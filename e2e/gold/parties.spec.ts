@@ -38,12 +38,17 @@ test('TC-PTY-01 a customer created through the form appears in the list', async 
   await page.getByRole('button', { name: /save party/i }).first().click()
 
   await page.waitForURL('**/parties', { timeout: 15_000 })
-  await expect(page.getByText(name, { exact: false }).first()).toBeVisible({ timeout: 10_000 })
+  // Search for it rather than expecting it on page 1: the list is name-sorted
+  // and paged, so on a business with more than a page of parties "did it save?"
+  // and "is it the first row?" are different questions. The first is the claim.
+  await page.getByPlaceholder(/search/i).first().fill(name)
+  const row = page.locator('.txn-row', { hasText: name }).first()
+  await expect(row).toBeVisible({ timeout: 15_000 })
   expect(failures.get(), 'creating a party must not produce an API failure').toEqual([])
 
   // Opening balance survives the rupee→paise→rupee conversion.
   // The row, not the text node — the click handler lives on the card.
-  await page.locator('.txn-row', { hasText: name }).first().click()
+  await row.click()
   await page.waitForURL(/\/parties\/[^/]+$/)
   await expect(page.locator('body')).toContainText(/1,?500/)
 })

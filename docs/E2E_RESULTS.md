@@ -20,6 +20,7 @@ Last run: 2026-07-26.
 | H — Parties (CRUD) | `e2e/gold/parties.spec.ts` | 5 | 5 | 0 | 0 |
 | H — Parties (list, GSTIN, offline) | `e2e/gold/parties-list.spec.ts` | 6 | 6 | 0 | 0 |
 | I — Products (create, GST fields, edit/delete) | `e2e/gold/products.spec.ts` | 5 | 5 | 0 | 0 |
+| I — Products (stock, low stock, barcode, paging) | `e2e/gold/products-stock.spec.ts` | 5 | 5 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
 planned but not written. Remaining suites (products, invoices, GST, import,
@@ -220,6 +221,34 @@ integration `setup.ts` TRUNCATEs every table between files, deleting the seeded
 owner. The server suites now own `hisaabpro_integ_test`
 (`INTEGRATION_DATABASE_URL` overrides), so the two suites can no longer delete
 each other's fixtures.
+
+### F19 — Products past page 20 were unreachable — **FIXED**
+
+`useProducts` was a single-page `useQuery` keyed on `filters.page`, and no UI
+ever called `setPage` — so a catalogue with 21 products showed 20, forever, with
+no control to reach the rest. For a shop, invisible inventory is a stock count
+that stops matching reality.
+
+Root cause: `src/features/products/useProducts.ts:47`. Fixed by moving the list
+to `useInfiniteQuery` (the same idiom the parties list already used) and
+extracting the pager the parties list had built for itself into a shared
+`<ListLoadMore>` — `PartyListLoadMore` was deleted rather than duplicated, so
+there is one pager component, not two that drift.
+Trace: `.claude/fix-trace-products-list-capped.md`. Test: TC-PRD-10.
+
+### F20 — `GET /api/marketing/opt-outs` did not exist — **FIXED**
+
+Every parties-list render fired a 404, and the marketing opt-out page could
+never list anyone: the client shipped a reader for an endpoint that was only
+ever built write-side (`POST /opt-out` flips the flag; nothing read it back).
+
+Root cause: `server/src/routes/marketing/segments.ts` — no GET route. Fixed by
+adding `listOptOutParties()` to the existing marketing-optout service (the SSOT
+for that flag) and exposing it cursor-paginated, ordered
+`[marketingOptOutAt desc, id desc]` so rows opted out before the timestamp was
+recorded still page stably. The response field is `optOuts`, which removes the
+`data.data` shape the client had assumed.
+Trace: `.claude/fix-trace-marketing-optouts-404.md`. Caught by TC-PTY-01.
 
 ### F7 — No language switch before login — **MEDIUM**, unfixed
 

@@ -6,7 +6,13 @@
  * against a real server, and the resulting cookies are real cookies.
  */
 
-import { test as base, expect, type APIRequestContext, type Page } from '@playwright/test'
+import {
+  test as base,
+  expect,
+  type APIRequestContext,
+  type BrowserContext,
+  type Page,
+} from '@playwright/test'
 import { registerVerifiedUser, testHooksLive } from './api'
 import { uniquePhone, VALID_PASSWORD, ROUTES, COOKIES, CSRF_HEADER } from './constants'
 
@@ -55,8 +61,40 @@ export const test = base.extend<GoldFixtures>({
 
 export { expect }
 
+/**
+ * Sessions already established in this worker, keyed by identity.
+ *
+ * The login endpoint is rate limited to 20 attempts per minute per IP — a real
+ * brute-force defence that a suite doing one UI login per test trips at test
+ * 21, failing whichever case happens to be there. Reusing the cookies of a
+ * session this worker already earned keeps every test authenticated as a real
+ * logged-in user without pretending the limiter isn't there. Login itself is
+ * under test in the auth suite, which is where those attempts belong.
+ */
+type SessionCookies = Awaited<ReturnType<BrowserContext['cookies']>>
+interface CachedSession {
+  cookies: SessionCookies
+  /** sessionStorage the app writes at login — `cachedUser` is the hint
+   *  ProtectedRoute reads before the server confirms the cookie. Restoring
+   *  cookies alone leaves the first render logged-out, which bounces a deep
+   *  link to the dashboard (finding F8) and makes the target page never load. */
+  storage: Record<string, string>
+}
+const sessions = new Map<string, CachedSession>()
+
 /** Logs in through the real form and waits for the app shell to take over. */
 export async function loginViaUi(page: Page, phone: string, password: string): Promise<void> {
+  const cached = sessions.get(phone)
+  if (cached) {
+    await page.context().addCookies(cached.cookies)
+    await page.addInitScript((entries: Record<string, string>) => {
+      for (const [key, value] of Object.entries(entries)) sessionStorage.setItem(key, value)
+    }, cached.storage)
+    await page.goto(ROUTES.DASHBOARD)
+    await page.waitForURL((url) => !url.pathname.startsWith(ROUTES.LOGIN), { timeout: 20_000 })
+    return
+  }
+
   await page.goto(ROUTES.LOGIN)
 
   const identifier = page.locator('#identifier')
@@ -77,6 +115,10 @@ export async function loginViaUi(page: Page, phone: string, password: string): P
 
   await submit.click()
   await page.waitForURL((url) => !url.pathname.startsWith(ROUTES.LOGIN), { timeout: 20_000 })
+  sessions.set(phone, {
+    cookies: await page.context().cookies(),
+    storage: await page.evaluate(() => ({ ...sessionStorage }) as Record<string, string>),
+  })
 }
 
 /**

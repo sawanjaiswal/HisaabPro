@@ -63,8 +63,12 @@ test('TC-PRD-01 a non-GST product is created from the form and priced in paise',
   expect(created!.purchasePrice).toBe(10000)
   expect(Number(created!.currentStock)).toBe(40)
 
+  // Search for it rather than expecting it on page 1: the list is paged and
+  // sorted, so on a catalogue larger than one page "did it save?" and "is it
+  // the first row?" are different questions. The first is what this case claims.
   await page.goto('/products')
-  await expect(page.locator('.product-row', { hasText: name })).toBeVisible({ timeout: 15_000 })
+  await page.getByPlaceholder(/search/i).first().fill(name)
+  await expect(page.locator('.product-row', { hasText: name })).toBeVisible({ timeout: 20_000 })
   expect(failures.get(), 'creating a product must not produce an API failure').toEqual([])
 })
 
