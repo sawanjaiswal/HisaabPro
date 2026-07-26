@@ -5,6 +5,7 @@
  */
 
 import { toLocalISODate } from '@/lib/format'
+import { discountToWire } from './invoice-discount-units'
 import type {
   DocumentType,
   DocumentFormData,
@@ -108,6 +109,15 @@ export function normalizeFormPayload(
   return {
     ...rest,
     status: targetStatus,
+    // Percentages are basis points on the wire — see invoice-discount-units.ts.
+    lineItems: form.lineItems.map((item) => ({
+      ...item,
+      discountValue: discountToWire(item.discountType, item.discountValue),
+    })),
+    additionalCharges: form.additionalCharges.map((charge) => ({
+      ...charge,
+      value: discountToWire(charge.type, charge.value),
+    })),
     // Normalise empty strings to undefined so the server omits them
     notes: form.notes?.trim() || undefined,
     termsAndConditions: form.termsAndConditions?.trim() || undefined,

@@ -16,6 +16,7 @@ import './invoice-line-items.css'
 import './invoice-product-search.css'
 import './invoice-summary.css'
 import './invoice-gst-banners.css'
+import { discountFromWire } from './invoice-discount-units'
 
 function detailToFormData(detail: DocumentDetail): DocumentFormData {
   return {
@@ -35,14 +36,15 @@ function detailToFormData(detail: DocumentDetail): DocumentFormData {
       quantity: li.quantity,
       rate: li.rate,
       discountType: li.discountType,
-      discountValue: li.discountValue,
+      // Basis points on the wire, percent in the form — invoice-discount-units.ts
+      discountValue: discountFromWire(li.discountType, li.discountValue),
       taxCategoryId: null,
       hsnCode: '',
     })),
     additionalCharges: detail.additionalCharges.map((ch) => ({
       name: ch.name,
       type: ch.type,
-      value: ch.value,
+      value: discountFromWire(ch.type, ch.value),
     })),
     transportDetails: detail.transportDetails ?? null,
     taxPricingMode: detail.taxPricingMode ?? 'EXCLUSIVE',
