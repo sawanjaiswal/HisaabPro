@@ -68,7 +68,7 @@ export async function createDocument(
   const taxCategories = taxCategoryIds.length > 0
     ? await prisma.taxCategory.findMany({
         where: { id: { in: taxCategoryIds }, businessId },
-        select: { id: true, cessRate: true, cessType: true },
+        select: { id: true, rate: true, cessRate: true, cessType: true },
       })
     : []
   const taxCategoryMap = new Map(taxCategories.map(tc => [tc.id, tc]))

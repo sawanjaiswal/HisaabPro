@@ -16,7 +16,11 @@
 import type { ExtendedPrismaClient } from '../../lib/prisma.js'
 import { notFoundError } from '../../lib/errors.js'
 import { calculateDocumentTotals, calculateChargeAmount } from '../document-calc.js'
-import { assertCompositionNoLineTax, assertCompositionNoInterState } from './create-tax-prep.js'
+import {
+  assertCompositionNoLineTax,
+  assertCompositionNoInterState,
+  buildCalcItems,
+} from './create-tax-prep.js'
 import { assertMoq, type MoqViolation } from './moq.guard.js'
 import { buildLineItemData } from './line-item-builder.js'
 import { getRoundOffSetting } from './helpers.js'
@@ -28,6 +32,8 @@ interface ExistingDoc {
   type: string
   placeOfSupply: string | null
   isComposite: boolean | null
+  taxPricingMode: string | null
+  isReverseCharge: boolean | null
 }
 
 export interface RecomputeResult {
@@ -67,7 +73,7 @@ export async function recomputeLineItemsAndTotals(
   const taxCategories = taxCategoryIds.length > 0
     ? await tx.taxCategory.findMany({
         where: { id: { in: taxCategoryIds }, businessId },
-        select: { id: true, cessRate: true, cessType: true },
+        select: { id: true, rate: true, cessRate: true, cessType: true },
       })
     : []
   const taxCategoryMap = new Map(taxCategories.map(tc => [tc.id, tc]))
@@ -83,31 +89,23 @@ export async function recomputeLineItemsAndTotals(
   assertCompositionNoLineTax(isCompositeUpdate, data.lineItems)
   assertCompositionNoInterState(isCompositeUpdate, biz?.stateCode ?? null, placeOfSupply)
 
-  const calcItems = data.lineItems.map(li => {
-    const tc = li.taxCategoryId ? taxCategoryMap.get(li.taxCategoryId) : undefined
-    // #133 BOGO — free items contribute 0 to revenue / discount / tax
-    if (li.isFreeItem) {
-      return {
-        quantity: li.quantity, rate: 0,
-        discountType: li.discountType, discountValue: 0,
-        purchasePrice: productMap.get(li.productId)!.purchasePrice || 0,
-        gstRate: 0, cessRate: 0, cessType: tc?.cessType ?? 'PERCENTAGE',
-      }
-    }
-    return {
-      quantity: li.quantity, rate: li.rate,
-      discountType: li.discountType, discountValue: li.discountValue,
-      purchasePrice: productMap.get(li.productId)!.purchasePrice || 0,
-      gstRate: li.gstRate,
-      cessRate: tc?.cessRate ?? 0,
-      cessType: tc?.cessType ?? 'PERCENTAGE',
-    }
-  })
+  // Same builder the create path uses. This mapping used to be duplicated here,
+  // and the copy had drifted: it never back-calculated INCLUSIVE prices, so an
+  // edit to an MRP-priced invoice quietly re-taxed the gross rate.
+  const purchasePrices = new Map(products.map(p => [p.id, p.purchasePrice || 0]))
+  const calcItems = buildCalcItems(
+    data.lineItems,
+    purchasePrices,
+    taxCategoryMap,
+    data.taxPricingMode ?? existing.taxPricingMode ?? 'EXCLUSIVE',
+    isCompositeUpdate,
+  )
   const calcCharges = (data.additionalCharges || []).map(c => ({ type: c.type, value: c.value }))
   const totals = calculateDocumentTotals(calcItems, calcCharges, roundOffSetting, {
     businessStateCode: biz?.stateCode ?? null,
     placeOfSupply: placeOfSupply as string | null,
     isComposite: isCompositeUpdate,
+    isReverseCharge: data.isReverseCharge ?? existing.isReverseCharge ?? false,
   })
 
   await tx.documentLineItem.deleteMany({ where: { documentId } })

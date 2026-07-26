@@ -4,7 +4,7 @@
  */
 import { validationError } from '../../lib/errors.js'
 import { calculateDocumentTotals } from '../document-calc.js'
-import { backCalculateInclusive, applyRcmFlag } from '../tax-calc.js'
+import { backCalculateInclusive } from '../tax-calc.js'
 import { determineSupplyType } from '../gstin.utils.js'
 import type { LineItemCalc } from '../document-calc.js'
 import type { DocumentTotalsResult } from '../document-calc.types.js'
@@ -23,6 +23,8 @@ interface BusinessContext {
 }
 
 interface TaxCategorySlice {
+  /** basis points — the SSOT for what a line tagged with this category is taxed at */
+  rate: number
   cessRate: number
   cessType: string
 }
@@ -102,11 +104,16 @@ export function buildCalcItems(
 ): LineItemCalc[] {
   return lineItems.map(li => {
     const tc = li.taxCategoryId ? taxCategoryMap.get(li.taxCategoryId) : undefined
+    // The rate belongs to the tax category, not to the request: the invoice form
+    // posts only `taxCategoryId` (it renders its GST summary from the category's
+    // own rate), and a client that could state the rate could bill 0% GST on
+    // taxable goods. `li.gstRate` survives only for a line with no category.
+    const gstRate = tc?.rate ?? li.gstRate ?? 0
     let effectiveRate = li.rate
 
-    if (taxPricingMode === 'INCLUSIVE' && !isComposite && li.gstRate && li.gstRate > 0) {
+    if (taxPricingMode === 'INCLUSIVE' && !isComposite && gstRate > 0) {
       const grossLine = Math.round(li.quantity * li.rate)
-      const { taxableValue } = backCalculateInclusive(grossLine, li.gstRate)
+      const { taxableValue } = backCalculateInclusive(grossLine, gstRate)
       effectiveRate = li.quantity > 0 ? Math.round(taxableValue / li.quantity) : 0
     }
 
@@ -131,7 +138,7 @@ export function buildCalcItems(
       discountType: li.discountType,
       discountValue: li.discountValue,
       purchasePrice: productPurchasePrices.get(li.productId) || 0,
-      gstRate: li.gstRate,
+      gstRate,
       cessRate: tc?.cessRate ?? 0,
       cessType: tc?.cessType ?? 'PERCENTAGE',
     }
@@ -147,35 +154,14 @@ export function computeGstTotals(
   isComposite: boolean,
   isReverseCharge: boolean,
 ): DocumentTotalsResult {
-  const rawTotals = calculateDocumentTotals(calcItems, charges, roundOffSetting, {
+  // The RCM rule lives in the calculator (it changes what the customer owes,
+  // not just what is reported) — this function only assembles its inputs.
+  return calculateDocumentTotals(calcItems, charges, roundOffSetting, {
     businessStateCode: business?.stateCode ?? null,
     placeOfSupply,
     isComposite,
+    isReverseCharge,
   })
-
-  if (!isReverseCharge) return rawTotals
-
-  const rcm = applyRcmFlag(
-    {
-      totalTaxableValue: rawTotals.totalTaxableValue,
-      totalCgst: rawTotals.totalCgst,
-      totalSgst: rawTotals.totalSgst,
-      totalIgst: rawTotals.totalIgst,
-      totalCess: rawTotals.totalCess,
-      totalTax: rawTotals.totalTax,
-      lineResults: [],
-    },
-    true,
-  )
-
-  return {
-    ...rawTotals,
-    totalCgst: rcm.totalCgst,
-    totalSgst: rcm.totalSgst,
-    totalIgst: rcm.totalIgst,
-    totalCess: rcm.totalCess,
-    totalTax: rcm.totalTax,
-  }
 }
 
 export function resolveSupplyType(partyGstin: string | null, grandTotal: number): string {

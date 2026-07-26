@@ -31,7 +31,7 @@ export async function updateDocument(
     where: { id: documentId, businessId },
     select: {
       id: true, type: true, status: true, partyId: true, grandTotal: true,
-      placeOfSupply: true, isComposite: true,
+      placeOfSupply: true, isComposite: true, taxPricingMode: true, isReverseCharge: true,
       lineItems: { select: { productId: true, quantity: true } },
     },
   })
