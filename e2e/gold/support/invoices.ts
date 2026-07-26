@@ -83,7 +83,12 @@ export interface InvoiceDetail {
   status: string
   subtotal: number
   totalDiscount: number
-  totalTax: number
+  totalCess?: number
+  /** GST split — CGST+SGST intra-state, IGST inter-state. Never both. */
+  totalCgst?: number
+  totalSgst?: number
+  totalIgst?: number
+  placeOfSupply?: string | null
   /** paise added/removed by the business's round-off setting */
   roundOff: number
   grandTotal: number
@@ -95,10 +100,10 @@ export interface InvoiceDetail {
     quantity: number
     rate: number
     lineTotal: number
-    taxAmount?: number
     cgstAmount?: number
     sgstAmount?: number
     igstAmount?: number
+    cessAmount?: number
     hsnCode?: string | null
   }>
 }

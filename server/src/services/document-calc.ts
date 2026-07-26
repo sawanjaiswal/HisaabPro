@@ -6,7 +6,7 @@
 import { PAISE_BASIS_POINTS } from '../../../shared/enums.js'
 
 import type { TaxLineInput, TaxLineResult } from './tax-calc.types.js'
-import { calculateLineTax, isInterState } from './tax-calc.js'
+import { calculateLineTax, isInterState, applyRcmFlag } from './tax-calc.js'
 import type {
   LineItemCalc, ChargeCalc, LineResult,
   DocumentTotalsOpts, DocumentTotalsResult,
@@ -63,7 +63,7 @@ export function calculateDocumentTotals(
   roundOffSetting: string,
   opts?: DocumentTotalsOpts,
 ): DocumentTotalsResult {
-  const { businessStateCode, placeOfSupply, isComposite } = opts ?? {}
+  const { businessStateCode, placeOfSupply, isComposite, isReverseCharge } = opts ?? {}
   const taxEnabled = !isComposite
   const interState = isInterState(businessStateCode ?? null, placeOfSupply ?? null)
 
@@ -120,7 +120,23 @@ export function calculateDocumentTotals(
     totalAdditionalCharges += calculateChargeAmount(subtotal, charge.type, charge.value)
   }
 
-  const totalTax = totalCgst + totalSgst + totalIgst + totalCess
+  // Reverse charge: the recipient pays the GST to the government, so the
+  // supplier collects none of it and the bill is the taxable value alone. This
+  // has to happen BEFORE preRound — zeroing the heads afterwards leaves
+  // grandTotal (and roundOff, and profit) carrying tax nobody collected, which
+  // is what unbalances the GL entry. Line amounts are kept: GSTR-1 reports an
+  // RCM supply with its rate and taxable value.
+  const rcm = applyRcmFlag(
+    { totalTaxableValue, totalCgst, totalSgst, totalIgst, totalCess,
+      totalTax: totalCgst + totalSgst + totalIgst + totalCess, lineResults: [] },
+    isReverseCharge ?? false,
+  )
+  totalCgst = rcm.totalCgst
+  totalSgst = rcm.totalSgst
+  totalIgst = rcm.totalIgst
+  totalCess = rcm.totalCess
+
+  const totalTax = rcm.totalTax
   const preRound = subtotal + totalAdditionalCharges + totalTax
   const roundOff = calculateRoundOff(preRound, roundOffSetting)
   const grandTotal = preRound + roundOff
