@@ -201,6 +201,14 @@ test('TC-IMP-06 the wizard itself uploads a file and reaches the preview', async
   ])
 
   await page.goto('/imports')
+
+  // The steps are numbered for a shopkeeper following them in order; two of
+  // them both said "1." because the ordinals were baked into the translated
+  // strings and the entity step was added in front of them later.
+  await expect(page.getByRole('heading', { level: 2 }).nth(0)).toHaveText(/^1\./)
+  await expect(page.getByRole('heading', { level: 2 }).nth(1)).toHaveText(/^2\./)
+  await expect(page.getByRole('heading', { level: 2 }).nth(2)).toHaveText(/^3\./)
+
   await page.getByRole('radio', { name: /Parties/i }).first().click()
   await page.getByRole('radio', { name: /Vyapar/i }).first().click()
   await page.locator('input[type="file"]').setInputFiles({

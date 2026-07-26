@@ -137,7 +137,7 @@ export default function ImportUploadPage() {
             className="font-semibold"
             style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
           >
-            {tx.importStepEntity ?? '1. What are you importing?'}
+            1. {tx.importStepEntity ?? 'What are you importing?'}
           </h2>
           <EntityPicker value={entity} onChange={setEntity} disabled={upload.isUploading} />
         </section>
@@ -148,7 +148,7 @@ export default function ImportUploadPage() {
             className="font-semibold"
             style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
           >
-            {tx.importStepFormat ?? '2. Choose source'}
+            2. {tx.importStepFormat ?? 'Choose source'}
           </h2>
           <FormatPicker value={format} onChange={setFormat} disabled={upload.isUploading || !entity} />
         </section>
@@ -159,7 +159,7 @@ export default function ImportUploadPage() {
             className="font-semibold"
             style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
           >
-            {tx.importStepFile ?? '3. Pick file'}
+            3. {tx.importStepFile ?? 'Pick file'}
           </h2>
           <FileDropzone
             file={file}

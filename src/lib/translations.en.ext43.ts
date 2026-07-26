@@ -10,8 +10,8 @@ export const enExt43 = {
     'Bring parties in from Tally, Vyapar, Busy, or a generic CSV — preview before anything is saved.',
 
   // ── Steps ──────────────────────────────────────────────────────────────
-  importStepFormat: '1. Choose source',
-  importStepFile: '2. Pick file',
+  importStepFormat: 'Choose source',
+  importStepFile: 'Pick file',
 
   // ── Format options (label + description) ───────────────────────────────
   importPickFormatLabel: 'Source format',
@@ -198,7 +198,7 @@ export const enExt43 = {
   importResultViewParties: 'View parties',
 
   // ── 7.1B — Entity picker + product copy ──────────────────────────────
-  importStepEntity: '1. What are you importing?',
+  importStepEntity: 'What are you importing?',
   importEntityPickAriaLabel: 'What are you importing',
   importEntityParties: 'Parties',
   importEntityPartiesDesc: 'Customers and suppliers from your books',

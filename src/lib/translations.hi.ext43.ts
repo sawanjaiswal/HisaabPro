@@ -9,8 +9,8 @@ export const hiExt43 = {
     'Tally, Vyapar, Busy, या किसी भी CSV से अपनी पार्टियाँ लाएँ — सेव करने से पहले प्रीव्यू देखें।',
 
   // ── Steps ──────────────────────────────────────────────────────────────
-  importStepFormat: '1. सोर्स चुनें',
-  importStepFile: '2. फ़ाइल चुनें',
+  importStepFormat: 'सोर्स चुनें',
+  importStepFile: 'फ़ाइल चुनें',
 
   // ── Format options ─────────────────────────────────────────────────────
   importPickFormatLabel: 'सोर्स फ़ॉर्मेट',
@@ -198,7 +198,7 @@ export const hiExt43 = {
   importResultViewParties: 'पार्टियाँ देखें',
 
   // ── 7.1B — एंटिटी पिकर + प्रोडक्ट कॉपी ──────────────────────────────
-  importStepEntity: '1. आप क्या इम्पोर्ट कर रहे हैं?',
+  importStepEntity: 'आप क्या इम्पोर्ट कर रहे हैं?',
   importEntityPickAriaLabel: 'आप क्या इम्पोर्ट कर रहे हैं',
   importEntityParties: 'पार्टियाँ',
   importEntityPartiesDesc: 'आपकी किताबों के ग्राहक और सप्लायर',
