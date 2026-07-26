@@ -6,7 +6,9 @@
  * GET  /api/gst/backfill/status/:jobId — poll job progress
  *
  * Rate limit on /execute: 1 request per hour per businessId+userId composite.
- * Idempotency-Key header required on /execute (400 if missing).
+ * Idempotency-Key header required on /execute (400 if missing). Every refusal
+ * (missing key, bad body, foreign tax category) is checked BEFORE the limiter,
+ * so a request the server always meant to reject never spends the hour.
  */
 
 import { Router } from 'express'
@@ -59,6 +61,36 @@ function backfillReplayCheck(req: Request, res: Response, next: NextFunction) {
   }).catch(next)
 }
 
+/**
+ * Ownership check for `defaultTaxCategoryId`, as middleware rather than inside
+ * the handler so it can be ordered AHEAD of the rate limiter. Every refusal
+ * this route can make is knowable without doing any work, and a request the
+ * server was always going to reject must not spend the one run per hour — the
+ * same reasoning the Idempotency-Key check above is ordered by.
+ */
+function requireOwnTaxCategory(req: Request, res: Response, next: NextFunction) {
+  const businessId = req.user?.businessId ?? ''
+  const body = req.body as import('../schemas/gst-backfill.schemas.js').ExecuteBackfillInput
+  prisma.taxCategory
+    .findFirst({
+      where: { id: body.defaultTaxCategoryId, businessId, isActive: true, isDeleted: false },
+      select: { id: true },
+    })
+    .then(taxCategory => {
+      if (!taxCategory) {
+        sendError(
+          res,
+          'defaultTaxCategoryId does not reference an active tax category in this business',
+          'INVALID_TAX_CATEGORY',
+          400,
+        )
+        return
+      }
+      next()
+    })
+    .catch(next)
+}
+
 // Rate limiter: 1 execute per hour per businessId+userId
 const backfillRateLimit = createRateLimiter({
   windowMs: 60 * 60 * 1000, // 1 hour
@@ -93,34 +125,17 @@ router.post(
   '/execute',
   requirePermission('settings.modify'),
   requireIdempotencyKey,
+  validate(executeBackfillSchema),
+  requireOwnTaxCategory,
   backfillReplayCheck,
   backfillRateLimit,
-  validate(executeBackfillSchema),
   asyncHandler(async (req, res) => {
     const { userId, businessId } = req.user!
     const idempotencyKey = req.headers['idempotency-key'] as string
 
+    // The body is validated and the tax category proven to be this business's by
+    // the middleware above — both ahead of the rate limiter, on purpose.
     const body = req.body as import('../schemas/gst-backfill.schemas.js').ExecuteBackfillInput
-
-    // Validate defaultTaxCategoryId belongs to this business and is active
-    const taxCategory = await prisma.taxCategory.findFirst({
-      where: {
-        id: body.defaultTaxCategoryId,
-        businessId,
-        isActive: true,
-        isDeleted: false,
-      },
-    })
-
-    if (!taxCategory) {
-      sendError(
-        res,
-        'defaultTaxCategoryId does not reference an active tax category in this business',
-        'INVALID_TAX_CATEGORY',
-        400,
-      )
-      return
-    }
 
     logger.info('BACKFILL_EXECUTE_START', {
       userId,
