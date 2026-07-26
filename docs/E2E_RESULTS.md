@@ -17,9 +17,12 @@ Last run: 2026-07-26.
 | B — Registration & OTP | `e2e/gold/registration.spec.ts` | 13 | 13 | 0 | 0 |
 | C — Login & session | `e2e/gold/auth.spec.ts` | 11 | 9 | 2 | 0 |
 | A — App shell | `e2e/gold/shell.spec.ts` | 8 | 7 | 0 | 1 |
+| H — Parties (CRUD) | `e2e/gold/parties.spec.ts` | 5 | 5 | 0 | 0 |
+| H — Parties (list, GSTIN, offline) | `e2e/gold/parties-list.spec.ts` | 6 | 6 | 0 | 0 |
 
-Remaining suites (parties, products, invoices, GST, import, payments,
-reports, settings) are not written yet.
+TC-PTY-09 (party statement: opening + transactions − payments = closing) is
+planned but not written. Remaining suites (products, invoices, GST, import,
+payments, reports, settings) are not written yet.
 
 ---
 
@@ -134,6 +137,60 @@ Fix is small — a `jti: randomUUID()` in both payloads — but `server/src/lib/
 is a declared high-risk path (`~/.claude/rules/HIGH_RISK_PATHS.md`), so it needs
 the `architect` + `security` design plan before the edit. Deliberately not
 touched here.
+
+### F13 — The parties list stopped at 20 with no way to reach the rest — **FIXED** (`618dcc11`)
+
+TC-PTY-07. `useParties` kept a page number in local state and replaced the data
+on change, so the 20-per-page default *was* the list. Priya (2-5 staff) and Amit
+(5-20 staff) both cross 20 parties in their first week; every party past the
+20th was reachable only by knowing its name and searching for it. Ported to
+`useInfiniteQuery` with a Load more control, and taught `party-cache` both cache
+shapes so optimistic create/delete still reconcile.
+
+### F14 — A party with a valid GSTIN could not be saved at all — **FIXED** (`618dcc11`)
+
+TC-PTY-10. `handleSubmit` spread the whole form into `createParty`, and the form
+carries the display-only verification state (`gstinVerified`, `gstinLegalName`,
+`gstinStatus`) that the `.strict()` server schema rejects:
+
+```
+POST /api/parties → 400
+"Unrecognized key(s) in object: 'gstinVerified', 'gstinLegalName', 'gstinStatus'"
+```
+
+Save appeared to do nothing. Every B2B customer — the only ones with a GSTIN,
+and the only ones whose invoices carry input tax credit — was unaddable through
+the UI. The same class had already been fixed inline on the *edit* branch of the
+same function; there was no shared mapper, so create kept the bug. Now one
+`party.payload.ts` owns the field set per direction.
+
+**Follow-up, not fixed:** nothing on the server ever writes `Party.gstinVerified`,
+so the "Verified" badge on a saved party can never render. Persisting
+verification is a server feature, logged separately.
+
+### F15 — Offline replays were dead-lettered on arrival — **FIXED** (`618dcc11`)
+
+TC-PTY-11. `processQueue` built its own header set (Content-Type + idempotency
+key), omitting the CSRF token (403) and the replay nonce/timestamp (400). Both
+are 4xx, which the processor treats as non-retryable, so every queued mutation
+went straight to `dead` the moment the network returned. Replays now go through
+`buildRequestHeaders` — the same builder the live client uses.
+
+### F16 — The offline queue never drained after a save-and-navigate — **FIXED** (`618dcc11`)
+
+TC-PTY-11, found immediately behind F15. The only caller of `processQueue` was
+an offline→online *edge* observed by `useSyncQueue`, which lives in
+`<SyncStatusIcon>` in the header. Saving offline navigates, the header unmounts,
+the reconnect fires with nobody listening, and the remounted hook seeds its
+"previous" value with the already-online state — so the edge is never seen
+again. Instrumented run: the item sat `pending`, unattempted, for the full
+window.
+
+Combined with F15 this meant **offline mode did not work at all**: the app's
+headline promise for 2G shops. The drain is now level-triggered ("online AND
+work pending") and owned by `src/lib/offline.autosync.ts`, started once at boot.
+That also covers an item enqueued while the heartbeat still reads online, which
+had no edge coming at all.
 
 ### F7 — No language switch before login — **MEDIUM**, unfixed
 
