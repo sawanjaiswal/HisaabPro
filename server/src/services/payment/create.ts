@@ -3,7 +3,8 @@
  */
 
 import { prisma } from '../../lib/prisma.js'
-import { notFoundError, validationError } from '../../lib/errors.js'
+import { notFoundError } from '../../lib/errors.js'
+import { assertAllocationsPayable } from './allocation-guard.js'
 import { PAYMENT_DETAIL_SELECT, mapPaymentDiscount } from './selects.js'
 import type { CreatePaymentInput } from '../../schemas/payment.schemas.js'
 import { notificationManager } from '../notifications/notification-manager.js'
@@ -24,24 +25,8 @@ export async function createPayment(
   })
   if (!party) throw notFoundError('Party')
 
-  // Validate allocations sum <= amount
-  const allocTotal = data.allocations.reduce((sum, a) => sum + a.amount, 0)
-  if (allocTotal > data.amount) {
-    throw validationError('Total allocations exceed payment amount')
-  }
-
-  // Validate allocation invoices exist and belong to business
-  if (data.allocations.length > 0) {
-    const invoiceIds = data.allocations.map(a => a.invoiceId)
-    const invoices = await prisma.document.findMany({
-      where: { id: { in: invoiceIds }, businessId, status: { in: ['SAVED', 'SHARED'] } },
-      select: { id: true },
-    })
-    const foundIds = new Set(invoices.map(i => i.id))
-    for (const a of data.allocations) {
-      if (!foundIds.has(a.invoiceId)) throw notFoundError(`Invoice ${a.invoiceId}`)
-    }
-  }
+  // Fits the payment, belongs to this business, and does not overpay the bill.
+  await assertAllocationsPayable(businessId, data.allocations, data.amount)
 
   // Calculate discount
   let discountAmount = 0

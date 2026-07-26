@@ -3,7 +3,8 @@
  */
 
 import { prisma } from '../../lib/prisma.js'
-import { notFoundError, validationError } from '../../lib/errors.js'
+import { notFoundError } from '../../lib/errors.js'
+import { assertAllocationsPayable } from './allocation-guard.js'
 import { PAYMENT_DETAIL_SELECT, mapPaymentDiscount } from './selects.js'
 import type { UpdateAllocationsInput } from '../../schemas/payment.schemas.js'
 
@@ -21,10 +22,16 @@ export async function updateAllocations(
   })
   if (!payment) throw notFoundError('Payment')
 
-  const newAllocTotal = data.allocations.reduce((sum, a) => sum + a.amount, 0)
-  if (newAllocTotal > payment.amount) {
-    throw validationError('Total allocations exceed payment amount')
-  }
+  // The rows below are reversed first, so what they hold is capacity this
+  // payment gets back. Same guard as create: the old check here only compared
+  // the total against the payment, so an allocation could overpay an invoice —
+  // or land on another business's invoice entirely, since nothing scoped the id.
+  await assertAllocationsPayable(
+    businessId,
+    data.allocations,
+    payment.amount,
+    new Map(payment.allocations.map(a => [a.invoiceId, a.amount])),
+  )
 
   return prisma.$transaction(async (tx) => {
     // Reverse existing allocations (parallel — each invoiceId is distinct)
