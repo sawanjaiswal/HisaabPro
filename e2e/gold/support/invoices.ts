@@ -59,7 +59,32 @@ export async function apiCreateInvoice(
     [key: string]: unknown
   },
 ): Promise<CreatedInvoice> {
-  const res = await csrfPost(page, `${API}/documents`, {
+  const res = await postDocument(page, body)
+  if (!res.ok()) throw new Error(`create document failed (${res.status()}): ${await res.text()}`)
+  const envelope = (await res.json()) as { data?: CreatedInvoice & { document?: CreatedInvoice } }
+  const doc = envelope.data?.document ?? envelope.data
+  if (!doc?.id) throw new Error(`create document returned no id: ${JSON.stringify(envelope)}`)
+  return doc
+}
+
+/**
+ * The raw response, for cases whose subject is a REFUSAL. `apiCreateInvoice`
+ * throws on a non-2xx, which is right when the create is arrangement — but a
+ * case asserting "the server must reject this" has to read the status and the
+ * message the seller would be shown.
+ */
+export async function apiCreateInvoiceResponse(
+  page: Page,
+  body: { partyId: string; lineItems: InvoiceLineInput[]; [key: string]: unknown },
+) {
+  return postDocument(page, body)
+}
+
+function postDocument(
+  page: Page,
+  body: { partyId: string; lineItems: InvoiceLineInput[]; [key: string]: unknown },
+) {
+  return csrfPost(page, `${API}/documents`, {
     type: 'SALE_INVOICE',
     status: 'SAVED',
     documentDate: today(),
@@ -70,11 +95,6 @@ export async function apiCreateInvoice(
       ...l,
     })),
   })
-  if (!res.ok()) throw new Error(`create document failed (${res.status()}): ${await res.text()}`)
-  const envelope = (await res.json()) as { data?: CreatedInvoice & { document?: CreatedInvoice } }
-  const doc = envelope.data?.document ?? envelope.data
-  if (!doc?.id) throw new Error(`create document returned no id: ${JSON.stringify(envelope)}`)
-  return doc
 }
 
 export interface InvoiceDetail {

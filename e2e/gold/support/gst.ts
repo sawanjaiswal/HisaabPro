@@ -53,7 +53,21 @@ export async function enableGst(page: Page, taxPricingMode = 'EXCLUSIVE'): Promi
 
 /** Restores the seeded default so the other suites keep their arithmetic. */
 export async function disableGst(page: Page): Promise<void> {
-  await patchGstSettings(page, { gstEnabled: false, taxPricingMode: 'EXCLUSIVE' })
+  await patchGstSettings(page, {
+    gstEnabled: false,
+    taxPricingMode: 'EXCLUSIVE',
+    compositionScheme: false,
+  })
+}
+
+/**
+ * Composition scheme — a small dealer who pays a flat percent of turnover and
+ * therefore may not charge GST on the bill at all. Switching it on changes what
+ * the server ACCEPTS, not just what it prints, so cases that set it must clear
+ * it (`disableGst` does).
+ */
+export async function setCompositionScheme(page: Page, on: boolean): Promise<GstSettings> {
+  return patchGstSettings(page, { compositionScheme: on })
 }
 
 export interface TaxCategory {

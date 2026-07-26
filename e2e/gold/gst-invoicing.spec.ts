@@ -1,6 +1,6 @@
 /**
  * Suite K — GST invoicing. Plan: docs/E2E_TEST_PLAN.md §12.
- * Cases TC-GST-01..07.
+ * Cases TC-GST-01..11.
  *
  * GST is the part of this app a shop cannot fudge: the split it prints is the
  * split it files, and a wrong one is a notice from the department rather than a
@@ -21,6 +21,7 @@ import { apiCreateProduct, uniqueProductName } from './support/products'
 import {
   addLine,
   apiCreateInvoice,
+  apiCreateInvoiceResponse,
   apiGetInvoice,
   apiListInvoices,
   selectParty,
@@ -31,6 +32,7 @@ import {
   OTHER_STATE,
   disableGst,
   enableGst,
+  setCompositionScheme,
   apiGetGstSettings,
   taxCategoryAt,
   taxOf,
@@ -264,4 +266,64 @@ test('TC-GST-08 the form shows the tax it is about to charge, and charges what i
   const detail = await apiGetInvoice(page, saved!.id)
   expect(taxOf(detail), 'the stored tax is the tax the seller was shown').toBe(36000)
   expect(detail.grandTotal - Number(detail.roundOff ?? 0)).toBe(236000)
+})
+
+test('TC-GST-09 a composition dealer cannot charge GST on a bill', async ({ page }) => {
+  const gst18 = await taxCategoryAt(page, 1800)
+  const party = await apiCreateParty(page, { name: uniqueName('Composite Buyer') })
+  const product = await apiCreateProduct(page, {
+    name: uniqueProductName('Composite'), salePrice: 100000, openingStock: 20, taxCategoryId: gst18.id,
+  })
+  await setCompositionScheme(page, true)
+
+  // A composition dealer pays a flat percent of turnover and issues a Bill of
+  // Supply. Charging GST on top collects tax the dealer has no right to collect
+  // and cannot pass on — the customer's input credit claim is what surfaces it,
+  // months later. The refusal must happen at save, not at print.
+  const res = await apiCreateInvoiceResponse(page, {
+    partyId: party.id,
+    placeOfSupply: HOME_STATE,
+    lineItems: [{ productId: product.id, quantity: 1, rate: 100000, taxCategoryId: gst18.id }],
+  })
+  expect(res.status(), 'a taxed composition invoice is refused').toBe(400)
+  expect(await res.text()).toMatch(/composition/i)
+})
+
+test('TC-GST-10 a composition dealer cannot sell inter-state', async ({ page }) => {
+  const party = await apiCreateParty(page, { name: uniqueName('Outstation Buyer') })
+  const product = await apiCreateProduct(page, {
+    name: uniqueProductName('Outstation'), salePrice: 100000, openingStock: 20,
+  })
+  await setCompositionScheme(page, true)
+
+  // The scheme is state-bound: an inter-state outward supply disqualifies the
+  // dealer from composition entirely, retrospectively for the year.
+  const res = await apiCreateInvoiceResponse(page, {
+    partyId: party.id,
+    placeOfSupply: OTHER_STATE,
+    lineItems: [{ productId: product.id, quantity: 1, rate: 100000 }],
+  })
+  expect(res.status(), 'an inter-state composition supply is refused').toBe(400)
+  expect(await res.text()).toMatch(/inter-state/i)
+})
+
+test('TC-GST-11 a composition Bill of Supply saves with no tax on it', async ({ page }) => {
+  const party = await apiCreateParty(page, { name: uniqueName('Bill Of Supply Buyer') })
+  const product = await apiCreateProduct(page, {
+    name: uniqueProductName('Supplied'), salePrice: 100000, openingStock: 20,
+  })
+  await setCompositionScheme(page, true)
+
+  const invoice = await apiCreateInvoice(page, {
+    partyId: party.id,
+    placeOfSupply: HOME_STATE,
+    lineItems: [{ productId: product.id, quantity: 3, rate: 100000 }],
+  })
+  const detail = await apiGetInvoice(page, invoice.id)
+
+  // The dealer's own bill still has to work: goods at their price, no tax
+  // column, and the customer pays the subtotal.
+  expect(detail.subtotal).toBe(300000)
+  expect(taxOf(detail), 'a Bill of Supply carries no tax').toBe(0)
+  expect(detail.grandTotal - Number(detail.roundOff ?? 0)).toBe(300000)
 })
