@@ -14,6 +14,7 @@
 
 // PII: logger / audit calls MUST NOT include raw cell content —
 // only jobId, rowId, status, counts (S9).
+import { DUPLICATE_ROW_STATUSES } from '../../constants/import.constants.js'
 import { AppError, ErrorCode } from '../../lib/errors.js'
 import logger from '../../lib/logger.js'
 import type {
@@ -30,10 +31,7 @@ interface ResolutionRowMin {
   matchedPartyId: string | null
 }
 
-const DUP_STATUSES: ReadonlySet<string> = new Set([
-  'DUPLICATE_EXACT',
-  'DUPLICATE_NEAR',
-])
+const DUP_STATUSES: ReadonlySet<string> = new Set(DUPLICATE_ROW_STATUSES)
 
 export interface ApplyResolutionsResult {
   overwrittenPartyIds: string[]
@@ -168,7 +166,7 @@ async function overwriteMatchedParty(
 ): Promise<string | null> {
   const n = (args.normalized ?? {}) as {
     name?: string
-    phoneE164?: string
+    phone?: string
     email?: string
     gstin?: string
     address?: string
@@ -179,7 +177,7 @@ async function overwriteMatchedParty(
     where: { id: args.matchedPartyId, businessId: args.businessId },
     data: {
       ...(n.name !== undefined ? { name: n.name } : {}),
-      ...(n.phoneE164 !== undefined ? { phone: n.phoneE164 } : {}),
+      ...(n.phone !== undefined ? { phone: n.phone } : {}),
       ...(n.email !== undefined ? { email: n.email } : {}),
       ...(n.gstin !== undefined ? { gstin: n.gstin } : {}),
       ...(n.address !== undefined ? { notes: n.address } : {}),

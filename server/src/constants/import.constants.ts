@@ -163,3 +163,16 @@ export const TRGM_TOP_K = 5
 export const ACTION_PRODUCTS_IMPORTED_BATCH = 'products.imported_batch' as const
 export const ACTION_PRODUCTS_UPDATED_FROM_IMPORT =
   'products.updated_from_import' as const
+
+/**
+ * Row statuses that mean "a duplicate the shopkeeper has not resolved yet".
+ *
+ * One list, because three places have to agree on it: the resolution endpoint
+ * (which decisions are legal), the commit's STAGED pass (which rows it must
+ * not create), and the commit result (which rows it must report as skipped, so
+ * committed + skipped + errors still reconciles to the file's row count).
+ */
+export const DUPLICATE_ROW_STATUSES = ['DUPLICATE_EXACT', 'DUPLICATE_NEAR'] as const
+
+/** Statuses a commit reports as skipped: explicit skips + unresolved duplicates. */
+export const SKIPPED_ROW_STATUSES = ['SKIPPED', ...DUPLICATE_ROW_STATUSES] as const

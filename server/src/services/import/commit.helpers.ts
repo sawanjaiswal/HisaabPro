@@ -52,6 +52,12 @@ export interface ChunkResult {
 /**
  * S7 — `hashtextextended(text, seed)` returns bigint; the older
  * `hashtext` int4 variant collides at ~77k businesses.
+ *
+ * Postgres offers exactly two advisory-lock signatures: `(bigint)` and
+ * `(int4, int4)`. There is NO `(bigint, bigint)`, so the namespace cannot be a
+ * second bigint argument — it is folded into the hashed text instead, which
+ * keeps the full 64-bit key width S7 asks for and still keeps import-commit
+ * keys disjoint from any other subsystem's.
  */
 export async function acquireBusinessLock(
   tx: Tx,
@@ -59,8 +65,7 @@ export async function acquireBusinessLock(
 ): Promise<void> {
   await tx.$executeRaw`
     SELECT pg_advisory_xact_lock(
-      hashtextextended('import-commit', 0),
-      hashtextextended(${businessId}, 0)
+      hashtextextended('import-commit:' || ${businessId}, 0)
     )
   `
 }
@@ -84,6 +89,15 @@ export async function lockJob(
  * M3 — assert that the locked job row matches all four binding fields:
  *   status='PREVIEWED' AND commitToken AND idempotencyKey AND (biz,user)
  * Any miss = 409 BAD_COMMIT_TOKEN (uniform response to avoid oracle).
+ *
+ * The idempotency key is CLAIMED by the first commit, not carried over from
+ * the upload: `idempotencyCheck()` keys its replay log by (key, user) alone,
+ * so a commit that re-sent the upload's key would be answered with the cached
+ * UPLOAD response and never reach this code. An unclaimed job therefore has
+ * `idempotencyKey === null` and binds to whatever key the commit presents;
+ * `commitImportJob` writes it in the same transaction. A second commit under
+ * a different key is stopped by `status !== 'PREVIEWED'`, and a replay under
+ * the same key never gets past the middleware.
  */
 export function assertCommitBind(
   row: JobLockRow | null,
@@ -93,7 +107,7 @@ export function assertCommitBind(
     row !== null &&
     row.status === 'PREVIEWED' &&
     row.commitToken === expected.commitToken &&
-    row.idempotencyKey === expected.idempotencyKey &&
+    (row.idempotencyKey === null || row.idempotencyKey === expected.idempotencyKey) &&
     row.businessId === expected.auth.businessId &&
     row.userId === expected.auth.userId
   if (!ok) {

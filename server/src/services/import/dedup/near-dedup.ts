@@ -79,8 +79,8 @@ export function nameSimilarity(a: string, b: string): number {
   return 1 - levenshtein(la, lb) / longer
 }
 
-function phoneSuffix(phoneE164: string): string {
-  return phoneE164.slice(-SUFFIX_LEN)
+function phoneSuffix(phone: string): string {
+  return phone.slice(-SUFFIX_LEN)
 }
 
 export async function findNearDuplicates(
@@ -100,8 +100,8 @@ export async function findNearDuplicates(
   // dedup is only sensible when we have at least the suffix to scope.
   const byBucket = new Map<string, typeof rows>()
   for (const r of rows) {
-    if (!r.phoneE164) continue
-    const sfx = phoneSuffix(r.phoneE164)
+    if (!r.phone) continue
+    const sfx = phoneSuffix(r.phone)
     const arr = byBucket.get(sfx) ?? []
     arr.push(r)
     byBucket.set(sfx, arr)

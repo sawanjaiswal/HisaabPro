@@ -9,9 +9,7 @@ import {
   normaliseOpeningBalance,
 } from '../party-normalizer.js'
 import {
-  TALLY_DEFAULT_MAPPING,
-  VYAPAR_DEFAULT_MAPPING,
-  BUSY_DEFAULT_MAPPING,
+  PARSER_CANONICAL_MAPPING,
   defaultMappingFor,
 } from '../normalize-mappings.js'
 import type { RawPartyRow, RowIssue } from '../../../../types/import.types.js'
@@ -23,14 +21,14 @@ function raw(o: Record<string, string>): RawPartyRow {
 describe('normalisePhone', () => {
   it('keeps 10-digit Indian numbers as +91XXXXXXXXXX', () => {
     const issues: never[] = []
-    expect(normalisePhone('9111111111', issues)).toBe('+919111111111')
+    expect(normalisePhone('9111111111', issues)).toBe('9111111111')
     expect(issues).toHaveLength(0)
   })
   it('strips hyphens and spaces', () => {
-    expect(normalisePhone('+91 91111-11111', [])).toBe('+919111111111')
+    expect(normalisePhone('+91 91111-11111', [])).toBe('9111111111')
   })
   it('keeps already-+91 numbers', () => {
-    expect(normalisePhone('+919111111111', [])).toBe('+919111111111')
+    expect(normalisePhone('9111111111', [])).toBe('9111111111')
   })
   it('marks <10 digit numbers INVALID_PHONE and returns undefined', () => {
     const issues: RowIssue[] = []
@@ -122,17 +120,17 @@ describe('normalizePartyRow (end-to-end)', () => {
   it('Vyapar happy row maps through default mapping', () => {
     const out = normalizePartyRow(
       raw({
-        'Party Name': 'Raju Traders',
-        'Phone Number': '9111111111',
-        Email: 'raju@traders.in',
-        GSTIN: '27AAPFU0939F1ZV',
-        Address: 'Shop 4, MG Road',
-        'Opening Balance': '1,00,000',
+        name: 'Raju Traders',
+        phone: '9111111111',
+        email: 'raju@traders.in',
+        gstin: '27AAPFU0939F1ZV',
+        address: 'Shop 4, MG Road',
+        openingBalance: '1,00,000',
       }),
-      VYAPAR_DEFAULT_MAPPING,
+      PARSER_CANONICAL_MAPPING,
     )
     expect(out.name).toBe('Raju Traders')
-    expect(out.phoneE164).toBe('+919111111111')
+    expect(out.phone).toBe('9111111111')
     expect(out.email).toBe('raju@traders.in')
     expect(out.gstin).toBe('27AAPFU0939F1ZV')
     expect(out.openingBalancePaise).toBe(10000000)
@@ -141,35 +139,35 @@ describe('normalizePartyRow (end-to-end)', () => {
 
   it('Tally row case-insensitive header match', () => {
     const out = normalizePartyRow(
-      raw({ name: 'Tally Party', ledphone: '9222222222' }),
-      TALLY_DEFAULT_MAPPING,
+      raw({ name: 'Tally Party', phone: '9222222222' }),
+      PARSER_CANONICAL_MAPPING,
     )
     expect(out.name).toBe('Tally Party')
-    expect(out.phoneE164).toBe('+919222222222')
+    expect(out.phone).toBe('9222222222')
   })
 
   it('Busy Cr balance → negative paise', () => {
     const out = normalizePartyRow(
-      raw({ PartyName: 'X', MobileNo: '9333333333', 'Opening Balance': '500 Cr' }),
-      BUSY_DEFAULT_MAPPING,
+      raw({ name: 'X', phone: '9333333333', openingBalance: '500 Cr' }),
+      PARSER_CANONICAL_MAPPING,
     )
     expect(out.openingBalancePaise).toBe(-50000)
   })
 
   it('keeps row even when phone invalid (issues populated)', () => {
     const out = normalizePartyRow(
-      raw({ 'Party Name': 'Raju', 'Phone Number': '12345' }),
-      VYAPAR_DEFAULT_MAPPING,
+      raw({ name: 'Raju', phone: '12345' }),
+      PARSER_CANONICAL_MAPPING,
     )
     expect(out.name).toBe('Raju')
-    expect(out.phoneE164).toBeUndefined()
+    expect(out.phone).toBeUndefined()
     expect(out.issues.some((i) => i.code === 'INVALID_PHONE')).toBe(true)
   })
 
   it('missing name surfaces MISSING_NAME', () => {
     const out = normalizePartyRow(
-      raw({ 'Party Name': '   ' }),
-      VYAPAR_DEFAULT_MAPPING,
+      raw({ name: '   ' }),
+      PARSER_CANONICAL_MAPPING,
     )
     expect(out.issues[0]!.code).toBe('MISSING_NAME')
   })
@@ -179,9 +177,11 @@ describe('defaultMappingFor', () => {
   it('returns null for GENERIC_CSV', () => {
     expect(defaultMappingFor('GENERIC_CSV')).toBeNull()
   })
-  it('returns mappings for known formats', () => {
-    expect(defaultMappingFor('TALLY_XML')).toBe(TALLY_DEFAULT_MAPPING)
-    expect(defaultMappingFor('VYAPAR_CSV')).toBe(VYAPAR_DEFAULT_MAPPING)
-    expect(defaultMappingFor('BUSY_XLSX')).toBe(BUSY_DEFAULT_MAPPING)
+  // Known formats share one mapping because their parsers all emit the same
+  // canonical row — the source headers live in each parser's own COLUMN_MAP.
+  it('returns the canonical mapping for parser-canonicalised formats', () => {
+    expect(defaultMappingFor('TALLY_XML')).toBe(PARSER_CANONICAL_MAPPING)
+    expect(defaultMappingFor('VYAPAR_CSV')).toBe(PARSER_CANONICAL_MAPPING)
+    expect(defaultMappingFor('BUSY_XLSX')).toBe(PARSER_CANONICAL_MAPPING)
   })
 })

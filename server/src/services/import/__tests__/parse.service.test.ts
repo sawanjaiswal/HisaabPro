@@ -99,7 +99,7 @@ describe('runParseAndStage', () => {
   it('exact-dedup match is reflected in matchedPartyId on the staged row', async () => {
     const { prisma, createManyCalls } = buildPrisma({
       existingParties: [
-        { id: 'party-existing', name: 'Old Raju', phone: '+919111111111', gstin: null },
+        { id: 'party-existing', name: 'Old Raju', phone: '9111111111', gstin: null },
       ],
     })
     await runParseAndStage({
@@ -118,7 +118,10 @@ describe('runParseAndStage', () => {
     }>
     const dupRow = rows.find((r) => r.sourceIndex === 0)
     expect(dupRow?.matchedPartyId).toBe('party-existing')
-    expect(dupRow?.status).toBe('STAGED')
+    // Held back for the shopkeeper's decision — committing it would create a
+    // second party on a phone the (businessId, phone) unique index forbids,
+    // and that aborts the whole commit transaction.
+    expect(dupRow?.status).toBe('DUPLICATE_EXACT')
   })
 
   it('row without a name is classified ERROR (not STAGED)', async () => {

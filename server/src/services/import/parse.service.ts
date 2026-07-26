@@ -146,13 +146,17 @@ export async function runParseAndStage(
   // Treat both union arms structurally — both expose status/raw/normalized.
   const stagedAny = staged as Array<{
     sourceIndex: number
-    status: 'STAGED' | 'ERROR' | 'SKIPPED'
+    status: 'STAGED' | 'ERROR' | 'SKIPPED' | 'DUPLICATE_EXACT'
     raw: Record<string, string>
     normalized: { issues?: unknown } & Record<string, unknown>
     matchedPartyId?: string
   }>
   const errorCount = stagedAny.filter((r) => r.status === 'ERROR').length
-  const stagedCount = stagedAny.length - errorCount
+  // Counted apart from `staged`: a duplicate is not committable until the
+  // shopkeeper resolves it, and a preview that folds it into "staged" promises
+  // rows the commit will not write.
+  const duplicateCount = stagedAny.filter((r) => r.status === 'DUPLICATE_EXACT').length
+  const stagedCount = stagedAny.length - errorCount - duplicateCount
 
   // Bulk insert in chunks of 500 — Prisma createMany takes Json natively.
   for (let i = 0; i < stagedAny.length; i += ROW_INSERT_CHUNK) {
@@ -187,6 +191,7 @@ export async function runParseAndStage(
           total: stagedAny.length,
           staged: stagedCount,
           errors: errorCount,
+          duplicates: duplicateCount,
         },
       },
     })

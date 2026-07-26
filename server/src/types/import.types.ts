@@ -46,13 +46,13 @@ export interface RawPartyRow {
 
 /**
  * One normalized party row ready for dedup + commit. All fields use
- * canonical HP representations (E.164 phone, paise integers, etc.).
+ * canonical HP representations (stored Party.phone shape, paise integers, etc.).
  * `issues[]` may be non-empty even when other fields are present — the
  * preview UI shows the row with inline error chips.
  */
 export interface NormalizedPartyRow {
   name: string
-  phoneE164?: string
+  phone?: string
   email?: string
   gstin?: string
   address?: string

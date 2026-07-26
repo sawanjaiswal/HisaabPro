@@ -34,7 +34,7 @@ import { createAuditEntry } from '../settings/audit.js'
 
 interface PartyNormalized {
   name: string
-  phoneE164?: string
+  phone?: string
   email?: string
   gstin?: string
   address?: string
@@ -51,7 +51,7 @@ async function commitOnePartyRow(
     data: {
       businessId,
       name: n.name,
-      phone: n.phoneE164 ?? null,
+      phone: n.phone ?? null,
       email: n.email ?? null,
       gstin: n.gstin ?? null,
       notes: n.address ?? null,

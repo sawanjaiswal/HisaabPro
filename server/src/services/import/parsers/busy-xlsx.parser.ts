@@ -63,7 +63,8 @@ function rowToParty(
     const s = String(v).trim()
     if (s) raw[dst] = s
   }
-  if (!raw.name) return null
+  // Kept even without a name — the normalizer classifies it (MISSING_NAME) so
+  // the row is visible in the preview instead of vanishing from the counts.
   if (!raw.phone && raw.mobile) {
     raw.phone = raw.mobile
   }

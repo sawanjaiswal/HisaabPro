@@ -73,8 +73,10 @@ function ledgerToRow(
   index: number,
 ): RawPartyRow | null {
   const name = asString(node['@_NAME'])
-  if (!name) return null
   const parent = asString(node.PARENT)
+  // Non-party ledger groups are excluded — they are not customers. A party
+  // ledger with an empty NAME is kept, and the normalizer flags it, so the
+  // ledger count and the preview count agree.
   if (!isPartyLedger(parent)) return null
 
   const raw: Record<string, string> = { name, parent }

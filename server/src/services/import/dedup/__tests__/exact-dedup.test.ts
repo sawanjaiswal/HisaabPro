@@ -47,13 +47,13 @@ describe('findExactDuplicates', () => {
     const prisma = {
       party: {
         findMany: vi.fn(async () => [
-          { id: 'p1', name: 'Existing Raju', phone: '+919111111111', gstin: null },
+          { id: 'p1', name: 'Existing Raju', phone: '9111111111', gstin: null },
         ]),
       },
     }
     const rows: Row[] = [
-      row({ sourceIndex: 0, name: 'Raju', phoneE164: '+919111111111' }),
-      row({ sourceIndex: 1, name: 'Priya', phoneE164: '+919222222222' }),
+      row({ sourceIndex: 0, name: 'Raju', phone: '9111111111' }),
+      row({ sourceIndex: 1, name: 'Priya', phone: '9222222222' }),
     ]
     const result = await findExactDuplicates({
       businessId: 'biz-1',
@@ -90,7 +90,7 @@ describe('findExactDuplicates', () => {
     const prisma = {
       party: {
         findMany: vi.fn(async () => [
-          { id: 'pPhone', name: 'A', phone: '+919111111111', gstin: null },
+          { id: 'pPhone', name: 'A', phone: '9111111111', gstin: null },
           { id: 'pGstin', name: 'B', phone: null, gstin: '27AAPFU0939F1ZV' },
         ]),
       },
@@ -100,7 +100,7 @@ describe('findExactDuplicates', () => {
       rows: [
         row({
           sourceIndex: 0,
-          phoneE164: '+919111111111',
+          phone: '9111111111',
           gstin: '27AAPFU0939F1ZV',
         }),
       ],
@@ -122,7 +122,7 @@ describe('findExactDuplicates', () => {
     }
     await findExactDuplicates({
       businessId: 'biz-tenant',
-      rows: [row({ sourceIndex: 0, phoneE164: '+919111111111' })],
+      rows: [row({ sourceIndex: 0, phone: '9111111111' })],
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       prisma: prisma as any,
     })

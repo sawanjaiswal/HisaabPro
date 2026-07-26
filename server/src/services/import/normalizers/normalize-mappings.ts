@@ -1,10 +1,11 @@
 /**
  * Phase 7 — Import Engine · Default column mappings per format
  *
- * Hardcoded source-header → target-field maps for the three "known"
- * exporters HP supports out of the box. The Generic CSV path has no
- * default — the caller (FE mapping page, or generic-csv tests) supplies
- * a `ColumnMapping` explicitly.
+ * The mapping the normalizer applies for each format. For the three "known"
+ * exporters the parser has already canonicalised the row, so the mapping is the
+ * identity over canonical keys — the source headers themselves belong to the
+ * parsers. The Generic CSV path has no default: it preserves the file's own
+ * headers on purpose, and the caller (FE mapping page) supplies the mapping.
  *
  * Cross-references:
  *   - ARCHITECTURE_PHASE7_IMPORT_7_1A.md File Plan row 9
@@ -28,31 +29,24 @@ export interface ColumnMapping {
   openingBalance?: string
 }
 
-export const TALLY_DEFAULT_MAPPING: ColumnMapping = {
-  name: 'NAME',
-  phone: 'LEDPHONE',
-  email: 'EMAIL',
-  gstin: 'GSTREGNUMBER',
-  address: 'LEDMAILINGADDRESS',
-  openingBalance: 'OPENINGBALANCE',
-}
-
-export const VYAPAR_DEFAULT_MAPPING: ColumnMapping = {
-  name: 'Party Name',
-  phone: 'Phone Number',
-  email: 'Email',
-  gstin: 'GSTIN',
-  address: 'Address',
-  openingBalance: 'Opening Balance',
-}
-
-export const BUSY_DEFAULT_MAPPING: ColumnMapping = {
-  name: 'PartyName',
-  phone: 'MobileNo',
-  email: 'EmailID',
-  gstin: 'GSTIN',
-  address: 'Address1',
-  openingBalance: 'Opening Balance',
+/**
+ * The shape every known-format parser emits.
+ *
+ * Source header names live in ONE place — each parser's own `COLUMN_MAP`, which
+ * is what reads the file. By the time a row reaches the normalizer the parser
+ * has already renamed those headers to these canonical keys, so the mapping
+ * applied downstream is the identity over them. Naming source headers here
+ * instead (`'Party Name'`, `'MobileNo'`, …) made every lookup miss, which
+ * surfaced as `MISSING_NAME` on every row of every Vyapar / Busy import.
+ * See .claude/fix-trace-import-mapping-source-headers.md.
+ */
+export const PARSER_CANONICAL_MAPPING: ColumnMapping = {
+  name: 'name',
+  phone: 'phone',
+  email: 'email',
+  gstin: 'gstin',
+  address: 'address',
+  openingBalance: 'openingBalance',
 }
 
 /**
@@ -64,11 +58,9 @@ export function defaultMappingFor(
 ): ColumnMapping | null {
   switch (format) {
     case 'TALLY_XML':
-      return TALLY_DEFAULT_MAPPING
     case 'VYAPAR_CSV':
-      return VYAPAR_DEFAULT_MAPPING
     case 'BUSY_XLSX':
-      return BUSY_DEFAULT_MAPPING
+      return PARSER_CANONICAL_MAPPING
     case 'GENERIC_CSV':
       return null
     default: {

@@ -73,7 +73,9 @@ describe('busyXlsxParser', () => {
     })
   })
 
-  it('skips rows without a party name', async () => {
+  // A nameless row is kept so the preview's count matches the file's; the
+  // normalizer is what marks it MISSING_NAME (see row-retention.test.ts).
+  it('keeps rows without a party name for the normalizer to flag', async () => {
     const buffer = buildBusyXlsx([
       {
         PartyName: '',
@@ -99,7 +101,8 @@ describe('busyXlsxParser', () => {
       },
     ])
     const res = await busyXlsxParser(buffer, ctx)
-    expect(res.rowCount).toBe(1)
-    expect(res.rows[0]!.raw.name).toBe('Real Party')
+    expect(res.rowCount).toBe(2)
+    expect(res.rows[0]!.raw.name).toBeUndefined()
+    expect(res.rows[1]!.raw.name).toBe('Real Party')
   })
 })

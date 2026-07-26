@@ -2,7 +2,7 @@
  * Phase 7 — Import Engine · Exact-duplicate detection
  *
  * For each normalized row, find an existing `Party` in the SAME business
- * that matches on `phoneE164` OR `gstin`. Single Prisma `findMany` is
+ * that matches on `phone` OR `gstin`. Single Prisma `findMany` is
  * scoped strictly to `businessId = :biz` so a malicious or buggy caller
  * cannot enumerate parties across tenants (SECURITY_AUDIT M1 / S5).
  *
@@ -49,7 +49,7 @@ export async function findExactDuplicates(
   const phones = new Set<string>()
   const gstins = new Set<string>()
   for (const r of rows) {
-    if (r.phoneE164) phones.add(r.phoneE164)
+    if (r.phone) phones.add(r.phone)
     if (r.gstin) gstins.add(r.gstin)
   }
   if (phones.size === 0 && gstins.size === 0) return out
@@ -77,8 +77,8 @@ export async function findExactDuplicates(
   }
 
   for (const r of rows) {
-    if (r.phoneE164) {
-      const hit = byPhone.get(r.phoneE164)
+    if (r.phone) {
+      const hit = byPhone.get(r.phone)
       if (hit) {
         out.set(r.sourceIndex, {
           partyId: hit.id,

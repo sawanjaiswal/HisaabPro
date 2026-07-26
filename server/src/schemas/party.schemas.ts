@@ -5,10 +5,12 @@ import {
   CREDIT_LIMIT_MODES,
   OPENING_BALANCE_TYPES,
 } from '../../../shared/enums.js'
+// The stored shape of Party.phone lives in one place — every other writer
+// (import, storefront) converts to it via the same module.
+import { PARTY_PHONE_REGEX as PHONE_REGEX } from '../lib/party-phone.js'
 
 // === Regex constants ===
 
-const PHONE_REGEX = /^[6-9]\d{9}$/
 const GSTIN_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/
 const PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
 const PINCODE_REGEX = /^\d{6}$/

@@ -3,7 +3,9 @@
  *
  * Pure function: `RawPartyRow` (from any parser) + `ColumnMapping` →
  * `NormalizedPartyRow` with canonical HP representations:
- *   - phone: E.164 (`+91XXXXXXXXXX`)
+ *   - phone: the stored Party.phone shape (bare 10 digits) — see
+ *     `lib/party-phone.ts`; anything else stops matching the parties the
+ *     app itself writes
  *   - gstin: uppercase, regex-validated
  *   - openingBalance: paise integer (Cr suffix = negative for Busy)
  *   - name / address: trimmed, whitespace-collapsed, length-capped
@@ -23,12 +25,10 @@ import type {
   RowIssue,
 } from '../../../types/import.types.js'
 import type { ColumnMapping } from './normalize-mappings.js'
+import { toPartyPhone } from '../../../lib/party-phone.js'
 
 const MAX_NAME_LEN = 200
 const MAX_ADDRESS_LEN = 500
-const DEFAULT_COUNTRY = '+91'
-const PHONE_MIN_DIGITS = 10
-const PHONE_MAX_DIGITS = 13
 const GSTIN_RE = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][0-9][A-Z][0-9A-Z]$/
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -77,6 +77,12 @@ export function normaliseName(
   return trimmed
 }
 
+/**
+ * Reduce a typed-in phone to the shape `Party.phone` stores (`lib/party-phone
+ * .ts`). A number that cannot be stored is reported as an issue rather than
+ * written in some other shape — the row still previews, with a chip on the
+ * phone cell.
+ */
 export function normalisePhone(
   v: string | undefined,
   issues: RowIssue[],
@@ -84,16 +90,15 @@ export function normalisePhone(
   if (!v) return undefined
   const trimmed = v.trim()
   if (!trimmed) return undefined
-  const digits = trimmed.replace(/\D/g, '')
-  if (digits.length < PHONE_MIN_DIGITS || digits.length > PHONE_MAX_DIGITS) {
+  const stored = toPartyPhone(trimmed)
+  if (!stored) {
+    const digits = trimmed.replace(/\D/g, '')
     issues.push(
       issue('phone', 'INVALID_PHONE', `Phone has ${digits.length} digits`),
     )
     return undefined
   }
-  // 10 digits → assume +91; 11-13 digits → assume already country-coded
-  if (digits.length === PHONE_MIN_DIGITS) return `${DEFAULT_COUNTRY}${digits}`
-  return `+${digits}`
+  return stored
 }
 
 export function normaliseEmail(
@@ -178,7 +183,7 @@ export function normalizePartyRow(
 ): NormalizedPartyRow {
   const issues: RowIssue[] = []
   const name = normaliseName(lookup(row.raw, mapping.name), issues)
-  const phoneE164 = normalisePhone(lookup(row.raw, mapping.phone), issues)
+  const phone = normalisePhone(lookup(row.raw, mapping.phone), issues)
   const email = normaliseEmail(lookup(row.raw, mapping.email), issues)
   const gstin = normaliseGstin(lookup(row.raw, mapping.gstin), issues)
   const address = normaliseAddress(lookup(row.raw, mapping.address), issues)
@@ -188,7 +193,7 @@ export function normalizePartyRow(
   )
   return {
     name,
-    phoneE164,
+    phone,
     email,
     gstin,
     address,

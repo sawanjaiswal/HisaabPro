@@ -186,12 +186,12 @@ describe('commitImportJob — dedup resolutions (API.8)', () => {
 
   it('OVERWRITE on EXACT match updates party fields and emits one batched audit', async () => {
     const parties = new Map<string, Record<string, unknown>>([
-      ['party-99', { name: 'Old Name', phone: '+910000000000' }],
+      ['party-99', { name: 'Old Name', phone: '0000000000' }],
     ])
     const rows: FakeRow[] = [
       mkRow(1, 'DUPLICATE_EXACT', {
         matchedPartyId: 'party-99',
-        normalized: { name: 'Raju Traders', phoneE164: '+919999999999' },
+        normalized: { name: 'Raju Traders', phone: '9999999999' },
       }),
     ]
     const { prisma, tx, parties: result } = buildPrisma({ rows, parties })
@@ -209,7 +209,7 @@ describe('commitImportJob — dedup resolutions (API.8)', () => {
     expect(r.overwrittenPartyIds).toEqual(['party-99'])
     expect(result.get('party-99')).toMatchObject({
       name: 'Raju Traders',
-      phone: '+919999999999',
+      phone: '9999999999',
     })
     const updateAudits = (tx.auditLog.create.mock.calls as unknown as Array<
       [{ data: { changes: { event: string; partyIds?: string[] } } }]

@@ -58,9 +58,13 @@ function rowToParty(
     const v = record[src]
     if (typeof v === 'string' && v.trim()) raw[dst] = v.trim()
   }
-  if (!raw.name) return null
-
+  // A missing name is NOT a reason to drop the line. The normalizer flags it
+  // (MISSING_NAME) and the row previews as an error the shop can see and fix —
+  // dropping it here would make the file's row count and the preview's
+  // disagree with nothing to explain the difference.
   const type = (raw.type || '').toLowerCase()
+  // The Type filter stays: an expense ledger is not a party at all, so it is
+  // not a row this import is about.
   if (!ALLOWED_TYPES.has(type)) return null
 
   return { sourceIndex: index, raw }

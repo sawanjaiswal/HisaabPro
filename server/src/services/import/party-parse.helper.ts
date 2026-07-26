@@ -16,6 +16,7 @@ import {
 } from './normalizers/normalize-mappings.js'
 import { findExactDuplicates } from './dedup/exact-dedup.js'
 import { findNearDuplicates } from './dedup/near-dedup.js'
+import { findInFileDuplicates } from './dedup/in-file-dedup.js'
 import type {
   ImportFormat,
   NormalizedPartyRow,
@@ -23,17 +24,35 @@ import type {
 } from '../../types/import.types.js'
 import type { ExtendedPrismaClient } from '../../lib/prisma.js'
 
+export type StagedRowStatus = 'STAGED' | 'ERROR' | 'SKIPPED' | 'DUPLICATE_EXACT'
+
 export interface StagedPartyRow {
   sourceIndex: number
-  status: 'STAGED' | 'ERROR' | 'SKIPPED'
+  status: StagedRowStatus
   raw: RawPartyRow['raw']
   normalized: NormalizedPartyRow
   matchedPartyId?: string
 }
 
-function classifyRow(n: NormalizedPartyRow): 'STAGED' | 'ERROR' {
+/**
+ * The single place a row's fate is decided.
+ *
+ * Status is the only field the commit reads: its STAGED pass creates a party
+ * unconditionally, and `DUPLICATE_*` rows are held back for the shopkeeper's
+ * SKIP / OVERWRITE / CREATE_NEW decision. So a match that does not reach the
+ * status changes nothing — the row is created a second time and Postgres'
+ * (businessId, phone) unique index aborts the WHOLE commit, taking every other
+ * row in the file with it.
+ *
+ * A near match deliberately stays STAGED. It is a fuzzy name similarity, not
+ * an identity; blocking on it would silently drop real customers, and it
+ * carries no matched party for an OVERWRITE to act on. It travels as an
+ * advisory `NEAR_DUPLICATE` issue instead.
+ */
+function classifyRow(n: NormalizedPartyRow, isExactDuplicate: boolean): StagedRowStatus {
   const hasFatal = n.issues.some((i) => i.code === 'MISSING_NAME')
-  return hasFatal ? 'ERROR' : 'STAGED'
+  if (hasFatal) return 'ERROR'
+  return isExactDuplicate ? 'DUPLICATE_EXACT' : 'STAGED'
 }
 
 export function resolvePartyMapping(
@@ -74,32 +93,46 @@ export async function buildStagedPartyRows(args: {
     findNearDuplicates({ businessId, rows: normalised, prisma }),
   ])
 
+  const inFile = findInFileDuplicates(normalised)
+
   return normalised.map((n) => {
     const exactHit = exact.get(n.sourceIndex)
     const nearHits = near.get(n.sourceIndex)
-    const normalizedView: NormalizedPartyRow = {
-      name: n.name,
-      ...(n.phoneE164 ? { phoneE164: n.phoneE164 } : {}),
-      ...(n.email ? { email: n.email } : {}),
-      ...(n.gstin ? { gstin: n.gstin } : {}),
-      ...(n.address ? { address: n.address } : {}),
-      ...(n.openingBalancePaise !== undefined
-        ? { openingBalancePaise: n.openingBalancePaise }
-        : {}),
-      issues: nearHits
+    const inFileHit = inFile.get(n.sourceIndex)
+    const extraIssues = [
+      ...(nearHits
         ? [
-            ...n.issues,
             {
               field: 'name',
               code: 'NEAR_DUPLICATE',
               message: `Possibly matches existing party ${nearHits[0]!.name}`,
             },
           ]
-        : n.issues,
+        : []),
+      ...(inFileHit
+        ? [
+            {
+              field: inFileHit.matchedField,
+              code: 'DUPLICATE_IN_FILE',
+              message: `Same ${inFileHit.matchedField} as row ${inFileHit.duplicateOf + 1} of this file`,
+            },
+          ]
+        : []),
+    ]
+    const normalizedView: NormalizedPartyRow = {
+      name: n.name,
+      ...(n.phone ? { phone: n.phone } : {}),
+      ...(n.email ? { email: n.email } : {}),
+      ...(n.gstin ? { gstin: n.gstin } : {}),
+      ...(n.address ? { address: n.address } : {}),
+      ...(n.openingBalancePaise !== undefined
+        ? { openingBalancePaise: n.openingBalancePaise }
+        : {}),
+      issues: extraIssues.length > 0 ? [...n.issues, ...extraIssues] : n.issues,
     }
     const row: StagedPartyRow = {
       sourceIndex: n.sourceIndex,
-      status: classifyRow(n),
+      status: classifyRow(n, Boolean(exactHit) || Boolean(inFileHit)),
       raw: n.raw,
       normalized: normalizedView,
     }

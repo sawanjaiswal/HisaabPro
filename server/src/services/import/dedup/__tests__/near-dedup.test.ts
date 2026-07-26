@@ -59,14 +59,14 @@ describe('findNearDuplicates', () => {
     const prisma = {
       party: {
         findMany: vi.fn(async () => [
-          { id: 'p1', name: 'Raju Trader', phone: '+919111111111' },
-          { id: 'p2', name: 'Completely Different', phone: '+919999991111' },
+          { id: 'p1', name: 'Raju Trader', phone: '9111111111' },
+          { id: 'p2', name: 'Completely Different', phone: '9999991111' },
         ]),
       },
     }
     const result = await findNearDuplicates({
       businessId: 'biz-1',
-      rows: [row({ sourceIndex: 0, name: 'Raju Traders', phoneE164: '+919111111111' })],
+      rows: [row({ sourceIndex: 0, name: 'Raju Traders', phone: '9111111111' })],
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       prisma: prisma as any,
     })
@@ -86,7 +86,7 @@ describe('findNearDuplicates', () => {
     }
     await findNearDuplicates({
       businessId: 'tenant-x',
-      rows: [row({ sourceIndex: 0, name: 'Raju', phoneE164: '+919111111111' })],
+      rows: [row({ sourceIndex: 0, name: 'Raju', phone: '9111111111' })],
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       prisma: prisma as any,
     })
@@ -102,7 +102,7 @@ describe('findNearDuplicates', () => {
         row({
           sourceIndex: i,
           name: `P${i}`,
-          phoneE164: `+91900000${String(i).padStart(4, '0')}`,
+          phone: `+91900000${String(i).padStart(4, '0')}`,
         }),
       )
     }
@@ -120,13 +120,13 @@ describe('findNearDuplicates', () => {
     const prisma = {
       party: {
         findMany: vi.fn(async () => [
-          { id: 'p1', name: 'Totally Unrelated', phone: '+919111111111' },
+          { id: 'p1', name: 'Totally Unrelated', phone: '9111111111' },
         ]),
       },
     }
     const result = await findNearDuplicates({
       businessId: 'biz-1',
-      rows: [row({ sourceIndex: 0, name: 'Raju', phoneE164: '+919111111111' })],
+      rows: [row({ sourceIndex: 0, name: 'Raju', phone: '9111111111' })],
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       prisma: prisma as any,
     })
@@ -137,15 +137,15 @@ describe('findNearDuplicates', () => {
     const prisma = {
       party: {
         findMany: vi.fn(async () => [
-          { id: 'a', name: 'Raju Traders', phone: '+919111111111' },
-          { id: 'b', name: 'Raju Trader', phone: '+919222221111' },
-          { id: 'c', name: 'Raju Tradrs', phone: '+919333331111' },
+          { id: 'a', name: 'Raju Traders', phone: '9111111111' },
+          { id: 'b', name: 'Raju Trader', phone: '9222221111' },
+          { id: 'c', name: 'Raju Tradrs', phone: '9333331111' },
         ]),
       },
     }
     const result = await findNearDuplicates({
       businessId: 'biz-1',
-      rows: [row({ sourceIndex: 0, name: 'Raju Traders', phoneE164: '+919111111111' })],
+      rows: [row({ sourceIndex: 0, name: 'Raju Traders', phone: '9111111111' })],
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       prisma: prisma as any,
     })

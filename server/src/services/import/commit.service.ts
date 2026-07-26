@@ -24,7 +24,10 @@
 import { AppError } from '../../lib/errors.js'
 import logger from '../../lib/logger.js'
 import { emitCommitted } from './audit-emit.js'
-import { MAX_CREATED_PARTY_IDS } from '../../constants/import.constants.js'
+import {
+  MAX_CREATED_PARTY_IDS,
+  SKIPPED_ROW_STATUSES,
+} from '../../constants/import.constants.js'
 import type { ExtendedPrismaClient } from '../../lib/prisma.js'
 import type {
   AuthContext,
@@ -89,10 +92,12 @@ export async function commitImportJob(
       // M3 four-field binding (status + commitToken + idempotencyKey + biz,user)
       assertCommitBind(job, { commitToken, idempotencyKey, auth })
 
-      // Move to COMMITTING + null commitToken so it can never be reused.
+      // Move to COMMITTING + null commitToken so it can never be reused, and
+      // claim the commit's idempotency key on the job (M3) — the binding this
+      // job is asserted against for the rest of its life.
       await tx.importJob.update({
         where: { id: jobId },
-        data: { status: 'COMMITTING', commitToken: null },
+        data: { status: 'COMMITTING', commitToken: null, idempotencyKey },
       })
 
       // API.8 — apply per-row dedup resolutions BEFORE the STAGED pass.
@@ -128,8 +133,11 @@ export async function commitImportJob(
       const errorRows = await tx.importJobRow.count({
         where: { jobId, status: 'ERROR' },
       })
+      // Unresolved duplicates were not written — they are skipped rows, and
+      // omitting them makes committed+skipped+errors fall short of the file's
+      // row count, which is the shopkeeper's only reconciliation.
       const skippedRows = await tx.importJobRow.count({
-        where: { jobId, status: 'SKIPPED' },
+        where: { jobId, status: { in: [...SKIPPED_ROW_STATUSES] } },
       })
 
       await tx.importJob.update({
@@ -178,7 +186,7 @@ export async function commitImportJob(
     where: { jobId, status: 'ERROR' },
   })
   const skippedCount = await prisma.importJobRow.count({
-    where: { jobId, status: 'SKIPPED' },
+    where: { jobId, status: { in: [...SKIPPED_ROW_STATUSES] } },
   })
 
   logger.info('import.commit.done', {
