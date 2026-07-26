@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { Navigate, useLocation } from 'react-router-dom'
 import { ROUTES } from '@/config/routes.config'
+import { NO_BUSINESS_ROUTES } from '@/config/route-access.config'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { Spinner } from '@/components/feedback/Spinner'
 import { AppShell } from '@/components/layout/AppShell'
@@ -39,12 +40,11 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
   if (isLoading) return <Spinner fullScreen />
   if (!isAuthenticated) return <Navigate to={ROUTES.LOGIN} replace />
-  // A freshly-registered user has no business yet — every business-scoped
-  // route would 403 (NO_BUSINESS). Send them to onboarding to create their
-  // first business. Exempt onboarding itself (redirect loop) and HOME, which
-  // HomeGate routes on its own (incl. the separate admin-host surface).
-  const exemptFromBusinessGate = pathname === ROUTES.ONBOARDING || pathname === ROUTES.HOME
-  if (businesses.length === 0 && !exemptFromBusinessGate) {
+  // A user with no business yet — every business-scoped route would 403
+  // (NO_BUSINESS). Send them to onboarding. The exempt set is declared beside
+  // the routes (route-access.config) so a route whose whole purpose is to give
+  // the user a business cannot be forgotten here.
+  if (businesses.length === 0 && !NO_BUSINESS_ROUTES.includes(pathname)) {
     return <Navigate to={ROUTES.ONBOARDING} replace />
   }
   return <>{children}</>

@@ -13,7 +13,7 @@ import {
   type BrowserContext,
   type Page,
 } from '@playwright/test'
-import { registerVerifiedUser, testHooksLive } from './api'
+import { API_BASE, registerVerifiedUser, testHooksLive } from './api'
 import { uniquePhone, VALID_PASSWORD, ROUTES, COOKIES, CSRF_HEADER } from './constants'
 
 interface FreshUser {
@@ -87,12 +87,23 @@ export async function loginViaUi(page: Page, phone: string, password: string): P
   const cached = sessions.get(phone)
   if (cached) {
     await page.context().addCookies(cached.cookies)
-    await page.addInitScript((entries: Record<string, string>) => {
-      for (const [key, value] of Object.entries(entries)) sessionStorage.setItem(key, value)
-    }, cached.storage)
-    await page.goto(ROUTES.DASHBOARD)
-    await page.waitForURL((url) => !url.pathname.startsWith(ROUTES.LOGIN), { timeout: 20_000 })
-    return
+    // Ask the server whether these cookies still authenticate, BEFORE handing
+    // the page to a test. Landing on /dashboard proves nothing: the URL is
+    // already correct when the app boots, so waiting on it returns instantly
+    // and the redirect to /login lands a moment later, inside the test. Stale
+    // cookies are normal here — switch-business blacklists the pair it
+    // replaces — and must not fail whichever case happens to run next.
+    const alive = (await page.request.get(`${API_BASE}/auth/me`)).status() === 200
+    if (alive) {
+      await page.addInitScript((entries: Record<string, string>) => {
+        for (const [key, value] of Object.entries(entries)) sessionStorage.setItem(key, value)
+      }, cached.storage)
+      await page.goto(ROUTES.DASHBOARD)
+      await page.waitForURL((url) => !url.pathname.startsWith(ROUTES.LOGIN), { timeout: 20_000 })
+      return
+    }
+    sessions.delete(phone)
+    await page.context().clearCookies()
   }
 
   await page.goto(ROUTES.LOGIN)

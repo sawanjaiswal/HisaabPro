@@ -3,18 +3,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { api } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
+import { createBusiness } from './business-session.service'
 import { BUSINESS_NAME_MIN, BUSINESS_NAME_MAX } from './business.constants'
 import type { CreateBusinessInput } from './business.types'
 
 interface CreateBusinessErrors {
   name?: string
-}
-
-interface CreatedBusiness {
-  id: string
-  name: string
 }
 
 export function useCreateBusiness() {
@@ -27,11 +22,10 @@ export function useCreateBusiness() {
   const [errors, setErrors] = useState<CreateBusinessErrors>({})
 
   const mutation = useMutation({
-    mutationFn: (payload: CreateBusinessInput) =>
-      api<CreatedBusiness>('/businesses', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      }),
+    // createBusiness also activates the new shop in the session — landing on
+    // the dashboard with the previous business's token shows an app that
+    // renders and answers nothing.
+    mutationFn: (payload: CreateBusinessInput) => createBusiness(payload),
     onSuccess: () => {
       navigate(ROUTES.DASHBOARD)
     },

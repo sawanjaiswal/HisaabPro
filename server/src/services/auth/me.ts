@@ -1,6 +1,6 @@
 import { prisma } from '../../lib/prisma.js'
 import { generateTokens } from '../../lib/jwt.js'
-import { unauthorizedError } from '../../lib/errors.js'
+import { noMembershipError } from '../../lib/errors.js'
 import { persistRefreshTokenFamily } from './helpers.js'
 
 /**
@@ -89,7 +89,11 @@ export async function switchBusiness(userId: string, phone: string, targetBusine
   })
 
   if (!bu || !bu.isActive || bu.status !== 'ACTIVE') {
-    throw unauthorizedError('You do not have access to this business')
+    // 403, not 401: the caller's session is fine — the business is not theirs.
+    // A 401 sends the client through a token refresh and then reports "session
+    // expired", so a stale entry in the switcher reads as being logged out.
+    // Same answer requireActiveBusiness already gives for the same fact.
+    throw noMembershipError('You do not have access to this business')
   }
 
   const tokens = generateTokens(userId, phone, targetBusinessId)

@@ -42,10 +42,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Load cached user immediately (offline-first hint)
       const cached = authLib.getCachedUser()
       const cachedBiz = authLib.getCachedBusinesses()
+      // An empty cached list is not evidence of anything: it looks the same for
+      // a brand-new account and for one whose first business was created (or
+      // joined) after the cache was written. Rendering on it hands the business
+      // gate a false "no businesses", which redirects to /onboarding — a route
+      // the gate exempts, so the correction /auth/me brings back a moment later
+      // never navigates anywhere and the owner is stranded on the welcome
+      // screen. Wait for the server in that case; keep the instant render, the
+      // whole point of the cache, whenever it actually holds a business.
+      // See .claude/fix-trace-empty-business-cache.md.
       if (cached) {
         setUser(cached)
-        if (cachedBiz) setBusinesses(cachedBiz)
-        setIsLoading(false)
+        if (cachedBiz?.length) {
+          setBusinesses(cachedBiz)
+          setIsLoading(false)
+        }
       }
 
       // Verify with server — cookie sends auth token automatically
@@ -57,6 +68,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         authLib.setCachedUser(response.user)
         authLib.setCachedBusinesses(response.businesses)
       } catch (err) {
+        // An aborted request is not a failure — it is the absence of an answer.
+        // The effect that started it has already been torn down (React does
+        // that on every remount, and deliberately on the first mount under
+        // StrictMode in dev), and the effect that replaced it is running its
+        // own init() which will publish the real state. Concluding anything
+        // here — above all ending isLoading, the only thing holding the
+        // business gate off — publishes an empty, unverified business list and
+        // redirects the owner to /onboarding, a route the gate exempts, so the
+        // answer arriving a moment later never navigates back.
+        // See .claude/fix-trace-aborted-auth-verify.md.
+        if (controller.signal.aborted) return
+
         // The cached user is an offline-first hint, not proof of a session. Keep
         // it when the request never got an answer (no network, server down) —
         // that is the 2G case the cache exists for. Drop it on a 401: the

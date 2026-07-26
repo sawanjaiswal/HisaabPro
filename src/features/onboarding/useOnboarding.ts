@@ -4,13 +4,11 @@ import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../../context/AuthContext'
-import * as authLib from '../../lib/auth'
-import { api } from '../../lib/api'
+import { createBusiness } from '../business/business-session.service'
 import { createSessionDraft } from '../../lib/session-draft'
 import { ROUTES } from '../../config/routes.config'
 import { ONBOARDING_STEP_ORDER } from './onboarding.constants'
 import type {
-  CreateBusinessResponse,
   DataSource,
   OnboardingDraft,
   OnboardingStep,
@@ -88,22 +86,12 @@ export function useOnboarding() {
       phone?: string
       city?: string
     }) =>
-      api<CreateBusinessResponse>('/businesses', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      }),
-    onSuccess: async (data) => {
-      // The token, not the database, is what every business-scoped route reads
-      // for businessId — and this user's was minted at registration, before the
-      // business existed. Without going through the same activation endpoint the
-      // business switcher uses, the shopkeeper finishes onboarding holding a
-      // session the server answers 403 NO_BUSINESS to on every screen.
-      try {
-        await authLib.switchBusiness(data.business.id)
-      } catch {
-        // A failed activation is not a failed signup — the business exists. The
-        // next navigation re-authenticates through the normal 401/refresh path.
-      }
+      // createBusiness activates the new shop in the session as part of
+      // creating it: the token, not the database, is what every business-scoped
+      // route reads for businessId, and this user's was minted at registration
+      // before the business existed.
+      createBusiness(payload),
+    onSuccess: async () => {
       // The new business isn't in AuthContext yet — ProtectedRoute gates on
       // `businesses.length` and would bounce goToDashboard() straight back
       // to /onboarding without this refetch.

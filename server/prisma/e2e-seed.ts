@@ -31,6 +31,20 @@ export const E2E_STAFF_PHONE = '9000000002'
 /** FIX-NEW: guaranteed to have no account. */
 export const E2E_UNREGISTERED_PHONE = '9000000099'
 
+/**
+ * FIX-FOREIGN — a second, unrelated tenant. Nothing links it to the owner
+ * above: different user, different business, no shared membership.
+ *
+ * Tenant isolation is the one property no amount of UI testing can prove, and
+ * proving it needs a real neighbour whose row IDs a spec can name and ask for
+ * directly. Without this fixture the isolation probe can only test a business
+ * the caller legitimately owns, which is not the question.
+ */
+export const E2E_FOREIGN_PHONE = '9000000003'
+export const E2E_FOREIGN_BUSINESS_ID = 'e2e-business-002'
+export const E2E_FOREIGN_PARTY_ID = 'e2e-foreign-party-001'
+export const E2E_FOREIGN_PRODUCT_ID = 'e2e-foreign-product-001'
+
 const flags = process.argv.slice(2)
 const withGst = flags.includes('--gst')
 const withData = flags.includes('--seeded')
@@ -120,6 +134,77 @@ async function seedData(businessId: string) {
   return { parties: parties.length, products: products.length }
 }
 
+/**
+ * FIX-FOREIGN — the neighbouring shop. Seeded with fixed IDs so an isolation
+ * probe can ask for them by name; if any of those requests ever answers with
+ * data, the probe has found a cross-tenant leak.
+ */
+async function seedForeignTenant() {
+  const passwordHash = await hashPassword(E2E_PASSWORD)
+
+  const user = await prisma.user.upsert({
+    where: { phone: E2E_FOREIGN_PHONE },
+    update: { isActive: true, isSuspended: false, passwordHash, failedLoginAttempts: 0, accountLockedUntil: null },
+    create: { phone: E2E_FOREIGN_PHONE, name: 'E2E Rival Owner', isActive: true, passwordHash },
+  })
+
+  const business = await prisma.business.upsert({
+    where: { id: E2E_FOREIGN_BUSINESS_ID },
+    update: {},
+    create: {
+      id: E2E_FOREIGN_BUSINESS_ID,
+      name: 'Rival Traders',
+      businessType: 'general',
+      phone: E2E_FOREIGN_PHONE,
+      state: 'Karnataka',
+      city: 'Bengaluru',
+    },
+  })
+
+  await prisma.businessUser.upsert({
+    where: { userId_businessId: { userId: user.id, businessId: business.id } },
+    update: { isActive: true, status: 'ACTIVE' },
+    create: { userId: user.id, businessId: business.id, role: 'owner', isActive: true },
+  })
+  await seedDefaultAccounts(business.id)
+
+  const unit = await prisma.unit.upsert({
+    where: { businessId_symbol: { businessId: business.id, symbol: 'pcs' } },
+    update: {},
+    create: { businessId: business.id, name: 'Pieces', symbol: 'pcs', category: 'COUNT', decimalAllowed: false },
+  })
+
+  await prisma.party.upsert({
+    where: { id: E2E_FOREIGN_PARTY_ID },
+    update: {},
+    create: {
+      id: E2E_FOREIGN_PARTY_ID,
+      businessId: business.id,
+      name: 'Rival Secret Customer',
+      phone: '9111100003',
+      type: 'CUSTOMER',
+      stateCode: '29',
+    },
+  })
+
+  await prisma.product.upsert({
+    where: { id: E2E_FOREIGN_PRODUCT_ID },
+    update: {},
+    create: {
+      id: E2E_FOREIGN_PRODUCT_ID,
+      businessId: business.id,
+      unitId: unit.id,
+      name: 'Rival Secret Product',
+      sku: 'E2E-RIVAL-1',
+      salePrice: 99900,
+      purchasePrice: 80000,
+      currentStock: 50,
+    },
+  })
+
+  return { user, business }
+}
+
 async function main() {
   if (process.env.NODE_ENV === 'production') {
     throw new Error('e2e-seed refuses to run with NODE_ENV=production')
@@ -135,6 +220,8 @@ async function main() {
     const counts = await seedData(business.id)
     console.log(`  data     ${counts.parties} parties · ${counts.products} products · 1 unit`)
   }
+  const foreign = await seedForeignTenant()
+  console.log(`  FIX-FOREIGN ${E2E_FOREIGN_PHONE} · ${foreign.business.name} (${foreign.business.id})`)
   console.log(`  FIX-NEW  ${E2E_UNREGISTERED_PHONE} (intentionally has no account)`)
 }
 

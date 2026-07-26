@@ -21,6 +21,21 @@ export const SEEDED_OWNER_PHONE = '9000000001'
 /** Guaranteed to have no account (FIX-NEW). */
 export const UNREGISTERED_PHONE = '9000000099'
 
+/**
+ * FIX-FOREIGN — the neighbouring shop, seeded with fixed IDs (server/prisma/
+ * e2e-seed.ts). The seeded owner has no membership in it, so any response that
+ * carries these rows is a cross-tenant leak, not a test failure.
+ */
+export const FOREIGN = {
+  phone: '9000000003',
+  businessId: 'e2e-business-002',
+  partyId: 'e2e-foreign-party-001',
+  productId: 'e2e-foreign-product-001',
+  partyName: 'Rival Secret Customer',
+  productName: 'Rival Secret Product',
+  businessName: 'Rival Traders',
+} as const
+
 export const VALID_PASSWORD = 'Test@12345'
 
 /**

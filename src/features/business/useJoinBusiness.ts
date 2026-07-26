@@ -3,8 +3,8 @@
 import { useState, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import * as authLib from '@/lib/auth'
 import { ApiError } from '@/lib/api'
+import { joinBusinessWithCode } from './business-session.service'
 import type { JoinBusinessSuccess } from './business.types'
 
 export function useJoinBusiness() {
@@ -14,7 +14,10 @@ export function useJoinBusiness() {
   const [success, setSuccess] = useState<JoinBusinessSuccess | null>(null)
 
   const mutation = useMutation({
-    mutationFn: (joinCode: string) => authLib.joinBusiness(joinCode),
+    // The invitee's token was minted before they belonged anywhere; without the
+    // activation joinBusinessWithCode performs, they join a shop the server
+    // refuses to show them.
+    mutationFn: (joinCode: string) => joinBusinessWithCode(joinCode),
     onSuccess: (result) => {
       setSuccess({
         businessName: result.business.name,

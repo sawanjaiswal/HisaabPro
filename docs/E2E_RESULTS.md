@@ -30,6 +30,7 @@ Last run: 2026-07-26.
 | F — Data import (upload → preview → commit) | `e2e/gold/import.spec.ts` | 6 | 6 | 0 | 0 |
 | D — Onboarding wizard | `e2e/gold/onboarding.spec.ts` | 8 | 8 | 0 | 0 |
 | G — Dashboard | `e2e/gold/dashboard.spec.ts` | 8 | 8 | 0 | 0 |
+| E — Business & multi-business | `e2e/gold/business.spec.ts` | 5 | 5 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
 planned but not written. Suite K's invoice half covers TC-GST-01..08 (08 is the
@@ -637,3 +638,80 @@ product whose promise is working in a basement market on 2G. Now
 `cacheReads: true` (OFFLINE_RULES rule 3 lists the dashboard summary as
 cache-safe; cleared on logout). Caught by TC-DASH-07.
 
+### F48 — A refused business switch logged the user out — **BLOCKER**, FIXED
+
+`POST /auth/switch-business` blacklisted the caller's tokens *before* checking
+membership, so switching into a business the user had been removed from — a
+stale row in the switcher — ended the session they were legitimately in. The
+membership check and the new tokens now come first; only a switch that will
+succeed retires the old tokens. Caught by TC-BIZ-05.
+Root cause: `server/src/routes/auth/switch-business.ts:36`.
+
+### F49 — "Not a member" was reported as "not signed in" — FIXED
+
+The same refusal answered 401, which sends the client through a token refresh
+and surfaces "session expired" for what is only a membership answer. Now 403
+`NO_MEMBERSHIP` (`noMembershipError`), matching what `requireActiveBusiness`
+already says. Caught by TC-BIZ-05.
+
+### F50 — `BusinessAvatar` / `BusinessSwitcher` are rendered by nothing — dead code
+
+The tap-to-switch header control has no mounting call-site; the shipped path is
+the side-nav "Your Businesses" accordion. Found while writing TC-BIZ-01, which
+now drives the side nav. Not fixed — a deletion decision, not a defect.
+
+### F51 — "Your Businesses" is hardcoded English — i18n
+
+`SideNavBusinessSwitcher.tsx` writes the heading inline instead of `t.*`.
+Not fixed.
+
+### F52 — Notifications button announces a raw format string — i18n
+
+`aria-label="Notifications — %d unread"` reaches the DOM with the `%d`
+unsubstituted, so a screen reader reads the placeholder. Seen in the page
+snapshot behind every suite; not fixed.
+
+### F53 — An invited staff member could never redeem their invite — **BLOCKER**, FIXED
+
+`ProtectedRoute`'s no-business gate exempted only onboarding and HOME, so `/join`
+— the one screen an invitee needs — bounced them to "create your own business",
+the exact screen the invite exists to bypass. The exempt set now lives beside the
+routes (`src/config/route-access.config.ts`) so a route whose purpose is to
+*give* the user a business cannot be forgotten. Caught by TC-BIZ-04.
+Root cause: `src/app.guards.tsx:46`. Trace: `.claude/fix-trace-join-business-gate.md`.
+
+### F54 — A cached "you have no businesses" stranded owners on the welcome screen — **BLOCKER**, FIXED
+
+Two independent routes to the same wrong state, both now closed:
+`AuthContext` ended its loading state on an *empty* cached business list (a hint
+indistinguishable from a genuinely new account), and it also ended it when its
+own `/auth/me` had been **aborted** — which React does on every remount, and
+deliberately on first mount under StrictMode. Either way the gate ran on an
+unverified empty list and redirected to `/onboarding`, a route the gate exempts,
+so the real answer arriving a moment later never navigated back.
+Root cause: `src/context/AuthContext.tsx:45` and `:88`. Traces:
+`.claude/fix-trace-empty-business-cache.md`, `.claude/fix-trace-aborted-auth-verify.md`.
+
+### F55 — A newly created business could not invite staff — **BLOCKER**, FIXED
+
+The Roles dropdown was permanently empty and `GET /businesses/:id/roles`
+answered 400 "Related record not found (foreign key constraint)". Business-scoped
+routes read `businessId` from the JWT claim, never the URL; creating (or joining)
+a business never re-minted the session, so a token issued at registration carried
+`''` and every scoped query ran against a business that does not exist. The
+onboarding hook already knew this and switched; the create-business and
+join-by-invite call-sites, written later, did not. Acquiring a business and
+activating it now live in one module
+(`src/features/business/business-session.service.ts`) that all three use.
+Caught by TC-BIZ-04. Root cause: `src/features/business/useCreateBusiness.ts:36`.
+Trace: `.claude/fix-trace-business-session-activation.md`.
+
+### F56 — JWT minting has no `jti`, so same-second tokens collide — **BLOCKER**, not fixed
+
+`generateTokens` signs `{userId, phone, businessId, type}` with no nonce, so two
+tokens minted in the same `iat` second are byte-identical and the second insert
+fails the unique index on `RefreshToken.token` (`DUPLICATE_ENTRY: "token already
+exists"`). Two switches in quick succession fail; two concurrent logins share an
+access token, so blacklisting one kills the other (the likely cause of TC-AUTH-11).
+`server/src/lib/jwt.ts:24` is a declared high-risk path — this needs
+`/start-epic jwt-jti` (architect + security) before any edit.

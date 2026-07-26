@@ -33,7 +33,13 @@ router.post(
       return
     }
 
-    // Blacklist old access token
+    // Membership is checked and the new tokens are minted FIRST. Invalidating
+    // the caller's current tokens before knowing the switch is allowed means a
+    // refused switch — a stale entry in the switcher, a business the user was
+    // removed from — logs them out of the session they were legitimately in.
+    const result = await authService.switchBusiness(userId, phone, targetBusinessId)
+
+    // Only now: retire the tokens that carried the old businessId.
     const rawAccessToken =
       (req.cookies?.[ACCESS_TOKEN_COOKIE] as string | undefined) ??
       req.headers.authorization?.slice(7)
@@ -56,8 +62,6 @@ router.post(
       const ttl = decoded?.exp ? decoded.exp * 1000 - Date.now() : 7 * 24 * 60 * 60 * 1000
       if (ttl > 0) blacklistToken(rawRefreshToken, ttl)
     }
-
-    const result = await authService.switchBusiness(userId, phone, targetBusinessId)
 
     authService.setTokenCookies(res, result.tokens)
 
