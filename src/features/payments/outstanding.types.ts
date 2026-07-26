@@ -28,9 +28,10 @@ export interface OutstandingParty {
   partyName: string
   partyPhone: string
   partyType: OutstandingPartyType
-  /** Absolute outstanding in PAISE (positive = receivable, negative = payable) */
+  /** Signed outstanding in PAISE — positive = receivable, negative = payable.
+   *  Render with Math.abs() and let `type` carry the direction. */
   outstanding: number
-  /** Resolved direction for this party in the current filter context */
+  /** Direction of `outstanding`, derived from its sign by the server */
   type: 'RECEIVABLE' | 'PAYABLE'
   invoiceCount: number
   oldestDueDate: string | null
@@ -95,12 +96,16 @@ export interface OutstandingInvoice {
 export interface OutstandingPartyDetail {
   partyId: string
   partyName: string
-  /** Current net outstanding in PAISE */
+  /** Signed net outstanding in PAISE — negative means the party is in credit */
   outstanding: number
+  /** Direction of `outstanding`, derived from its sign by the server */
+  type: 'RECEIVABLE' | 'PAYABLE'
   invoices: OutstandingInvoice[]
-  /** Advance (unallocated) balance available, in PAISE */
-  advanceBalance: number
-  aging: OutstandingAging
+  /** Advance (unallocated) balance available, in PAISE.
+   *  Optional: the endpoint does not compute it yet, and a required field the
+   *  server never sends is how `undefined` reaches a formatter as Rs NaN. */
+  advanceBalance?: number
+  aging?: OutstandingAging
 }
 
 /** Query parameters for GET /outstanding */

@@ -6,6 +6,19 @@ import { prisma } from '../../lib/prisma.js'
 import { notFoundError } from '../../lib/errors.js'
 import type { ListOutstandingQuery } from '../../schemas/payment.schemas.js'
 
+/**
+ * The direction a party's balance points in.
+ *
+ * `Party.outstandingBalance` is signed (schema.prisma: positive = receivable,
+ * negative = payable) and the sign IS the fact — a customer sitting on an
+ * advance is not a customer who owes money. Responses therefore carry the
+ * signed amount plus this label, from one helper, so the list and the detail
+ * cannot answer differently. Display code abs()es it for rendering.
+ */
+export function outstandingDirection(balancePaise: number): 'RECEIVABLE' | 'PAYABLE' {
+  return balancePaise < 0 ? 'PAYABLE' : 'RECEIVABLE'
+}
+
 export async function listOutstanding(businessId: string, query: ListOutstandingQuery) {
   const { type, overdue: _overdue, search, sortBy, sortOrder, page, limit } = query
 
@@ -72,8 +85,8 @@ export async function listOutstanding(businessId: string, query: ListOutstanding
       partyName: p.name,
       partyPhone: p.phone,
       partyType: p.type,
-      outstanding: Math.abs(p.outstandingBalance),
-      type: p.outstandingBalance > 0 ? 'RECEIVABLE' : 'PAYABLE',
+      outstanding: p.outstandingBalance,
+      type: outstandingDirection(p.outstandingBalance),
       invoiceCount: p._count.documents,
       lastPaymentDate: p.lastTransactionAt,
     })),
@@ -129,7 +142,8 @@ export async function getPartyOutstanding(
   return {
     partyId: party.id,
     partyName: party.name,
-    outstanding: Math.abs(party.outstandingBalance),
+    outstanding: party.outstandingBalance,
+    type: outstandingDirection(party.outstandingBalance),
     invoices: page.map(inv => ({
       id: inv.id,
       number: inv.documentNumber,
