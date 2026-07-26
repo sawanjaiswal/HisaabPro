@@ -29,6 +29,7 @@ Last run: 2026-07-26.
 | K — GST backfill | `e2e/gold/gst-backfill.spec.ts` | 5 | 5 | 0 | 0 |
 | F — Data import (upload → preview → commit) | `e2e/gold/import.spec.ts` | 6 | 6 | 0 | 0 |
 | D — Onboarding wizard | `e2e/gold/onboarding.spec.ts` | 8 | 8 | 0 | 0 |
+| G — Dashboard | `e2e/gold/dashboard.spec.ts` | 8 | 8 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
 planned but not written. Suite K's invoice half covers TC-GST-01..08 (08 is the
@@ -595,3 +596,44 @@ app, and `Business` has no column for the answer, so it is discarded. It is the
 single most useful signal for what to offer next (an import template, a migration
 nudge), and persisting it is a `prisma/schema.prisma` change — a high-risk path
 that needs `/start-epic` before any edit. Recorded rather than silently patched.
+
+### F45 — The dashboard showed every business the same invented numbers — **BLOCKER**, FIXED
+
+The home screen — the one screen most shopkeepers ever look at — rendered
+`dashboard-preview.mock.ts`: a hardcoded ₹52,300 headline, a +18% chip, a shipped
+31-day curve, mock collections/cash/expenses tiles, a mock overview carousel, and
+a priorities list that fell back to "Raj Traders payment due" / "Cement stock low"
+whenever the real one was empty. Nothing on screen distinguishes a fabricated
+number from a real one, so the user cannot detect this from the inside; a
+shopkeeper could chase a customer who does not exist.
+
+Fixed at the source rather than by hiding the cards: `GET /dashboard/home` now
+returns a `trend` block computed from this business's own ledger
+(`server/src/services/dashboard/trend.ts`) — 30-day sales / collections /
+expenses with the prior 30-day window behind each delta, a dense per-day series,
+cash in hand, and today vs yesterday. Both raw queries lead with
+`"businessId" = ${businessId}` and are registered in the raw-SQL allowlist.
+`dashboard-preview.mock.ts` is deleted, so the fallback cannot come back by
+accident, and the priorities card renders nothing when there is nothing to chase.
+
+Metrics with no honest basis are omitted, not estimated: **no profit tile** (COGS
+is not tracked, and an invented estimate is exactly the number a shopkeeper would
+act on) and cash in hand carries `deltaPct: null` — a balance has no prior window,
+so the UI shows no chip rather than a made-up percentage. Caught by TC-DASH-01/02/06.
+
+### F46 — Quick-action tiles were not buttons to a screen reader — FIXED
+
+Each tile carried `role="listitem"` on the `<Button>` itself, which *replaces*
+the implicit button role: the tile stopped being announced as actionable, and
+nothing looking for a button — a screen reader, a keyboard rotor, a test — could
+find it. The list semantics belong to a wrapper; the button keeps its own role.
+Caught by TC-DASH-05, which could not locate "Invoice" by role.
+
+### F47 — The offline-first app failed on its own home screen — FIXED
+
+`getHomeDashboard` did not opt into the read cache, so opening the app without a
+connection produced an error card where the day's numbers should be — on a
+product whose promise is working in a basement market on 2G. Now
+`cacheReads: true` (OFFLINE_RULES rule 3 lists the dashboard summary as
+cache-safe; cleared on logout). Caught by TC-DASH-07.
+

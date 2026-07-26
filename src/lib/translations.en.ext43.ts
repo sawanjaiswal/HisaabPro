@@ -240,4 +240,7 @@ export const enExt43 = {
   importIssue_TAX_RATE_FALLBACK: 'GST rate not matched — using business default',
   importIssue_UNIT_NOT_FOUND: 'Unit not recognised',
   importIssue_PLACEHOLDER_NAME: 'Looks like a placeholder name',
+
+  // Dashboard trend window (the hero chart and the overview carousel)
+  last30Days: 'Last 30 days',
 } as const

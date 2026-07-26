@@ -55,10 +55,13 @@ export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
         const label = t[action.labelKey]
 
         return (
+          // The list semantics belong to the wrapper. Putting role="listitem"
+          // on the Button itself REPLACES its button role: the tile stops being
+          // announced as actionable, and nothing that looks for a button — a
+          // screen reader, a keyboard user's rotor, a test — can find it.
+          <div key={action.id} role="listitem" className="dashboard-action-cell">
           <Button variant="none"
-            key={action.id}
             className="dashboard-action-item"
-            role="listitem"
             onClick={() => onAction(action.route)}
             aria-label={label}
           >
@@ -71,6 +74,7 @@ export const DashboardQuickActions: React.FC<DashboardQuickActionsProps> = ({
             </div>
             <span className="dashboard-action-label">{label}</span>
           </Button>
+          </div>
         )
       })}
     </div>

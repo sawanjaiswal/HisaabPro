@@ -240,4 +240,7 @@ export const hiExt43 = {
   importIssue_TAX_RATE_FALLBACK: 'GST रेट नहीं मिला — बिज़नेस डिफ़ॉल्ट इस्तेमाल हो रहा है',
   importIssue_UNIT_NOT_FOUND: 'इकाई पहचानी नहीं गई',
   importIssue_PLACEHOLDER_NAME: 'यह नाम प्लेसहोल्डर लगता है',
+
+  // डैशबोर्ड ट्रेंड विंडो
+  last30Days: 'पिछले 30 दिन',
 } as const

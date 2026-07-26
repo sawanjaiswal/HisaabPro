@@ -13,7 +13,11 @@ import type { HomeDashboardData, DashboardStats, DashboardFilters, RecentActivit
  * No date filter — always returns current state + today's numbers.
  */
 export async function getHomeDashboard(signal?: AbortSignal): Promise<HomeDashboardData> {
-  return api<HomeDashboardData>('/dashboard/home', { signal })
+  // Cached deliberately (OFFLINE_RULES rule 3 lists the dashboard summary as
+  // safe): this is the screen the app opens on, and a shopkeeper on 2G or in a
+  // basement market must see last-known numbers rather than an error card. The
+  // cache is this session's own data and is cleared on logout.
+  return api<HomeDashboardData>('/dashboard/home', { signal, cacheReads: true })
 }
 
 // ─── Recent activity search ─────────────────────────────────────────────────

@@ -96,6 +96,14 @@ describe('isHomeDashboardEmpty', () => {
       netCashFlow: 0,
     },
     recentActivity: [],
+    trend: {
+      days: 30,
+      sales: { total: 0, previousTotal: 0, deltaPct: null, series: Array(30).fill(0) },
+      collections: { total: 0, previousTotal: 0, deltaPct: null, series: Array(30).fill(0) },
+      expenses: { total: 0, previousTotal: 0, deltaPct: null, series: Array(30).fill(0) },
+      cashInHand: 0,
+      todayVsYesterday: { today: 0, yesterday: 0, deltaPct: null },
+    },
     alerts: { lowStockCount: 0, overdueInvoiceCount: 0, overdueAmount: 0 },
     topDebtors: [],
   }

@@ -2,7 +2,6 @@
  *
  * Sits on the dark sales hero. Each tile: icon chip, label, amount, and a
  * delta chip (▲/▼ %) or a status pill. All amounts in PAISE.
- * PREVIEW: fed by mock data until the backend series endpoint lands.
  */
 
 import React, { useState } from 'react'
@@ -11,12 +10,12 @@ import type { LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatCompactAmount } from '../dashboard.utils'
-import type { MetricTileMock } from '../dashboard-preview.mock'
+import type { MetricTile } from '../dashboard.types'
 
 const ICONS: Record<string, LucideIcon> = { Wallet, Receipt, Landmark, PieChart }
 
 interface DashboardMetricTilesProps {
-  tiles: MetricTileMock[]
+  tiles: MetricTile[]
 }
 
 export const DashboardMetricTiles: React.FC<DashboardMetricTilesProps> = ({ tiles }) => {
@@ -30,7 +29,7 @@ export const DashboardMetricTiles: React.FC<DashboardMetricTilesProps> = ({ tile
   // Keep the already-shown tiles in their original first-row slots. The hidden
   // tiles live in a collapsible reveal wrapper below so they animate open on a
   // smooth grid-rows transition instead of popping in.
-  const renderTile = (tile: MetricTileMock) => {
+  const renderTile = (tile: MetricTile) => {
     const Icon = ICONS[tile.icon] ?? Wallet
     const up = (tile.deltaPct ?? 0) >= 0
     return (

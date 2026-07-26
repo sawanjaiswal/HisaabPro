@@ -38,6 +38,14 @@ const MOCK_HOME = {
     netCashFlow: 20000,
   },
   recentActivity: [],
+  trend: {
+    days: 30,
+    sales: { total: 500000, previousTotal: 400000, deltaPct: 25, series: Array(30).fill(0) },
+    collections: { total: 200000, previousTotal: 200000, deltaPct: 0, series: Array(30).fill(0) },
+    expenses: { total: 100000, previousTotal: 120000, deltaPct: -17, series: Array(30).fill(0) },
+    cashInHand: 100000,
+    todayVsYesterday: { today: 0, yesterday: 0, deltaPct: null },
+  },
   alerts: { lowStockCount: 3, overdueInvoiceCount: 1, overdueAmount: 15000 },
   topDebtors: [],
 }

@@ -4,6 +4,7 @@
  */
 
 import { prisma } from '../../lib/prisma.js'
+import { getDashboardTrend } from './trend.js'
 
 const RECENT_ACTIVITY_LIMIT = 10
 const TOP_DEBTORS_LIMIT = 5
@@ -25,6 +26,7 @@ export async function getHomeDashboard(businessId: string) {
     lowStockCount,
     overdueInvoiceAgg,
     topDebtors,
+    trend,
   ] = await Promise.all([
     // Outstanding receivable
     prisma.party.aggregate({
@@ -141,6 +143,10 @@ export async function getHomeDashboard(businessId: string) {
       orderBy: { outstandingBalance: 'desc' },
       take: TOP_DEBTORS_LIMIT,
     }),
+
+    // 30-day sales/collections/expenses series + cash in hand — what the hero,
+    // its metric tiles and the overview carousel render.
+    getDashboardTrend(businessId),
   ])
 
   const invoiceActivities = recentInvoices.map(inv => {
@@ -196,6 +202,7 @@ export async function getHomeDashboard(businessId: string) {
       netCashFlow: paymentsReceivedAmount - paymentsMadeAmount,
     },
     recentActivity,
+    trend,
     alerts: {
       lowStockCount: typeof lowStockCount === 'number' ? lowStockCount : 0,
       overdueInvoiceCount: overdueInvoiceAgg._count,

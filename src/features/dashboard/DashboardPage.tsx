@@ -14,7 +14,6 @@ import { ROUTES } from '@/config/routes.config'
 import { useHomeDashboard } from './useDashboard'
 import { buildTopPriorities } from './dashboard.utils'
 import { QUICK_ACTIONS } from './dashboard.constants'
-import { PRIORITY_ITEMS } from './dashboard-preview.mock'
 import { DashboardHeader } from './components/DashboardHeader'
 import { DashboardSalesHero } from './components/DashboardSalesHero'
 import { BusinessOverviewCarousel } from './components/BusinessOverviewCarousel'
@@ -37,6 +36,8 @@ export default function DashboardPage() {
   const navigate = useNavigate()
   const { t } = useLanguage()
   const { data, status, refresh } = useHomeDashboard()
+
+  const priorities = data ? buildTopPriorities(data) : []
 
   const handleQuickAction = (route: string) => navigate(route)
 
@@ -86,23 +87,25 @@ export default function DashboardPage() {
           <>
             {/* Dark hero area */}
             <div className="dashboard-top-section dashboard-top-section--dark py-0">
-              <DashboardSalesHero />
+              <DashboardSalesHero trend={data.trend} />
             </div>
 
             {/* White drawer section */}
             <div className="dashboard-white-section py-0">
-              <TopPrioritiesCard
-                items={(() => {
-                  const live = buildTopPriorities(data)
-                  return live.length > 0 ? live : PRIORITY_ITEMS
-                })()}
-                onViewAll={handleViewAllPriorities}
-                onItemAction={handlePriorityAction}
-              />
+              {/* A shopkeeper with nothing overdue has no priorities — showing
+                  invented ones ("Raj Traders payment due") sends them chasing a
+                  customer who does not exist. */}
+              {priorities.length > 0 && (
+                <TopPrioritiesCard
+                  items={priorities}
+                  onViewAll={handleViewAllPriorities}
+                  onItemAction={handlePriorityAction}
+                />
+              )}
 
               <DashboardQuickActions actions={QUICK_ACTIONS} onAction={handleQuickAction} />
 
-              <BusinessOverviewCarousel />
+              <BusinessOverviewCarousel trend={data.trend} />
 
               <TopDebtors
                 debtors={data.topDebtors}
