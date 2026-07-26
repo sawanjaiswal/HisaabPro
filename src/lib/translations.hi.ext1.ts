@@ -143,6 +143,7 @@ export const hiExt1 = {
   transactionLedger:     'लेनदेन लेजर',
   loadMoreTransactions:  'और लेनदेन लोड करें',
   loadMoreParties:       'और पार्टियाँ लोड करें',
+  loadMoreProducts:     'और उत्पाद लोड करें',
   loadMore2:             'और लोड करें',
   balAbbrev:             'बैलेंस:',
   viewDetailsFor:        'विवरण देखें',

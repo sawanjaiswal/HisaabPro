@@ -21,7 +21,7 @@ import { PartyCard } from './components/PartyCard'
 import { useOptOutSet } from '@/features/marketing/hooks/useOptOutSet'
 import { TagFilterBar } from '@/features/crm/components/TagFilterBar'
 import { PartyListSkeleton } from './components/PartyListSkeleton'
-import { PartyListLoadMore } from './components/PartyListLoadMore'
+import { ListLoadMore } from '@/components/ui/ListLoadMore'
 import { deleteParty } from './party.service'
 import { ROUTES } from '@/config/routes.config'
 import type { BulkAction } from '@/components/ui/BulkActionBar'
@@ -198,7 +198,12 @@ export default function PartiesPage() {
               </div>
             ))}
           </div>
-          <PartyListLoadMore hasMore={hasMore} isLoading={isLoadingMore} onLoadMore={loadMore} />
+          <ListLoadMore
+            hasMore={hasMore}
+            isLoading={isLoadingMore}
+            onLoadMore={loadMore}
+            ariaLabel={t.loadMoreParties}
+          />
           {!bulk.isActive && (
             <OutstandingTotalCard
               label={t.totalOutstandingLabel}

@@ -5,8 +5,8 @@
  * Query replaces useState(data) + useEffect(fetch) + refreshKey.
  */
 
-import { useState, useEffect, useCallback } from 'react'
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useInfiniteQuery, useQueryClient, useMutation, type InfiniteData } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
 import { queryKeys } from '@/lib/query-keys'
@@ -28,6 +28,9 @@ interface UseProductsReturn {
   setSearch: (term: string) => void
   setFilter: <K extends keyof ProductFilters>(key: K, value: ProductFilters[K]) => void
   setPage: (page: number) => void
+  hasMore: boolean
+  loadMore: () => void
+  isLoadingMore: boolean
   refresh: () => void
   handleCreate: (formData: ProductFormData) => Promise<void>
   handleDelete: (id: string, name: string) => void
@@ -43,13 +46,30 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
     ...initialFilters,
   })
 
-  // TanStack Query replaces useState(data) + useEffect(fetch) + refreshKey
-  const query = useQuery({
+  // Paged, not single-shot: a catalogue larger than `limit` must be reachable
+  // past row 20. `useInfiniteQuery` accumulates pages so "load more" grows the
+  // list; a `useQuery` keyed on `filters.page` would swap rows 1-20 for 21-40.
+  // Same idiom as the parties list (src/features/parties/useParties.ts).
+  const query = useInfiniteQuery({
     queryKey: queryKeys.products.list(filters),
-    queryFn: ({ signal }) => getProducts(filters, signal),
+    queryFn: ({ pageParam, signal }) => getProducts({ ...filters, page: pageParam }, signal),
+    initialPageParam: filters.page,
+    getNextPageParam: (last) =>
+      last.pagination.page < last.pagination.totalPages ? last.pagination.page + 1 : undefined,
   })
 
-  const data = query.data ?? null
+  // Flattened back into the single-response shape every consumer already reads.
+  // `pagination` comes from the newest page (how far the user has scrolled);
+  // `summary` from the first, since its totals describe the whole filtered set.
+  const data = useMemo<ProductListResponse | null>(() => {
+    const pages = query.data?.pages
+    if (!pages?.length) return null
+    return {
+      products: pages.flatMap((p) => p.products),
+      pagination: pages[pages.length - 1].pagination,
+      summary: pages[0].summary,
+    }
+  }, [query.data])
   const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
   // Show toast on fetch error
@@ -84,6 +104,10 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
     setFilters((prev) => ({ ...prev, page }))
   }, [])
 
+  const loadMore = useCallback(() => {
+    if (query.hasNextPage && !query.isFetchingNextPage) query.fetchNextPage()
+  }, [query])
+
   const refresh = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: queryKeys.products.all() })
   }, [queryClient])
@@ -107,15 +131,20 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
 
   // Delete with undo (keeps existing UX: delay actual delete for 5s undo window)
   const handleDelete = useCallback((id: string, name: string) => {
-    // Optimistic: update cache directly
-    queryClient.setQueryData<ProductListResponse>(
+    // Optimistic: update cache directly. The cache holds pages, not one
+    // response — writing the flattened shape here would leave the list
+    // unreadable until the next refetch.
+    queryClient.setQueryData<InfiniteData<ProductListResponse, number>>(
       queryKeys.products.list(filters),
       (old) => {
         if (!old) return old
         return {
           ...old,
-          products: old.products.filter((p) => p.id !== id),
-          pagination: { ...old.pagination, total: old.pagination.total - 1 },
+          pages: old.pages.map((page) => ({
+            ...page,
+            products: page.products.filter((p) => p.id !== id),
+            pagination: { ...page.pagination, total: page.pagination.total - 1 },
+          })),
         }
       }
     )
@@ -147,6 +176,9 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
     setSearch,
     setFilter,
     setPage,
+    hasMore: query.hasNextPage,
+    loadMore,
+    isLoadingMore: query.isFetchingNextPage,
     refresh,
     handleCreate,
     handleDelete,

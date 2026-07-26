@@ -12,6 +12,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { BulkActionBar } from '@/components/ui/BulkActionBar'
+import { ListLoadMore } from '@/components/ui/ListLoadMore'
 import { Button } from '@/components/ui/Button'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { useToast } from '@/hooks/useToast'
@@ -44,7 +45,7 @@ export default function ProductsPage() {
   // Arriving from the Categories list (#53) pre-applies that category.
   const [searchParams] = useSearchParams()
   const categoryIdFromUrl = searchParams.get('categoryId') ?? undefined
-  const { data, status, filters, setSearch, setFilter, refresh, handleDelete } = useProducts({
+  const { data, status, filters, setSearch, setFilter, refresh, handleDelete, hasMore, loadMore, isLoadingMore } = useProducts({
     initialFilters: categoryIdFromUrl ? { categoryId: categoryIdFromUrl } : undefined,
   })
   const bulk = useBulkSelect()
@@ -174,6 +175,12 @@ export default function ProductsPage() {
                 </div>
               ))}
             </div>
+            <ListLoadMore
+              hasMore={hasMore}
+              isLoading={isLoadingMore}
+              onLoadMore={loadMore}
+              ariaLabel={t.loadMoreProducts}
+            />
           </div>
         )}
 

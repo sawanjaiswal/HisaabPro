@@ -1,0 +1,7 @@
+/* Pager for paged lists — sits below the last row, centred, above whatever
+   summary card closes the page. */
+.list-load-more {
+  display: flex;
+  align-self: center;
+  margin: var(--space-3) auto 0;
+}

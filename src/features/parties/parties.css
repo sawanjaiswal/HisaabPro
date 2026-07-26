@@ -568,10 +568,5 @@
   border-color: var(--color-gray-200);
 }
 
-/* Load more — the list is paged, so the pager sits below the last row and
-   above the outstanding-total card (mirrors .party-txn-load-more). */
-.party-list-load-more {
-  display: flex;
-  align-self: center;
-  margin: var(--space-3) auto 0;
-}
+/* Load more lives in src/components/ui/list-load-more.css — one pager for
+   every paged list (.list-load-more). */
