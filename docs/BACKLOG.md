@@ -331,7 +331,64 @@ V1, V2 touch schema → mandatory `scope-writer → architect → task-manager` 
 
 ---
 
+### 10. Billing SSOT & global subscriptions (architecture APPROVED 2026-07-26, not started)
+
+**Master doc: `docs/BILLING_ARCHITECTURE.md`** (25 sections, **v3.1** — the
+single SSOT for billing decisions; its §23 is the authoritative register). Spec
+only — zero code or schema touched. v3.1 fixed §14: mid-cycle upgrade/addon
+purchases charge **on-session** (D13), never a mandate debit — NPCI's T-24h
+pre-debit notice makes an instant mandate execution impossible. Supersedes the money half of §1b's shipped
+subscription port; the 7-state machine, UPI Autopay flow, and RS256 offline JWT
+are all **kept**.
+
+**Why this exists:** a subscriber's price currently lives in **four** places —
+`checkout-session.service.ts` hardcoded map, `subscription.constants.ts` hardcoded
+map, `Subscription.razorpayPlanId`, and `Coupon.razorpayOfferId`. That is the
+DudhHisaab failure mode, present before the first paying customer. There is also
+no `PaymentAttempt` / `Charge` / `SettlementRecord` model anywhere — no money
+ledger, so a failed charge is only discoverable by a customer complaining.
+
+**The architecture in one line:** the gateway moves money, it never holds truth.
+One port (`BillingProvider`), one primitive (off-session charge against a stored
+mandate, amount decided at call time), drivers for cashfree/stripe/razorpay/fake.
+Price SSOT = immutable `PriceVersion` rows + policy-driven resolution
+(`FOLLOW_CURRENT_PRICE` default, `PRICE_LOCK` / `CONTRACT_PRICE` available).
+
+**Effort:** ~28 new files, ~3,900 lines, plus contract + property suites. §10
+(scheduler) + §11 (dunning) + §25 (failure taxonomy) are the hard correctness
+surface — roughly half the work.
+
+⚠️ **HIGH-RISK — touches `prisma/schema.prisma` + billing services.** Mandatory
+sequence before any code: `scope-writer → architect → architecture-auditor →
+security → task-manager`. Start with:
+
+```
+/start-epic subscription-ssot-and-global-billing
+```
+
+🔴 **Do this part FIRST, independent of the rest — it gets more expensive every
+day.** Migration step 9 drops `Subscription.razorpayPlanId` and
+`Coupon.razorpayOfferId` and renames the `razorpay*` columns to provider-neutral
+names. Cheap now (no live mandates); a data-migration exercise after the first
+production mandate exists.
+
+**Blocked on external validation the architect must have before designing (§23):**
+- **B1** — Cashfree Controlled Notification / Controlled Execution semantics. Changes service count.
+- **B2** — recurring-payments activation lead time, Cashfree **and** Stripe. No published SLA; **likely the longest lead item in the epic and it isn't code — file both tickets before anything else.**
+- **B3** — target: diaspora + Gulf, or US/UK domestic SMBs? Blocks §16.2 tax scope only.
+- **B4** — effective MDR per rail, from commercial term sheets. No number is asserted anywhere in the doc.
+- **D5** — reject Cashfree Periodic + `CHANGE_PLAN`? Costs ~600 lines of scheduler + dunning we then own. **Decide in a technical workshop with Cashfree, not from docs.** If Periodic turns out adequate, the epic shrinks and nothing else in the architecture changes — the port absorbs it.
+- **D3** — mandate ceiling 3× monthly. Product decision; needs signup-abandonment A/B, not architecture.
+
+**Prior art not to re-derive:** §1b's state machine + entitlement JWT stay as-is.
+`server/src/config/plans.ts` keeps its 30 feature booleans and loses all money
+notions. `currency.service.ts` serves the customer's *own* invoicing and must
+never be imported by billing (guard G8).
+
+---
+
 ## Open files to remember
+- `docs/BILLING_ARCHITECTURE.md` — approved billing architecture (§10 above). Read before touching any subscription/money path.
 - `.claude/design-plan-active.md` — last approved for Phase 6 Staff & HR. Replace before starting Phase 7 / verticals.
 - Shipped epic docs (don't archive — referenced for context):
   - Phase 5: `docs/SCOPE_phase5_marketing_comms.md`, `docs/SCOPE_EPIC_B_sales_workflow.md`, `docs/SCOPE_EPIC_C_customer_facing.md`, `docs/SCOPE_EPIC_D_crm_loyalty.md`, companions `ARCHITECTURE_*`, `SECURITY_AUDIT_*`, `QA_GATE_EPIC_D_*`, `ARCHITECTURE_AUDIT_EPIC_D_*`.
@@ -342,5 +399,6 @@ V1, V2 touch schema → mandatory `scope-writer → architect → task-manager` 
 - **Ship-to-prod (recommended next):** merge `hisaabpro` → `master`, set Render env, `npx prisma migrate deploy` (Phase 6 added 9 tables + 28 cols on top of Epic D's 4 tables + subscription port's 4 tables), then follow `docs/ROLLOUT_PHASE6.md` Stage 0 (internal 48h) → Stage 1 (10%) → … → Stage 4 (100%).
 - **Start Phase 7 #143 (WhatsApp bot billing):** `/start-epic phase-7-whatsapp-bot-billing` — touches webhook handling + Aisensy creds.
 - **Start vertical V3 (recipe cost):** `/start-epic vertical-v3-recipe-cost-dashboard`
+- **Start billing SSOT epic (§10):** `/start-epic subscription-ssot-and-global-billing` — spec is `docs/BILLING_ARCHITECTURE.md`. File the B2 gateway-activation tickets first; do the `razorpayPlanId`/`razorpayOfferId` column drop before the first live mandate regardless of when the rest starts.
 - **Roadmap:** `docs/ROADMAP.md` — keep in sync after every epic.
 - **Re-audit doc accuracy:** ask Claude "WHATS LEFT and whats done? deep audit, update the docs."

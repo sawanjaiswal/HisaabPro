@@ -1,6 +1,7 @@
 # HisaabPro — Billing & Subscription Architecture
 
-> **Status:** DRAFT v2 — specification for `/start-epic subscription-ssot-and-global-billing`
+> **Status:** APPROVED v3.1 (2026-07-26) — specification for `/start-epic subscription-ssot-and-global-billing`
+> **v3.1:** fixes §14's upgrade line (on-session charge, not a mandate debit — D13); §23 is the authoritative decision register
 > **Created:** 2026-07-26 · **Author:** Sawan (with Claude)
 > **Supersedes:** ad-hoc Razorpay coupling across schema, checkout-session, coupons, addons
 > **Required readers:** `architect` (produces ARCHITECTURE.md against this) ·
@@ -23,7 +24,8 @@ which is another company's database.
 money attempted, and one provider interface whose only verb is *"charge this
 mandate for an amount I give you now."*
 
-Eight decisions, all litigable:
+The decisions, all litigable (summary — the authoritative register with open
+items and retractions is §23):
 
 | | Decision | Confidence |
 |---|---|---|
@@ -38,8 +40,15 @@ Eight decisions, all litigable:
 | D9 | **Pricing Engine and Billing Engine are separate modules.** "What does it cost" ≠ "when do we charge" | high — **new v3** |
 | D10 | **`BillingProfile` per business** owns country, currency, tax regime, provider, pricing policy. Subscription owns none of it | high — **new v3** |
 | D11 | Jurisdiction is **verified and locked**, never self-declared, with a recorded `verificationSource` | high — **new v3** |
+| D12 | **Capabilities are part of the provider contract.** The engine reasons about `capabilities(rail)`, never `provider.id` | high — **new v3** |
+| D13 | Mid-cycle upgrade and addon purchases are **one-time on-session payments**, never mandate debits — NPCI's T-24h pre-debit notice makes an instant mandate execution impossible | high — **new v3.1, fixes §14** |
 
-**Effort:** ~28 new files, ~3,600 lines, plus contract + property suites.
+**Failure handling is not an appendix.** §25 carries the `PaymentAttempt` state
+machine, the failure-code taxonomy, the three-retry-layer rule (conflating them
+is how double-charges happen), the ambiguous-outcome protocol, the rail circuit
+breaker, and a 48-row edge-case matrix. Every row there is an acceptance test.
+
+**Effort:** ~28 new files, ~3,900 lines, plus contract + property suites.
 **Longest lead item is not code** — it is gateway recurring-payments activation
 (§4, B2). File those tickets today.
 
@@ -218,9 +227,12 @@ export interface MandateRef {
 }
 
 export interface BillingProvider {
-  readonly id: ProviderId
+  readonly id: ProviderId          // logging, metrics, config ONLY — never branched on (G12)
   readonly rails: readonly Rail[]
   readonly currencies: readonly Currency[]
+
+  /** Capability contract (D12, §4.4). The engine asks what a provider CAN DO. */
+  capabilities(rail: Rail): CapabilitySet
 
   // ── mandate lifecycle ──────────────────────────────────────────────
   /** Returns the ceiling the RAIL actually granted — may be < requested. */
@@ -272,7 +284,55 @@ which DudhHisaab's price, and HisaabPro's current coupon discounts, escaped
 into someone else's database. A driver that needs a plan object in order to
 charge is a driver we do not use.
 
-### 4.4 Rail routing
+### 4.4 Capabilities are part of the contract (D12)
+
+The engine must reason about **what a provider can do**, never about **which
+vendor it is**:
+
+```ts
+// ✅
+if (provider.capabilities(rail).preDebitNotice) { … }
+
+// ❌ — vendor knowledge leaking above the port
+if (provider.id === 'cashfree') { … }
+```
+
+```ts
+export interface CapabilitySet {
+  preDebitNotice:    boolean   // NPCI T-24h primitive exists on this rail
+  variableAmount:    boolean   // amount chosen per charge (⇐ the whole design, §4.1)
+  mandateUpdate:     boolean   // ceiling/terms updatable post-auth (currently: nobody)
+  asyncSettlement:   boolean   // CAPTURED lags the API response (§12.1)
+  settlementReports: boolean   // fetchSettlements available (§12.3)
+  refunds:           'full' | 'partial' | 'none'
+  scaChallenge:      boolean   // can demand on-session re-auth mid-subscription
+  maxMandateYears:   number | null
+}
+```
+
+⚠️ **Capability is a function of `(provider, rail)`, not of provider alone.**
+This is the refinement that makes the idea hold up:
+
+| | Cashfree On-Demand | Cashfree Periodic | Stripe CARD | Stripe SEPA_DD |
+|---|---|---|---|---|
+| `variableAmount` | ✅ | ❌ | ✅ | ✅ |
+| `preDebitNotice` | ✅ (NPCI) | ✅ (NPCI) | ❌ | ✅ (SEPA pre-notification) |
+| `asyncSettlement` | ✅ | ✅ | ❌ | ✅ |
+| `scaChallenge` | ❌ | ❌ | ✅ (EU) | ❌ |
+
+A provider-level flag would get every column in that table wrong at least once.
+
+Two consequences worth stating:
+
+1. **`variableAmount: false` is a hard incompatibility, not a degraded mode.**
+   The charge service refuses to bind a subscription to such a rail at all —
+   this is D2/D5 made mechanical rather than left to reviewer memory.
+2. The optional-method idiom (`sendPreDebitNotice?`) is retained for
+   type-narrowing but is **no longer the source of truth**. An optional method
+   conflates *"this provider cannot"* with *"we haven't implemented it yet"* —
+   only the first is a capability. The contract suite asserts the two agree.
+
+### 4.5 Rail routing
 
 Derived, never stored on the business:
 
@@ -505,7 +565,7 @@ model BillingProfile {
   contractId         String?           // CONTRACT_PRICE only
 
   // ── routing (derived, cached for query-ability) ────────────────
-  provider           String            // resolved by billing-router (§4.4)
+  provider           String            // resolved by billing-router (§4.5)
   rail               String
 
   createdAt   DateTime @default(now())
@@ -520,7 +580,7 @@ India → USA becomes `billingProfile.update()` plus a re-mandate (the old rail
 cannot serve the new country), not a subscription migration.
 
 ⚠️ `provider` and `rail` are a **cache of a derivation**, not an input. The
-router (§4.4) remains the SSOT; these columns exist so ops can query "how many
+router (§4.5) remains the SSOT; these columns exist so ops can query "how many
 businesses are on Cashfree" without recomputing. A drift check asserts
 `profile.provider === route(profile.currency)` nightly.
 
@@ -721,8 +781,10 @@ amountMinor = grossMinor − discountMinor + taxMinor
 `BusinessAddon` charges reuse the same ledger and port — an addon purchase is a
 `PaymentAttempt` with its own `priceVersionId` (tier field carries the addon
 code). Addon prices move into `PriceVersion` alongside plan prices; no second
-catalog. Recurring addons ride the same mandate and **count against the same
-ceiling** — so `sum(plan + active addons) ≤ ceilingMinor` is a precondition of
+catalog. The addon *purchase* itself is a one-time **on-session** payment,
+like a mid-cycle upgrade (D13, §14) — only its *renewals* ride the mandate.
+Recurring addons **count against the same ceiling** — so
+`sum(plan + active addons) ≤ ceilingMinor` is a precondition of
 addon purchase, checked before sale, not at charge time (§9.2).
 
 ---
@@ -914,6 +976,10 @@ response, plus UPI's asynchronous settlement.
 | 4 | D+5 | warning | → attempt 5 |
 | 5 | D+7 | final warning | → `grace.expired` → **LOCKED** |
 
+This table is the *schedule* only. The *rules* — which failures are retryable
+at all, at which of the three retry layers, and what happens on an ambiguous
+outcome — are in **§25**. Read §25.2 before implementing any retry.
+
 **Terminal immediately — zero retries:** `MANDATE_REVOKED`, `MANDATE_PAUSED`,
 `MANDATE_EXPIRED`, `CEILING_EXCEEDED`, `AUTH_REQUIRED`. Retrying these is
 guaranteed to fail and damages rail standing. Each routes to its own recovery flow.
@@ -995,7 +1061,7 @@ bill customers. Losing paid *features* is acceptable; losing the *app* is not.
 
 | Path | Rule |
 |---|---|
-| **Upgrade** mid-cycle | Charge `(new − old) × remainingDays / periodDays` immediately off the existing mandate. Entitlement changes on `CAPTURED`. Exceeds ceiling → re-mandate (§9.4) |
+| **Upgrade** mid-cycle | Charge `(new − old) × remainingDays / periodDays` as a **one-time on-session payment** (D13) — the user is present tapping "Upgrade", so a normal UPI-intent/checkout payment is instant. **Never a mandate debit:** NPCI's T-24h pre-debit notice means a mandate execution cannot land before tomorrow. The mandate is untouched; the *next renewal* charges the new plan price off it. New price exceeds ceiling → re-mandate (§9.4), checked **before the upgrade is sold** (§9.2). Entitlement changes on `CAPTURED`. Proven pattern: DudhHisaab `checkout-upgrade.routes.ts` |
 | **Downgrade** | Scheduled at period end. The existing `pendingDowngradeTier` column already models this — reuse it. No mid-cycle refund by default |
 | **Cancel** | Access runs to `expiresAt`; `autoRenew = false`; mandate revoked **at period end**, not immediately |
 | **Reactivate** in grace | Existing transitions 13/14/17/19 cover it |
@@ -1038,7 +1104,7 @@ per-financial-year, auditable.
 
 ### 16.1 The cheap part — payments
 
-Currency on every money row (§8.1) + rail routing (§4.4). Scheduler, dunning,
+Currency on every money row (§8.1) + rail routing (§4.5). Scheduler, dunning,
 entitlement, state machine, and catalog are written **once** and never branch on
 country. Only three things differ per rail:
 
@@ -1159,6 +1225,7 @@ emit settlement files, so §12.3 needs a fixture-driven test rather than a live 
 | **G9** | **Pricing Engine stays pure** — no Prisma, no `new Date()`, no I/O | `no-restricted-imports` + `no-restricted-globals` scoped to `services/billing/pricing/**` (D9) |
 | **G10** | **No increase charged without notice** | Assertion in `charge.service.ts`: `requiresNotice ⇒ noticeSentAt != null && elapsed ≥ noticeDays` (I11) |
 | **G11** | **No non-INR pricing on a `SELF_DECLARED` profile** | Assertion in the Pricing Engine + nightly audit query (D11, §6.5) |
+| **G12** | **No vendor-id branching above the port** | ESLint `no-restricted-syntax`: comparisons against `provider.id` / `ProviderId` literals outside `drivers/`. The engine asks `capabilities(rail)` (D12, §4.4) |
 
 **G2, G7, G9 and G10 are what make this document self-enforcing after everyone
 forgets it.**
@@ -1298,6 +1365,9 @@ Each maps to an invariant so the auditor can trace coverage.
 - [ ] `npm run ssot` exit 0 · `node scripts/enforce.js` 0 errors
 - [ ] G1 proven: importing a driver above the port fails lint
 - [ ] G7 proven: no price literal survives outside `PriceVersion`
+- [ ] A rail with `variableAmount: false` **cannot be bound** to a subscription — refused at bind time, not at charge time *(D12, §4.4)*
+- [ ] Declared `capabilities(rail)` agree with the methods the driver actually implements — asserted for every driver by the contract suite *(D12)*
+- [ ] G12 proven: a `provider.id === 'cashfree'` comparison above the port fails lint *(D12)*
 
 **Frontend**
 - [ ] Mandate consent screen states the ceiling verbatim, **en + hi**
@@ -1309,6 +1379,9 @@ Each maps to an invariant so the auditor can trace coverage.
 ---
 
 ## §23 — Decisions, open items, retractions
+
+> **This table is the authoritative decision register.** §0's table is a
+> summary of it; on any divergence, §23 wins.
 
 | ID | Item | Status |
 |---|---|---|
@@ -1323,6 +1396,8 @@ Each maps to an invariant so the auditor can trace coverage.
 | D9 | Pricing Engine (pure) separate from Billing Engine (impure) | decided — new v3 |
 | D10 | `BillingProfile` per business owns country/currency/tax/provider/policy | decided — new v3 |
 | D11 | Jurisdiction verified + locked on first charge; `SELF_DECLARED` never earns regional pricing | decided — new v3 |
+| D12 | Capabilities are part of the provider contract; the engine reads `capabilities(rail)`, never `provider.id` | decided — new v3 |
+| D13 | Mid-cycle upgrade/addon purchases are one-time **on-session** payments, never mandate debits | **decided — new v3.1.** NPCI's T-24h pre-debit notice makes an "immediate" mandate execution impossible; the user is on-session at upgrade time anyway. DudhHisaab's shipped pattern (`checkout-upgrade.routes.ts`) |
 | B1 | Cashfree Controlled Notification/Execution semantics | **open — verify before architect** |
 | B2 | Recurring activation lead time, both gateways | **open — file tickets today** |
 | B3 | Diaspora+Gulf vs US/UK domestic | **open — blocks §16.2 only** |
@@ -1338,6 +1413,11 @@ Each maps to an invariant so the auditor can trace coverage.
 - *"Include `priceVersionId` in the idempotency key"* — a bug from an earlier
   draft; it would permit a second debit for an already-paid period after a
   price change (§8.3).
+- *"Charge the upgrade proration immediately off the existing mandate"* (v3
+  §14) — **withdrawn (v3.1).** NPCI's T-24h pre-debit notice makes an
+  immediate mandate execution impossible; the debit would land tomorrow, not
+  now. Replaced by D13: one-time on-session payment for the prorated
+  difference.
 - *"Price is pinned per subscription at signup"* (v2 D4) — **withdrawn.** Correct
   about consent, wrong as a default: it made the normal case (a price change
   reaching the base) an explicit migration campaign, and produced unbounded
@@ -1375,3 +1455,282 @@ Each maps to an invariant so the auditor can trace coverage.
   supply, and deferred revenue are flagged, not solved.
 - **US/UK domestic is out of scope** and this document does not pretend otherwise.
 - **No MDR figure is asserted anywhere** (B4). Unit economics are unmodelled here.
+
+---
+
+## §25 — Failure taxonomy, retry policy & edge-case matrix
+
+> §11 gives the *schedule* of retries. This section gives the *rules*: which
+> failures are retryable at all, at which layer, and what the system does for
+> every outcome — success, failure, and the ambiguous middle that causes real
+> double-charges.
+
+### 25.1 The `PaymentAttempt` state machine (forward-only)
+
+One attempt row, one lifecycle. **Forward-only** — a later webhook can never
+regress state (§12.2 rule 3). This is what makes out-of-order delivery safe.
+
+```
+                    ┌──────────────────────────────► ABANDONED
+                    │  (sweep: unresolvable after 24h, no provider id)
+  CREATED ──────────┼──────────► SUBMITTED ──────► PENDING ──────► CAPTURED
+  (ledger written   │            (provider                          │
+   before network)  │             accepted)                          ├──► SETTLED
+                    │                 │                              │    (recon)
+                    │                 ▼                              ▼
+                    └──────────► FAILED ◄─────────────────────── REFUNDED
+                                   │                                 │
+                                   │                                 └──► DISPUTED
+                                   ▼
+                          (dunning decides: next attemptNo, or terminal)
+```
+
+| State | Meaning | Entitlement? |
+|---|---|---|
+| `CREATED` | Ledger row exists, network call not yet made or outcome unknown | no |
+| `SUBMITTED` | Provider returned a charge id; no terminal status yet | no |
+| `PENDING` | Provider confirmed in-flight (normal for UPI Autopay) | **no** (§12.1) |
+| `CAPTURED` | Money taken | **yes — grant here, only here** |
+| `SETTLED` | Matched to a settlement line (§12.3) | yes |
+| `FAILED` | Terminal for this attempt; dunning decides what's next | no |
+| `ABANDONED` | Outcome unknowable; escalated to a human | no |
+| `REFUNDED` / `DISPUTED` | Money returned or contested | revoked |
+
+**Invariant:** `CREATED` is written **before** the network call, in its own
+committed transaction. A crash after this point is recoverable; a crash before
+it means no charge was attempted. There is no window where money moves without
+a row.
+
+---
+
+### 25.2 Three retry layers — never conflate them
+
+This is the single most important distinction in the whole document. **Most
+production double-charges are an L1 retry that was actually an L2 retry.**
+
+| Layer | Trigger | New `attemptNo`? | Idempotency key | Cadence | Cap |
+|---|---|---|---|---|---|
+| **L1 — transport** | Network error, timeout, provider 5xx, rate-limit 429 | **NO** | **Same key, replayed** | 1s, 3s, 9s + jitter | 3 tries |
+| **L2 — dunning** | Payer-side decline (§25.3 `SOFT`) | **YES** — `attemptNo + 1` | **New key** (new attemptNo) | D+1/3/5/7 (§11) | 5 attempts |
+| **L3 — sweep/recon** | Row stuck in a non-terminal state | **NO** | none — read-only | every 5 min / nightly | unbounded |
+
+Rules:
+
+1. **L1 replays the identical key.** That is the entire point of the key: a
+   replay after a timeout either returns the original result or is rejected as a
+   duplicate. It cannot charge twice.
+2. **L1 never allocates a new `attemptNo`.** A new attemptNo means a new key
+   means a *new debit*. Incrementing `attemptNo` on a network timeout is the
+   classic double-charge bug — the first charge succeeded, we just didn't hear it.
+3. **L3 never charges.** It only reads provider state and resolves our row.
+4. **A failure that is our fault or the rail's fault does not consume an L2
+   attempt** (§25.5). Burning a dunning attempt on a Cashfree outage punishes the
+   customer for our vendor's downtime and shortens their grace period.
+
+---
+
+### 25.3 Failure-code taxonomy
+
+Drivers translate vendor strings into this closed set. `rawStatus` is always
+persisted alongside, so a mistranslation is diagnosable after the fact.
+
+| Class | Codes | Retry | Action |
+|---|---|---|---|
+| **`SOFT`** — payer-side, may succeed later | `INSUFFICIENT_FUNDS`, `LIMIT_EXCEEDED`, `BANK_DECLINED`, `ACCOUNT_FROZEN_TEMP` | **L2 — yes** | Dunning ladder. `PAST_DUE` + recovery CTA |
+| **`RAIL`** — infrastructure, not the payer | `PROVIDER_5XX`, `TIMEOUT`, `RATE_LIMITED`, `RAIL_DOWN`, `NPCI_UNAVAILABLE` | **L1 — yes; L2 does not count** | Retry transport; on exhaustion re-queue for +2h. **Do not** notify the user, **do not** advance dunning |
+| **`MANDATE`** — authorization is gone | `MANDATE_REVOKED`, `MANDATE_PAUSED`, `MANDATE_EXPIRED`, `MANDATE_NOT_FOUND` | **never** | → re-mandate flow. Zero retries (§11) |
+| **`CEILING`** — our amount exceeds their cap | `CEILING_EXCEEDED` | **never** | → re-mandate at a higher ceiling (§9). Never a "failed payment" in the UI |
+| **`AUTH`** — payer must be present | `AUTH_REQUIRED`, `SCA_REQUIRED` | **never off-session** | → on-session challenge link (card/SEPA rails only, `capabilities.scaChallenge`) |
+| **`CONFIG`** — our bug | `INVALID_AMOUNT`, `CURRENCY_MISMATCH`, `MERCHANT_INACTIVE`, `SIGNATURE_INVALID` | **never** | Page an operator. Do **not** retry — a retry cannot fix a config error, and 5 of them look like an attack |
+| **`FRAUD`** — blocked upstream | `RISK_BLOCKED`, `BLACKLISTED` | **never** | Manual review queue |
+
+**`UNKNOWN` is not in this table by accident.** An untranslated vendor code maps
+to `RAIL` (retry-safe, no user impact) **and** raises an alert, because a
+silently-misclassified `MANDATE_REVOKED` would otherwise be retried 5 times.
+Fail toward the harmless classification, alert loudly.
+
+---
+
+### 25.4 The ambiguous outcome — the case that actually loses money
+
+We called `chargeOffSession()` and got a timeout. **Did the money move?**
+Unknown. This is the only genuinely hard failure mode; everything else is
+bookkeeping.
+
+Wrong answers, both seen in the wild:
+- *Assume it failed and retry with a new key* → **double debit.**
+- *Assume it succeeded and grant entitlement* → **free service.**
+
+The correct answer is to refuse to guess:
+
+```
+timeout / no parseable response
+  → row stays CREATED, providerChargeId = null
+  → L1 replay, SAME key            (up to 3, exp backoff + jitter)
+      ├─ returns a result  → adopt it, done
+      └─ still ambiguous   → hand to the sweeper, stop calling
+```
+
+The sweeper (L3, every 5 min) resolves by **asking the provider, never by
+re-charging**:
+
+| Sweep finding | Resolution |
+|---|---|
+| `fetchCharge(key)` finds a charge | Adopt its state. The first call *did* land |
+| Provider has no record after 15 min | Safe to mark `FAILED` (`RAIL`), no dunning penalty |
+| Ambiguous for > 24h | → `ABANDONED` + **page a human.** Never auto-resolve |
+| Settlement line appears for an `ABANDONED` row | Recon adopts it → `CAPTURED`, back-grant entitlement |
+
+**This is why the idempotency key is derived (§8.3) and not random.** A random
+key cannot be looked up after a crash; a derived key is recomputable from
+`(subscriptionId, periodStart, attemptNo)` forever. A random key here would make
+the ambiguous case *unresolvable* — the one place the design has no fallback.
+
+---
+
+### 25.5 Whole-rail outage — the circuit breaker
+
+An individual `RAIL` failure is retried. A *systemic* one must not run the entire
+base through the dunning ladder while UPI is down nationwide.
+
+```
+rolling 5-min window, per (provider, rail):
+  RAIL-class failure ratio > 50% AND n ≥ 20
+    → OPEN: pause the scheduler for that rail, alert
+    → attempts already in flight finish; none are newly scheduled
+    → HALF_OPEN after 10 min: 5 canary charges
+    → CLOSED on ≥4 successes; back to OPEN otherwise
+```
+
+While open: `nextBillingAt` is **not** advanced, `attemptNo` is **not**
+incremented, `gracePeriodEndsAt` is extended by the outage duration, and the
+user sees nothing. A rail outage is our problem, not theirs.
+
+Same treatment for `MERCHANT_INACTIVE` — that is an account-level stop, not a
+per-customer decline. Page immediately; do not attempt the rest of the batch.
+
+---
+
+### 25.6 Edge-case matrix
+
+Every row is an acceptance test. Grouped by lifecycle stage.
+
+**Signup & mandate**
+
+| # | Scenario | Response |
+|---|---|---|
+| E1 | User abandons the UPI consent screen | Mandate stays `PENDING`; reaped after 30 min; no subscription created |
+| E2 | Mandate authorized but our callback never fires | Drift reconcile (`fetchMandate`, nightly) adopts it; user is not asked to re-authorize |
+| E3 | Consent screen shows one ceiling, driver sends another | **Hard fail at bind.** The disclosed number and the requested number come from one call site or the flow refuses (§9) |
+| E4 | ₹1 promo signup | Ceiling from **standard** price, never the promo (G6). Highest-severity test in §22 |
+| E5 | Business already has a subscription | `businessId @unique` rejects; UI routes to upgrade, not signup |
+| E6 | Rail can't do variable amounts | Refused **at bind time** (D12, §4.4) — never discovered at first charge |
+| E7 | Profile currency ≠ mandate currency | `CURRENCY_MISMATCH` at bind; `CONFIG` class; unbindable |
+| E8 | User revokes in their UPI app (no webhook on some rails) | Nightly drift reconcile catches it → re-mandate CTA before the next due date, not after a failed charge |
+| E9 | Mandate hits `maxMandateYears` | Re-mandate campaign starts 30 days out, driven by `capabilities.maxMandateYears` |
+
+**Pricing & notice**
+
+| # | Scenario | Response |
+|---|---|---|
+| E10 | Pre-debit notice send fails | **Charge does not proceed** (I11, G10). Re-queue the notice; slip the charge date |
+| E11 | Notice sent, charge delayed > 48h | Notice is stale → re-send, re-slip. Never charge on an expired notice |
+| E12 | Catalog price rises above the ceiling | Re-mandate flow, **not** a failed charge (§9) |
+| E13 | Coupon expires between decision and charge | Recorded `PriceDecision` wins for this period. The amount charged is always the amount noticed |
+| E14 | Price changes mid-dunning | Retries use the **original** period's decision. A dunning retry is the same debt, not a new one |
+| E15 | Catalog row edited to a nonsense amount | Shadow mode (§18.1) + rate limiter (§7.6) + review. Blast radius is bounded, not zero (§24) |
+| E16 | Downgrade requested during `PAST_DUE` | Applies at period end; does not clear the outstanding debt |
+
+**Charge & webhook**
+
+| # | Scenario | Response |
+|---|---|---|
+| E17 | Timeout, unknown outcome | §25.4. Same key replay → sweeper → never a new `attemptNo` |
+| E18 | Crash between ledger write and API call | Sweeper finds `CREATED` with no provider id; asks the provider (I4) |
+| E19 | Webhook arrives before our API response is stored | Row is keyed by our derived key; webhook parks against it. Whichever lands second is the no-op |
+| E20 | Duplicate webhook | Deduped on `providerEventId` (§12.2) |
+| E21 | Out-of-order (`PENDING` after `CAPTURED`) | Dropped — forward-only (§25.1) |
+| E22 | Webhook amount ≠ ledger amount | **Never trust the webhook silently.** Alert, quarantine, do not grant. A mismatch is either their bug or our bug — both need eyes |
+| E23 | Webhook for a charge we don't have | Persist raw, alert. Possibly a charge we initiated and lost (E18) — or one we never made, which is worse |
+| E24 | Webhook secret rotated | Accept **both** secrets during a documented overlap window; verify against each |
+| E25 | Signature invalid | Reject, 401, alert. Never process. `SIGNATURE_INVALID` is `CONFIG`, not `RAIL` |
+| E26 | Provider retries because we were slow | Ack-fast/process-async (§12.2 rule 4) makes this rare; dedupe makes it harmless |
+
+**Scheduler & time**
+
+| # | Scenario | Response |
+|---|---|---|
+| E27 | Two scheduler instances | Claim-on-read + `@@unique(subscriptionId, periodStart, attemptNo)` — one charge (I5) |
+| E28 | Worker dies holding a claim | Stale claims (`billingClaimedAt` older than 15 min) are reaped and re-offered |
+| E29 | Scheduler down for 2 days | Catch-up is **query-over-due-state**, so it self-heals. Each period charges once — missed periods do not multiply |
+| E30 | Anchor day 31 in February | Clamp to month end; **restore to 31** the following month (§19.3 property test, 5 years incl. leap) |
+| E31 | Feb 29 anchor | Same clamp; charges Feb 28 in non-leap years |
+| E32 | IST vs UTC day boundary | All due-date math in IST; a 00:30 IST charge is *today's*, not yesterday's |
+| E33 | Duplicate rows attempted for one period | DB unique constraint is the backstop, not application logic |
+
+**Settlement, refunds, disputes**
+
+| # | Scenario | Response |
+|---|---|---|
+| E34 | `CAPTURED` > 7 days, never settled | Alert (§12.3) — money we believe we earned and never received |
+| E35 | Settlement line with no attempt | Alert — a charge we did not initiate |
+| E36 | Settlement file late or missing | Recon is idempotent and re-runnable; a missed day is caught the next night |
+| E37 | Refund requested on a `PENDING` charge | Refused until `CAPTURED`. There is nothing to refund yet |
+| E38 | Refund exceeds captured amount | Rejected in the ledger writer, before the port |
+| E39 | Double refund of one attempt | Ledger enforces one open refund per attempt |
+| E40 | Refund fails at the provider | Row stays `CAPTURED` with a refund-failed marker + alert. **Never** mark `REFUNDED` optimistically |
+| E41 | Chargeback / dispute | → `DISPUTED`, entitlement revoked, evidence packet from the ledger. This is what the audit trail is for |
+| E42 | `refunds: 'none'` on the rail | Manual/out-of-band process, surfaced from `capabilities` — not a silent failure at request time |
+
+**Entitlement & offline**
+
+| # | Scenario | Response |
+|---|---|---|
+| E43 | Offline at renewal | Existing JWT runs to its 24h TTL, then the 72h grace, then FREE (D7) |
+| E44 | Device clock moved back | `trustedTime` detects the rewind → treat as expired (§13) |
+| E45 | Signing key rotated | Verify against the previous public key during overlap; JWTs carry a `kid` |
+| E46 | Charge fails while user is offline | They keep working. State reconciles on reconnect — never a mid-session lockout |
+| E47 | 72h expiry mid-billing-failure | Degrades to **FREE**, not `LOCKED`. They can still bill their customers (D7) |
+| E48 | Entitlement service down at grant time | Charge stays `CAPTURED`; grant is retried from the queue. Money and access are decoupled |
+
+---
+
+### 25.7 Success paths (the ones to assert explicitly)
+
+Failure paths get all the attention; a success path that quietly does the wrong
+thing is worse. Assert these:
+
+| # | Path | Must be true |
+|---|---|---|
+| S1 | First charge on a new mandate | Notice sent → `CAPTURED` → entitlement granted → invoice numbered → `nextBillingAt` advanced exactly one interval |
+| S2 | Steady-state renewal | Exactly one `PaymentAttempt` per period. Assert by count, not by absence of complaints |
+| S3 | Promo → standard | Month 2 charges the standard price, under the original ceiling (E4's payoff) |
+| S4 | Price rise, `FOLLOW_CURRENT_PRICE` | Notice 30d prior → renewal at the new price → `policyApplied` + `priceReason` explain it forever (I10) |
+| S5 | Price rise, `PRICE_LOCK` | Same catalog edit, **unchanged** amount |
+| S6 | Recovery from `PAST_DUE` | Retry succeeds → `ACTIVE`, grace cleared, remaining dunning cancelled, no duplicate notification |
+| S7 | Upgrade mid-period | Proration computed locally; one **on-session** charge, no mandate debit (D13); ceiling re-checked *before* the request, not after |
+| S8 | Cancellation | Access to period end, `autoRenew` false, mandate revoked at the provider, no further attempts |
+| S9 | Settlement match | `CAPTURED` → `SETTLED`, `unmatchedMinor = 0` |
+| S10 | Full lifecycle replay | Signup → 13 renewals → one failure → recovery → cancel, against the Fake driver, deterministic clock, in CI |
+
+---
+
+### 25.8 Additions to the guards and the gate
+
+| ID | Guard | Mechanism |
+|---|---|---|
+| **G13** | **`attemptNo` is never incremented on a `RAIL`-class failure** | Only the dunning service may increment; enforced at the ledger writer + unit test |
+| **G14** | **No retry wrapper around `chargeOffSession` that regenerates the key** | Lint: the key is a required parameter, never computed inside a retry helper |
+| **G15** | **Every vendor code maps to a declared class** | Driver contract suite asserts exhaustiveness; `UNKNOWN` → `RAIL` + alert |
+
+Acceptance rows added to §22 (backend):
+
+- [ ] Timeout then success ⇒ **one** debit; `attemptNo` unchanged *(E17, G13)*
+- [ ] Crash between ledger write and API call ⇒ sweeper resolves, no second charge *(E18)*
+- [ ] Ambiguous > 24h ⇒ `ABANDONED` + alert, never auto-resolved *(§25.4)*
+- [ ] Rail-outage simulation ⇒ scheduler pauses, no dunning advanced, grace extended *(§25.5)*
+- [ ] `RAIL` failure ⇒ dunning attempt **not** consumed; `SOFT` failure ⇒ consumed *(G13)*
+- [ ] Webhook amount mismatch ⇒ quarantined, entitlement **not** granted *(E22)*
+- [ ] Unknown vendor code ⇒ classified `RAIL`, alert raised, not retried as `SOFT` *(G15)*
+- [ ] Anchor 31 → Feb → back to 31 *(E30, property test)*
+- [ ] Full-lifecycle replay green against the Fake driver on a deterministic clock *(S10)*
