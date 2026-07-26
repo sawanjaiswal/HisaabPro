@@ -45,7 +45,16 @@ export default defineConfig({
       timeout: 120_000,
       // DATABASE_URL is forced, not inherited: server/.env points at the dev
       // database, and these specs create and destroy tenants.
-      env: { E2E_TEST_HOOKS: '1', DATABASE_URL: e2eDatabaseUrl() },
+      // FEATURE_DATA_IMPORT defaults OFF (config/features.ts), so /api/imports
+      // answers 404 "Feature not available" unless it is switched on here. The
+      // suite has to exercise the feature the way the launch will run it — the
+      // flag is a rollout control, not a reason to leave import untested.
+      env: {
+        E2E_TEST_HOOKS: '1',
+        DATABASE_URL: e2eDatabaseUrl(),
+        FEATURE_DATA_IMPORT: 'true',
+        FEATURE_DATA_IMPORT_COHORT_PCT: '100',
+      },
     },
     {
       command: 'npm run dev:web',
