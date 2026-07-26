@@ -13,6 +13,7 @@ import { ApiError } from '@/lib/api'
 import { useConflictReconcile, isConflictError } from '@/features/collaboration/useConflictReconcile'
 import { createDocument, updateDocument } from './invoice.service'
 import { calculateInvoiceTotals } from './invoice-totals.utils'
+import { useInvoiceGstSummary } from './useInvoiceGstSummary'
 import type { InvoiceTotals, LineItemCalc, ChargeCalc } from './invoice-calc.utils'
 import type {
   DocumentType,
@@ -69,6 +70,12 @@ export function useInvoiceForm(
 
   // ─── Real-time totals ─────────────────────────────────────────────────────
 
+  // Tax is computed here, next to the totals it feeds, so the GST card and the
+  // grand total can never disagree — and so the amount on screen is the amount
+  // the server will store.
+  const gstSummary = useInvoiceGstSummary(form.lineItems, form.placeOfSupply, form.taxPricingMode)
+  const totalTax = gstSummary?.summary.totalTax ?? 0
+
   const totals = useMemo<InvoiceTotals>(() => {
     const lineItemCalcs: LineItemCalc[] = form.lineItems.map((item) => ({
       quantity: item.quantity,
@@ -82,8 +89,8 @@ export function useInvoiceForm(
       type: charge.type,
       value: charge.value,
     }))
-    return calculateInvoiceTotals(lineItemCalcs, chargeCalcs, roundOffSetting)
-  }, [form.lineItems, form.additionalCharges, roundOffSetting])
+    return calculateInvoiceTotals(lineItemCalcs, chargeCalcs, roundOffSetting, totalTax)
+  }, [form.lineItems, form.additionalCharges, roundOffSetting, totalTax])
 
   // ─── Stock validation ─────────────────────────────────────────────────────
 
@@ -215,7 +222,7 @@ export function useInvoiceForm(
     form, errors, isSubmitting, isEditMode, activeSection, setActiveSection,
     updateField, addLineItem, updateLineItem, removeLineItem,
     addCharge, updateCharge, removeCharge,
-    totals, stockWarnings, hasStockBlocks, validate,
+    totals, gstSummary, stockWarnings, hasStockBlocks, validate,
     handleSubmit, handleSaveDraft, reset,
     stockShortageItems, clearStockShortage,
     batchErrorCode, batchErrorLineIndex, clearBatchError,

@@ -22,7 +22,7 @@ import { calculateLineProfit } from '../invoice-totals.utils'
 import { usePartyTier } from '@/features/price-lists/use-party-tier'
 import { usePriceListOverride } from '@/features/pricing/usePriceListOverride'
 import { PriceListOverrideSelector } from '@/features/pricing/components/PriceListOverrideSelector'
-import type { LineItemFormData } from '../invoice.types'
+import type { LineItemFormData, ProductPick } from '../invoice.types'
 import type { StockValidationItem } from '../invoice.service'
 import type { PriceMode } from './useLinePriceMeta'
 import { Button } from '@/components/ui/Button'
@@ -44,7 +44,7 @@ interface InvoiceItemsSectionProps {
   /** Epic B PR2 — called when user changes the tier override */
   onPriceListChange?: (id: string | null) => void
   onPartyChange: (id: string, name: string) => void
-  onProductSelect: (productId: string, ratePaise: number, productName: string, salePricePaise?: number) => void
+  onProductSelect: (pick: ProductPick) => void
   onUpdateLineItem: (index: number, item: Partial<LineItemFormData>) => void
   onRemoveLineItem: (index: number) => void
   onToggleProductSearch: () => void
@@ -83,9 +83,9 @@ export function InvoiceItemsSection({
   })
 
   const handleProductSelect = useCallback(
-    (productId: string, ratePaise: number, productName: string, salePricePaise?: number) => {
-      appendMeta(salePricePaise ?? ratePaise)
-      onProductSelect(productId, ratePaise, productName, salePricePaise)
+    (pick: ProductPick) => {
+      appendMeta(pick.salePrice)
+      onProductSelect(pick)
     },
     [appendMeta, onProductSelect],
   )
@@ -166,7 +166,6 @@ export function InvoiceItemsSection({
                   <TaxPickerColumn
                     lineIndex={index}
                     taxCategoryId={item.taxCategoryId}
-                    isNewLine={true}
                     compositionScheme={compositionScheme}
                     onChange={(id) => onUpdateLineItem(index, { taxCategoryId: id })}
                   />

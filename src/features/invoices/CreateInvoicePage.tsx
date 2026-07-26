@@ -25,7 +25,6 @@ import { InvoicePreviewDrawer } from './components/InvoicePreviewDrawer'
 import { InvoiceOptionalSections } from './components/InvoiceOptionalSections'
 import { InvoiceGstSummary } from './components/InvoiceGstSummary'
 import { ReceivePaymentToggle } from './components/ReceivePaymentToggle'
-import { useInvoiceGstSummary } from './useInvoiceGstSummary'
 import { StockShortageBanner } from './components/StockShortageBanner'
 import { ExpiredBatchBanner } from '@/features/inventory/components/ExpiredBatchBanner'
 import './invoice-party-search.css'
@@ -33,6 +32,7 @@ import './invoice-line-items.css'
 import './invoice-product-search.css'
 import './invoice-summary.css'
 import './invoice-gst-banners.css'
+import type { ProductPick } from './invoice.types'
 
 interface CreateInvoicePageProps {
   /** Document type override — Estimate / Sale Order / Challan share this engine. */
@@ -69,10 +69,10 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
     clearBatchError,
     priceListId,
     validate,
+    gstSummary,
   } = useInvoiceForm(type)
 
   const { compositionScheme } = useGstGate()
-  const gstSummary = useInvoiceGstSummary(form.lineItems, form.placeOfSupply, form.taxPricingMode)
   const [productNames, setProductNames] = useState<Record<string, string>>({})
   const [showProductSearch, setShowProductSearch] = useState(false)
   const [partyName, setPartyName] = useState('')
@@ -91,20 +91,20 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
     if (id && form.lineItems.length === 0) setShowProductSearch(true)
   }, [updateField, form.lineItems.length])
 
-  const handleProductSelect = useCallback((productId: string, ratePaise: number, productName: string) => {
+  const handleProductSelect = useCallback((pick: ProductPick) => {
     // Re-selecting an already-added product bumps its qty (tap the same chip
     // twice = two units); no modal confirm — it would kill the one-tap flow.
-    const existing = form.lineItems.findIndex((item) => item.productId === productId)
+    const existing = form.lineItems.findIndex((item) => item.productId === pick.productId)
     if (existing >= 0) {
       updateLineItem(existing, { quantity: (form.lineItems[existing]?.quantity ?? 1) + 1 })
       toast.success(t.qtyIncreased)
       return
     }
-
-    setProductNames((prev) => ({ ...prev, [productId]: productName }))
+    setProductNames((prev) => ({ ...prev, [pick.productId]: pick.name }))
     addLineItem({
-      productId, quantity: 1, rate: ratePaise, discountType: 'PERCENTAGE',
-      discountValue: 0, taxCategoryId: null, hsnCode: '',
+      productId: pick.productId, quantity: 1, rate: pick.salePrice,
+      discountType: 'PERCENTAGE', discountValue: 0,
+      taxCategoryId: pick.taxCategoryId, hsnCode: '',
     })
   }, [form.lineItems, addLineItem, updateLineItem, toast, t])
 
@@ -210,6 +210,7 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
         subtotal={totals.subtotal}
         totalDiscount={totals.totalDiscount}
         totalCharges={totals.totalCharges}
+        totalTax={totals.totalTax}
         roundOff={totals.roundOff}
         grandTotal={totals.grandTotal}
         totalProfit={totals.totalProfit}

@@ -22,6 +22,7 @@ import '@/features/invoices/invoice-line-items.css'
 import '@/features/invoices/invoice-product-search.css'
 import '@/features/invoices/invoice-summary.css'
 import './purchase-form.css'
+import type { ProductPick } from '@/features/invoices/invoice.types'
 
 export default function CreatePurchasePage() {
   const { t } = useLanguage()
@@ -56,7 +57,8 @@ export default function CreatePurchasePage() {
     updateField('partyId', id)
   }, [updateField])
 
-  const handleProductSelect = useCallback((productId: string, ratePaise: number, productName: string) => {
+  const handleProductSelect = useCallback((pick: ProductPick) => {
+    const { productId, salePrice: ratePaise, name: productName } = pick
     const alreadyAdded = form.lineItems.some((item) => item.productId === productId)
     if (alreadyAdded) return
     setProductNames((prev) => ({ ...prev, [productId]: productName }))
@@ -66,7 +68,7 @@ export default function CreatePurchasePage() {
       rate: ratePaise,
       discountType: 'PERCENTAGE',
       discountValue: 0,
-      taxCategoryId: null,
+      taxCategoryId: pick.taxCategoryId,
       hsnCode: '',
     })
   }, [form.lineItems, addLineItem])
@@ -117,6 +119,7 @@ export default function CreatePurchasePage() {
         subtotal={totals.subtotal}
         totalDiscount={totals.totalDiscount}
         totalCharges={totals.totalCharges}
+        totalTax={totals.totalTax}
         roundOff={totals.roundOff}
         grandTotal={totals.grandTotal}
         totalProfit={totals.totalProfit}

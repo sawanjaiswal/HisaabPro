@@ -9,6 +9,9 @@ interface InvoiceTotalsBarProps {
   subtotal: number
   totalDiscount: number
   totalCharges: number
+  /** Document GST in paise — shown as its own row so the seller sees what the
+   *  grand total is carrying. 0 when GST is off. */
+  totalTax: number
   roundOff: number
   grandTotal: number
   totalProfit: number
@@ -26,6 +29,7 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
   subtotal,
   totalDiscount,
   totalCharges,
+  totalTax,
   roundOff,
   grandTotal,
   totalProfit,
@@ -66,6 +70,13 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
           <div className="invoice-summary-row" role="listitem">
             <span>{t.chargesLabel}</span>
             <span>+{formatInvoiceAmount(totalCharges)}</span>
+          </div>
+        )}
+
+        {totalTax > 0 && (
+          <div className="invoice-summary-row" role="listitem">
+            <span>{t.tax}</span>
+            <span>+{formatInvoiceAmount(totalTax)}</span>
           </div>
         )}
 

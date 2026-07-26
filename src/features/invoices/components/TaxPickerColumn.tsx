@@ -1,16 +1,18 @@
 /** Invoice Form — Per-line tax category dropdown
  *
- * Reads TanStack Query ['tax', 'categories'] cache.
- * Auto-fills from product.taxCategoryId for new lines.
+ * Subscribes to the tax-categories query (a passive cache read would find an
+ * empty list on any route that never fetched it, and every line would silently
+ * go to the server untagged).
+ * The line arrives pre-tagged from the product it was added from (see
+ * ProductPick) — this column is the override, not the source.
  * Shows "Tax not set" warning on blur when taxCategoryId is null.
  * Hidden entirely in composition mode.
  */
 
-import { useEffect, useRef, useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { AlertCircle } from 'lucide-react'
-import { queryKeys } from '@/lib/query-keys'
-import type { TaxCategory } from '@/lib/types/tax.types'
+import { useAuth } from '@/context/AuthContext'
+import { useTaxCategories } from '@/hooks/useTaxCategories'
 import { formatRate } from '@/features/tax/tax.constants'
 import { Select, SelectItem } from '@/components/ui/Select'
 
@@ -19,8 +21,6 @@ const NONE = '__none__' as const
 interface TaxPickerColumnProps {
   lineIndex: number
   taxCategoryId: string | null
-  productTaxCategoryId?: string | null
-  isNewLine?: boolean
   compositionScheme: boolean
   onChange: (id: string | null) => void
 }
@@ -28,26 +28,12 @@ interface TaxPickerColumnProps {
 export function TaxPickerColumn({
   lineIndex,
   taxCategoryId,
-  productTaxCategoryId,
-  isNewLine = false,
   compositionScheme,
   onChange,
 }: TaxPickerColumnProps) {
-  const qc = useQueryClient()
-  const categories = qc.getQueryData<TaxCategory[]>(queryKeys.tax.categories()) ?? []
+  const { user } = useAuth()
+  const { categories } = useTaxCategories(user?.businessId ?? '')
   const [touched, setTouched] = useState(false)
-  const autoFilled = useRef(false)
-
-  // Auto-fill from product on new line mount
-  useEffect(() => {
-    if (isNewLine && !autoFilled.current && productTaxCategoryId && taxCategoryId === null) {
-      const match = categories.find((c) => c.id === productTaxCategoryId && c.isActive)
-      if (match) {
-        onChange(match.id)
-        autoFilled.current = true
-      }
-    }
-  }, [isNewLine, productTaxCategoryId, taxCategoryId, categories, onChange])
 
   if (compositionScheme) return null
 

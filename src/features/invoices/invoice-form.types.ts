@@ -5,6 +5,7 @@
  */
 
 import type { StockValidationItem } from './invoice.service'
+import type { InvoiceGstSummary } from './useInvoiceGstSummary'
 import type { InvoiceTotals } from './invoice-calc.utils'
 import type { useConflictReconcile } from '@/features/collaboration/useConflictReconcile'
 import type {
@@ -65,6 +66,8 @@ export interface UseInvoiceFormReturn {
   updateCharge: (index: number, charge: Partial<AdditionalChargeFormData>) => void
   removeCharge: (index: number) => void
   totals: InvoiceTotals
+  /** Live GST breakdown, or null when GST is off / nothing is taxed. */
+  gstSummary: InvoiceGstSummary | null
   stockWarnings: StockValidationItem[]
   hasStockBlocks: boolean
   validate: () => boolean

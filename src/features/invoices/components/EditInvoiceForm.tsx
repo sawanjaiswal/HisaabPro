@@ -26,6 +26,7 @@ import { usePresence } from '@/features/collaboration/usePresence'
 import { PresenceAvatars } from '@/features/collaboration/PresenceAvatars'
 import { ConflictDialog } from '@/features/collaboration/ConflictDialog'
 import type { DocumentFormData } from '../invoice.types'
+import type { ProductPick } from '../invoice.types'
 
 interface EditInvoiceFormProps {
   invoiceId: string
@@ -77,7 +78,8 @@ export function EditInvoiceForm({
     updateField('partyId', _partyId)
   }, [updateField])
 
-  const handleProductSelect = useCallback((productId: string, ratePaise: number, productName: string) => {
+  const handleProductSelect = useCallback((pick: ProductPick) => {
+    const { productId, salePrice: ratePaise, name: productName } = pick
     const alreadyAdded = form.lineItems.some((item) => item.productId === productId)
     if (alreadyAdded) return
 
@@ -88,7 +90,7 @@ export function EditInvoiceForm({
       rate: ratePaise,
       discountType: 'PERCENTAGE',
       discountValue: 0,
-      taxCategoryId: null,
+      taxCategoryId: pick.taxCategoryId,
       hsnCode: '',
     })
   }, [form.lineItems, addLineItem])
@@ -181,6 +183,7 @@ export function EditInvoiceForm({
         subtotal={totals.subtotal}
         totalDiscount={totals.totalDiscount}
         totalCharges={totals.totalCharges}
+        totalTax={totals.totalTax}
         roundOff={totals.roundOff}
         grandTotal={totals.grandTotal}
         totalProfit={totals.totalProfit}

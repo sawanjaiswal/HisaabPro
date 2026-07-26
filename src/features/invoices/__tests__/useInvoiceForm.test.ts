@@ -27,6 +27,13 @@ vi.mock('../useStockValidation', () => ({
   useStockValidation: () => ({ stockWarnings: [], hasStockBlocks: false }),
 }))
 
+// The hook now computes GST alongside the totals (one source for both), which
+// pulls in the auth context for the business id. GST off = no tax, which is
+// what every case below asserts against.
+vi.mock('@/context/AuthContext', () => ({
+  useAuth: () => ({ user: { businessId: 'biz-1' } }),
+}))
+
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 
 const wrapper = createTestWrapper()

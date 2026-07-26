@@ -63,4 +63,4 @@ export interface QuickSaleResult {
 export type QuickProduct = Pick<
   ProductSummary,
   'id' | 'name' | 'sku' | 'salePrice' | 'currentStock'
-> & Pick<Partial<ProductSummary>, 'barcode'>
+> & Pick<Partial<ProductSummary>, 'barcode' | 'taxCategory'>

@@ -45,7 +45,9 @@ export interface InvoiceTotals {
   totalCharges: number
   /** Round-off delta (positive or negative), in PAISE */
   roundOff: number
-  /** subtotal - totalDiscount + totalCharges + roundOff, in PAISE */
+  /** CGST+SGST+IGST+cess for the whole document, in PAISE (0 when GST is off) */
+  totalTax: number
+  /** subtotal + totalCharges + totalTax + roundOff, in PAISE */
   grandTotal: number
   /** Sum of (qty × purchasePrice) across all items, in PAISE */
   totalCost: number
@@ -212,15 +214,21 @@ export function calculateRoundOff(
 /**
  * Final payable amount in paise.
  *
- * grandTotal = subtotal - totalDiscount + totalCharges + roundOff
+ * grandTotal = subtotal - totalDiscount + totalCharges + totalTax + roundOff
  * Guaranteed >= 0 (clamped).
+ *
+ * `totalTax` mirrors the server's `grandTotal = subtotal + charges + tax +
+ * roundOff` (server/src/services/document-calc.ts). Leaving it out made the
+ * screen quote a GST invoice at its pre-tax amount while the server stored —
+ * and the customer was billed — the taxed one.
  */
 export function calculateGrandTotal(
   subtotal: number,
   totalDiscount: number,
   totalCharges: number,
   roundOff: number,
+  totalTax = 0,
 ): number {
-  return Math.max(0, subtotal - totalDiscount + totalCharges + roundOff)
+  return Math.max(0, subtotal - totalDiscount + totalCharges + totalTax + roundOff)
 }
 

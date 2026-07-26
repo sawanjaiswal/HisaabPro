@@ -18,7 +18,14 @@ import { test, expect, loginViaUi } from './support/fixtures'
 import { SEEDED_OWNER_PHONE, VALID_PASSWORD } from './support/constants'
 import { apiCreateParty, uniqueName } from './support/parties'
 import { apiCreateProduct, uniqueProductName } from './support/products'
-import { apiCreateInvoice, apiGetInvoice } from './support/invoices'
+import {
+  addLine,
+  apiCreateInvoice,
+  apiGetInvoice,
+  apiListInvoices,
+  selectParty,
+  setLineFields,
+} from './support/invoices'
 import {
   HOME_STATE,
   OTHER_STATE,
@@ -222,4 +229,39 @@ test('TC-GST-07 an untagged line is billed without tax, not refused', async ({ p
   expect(detail.subtotal).toBe(100000)
   expect(taxOf(detail), 'no category means no tax, not a default rate').toBe(0)
   expect(detail.grandTotal - Number(detail.roundOff ?? 0)).toBe(100000)
+})
+
+test('TC-GST-08 the form shows the tax it is about to charge, and charges what it showed', async ({
+  page,
+}) => {
+  const gst18 = await taxCategoryAt(page, 1800)
+  const party = await apiCreateParty(page, { name: uniqueName('Counter Buyer') })
+  const product = await apiCreateProduct(page, {
+    name: uniqueProductName('Counter'),
+    salePrice: 100000, // Rs 1,000
+    openingStock: 50,
+    taxCategoryId: gst18.id,
+  })
+
+  await page.goto('/invoices/new')
+  await selectParty(page, party.name)
+  await addLine(page, product.name)
+  await setLineFields(page, 0, { quantity: 2 })
+
+  // The GST card and the totals bar are read by the same person in the same
+  // glance. Rs 2,000 of goods at 18% is Rs 360 of tax and Rs 2,360 to collect —
+  // a bar that stops at the taxable value sends the seller to the customer with
+  // the wrong number, and the invoice that lands in the books says something
+  // else again.
+  await expect(page.locator('.gst-summary')).toContainText('360')
+  await expect(page.locator('.invoice-summary-row-total')).toContainText('2,360')
+
+  await page.getByRole('button', { name: /preview invoice/i }).click()
+  await page.getByRole('button', { name: /save & send|saving/i }).click()
+  await page.waitForURL('**/invoices', { timeout: 20_000 })
+
+  const [saved] = await apiListInvoices(page, `type=SALE_INVOICE&partyId=${party.id}&limit=10`)
+  const detail = await apiGetInvoice(page, saved!.id)
+  expect(taxOf(detail), 'the stored tax is the tax the seller was shown').toBe(36000)
+  expect(detail.grandTotal - Number(detail.roundOff ?? 0)).toBe(236000)
 })

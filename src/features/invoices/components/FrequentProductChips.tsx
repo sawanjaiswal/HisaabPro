@@ -14,14 +14,15 @@ import { queryKeys } from '@/lib/query-keys'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatRupees } from '@/lib/format'
 import { getFrequentProducts } from '../frequent-products.service'
+import type { ProductPick } from '../invoice.types'
 import './frequent-product-chips.css'
 
 interface FrequentProductChipsProps {
   partyId: string
   /** productId → quantity on the invoice (absent/0 = not yet added). */
   quantities: Record<string, number>
-  /** Adds the product / bumps its qty (same signature as item-search select). */
-  onAdd: (productId: string, ratePaise: number, productName: string) => void
+  /** Adds the product / bumps its qty (same shape as item-search select). */
+  onAdd: (pick: ProductPick) => void
 }
 
 export function FrequentProductChips({ partyId, quantities, onAdd }: FrequentProductChipsProps) {
@@ -51,7 +52,12 @@ export function FrequentProductChips({ partyId, quantities, onAdd }: FrequentPro
               variant="outline"
               size="sm"
               className={`frequent-chip${qty > 0 ? ' frequent-chip--added' : ''}`}
-              onClick={() => onAdd(p.productId, p.salePrice, p.name)}
+              onClick={() => onAdd({
+                productId: p.productId,
+                name: p.name,
+                salePrice: p.salePrice,
+                taxCategoryId: p.taxCategoryId,
+              })}
               aria-label={`${p.name}${qty > 0 ? ` ×${qty}` : ''}`}
             >
               <Plus size={12} aria-hidden="true" />

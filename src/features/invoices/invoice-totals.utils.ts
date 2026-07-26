@@ -88,6 +88,10 @@ export function calculateInvoiceTotals(
   lineItems: LineItemCalc[],
   charges: ChargeCalc[],
   roundOffSetting: RoundOffSetting,
+  /** Document GST (CGST+SGST+IGST+cess) in paise — 0 when GST is off. The
+   *  caller computes it from the tax engine; this function only places it in
+   *  the same spot the server does, so both round off the same figure. */
+  totalTax = 0,
 ): InvoiceTotals {
   const subtotal = calculateSubtotal(lineItems)
   const totalDiscount = calculateTotalDiscount(lineItems)
@@ -98,9 +102,11 @@ export function calculateInvoiceTotals(
   // the gross figure, or the discount comes off twice and the bill collects less
   // than the server stores (which charges subtotal + charges + tax).
   const grossSubtotal = subtotal + totalDiscount
-  const preRoundTotal = subtotal + totalCharges
+  const preRoundTotal = subtotal + totalCharges + totalTax
   const roundOff = calculateRoundOff(preRoundTotal, roundOffSetting)
-  const grandTotal = calculateGrandTotal(grossSubtotal, totalDiscount, totalCharges, roundOff)
+  const grandTotal = calculateGrandTotal(
+    grossSubtotal, totalDiscount, totalCharges, roundOff, totalTax,
+  )
 
   const { totalCost, totalProfit, profitPercent } = calculateTotalProfit(lineItems)
 
@@ -109,6 +115,7 @@ export function calculateInvoiceTotals(
     totalDiscount,
     totalCharges,
     roundOff,
+    totalTax,
     grandTotal,
     totalCost,
     totalProfit,

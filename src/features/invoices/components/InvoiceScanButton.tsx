@@ -14,12 +14,13 @@ import { ScanLine } from 'lucide-react'
 import { BarcodeScanner } from '@/components/ui/BarcodeScanner'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
+import type { ProductPick } from '../invoice.types'
 import { useBarcodeLookup } from '@/features/pos/useBarcodeLookup'
 import './invoice-scan-button.css'
 
 interface InvoiceScanButtonProps {
   /** Adds the scanned product as a line item (same signature as item-search). */
-  onAdd: (productId: string, ratePaise: number, productName: string) => void
+  onAdd: (pick: ProductPick) => void
 }
 
 export function InvoiceScanButton({ onAdd }: InvoiceScanButtonProps) {
@@ -29,7 +30,12 @@ export function InvoiceScanButton({ onAdd }: InvoiceScanButtonProps) {
 
   // onFound adds the line, then re-arms the scanner for the next code.
   const { lookup } = useBarcodeLookup((p) => {
-    onAdd(p.id, p.salePrice, p.name)
+    onAdd({
+      productId: p.id,
+      name: p.name,
+      salePrice: p.salePrice,
+      taxCategoryId: p.taxCategory?.id ?? null,
+    })
     setScanKey((k) => k + 1)
   })
 

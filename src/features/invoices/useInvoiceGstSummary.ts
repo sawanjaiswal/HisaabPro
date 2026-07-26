@@ -1,18 +1,18 @@
 /** useInvoiceGstSummary — live CGST/SGST/IGST breakdown for the create screen.
  *
- * Reads the same caches the rest of the flow already populates (GST settings +
- * tax categories) and reuses the canonical `calculateDocumentTax` engine — the
+ * Subscribes to the GST settings and tax categories (via the gate and the
+ * shared categories hook — reading those caches passively meant a screen that
+ * never fetched them saw "GST off, no categories") and reuses the canonical
+ * `calculateDocumentTax` engine — the
  * one that mirrors the server's tax-calc.ts. This hook only *assembles* the
  * per-line tax inputs from the form; it computes nothing itself, so the summary
  * shown here can't drift from what the server will persist.
  */
 
 import { useMemo } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
-import { queryKeys } from '@/lib/query-keys'
-import { GST_SETTINGS_QUERY_KEY } from '@/features/gst/useGstSettings'
-import type { GstSettings } from '@/features/gst/gst.types'
-import type { TaxCategory } from '@/lib/types/tax.types'
+import { useAuth } from '@/context/AuthContext'
+import { useGstGate } from '@/features/gst/useGstGate'
+import { useTaxCategories } from '@/hooks/useTaxCategories'
 import { calculateLineTotal } from './invoice-calc.utils'
 import {
   calculateDocumentTax,
@@ -37,12 +37,12 @@ export function useInvoiceGstSummary(
   placeOfSupply: string | undefined,
   taxPricingMode: TaxPricingMode,
 ): InvoiceGstSummary | null {
-  const qc = useQueryClient()
-  const gst = qc.getQueryData<GstSettings>(GST_SETTINGS_QUERY_KEY)
-  const categories = qc.getQueryData<TaxCategory[]>(queryKeys.tax.categories()) ?? []
+  const { user } = useAuth()
+  const gst = useGstGate()
+  const { categories } = useTaxCategories(user?.businessId ?? '')
 
   return useMemo(() => {
-    if (!gst?.gstEnabled || gst.compositionScheme) return null
+    if (!gst.gstEnabled || gst.compositionScheme) return null
 
     const interState = isInterState(gst.stateCode, placeOfSupply ?? null)
     const inputs: TaxLineInput[] = []

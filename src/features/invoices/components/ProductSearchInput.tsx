@@ -6,6 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useDebounce } from '@/hooks/useDebounce'
 import { getProducts } from '@/lib/services/product.service'
 import type { ProductSummary } from '@/lib/types/product.types'
+import type { ProductPick } from '../invoice.types'
 import { paiseToRupees } from '../invoice-format.utils'
 import { ProductSearchDropdown } from './ProductSearchDropdown'
 import { Input } from '@/components/ui/Input'
@@ -19,7 +20,7 @@ const SEARCH_LIMIT = 10
 
 interface ProductSearchInputProps {
   /** Called when user taps a product — passes productId, rate (paise), name */
-  onSelect: (productId: string, ratePaise: number, productName: string) => void
+  onSelect: (pick: ProductPick) => void
   /** IDs of products already in the line items — shown as "Added" */
   addedProductIds: string[]
   /** When true, focus the field on mount so the keyboard stays open as the
@@ -132,7 +133,12 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
 
   const handleAdd = useCallback(
     (product: ProductSummary) => {
-      onSelect(product.id, product.salePrice, product.name)
+      onSelect({
+        productId: product.id,
+        name: product.name,
+        salePrice: product.salePrice,
+        taxCategoryId: product.taxCategory?.id ?? null,
+      })
       // Keep search open so user can add more items
     },
     [onSelect],

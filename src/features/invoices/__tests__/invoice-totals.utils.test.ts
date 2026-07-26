@@ -60,6 +60,25 @@ describe('calculateInvoiceTotals', () => {
     expect(totals.roundOff).toBe(0) // 210000 is already rounded to ₹
   })
 
+  // Regression: the screen quoted a GST invoice at its pre-tax amount while the
+  // server stored (and the customer was billed) the taxed one — the totals
+  // orchestrator had no tax input at all.
+  it('bills the tax the document carries', () => {
+    const totals = calculateInvoiceTotals(lineItems, charges, 'NONE', 42300)
+    expect(totals.totalTax).toBe(42300)
+    expect(totals.grandTotal).toBe(225000 + 10000 + 42300)
+  })
+
+  it('rounds off the taxed total, not the pre-tax one', () => {
+    const totals = calculateInvoiceTotals(
+      [{ quantity: 1, ratePaise: 100000, discountType: 'PERCENTAGE', discountValue: 0, purchasePricePaise: 0 }],
+      [], 'NEAREST_1', 12345,
+    )
+    // 100000 + 12345 = 112345 → nearest rupee is 112300
+    expect(totals.roundOff).toBe(-45)
+    expect(totals.grandTotal).toBe(112300)
+  })
+
   it('handles empty items', () => {
     const totals = calculateInvoiceTotals([], [], 'NONE')
     expect(totals.grandTotal).toBe(0)
