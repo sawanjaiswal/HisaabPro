@@ -5,12 +5,10 @@
 
 import type { ExtendedPrismaClient } from '../../lib/prisma.js'
 import { adjustStock } from './core.js'
-import { claimBatchesFEFO } from './batch-claim.service.js'
-import { checkSingleBatch, type ExpiryPolicy } from './expiry-policy.js'
-import { stockShortageError, batchProductMismatchError, notFoundError } from '../../lib/errors.js'
+import { stockShortageError } from '../../lib/errors.js'
+import type { ExpiryPolicy } from './expiry-policy.js'
+import { claimClientBatch, claimFEFO } from './invoice-ops-batch.js'
 import { istMidnightUtc } from '../../lib/date.js'
-import logger from '../../lib/logger.js'
-import type { ExpiryWarning } from './expiry-policy.js'
 
 export { addForPurchaseInvoice, reverseForInvoice, scheduleAlertChecks } from './invoice-ops-purchase.js'
 
@@ -107,9 +105,9 @@ export async function deductForSaleInvoice(
   for (const item of params.items) {
     if (item.batchTracking) {
       if (item.batchId) {
-        await _claimClientBatch(tx, item, params, expiredBatchPolicy, today, results, allWarnings)
+        await claimClientBatch(tx, item, params, expiredBatchPolicy, today, results, allWarnings)
       } else {
-        await _claimFEFO(tx, item, params, expiredBatchPolicy, results, allWarnings)
+        await claimFEFO(tx, item, params, expiredBatchPolicy, results, allWarnings)
       }
 
       // Product-level stock rollup (batch + product stay in sync)
@@ -124,6 +122,8 @@ export async function deductForSaleInvoice(
         userId: params.userId,
         cachedBusinessValidationMode,
       })
+
+      if (productResult.warning) allWarnings.push(productResult.warning)
 
       // Back-fill balanceAfter on the batch movements (last N pushed)
       const productBalanceAfter = productResult.newStock
@@ -147,103 +147,9 @@ export async function deductForSaleInvoice(
         cachedBusinessValidationMode,
       })
       results.push(result.movement)
+      if (result.warning) allWarnings.push(result.warning)
     }
   }
 
   return { movements: results, warnings: allWarnings }
-}
-
-type BatchRow = { id: string; batchNumber: string; expiryDate: Date | null; currentStock: number; productId: string; costPrice: number | null }
-
-async function _claimClientBatch(
-  tx: TxClient,
-  item: InvoiceStockItem,
-  params: { businessId: string; invoiceId: string; invoiceNumber: string; userId: string },
-  policy: ExpiryPolicy,
-  today: Date,
-  results: object[],
-  warnings: string[]
-) {
-  const batchRows = await tx.$queryRaw<BatchRow[]>`
-    SELECT b.id, b."batchNumber", b."expiryDate", b."currentStock",
-           b."productId", b."costPrice"
-    FROM "Batch" b
-    WHERE b.id = ${item.batchId!}
-      AND b."businessId" = ${params.businessId}
-      AND b."isDeleted" = false
-    FOR UPDATE
-  `
-
-  if (batchRows.length === 0) throw notFoundError('Batch', { batchId: item.batchId })
-  const br = batchRows[0]
-
-  if (br.productId !== item.productId) throw batchProductMismatchError(item.batchId!, item.productId)
-
-  const batchForPolicy = {
-    id: br.id, batchNumber: br.batchNumber, expiryDate: br.expiryDate,
-    productId: br.productId, productName: item.productName ?? br.productId,
-    currentStock: Number(br.currentStock),
-    costPriceAtClaim: br.costPrice != null ? BigInt(br.costPrice) : null,
-  }
-
-  const warning: ExpiryWarning | null = checkSingleBatch(batchForPolicy, policy, today)
-  if (warning) {
-    warnings.push(
-      `Batch "${warning.batchNumber}" expired on ${warning.expiryDate.toISOString().split('T')[0]} — sold under WARN_ONLY policy`
-    )
-  }
-
-  const updated = await tx.$queryRaw<Array<{ id: string }>>`
-    UPDATE "Batch" SET "currentStock" = "currentStock" - ${item.quantity}
-    WHERE id = ${item.batchId!} AND "currentStock" >= ${item.quantity}
-    RETURNING id
-  `
-
-  if (updated.length === 0) {
-    throw stockShortageError([{
-      productId: item.productId, productName: item.productName ?? item.productId,
-      requested: item.quantity, available: Number(br.currentStock),
-    }])
-  }
-
-  const movement = await tx.stockMovement.create({
-    data: {
-      businessId: params.businessId, productId: item.productId, type: 'SALE',
-      quantity: -item.quantity, balanceAfter: 0, batchId: item.batchId,
-      referenceType: 'SALE_INVOICE', referenceId: params.invoiceId,
-      referenceNumber: params.invoiceNumber, movementDate: new Date(), createdBy: params.userId,
-    },
-  })
-  results.push(movement)
-  logger.info('Client-supplied batch sale movement emitted', { batchId: item.batchId, qtyTaken: item.quantity })
-}
-
-async function _claimFEFO(
-  tx: TxClient,
-  item: InvoiceStockItem,
-  params: { businessId: string; invoiceId: string; invoiceNumber: string; userId: string },
-  policy: ExpiryPolicy,
-  results: object[],
-  warnings: string[]
-) {
-  const { claims, warnings: claimWarnings } = await claimBatchesFEFO(
-    tx, item.productId, item.quantity,
-    { policy, productName: item.productName }
-  )
-  warnings.push(...claimWarnings)
-
-  for (const claim of claims) {
-    const movement = await tx.stockMovement.create({
-      data: {
-        businessId: params.businessId, productId: item.productId, type: 'SALE',
-        quantity: -claim.qtyTaken, balanceAfter: 0, batchId: claim.batchId,
-        referenceType: 'SALE_INVOICE', referenceId: params.invoiceId,
-        referenceNumber: params.invoiceNumber, movementDate: new Date(), createdBy: params.userId,
-      },
-    })
-    results.push(movement)
-    logger.info('Batch FEFO movement emitted', {
-      batchId: claim.batchId, qtyTaken: claim.qtyTaken, invoiceId: params.invoiceId,
-    })
-  }
 }

@@ -94,6 +94,12 @@ export interface PosSaleDTO {
   voidedAt?: string
   createdAt: string
   items: PosSaleItemDTO[]
+  /**
+   * Non-fatal notices from the checkout — an oversell allowed under WARN_ONLY,
+   * an expired batch sold anyway. Present on a create response, absent on a
+   * list row, hence optional.
+   */
+  warnings?: string[]
 }
 
 export interface PosListResponse {

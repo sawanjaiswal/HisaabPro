@@ -5,6 +5,7 @@
   "_generated": "2026-07-19",
   "_widened": "2026-07-21 (M-4a): the linter's walk root moved from server/src to the repo root, so scripts/, server/scripts/ and server/prisma/ are linted for the first time. server/scripts/backfill-money-paise.ts is the only file that surfaced. Its 8 sites are pre-existing and deliberately cross-tenant — it is a one-off rupees-to-paise migration that must rewrite every row in the table regardless of owner, so a business_id predicate would make it wrong, not safe. Frozen at its current count, NOT certified: the _gate above still applies before enforce ships.",
   "_reviewed_2026_07_23": "erasure.service.ts raised 4→6: the $executeRaw scrubs were already frozen; the new $queryRaw (SELECT DISTINCT businessId FROM ImportJob WHERE userId = $1) is scoped by the erased userId, NOT by business. This is a platform-wide DPDP erasure sweep that must span every business the user imported into — a business_id predicate would make it wrong, not safe (same rationale as backfill-money-paise). Raw SQL is deliberately chosen here so a future ImportJob scoped-models entry can never silently tenant-narrow the sweep and under-erase. Reviewed tenant-safe. (The +2 is 1 real query + 1 token from widening the TxLike Pick to include '$queryRaw'.)",
+  "_reviewed_2026_07_26_pos": "server/src/services/stock/invoice-ops-batch.ts added at 2 sites, and invoice-ops.ts lowered 3 -> 1 to match: the two claim helpers moved out verbatim when invoice-ops.ts crossed 250 lines, so this is the same audited SQL under a new path, not new drift. Both sites are tenant-scoped: the FOR UPDATE select filters b.\"businessId\" = ${params.businessId}, and the conditional UPDATE targets the batch id that select already proved belongs to the caller. Reviewed tenant-safe.",
   "_reviewed_2026_07_26": "dashboard/trend.ts added with 2 sites: daily sales (Document) and daily payments (Payment) bucketed by date_trunc('day'), which Prisma groupBy cannot express. Both carry an explicit \"businessId\" = $1 predicate as their first WHERE term and select only aggregate sums for that business. Reviewed tenant-safe. They replace hardcoded mock numbers that were being shown to real users as their own sales.",
   "_total": 94,
   "sites": {
@@ -53,7 +54,8 @@
     "server/src/services/stock/batch-claim.service.ts": 3,
     "server/src/services/stock/batch-expiry-alerts.service.ts": 2,
     "server/src/services/stock/core.ts": 1,
-    "server/src/services/stock/invoice-ops.ts": 3,
+    "server/src/services/stock/invoice-ops-batch.ts": 2,
+    "server/src/services/stock/invoice-ops.ts": 1,
     "server/src/services/stock/value-report-queries.ts": 2,
     "server/src/services/stock/verification-finalize.service.ts": 1,
     "server/src/services/subscription/subscription.writer.ts": 1

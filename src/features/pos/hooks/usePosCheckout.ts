@@ -40,6 +40,11 @@ export function usePosCheckout(
       setCheckoutState('success')
       store.clearCart()
       void qc.invalidateQueries({ queryKey: [POS_PRODUCTS_KEY] })
+      // The sale is done either way, so these are toasts and not a blocked
+      // flow — but a shelf that just went negative, or an expired batch that
+      // was sold anyway, is exactly what the person at the counter has to hear
+      // while the customer is still standing there.
+      sale.warnings?.forEach((w) => toast.warning(w))
       if (navigator.vibrate) navigator.vibrate([100, 50, 100])
     },
     onError: (err) => {

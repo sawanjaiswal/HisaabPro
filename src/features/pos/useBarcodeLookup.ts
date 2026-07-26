@@ -11,6 +11,9 @@ import type { QuickProduct } from './pos.types'
 
 const LOOKUP_COOLDOWN_MS = 300
 
+/** Where a code came from — a trigger pull, or the camera's continuous decode. */
+export type LookupSource = 'manual' | 'camera'
+
 // ─── Offline cache lookup ─────────────────────────────────────────────────────
 // The API cache stores full product list responses keyed by URL.
 // When offline, we iterate through cached product list pages to find a
@@ -41,6 +44,7 @@ async function lookupProductOffline(code: string): Promise<QuickProduct | null> 
 
 export function useBarcodeLookup(onFound: (product: QuickProduct) => void) {
   const lastLookupRef = useRef(0)
+  const lastCodeRef = useRef<string | null>(null)
   const toast = useToast()
   const { t } = useLanguage()
 
@@ -71,10 +75,31 @@ export function useBarcodeLookup(onFound: (product: QuickProduct) => void) {
     },
   })
 
-  const lookup = useCallback((code: string) => {
+  /**
+   * `source` decides whether a repeat is an echo or a sale.
+   *
+   * The cooldown used to drop ANY code within 300ms of the last one. At a
+   * counter that is silent item loss twice over: a cashier working the belt
+   * fast loses different items, and — worse, because it is the common case —
+   * two units of the same SKU (two bottles of milk, both scanned in one motion)
+   * bill as one, with no toast, no beep, nothing. The customer is undercharged
+   * and the stock is wrong.
+   *
+   * A deliberate scan is always a sale. Only the camera, which decodes the same
+   * label continuously while it is pointed at it, can produce an echo — so the
+   * guard now lives where the repeats actually come from.
+   */
+  const lookup = useCallback((code: string, source: LookupSource = 'manual') => {
     const now = Date.now()
-    if (now - lastLookupRef.current < LOOKUP_COOLDOWN_MS) return
+    if (
+      source === 'camera' &&
+      lastCodeRef.current === code &&
+      now - lastLookupRef.current < LOOKUP_COOLDOWN_MS
+    ) {
+      return
+    }
     lastLookupRef.current = now
+    lastCodeRef.current = code
     mutation.mutate(code)
   }, [mutation])
 

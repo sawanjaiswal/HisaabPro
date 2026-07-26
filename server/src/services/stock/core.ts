@@ -6,6 +6,7 @@
 import type { ExtendedPrismaClient } from '../../lib/prisma.js'
 import { notFoundError, insufficientStockError } from '../../lib/errors.js'
 import logger from '../../lib/logger.js'
+import { oversellWarning } from './oversell-warning.js'
 
 type TxClient = Parameters<Parameters<ExtendedPrismaClient['$transaction']>[0]>[0]
 
@@ -73,6 +74,11 @@ export async function adjustStock(
   const currentStock = Number(products[0].current_stock)
   const newStock = currentStock + params.quantity
 
+  // The other half of WARN_ONLY. The policy and the resulting balance are both
+  // decided here, so this is the only place that can say "allowed, but the
+  // shelf is now short" — callers only ever forward it.
+  let warning: string | null = null
+
   // Step 2: Validate stock if reducing
   if (params.quantity < 0) {
     const validationMode = await resolveValidationMode(
@@ -89,6 +95,10 @@ export async function adjustStock(
         Math.abs(params.quantity),
         Math.abs(newStock)
       )
+    }
+
+    if (validationMode === 'WARN_ONLY') {
+      warning = oversellWarning(products[0].name, newStock)
     }
   }
 
@@ -140,5 +150,5 @@ export async function adjustStock(
     newStock,
   })
 
-  return { movement, previousStock: currentStock, newStock }
+  return { movement, previousStock: currentStock, newStock, warning }
 }

@@ -95,6 +95,22 @@ async function seedTenant() {
     create: { userId: user.id, businessId: business.id, role: 'owner', isActive: true },
   })
 
+  // The E2E shop runs a counter, so it is on a plan that includes one. Without
+  // a Subscription row it resolves to the trial (PRO), which has no `posMode` —
+  // and since /api/pos is plan-gated, every POS spec would test the paywall
+  // instead of the till. The foreign tenant deliberately has NO row, so it
+  // remains the fixture for "a shop that has not paid for POS".
+  await prisma.subscription.upsert({
+    where: { businessId: business.id },
+    update: { planTier: 'BUSINESS', status: 'ACTIVE', subscriptionState: 'ACTIVE' },
+    create: {
+      businessId: business.id,
+      planTier: 'BUSINESS',
+      status: 'ACTIVE',
+      subscriptionState: 'ACTIVE',
+    },
+  })
+
   // Double-entry needs its chart before any document can post — reuse the real
   // service so the E2E chart is byte-identical to a production signup's.
   await seedDefaultAccounts(business.id)

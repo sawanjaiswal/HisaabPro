@@ -55,7 +55,7 @@ export function ScanBar({ onProductFound }: ScanBarProps) {
         </Button>
       </div>
       {showCamera && (
-        <BarcodeScanner onScan={(v) => { setShowCamera(false); lookup(v) }} onClose={() => setShowCamera(false)} />
+        <BarcodeScanner onScan={(v) => { setShowCamera(false); lookup(v, 'camera') }} onClose={() => setShowCamera(false)} />
       )}
     </>
   )

@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/Header'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePosPage } from '../hooks/usePosPage'
+import { usePosBusinessInfo } from '../hooks/usePosBusinessInfo'
 import '../pos-billing.css'
 import { ProductGrid } from '../components/grid/ProductGrid'
 import { CartPanel } from '../components/cart/CartPanel'
@@ -15,14 +16,10 @@ import { CustomerSelector } from '../components/customer/CustomerSelector'
 import { ReceiptPreview } from '../components/receipt/ReceiptPreview'
 import { Button } from '@/components/ui/Button'
 
-const MOCK_BUSINESS = {
-  name:    'My Business',
-  gstEnabled: false,
-}
-
 export default function PosMainPage() {
   const { t }     = useLanguage()
   const page      = usePosPage()
+  const businessInfo = usePosBusinessInfo()
   const [cartOpen, setCartOpen] = useState(false)
 
   const cartProductIds = useMemo(
@@ -37,7 +34,7 @@ export default function PosMainPage() {
         <div className="pos-page">
           <Header title={t.posReceiptTitle ?? 'Receipt'} backTo />
           <div className="pos-receipt-page">
-            <ReceiptPreview sale={page.lastSale} businessInfo={MOCK_BUSINESS} />
+            <ReceiptPreview sale={page.lastSale} businessInfo={businessInfo} />
             <div className="pos-receipt-page__actions">
               <Button variant="none"
                 type="button"

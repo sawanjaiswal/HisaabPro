@@ -8,21 +8,18 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePosSaleDetail } from '../hooks/usePosSaleDetail'
+import { usePosBusinessInfo } from '../hooks/usePosBusinessInfo'
 import '../pos-billing.css'
 import { VoidModal } from '../components/void/VoidModal'
 import { ReceiptPreview } from '../components/receipt/ReceiptPreview'
 import { paiseToInr, formatDisplayDate, formatDisplayTime } from '../utils/pos.format'
 import { Button } from '@/components/ui/Button'
 
-const MOCK_BUSINESS = {
-  name:    'My Business',
-  gstEnabled: false,
-}
-
 export default function PosSaleDetailPage() {
   const { id }    = useParams<{ id: string }>()
   const { t }     = useLanguage()
   const detail    = usePosSaleDetail(id)
+  const businessInfo = usePosBusinessInfo()
   const [showVoid, setShowVoid] = useState(false)
   const [showReceipt, setShowReceipt] = useState(false)
 
@@ -132,7 +129,7 @@ export default function PosSaleDetailPage() {
           </Button>
 
           {showReceipt && (
-            <ReceiptPreview sale={sale} businessInfo={MOCK_BUSINESS} />
+            <ReceiptPreview sale={sale} businessInfo={businessInfo} />
           )}
 
           {/* Actions */}

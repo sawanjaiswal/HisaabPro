@@ -35,6 +35,9 @@ Last run: 2026-07-26.
 | Q — Security (isolation, authn, CSRF) | `e2e/gold/security.spec.ts` | 4 | 4 | 0 | 0 |
 | Q — Security (privilege, injection, limits, leakage) | `e2e/gold/security-hardening.spec.ts` | 4 | 4 | 0 | 0 |
 | Q — Test-hook gate (TC-SEC-09) | `server/src/__tests__/test-hooks.test.ts` | 4 | 4 | 0 | 0 |
+| R — POS: the transaction | `e2e/gold/pos.spec.ts` | 8 | 8 | 0 | 0 |
+| R — POS: the counter | `e2e/gold/pos-ui.spec.ts` | 4 | 4 | 0 | 0 |
+| R — Receipt identity | `src/features/pos/__tests__/receipt-identity.test.tsx` | 2 | 2 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
 planned but not written. Suite K's invoice half covers TC-GST-01..08 (08 is the
@@ -70,7 +73,19 @@ carrying no customer phone, GSTIN, token or hash. TC-SEC-09 is a server unit tes
 rather than a browser case — the hatch is gated on the `NODE_ENV` the server
 booted with, which a live run cannot vary.
 
-Remaining suites (reports, settings, responsive/a11y, POS, purchases, expenses,
+Suite R (`TC-POS-01..13`) covers the counter: a cash sale moving stock, split
+tenders reconciling to the grand total, a line discount taken before tax, the
+walk-in sentinel party shared across sales, oversell under both stock policies, a
+replayed checkout billing once, POS/invoice tax parity, a scan reaching the cart
+and a second scan billing two, an unmatched barcode saying so, the receipt
+rendering at 320px, the day's sales findable and reconciling against the server,
+and (TC-POS-13, added with the paywall fix) a shop without the POS plan refused by
+the API rather than only by the screen.
+
+TC-POS-06 (hold / park a sale and resume it) has **no test because the feature
+does not exist** — nothing in `src/features/pos` holds a cart aside. See F63.
+
+Remaining suites (reports, settings, responsive/a11y, purchases, expenses,
 accounting) are not written yet.
 
 Suite C's third failure is TC-AUTH-05 (an expired access token should refresh
@@ -801,3 +816,74 @@ staff register over one wifi; the per-IP burst brake stays alongside it.
 Caught by TC-SEC-07 (which also asserts a bystander number still registers).
 Root cause: `server/src/routes/auth/register.ts:24`.
 Trace: `.claude/fix-trace-otp-limiter-unwired.md`.
+
+### F61 — Overselling under WARN_ONLY was silent — **HIGH**, FIXED
+
+`stockValidationMode: 'WARN_ONLY'` is meant to mean "let the sale through and
+warn". Only the first half was implemented: `adjustStock` acted on a negative
+balance solely under HARD_BLOCK, so WARN_ONLY wrote negative stock and returned
+nothing — no warning on the checkout response, none on the invoice, and the POS
+client's `PosSaleDTO` did not even carry a `warnings` field to receive one. A
+shop could sell four units it did not have, and the first anyone knew was a
+stock report reading −4 some days later.
+
+The judgement is now emitted where the policy and the balance are both known
+(`adjustStock` returns `warning`), phrased in one place
+(`server/src/services/stock/oversell-warning.ts`), forwarded unchanged by both
+callers (POS checkout and invoice deduction), and shown to the cashier as a toast
+at the moment of the sale. Caught by TC-POS-08.
+Root cause: `server/src/services/stock/core.ts:85`.
+Trace: `.claude/fix-trace-oversell-silent.md`.
+
+### F62 — POS was paywalled in the client only — **HIGH**, FIXED
+
+`src/App.tsx` wraps every `/pos*` route in `<PlanGate feature="posMode">`, so a
+FREE or PRO shop sees an upgrade wall. `/api/pos/*` mounted no plan gate at all,
+so the same shop could ring up unlimited sales with a direct call — and Suite R
+part 1 did exactly that, creating seven real POS sales on a business the UI
+refuses to show POS for. Comparable paid routers do gate (`godowns`/`einvoice`
+`requirePlan('BUSINESS')`, `gst-returns` `requirePlan('PRO')`, `reports`/`bank`/
+`expenses` `requireFeature(...)`), so POS was the outlier, not the pattern.
+
+`requireFeature('posMode')` now sits on the POS router after `auth` (the gate
+reads `req.user.businessId` and no-ops without it), which makes
+`PLAN_LIMITS[plan].posMode` the single answer to "may this shop use POS" for both
+the screen and the API. The E2E shop gained a real BUSINESS subscription in the
+seed so the POS specs exercise a POS shop; the foreign tenant deliberately has no
+subscription and is the fixture for the refusal. Caught by TC-POS-13.
+Root cause: `server/src/routes/pos.ts:13`.
+Trace: `.claude/fix-trace-pos-paywall-serverside.md`.
+
+### F63 — Hold / park a sale does not exist — not fixed, feature gap
+
+TC-POS-06 in the plan asks that a cashier park a half-rung sale, serve the next
+customer, and resume it. No such code exists in `src/features/pos` — the cart is
+a single `sessionStorage` slot (`pos-cart`), so starting another sale overwrites
+the first. Not a regression and not faked green; recorded so the plan and the
+suite agree about what is untested.
+
+### F64 — A second scan within 300ms was dropped silently — **HIGH**, FIXED
+
+`useBarcodeLookup` refused any lookup within 300ms of the previous one,
+regardless of which code it was. The guard was meant for a scanner repeat-firing
+one trigger pull, but it could not tell that from a person: two units of the same
+SKU scanned in one motion billed as one, and a cashier working the belt fast lost
+different items outright. The drop produced no toast, no error and no state
+change — the cart simply read ×1, the customer was undercharged, and stock drifted
+by the same unit.
+
+`lookup()` now takes a `source`: a deliberate scan is always a sale, and the
+same-code cooldown applies only to `'camera'`, which is the one input that decodes
+a label continuously and can therefore echo. Caught by TC-POS-02.
+Root cause: `src/features/pos/useBarcodeLookup.ts:75`.
+Trace: `.claude/fix-trace-pos-scan-dropped.md`.
+
+### F65 — Two POS implementations, one feature — noted, not fixed
+
+`/pos` (`src/features/pos/PosPage.tsx`, "Quick Sale", posts to
+`/documents/quick-sale`) and `/pos/billing` (`src/features/pos/pages/PosPage.tsx`,
+posts to `/pos/sales`) are separate carts, separate checkout paths and separate
+receipt surfaces for the same counter. Suite R part 2 drives the first for
+scanning and the second for receipts because that is where each behaviour lives.
+Only one of them can be the SSOT for a sale; deciding which — and deleting the
+other — is its own change, not a test fix.

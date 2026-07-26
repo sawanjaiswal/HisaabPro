@@ -103,7 +103,7 @@ export async function claimInventory(
           }
         } else {
           // Plain stock adjustment
-          await adjustStock(tx, {
+          const adjusted = await adjustStock(tx, {
             productId: line.productId,
             businessId,
             quantity: -line.quantity,
@@ -114,6 +114,8 @@ export async function claimInventory(
             userId,
             cachedBusinessValidationMode: stockPolicy,
           })
+          // WARN_ONLY let the sale through — the cashier still has to be told.
+          if (adjusted.warning) warnings.push(adjusted.warning)
         }
       }
     } catch (err: unknown) {
