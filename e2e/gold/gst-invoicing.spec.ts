@@ -1,6 +1,8 @@
 /**
  * Suite K — GST invoicing. Plan: docs/E2E_TEST_PLAN.md §12.
- * Cases TC-GST-01..11.
+ * Cases TC-GST-01..08 (invoice-side) and TC-GST-17..19 (composition scheme).
+ * TC-GST-09..16 are the return-side cases, implemented in gst-returns.spec.ts
+ * as the TC-GSTR-* family — the plan numbers them under this same suite.
  *
  * GST is the part of this app a shop cannot fudge: the split it prints is the
  * split it files, and a wrong one is a notice from the department rather than a
@@ -268,7 +270,7 @@ test('TC-GST-08 the form shows the tax it is about to charge, and charges what i
   expect(detail.grandTotal - Number(detail.roundOff ?? 0)).toBe(236000)
 })
 
-test('TC-GST-09 a composition dealer cannot charge GST on a bill', async ({ page }) => {
+test('TC-GST-17 a composition dealer cannot charge GST on a bill', async ({ page }) => {
   const gst18 = await taxCategoryAt(page, 1800)
   const party = await apiCreateParty(page, { name: uniqueName('Composite Buyer') })
   const product = await apiCreateProduct(page, {
@@ -289,7 +291,7 @@ test('TC-GST-09 a composition dealer cannot charge GST on a bill', async ({ page
   expect(await res.text()).toMatch(/composition/i)
 })
 
-test('TC-GST-10 a composition dealer cannot sell inter-state', async ({ page }) => {
+test('TC-GST-18 a composition dealer cannot sell inter-state', async ({ page }) => {
   const party = await apiCreateParty(page, { name: uniqueName('Outstation Buyer') })
   const product = await apiCreateProduct(page, {
     name: uniqueProductName('Outstation'), salePrice: 100000, openingStock: 20,
@@ -307,7 +309,7 @@ test('TC-GST-10 a composition dealer cannot sell inter-state', async ({ page }) 
   expect(await res.text()).toMatch(/inter-state/i)
 })
 
-test('TC-GST-11 a composition Bill of Supply saves with no tax on it', async ({ page }) => {
+test('TC-GST-19 a composition Bill of Supply saves with no tax on it', async ({ page }) => {
   const party = await apiCreateParty(page, { name: uniqueName('Bill Of Supply Buyer') })
   const product = await apiCreateProduct(page, {
     name: uniqueProductName('Supplied'), salePrice: 100000, openingStock: 20,

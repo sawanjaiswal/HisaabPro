@@ -23,17 +23,23 @@ Last run: 2026-07-26.
 | I — Products (stock, low stock, barcode, paging) | `e2e/gold/products-stock.spec.ts` | 5 | 5 | 0 | 0 |
 | J — Invoices (create, discounts, totals, validation) | `e2e/gold/invoices.spec.ts` | 5 | 5 | 0 | 0 |
 | J — Invoices (draft, edit, delete, payment, stock) | `e2e/gold/invoices-lifecycle.spec.ts` | 5 | 5 | 0 | 0 |
-| K — GST invoicing (split, rates, inclusive, RCM, UI) | `e2e/gold/gst-invoicing.spec.ts` | 8 | 8 | 0 | 0 |
-| L — GST returns & tax reports | `e2e/gold/gst-returns.spec.ts` | 12 | 12 | 0 | 0 |
+| K — GST invoicing (split, rates, inclusive, RCM, UI, composition) | `e2e/gold/gst-invoicing.spec.ts` | 11 | 11 | 0 | 0 |
+| K — GST returns & tax reports (return side) | `e2e/gold/gst-returns.spec.ts` | 12 | 12 | 0 | 0 |
+| L — Payments, allocation & outstanding | `e2e/gold/payments.spec.ts` | 10 | 10 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
-planned but not written. Suite K covers TC-GST-01..08 (08 is the browser case:
-a GST-registered seller sees the tax on New Invoice and the grand total
-includes it). Suite L covers the return side — tax summary windowing, drafts and
-deleted documents excluded, credit notes reducing liability, HSN summary,
-GSTR-1 B2B, the stored return, GSTR-3B outward tax and ITC, filing readiness.
-Composition / Bill-of-Supply rejection and the GST backfill route are still to
-write. Remaining suites (import, payments, reports, settings) are not written yet.
+planned but not written. Suite K's invoice half covers TC-GST-01..08 (08 is the
+browser case: a GST-registered seller sees the tax on New Invoice and the grand
+total includes it) plus TC-GST-17..19, the composition scheme — a composition
+dealer is refused a tax category and an inter-state sale, and its Bill of Supply
+saves with zero on every head. Suite K's return half (`TC-GSTR-01..12`) covers
+tax-summary windowing, drafts and deleted documents excluded, credit notes
+reducing liability, HSN summary, GSTR-1 B2B, the stored return, GSTR-3B outward
+tax and ITC for both intra- and inter-state supply, and filing readiness. Suite L
+covers receipts, part payments, advances, every payment mode, delete reversal,
+and the three refusals an allocation must produce. The GST backfill route
+(`/gst/backfill`) is still to write. Remaining suites (import, reports, settings,
+offline, responsive/a11y, security) are not written yet.
 
 ---
 
@@ -412,3 +418,36 @@ Trace: `.claude/fix-trace-gstr3b-igst-dropped.md`. Caught by TC-GSTR-11/12.
 - `documents.test.ts > POST / creates document with 201 (owner)` fails on the
   server unit suite. Verified pre-existing on HEAD via `git stash` — unrelated
   to this work.
+
+### F31 — A customer's advance showed as a debt of the same size — **BLOCKER**, FIXED
+
+`Party.outstandingBalance` is signed: positive is a receivable, negative means
+the shop is holding the customer's money. Both outstanding endpoints returned
+`Math.abs(...)`, so an advance of Rs 2,500 rendered as Rs 2,500 *owed*. The
+shopkeeper asks for money already paid, and the receivables total is overstated
+by twice the advance.
+
+The client types made it worse in the other direction: `OutstandingPartyDetail`
+declared `advanceBalance` and `aging` as required fields the server never sends,
+which is how `undefined` reaches a formatter as `Rs NaN`.
+
+Root: `server/src/services/payment/outstanding.ts` — the sign is now kept and the
+direction comes from a shared `outstandingDirection()` helper.
+Caught by TC-PAY-03. Fixed in `6712efa7`.
+
+### F32 — An invoice could be paid past its total, and a rewrite could reach another tenant's invoice — **BLOCKER**, FIXED
+
+Allocation validation was written inline at two call sites. `createPayment`
+checked that the allocations fit the payment and that the invoices existed, but
+never that an allocation fit the invoice's own `balanceDue` — so an
+over-allocation drove `balanceDue` negative, which then subtracts from every
+receivables total that sums it. `updateAllocations` repeated the check and
+dropped the ownership half entirely: the invoice id came off the wire straight
+into `tx.document.update({ where: { id } })`, so a guessed id posted one
+business's money onto another's ledger.
+
+Root: `server/src/services/payment/create.ts` — both paths now call one
+`assertAllocationsPayable` guard (fits the payment, belongs to this business,
+does not exceed what is due). The update path passes its existing allocations as
+capacity, since those rows are reversed before the new ones land.
+Caught by TC-PAY-07, TC-PAY-09, TC-PAY-10. Fixed in `39b7df2d`.

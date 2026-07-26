@@ -1,6 +1,7 @@
 /**
- * Suite L — GST returns and tax reports. Plan: docs/E2E_TEST_PLAN.md §12b.
- * Cases TC-GSTR-01..09.
+ * Suite K, return side — GST returns and tax reports. Plan: docs/E2E_TEST_PLAN.md §12
+ * (TC-GST-10..14), implemented as the TC-GSTR-01..12 family so the return cases
+ * carry their own numbering. Suite L is Payments; this file is not it.
  *
  * Suite K proves one invoice is taxed correctly. This suite proves the same
  * tax comes back out on the return side — the aggregates a business actually

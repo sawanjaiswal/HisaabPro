@@ -294,6 +294,14 @@ formats from `import.constants.ts`: `tally_xml`, `vyapar_csv`, `busy_xls`,
 | `TC-GST-14` | Filing readiness | `/gst/filing-readiness` flags missing GSTIN / HSN / place-of-supply |
 | `TC-GST-15` | Non-GST business | GST off → no GST fields anywhere; PDF has no tax block |
 | `TC-GST-16` | Credit note / sales return | Reverses tax correctly and appears in returns |
+| `TC-GST-17` | Composition + tax category | Composition dealer charging GST is refused (400) |
+| `TC-GST-18` | Composition inter-state | Composition dealer selling inter-state is refused (400) |
+| `TC-GST-19` | Bill of Supply | Composition sale saves with zero tax on every head |
+
+> Implementation split: `TC-GST-01..08`, `17..19` live in
+> `e2e/gold/gst-invoicing.spec.ts`. The return-side cases (`TC-GST-10..14`)
+> live in `e2e/gold/gst-returns.spec.ts` under their own `TC-GSTR-01..12`
+> numbering — same suite, separate file. Suite L is Payments.
 
 ---
 
