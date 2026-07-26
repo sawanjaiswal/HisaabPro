@@ -19,17 +19,28 @@ export const IS_DEV = APP_ENV === 'development'
 /**
  * Auth mode — controls login flow.
  *
- * 'dev-login' → username/password (dev credentials: admin/admin123, demo/demo123)
- * 'otp'       → phone number + OTP (production flow, needs MSG91 credentials)
- *
- * To enable OTP for production:
- *   1. Set VITE_AUTH_MODE=otp in .env
- *   2. Uncomment OTP routes in server/src/routes/auth.ts (lines 94-142)
- *   3. Uncomment sendOtp/verifyOtp in src/lib/auth.ts (lines 68-85)
- *   4. Configure MSG91_AUTH_KEY + MSG91_TEMPLATE_ID in server/.env
+ * 'otp'       → phone number + OTP. The real flow, and the default.
+ * 'dev-login' → username/password against `/api/auth/dev-login`, a route the
+ *               server serves only when `ALLOW_DEV_LOGIN=true`. Opt-in, and
+ *               only outside production.
  */
 export type AuthMode = 'dev-login' | 'otp'
-export const AUTH_MODE: AuthMode = (import.meta.env.VITE_AUTH_MODE as AuthMode) || 'dev-login'
+
+/**
+ * Resolves the login flow from what the build declared.
+ *
+ * Unset means OTP, never dev-login: an env var missing from `.env.production`
+ * used to point the sign-in form at a route production refuses, so nobody could
+ * log in at all. A default that only works in dev is a default that breaks the
+ * build it is not watching. `dev-login` in a production build is likewise
+ * treated as a misconfiguration rather than honoured.
+ */
+export function resolveAuthMode(declared: string | undefined, appEnv: string): AuthMode {
+  if (declared === 'dev-login') return appEnv === 'production' ? 'otp' : 'dev-login'
+  return 'otp'
+}
+
+export const AUTH_MODE: AuthMode = resolveAuthMode(import.meta.env.VITE_AUTH_MODE, APP_ENV)
 
 /** Currency config — all amounts stored in paise (integer) */
 export const CURRENCY = {
