@@ -44,7 +44,9 @@ describe('useInvoiceCalculations', () => {
       useInvoiceCalculations(singleItem, charges),
     )
     expect(result.current.totalCharges).toBe(5000)
-    expect(result.current.grandTotal).toBe(85000) // 90000 - 10000 discount + 5000 charge
+    // 90000 is already net of the Rs 100 line discount, so the charge is all
+    // that is left to add — subtracting the discount again under-billed by it.
+    expect(result.current.grandTotal).toBe(95000)
   })
 
   it('handles percentage charge', () => {

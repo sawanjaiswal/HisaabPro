@@ -93,9 +93,14 @@ export function calculateInvoiceTotals(
   const totalDiscount = calculateTotalDiscount(lineItems)
   const totalCharges = calculateTotalCharges(charges, subtotal)
 
-  const preRoundTotal = subtotal - totalDiscount + totalCharges
+  // `calculateSubtotal` already nets the per-line discounts off, while
+  // `calculateGrandTotal` subtracts the discount from a gross subtotal. Feed it
+  // the gross figure, or the discount comes off twice and the bill collects less
+  // than the server stores (which charges subtotal + charges + tax).
+  const grossSubtotal = subtotal + totalDiscount
+  const preRoundTotal = subtotal + totalCharges
   const roundOff = calculateRoundOff(preRoundTotal, roundOffSetting)
-  const grandTotal = calculateGrandTotal(subtotal, totalDiscount, totalCharges, roundOff)
+  const grandTotal = calculateGrandTotal(grossSubtotal, totalDiscount, totalCharges, roundOff)
 
   const { totalCost, totalProfit, profitPercent } = calculateTotalProfit(lineItems)
 

@@ -47,7 +47,10 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
       <div className="invoice-summary-rows" role="list">
         <div className="invoice-summary-row" role="listitem">
           <span>{t.subtotal}</span>
-          <span>{formatInvoiceAmount(subtotal)}</span>
+          {/* `subtotal` is net of the line discounts on both sides of the wire,
+              so the row above a "- discount" line has to add it back — otherwise
+              the breakdown reads as if the discount were taken twice. */}
+          <span>{formatInvoiceAmount(subtotal + totalDiscount)}</span>
         </div>
 
         {totalDiscount > 0 && (
