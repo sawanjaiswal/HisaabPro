@@ -26,6 +26,7 @@ Last run: 2026-07-26.
 | K — GST invoicing (split, rates, inclusive, RCM, UI, composition) | `e2e/gold/gst-invoicing.spec.ts` | 11 | 11 | 0 | 0 |
 | K — GST returns & tax reports (return side) | `e2e/gold/gst-returns.spec.ts` | 12 | 12 | 0 | 0 |
 | L — Payments, allocation & outstanding | `e2e/gold/payments.spec.ts` | 10 | 10 | 0 | 0 |
+| K — GST backfill | `e2e/gold/gst-backfill.spec.ts` | 5 | 5 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
 planned but not written. Suite K's invoice half covers TC-GST-01..08 (08 is the
@@ -37,8 +38,12 @@ tax-summary windowing, drafts and deleted documents excluded, credit notes
 reducing liability, HSN summary, GSTR-1 B2B, the stored return, GSTR-3B outward
 tax and ITC for both intra- and inter-state supply, and filing readiness. Suite L
 covers receipts, part payments, advances, every payment mode, delete reversal,
-and the three refusals an allocation must produce. The GST backfill route
-(`/gst/backfill`) is still to write. Remaining suites (import, reports, settings,
+and the three refusals an allocation must produce. GST backfill (`TC-GSTBF-01..05`) covers the read-only preview, the
+three refusals, one real run asserting the stored parts still sum to the stored
+grand total, key replay, and the hourly limit. Note for the record: the backfill
+tags untagged **products** but deliberately leaves existing document line items
+alone, so a bill already given to a customer keeps the total it was issued with.
+Remaining suites (import, reports, settings,
 offline, responsive/a11y, security) are not written yet.
 
 ---
@@ -451,3 +456,18 @@ Root: `server/src/services/payment/create.ts` — both paths now call one
 does not exceed what is due). The update path passes its existing allocations as
 capacity, since those rows are reversed before the new ones land.
 Caught by TC-PAY-07, TC-PAY-09, TC-PAY-10. Fixed in `39b7df2d`.
+
+### F33 — A typo'd backfill locked the wizard for an hour — FIXED
+
+`/api/gst/backfill/execute` allows one run per hour per business+user. The rate
+limiter was ordered ahead of body validation and the tax-category ownership
+check, so a request the server was always going to refuse with a 400 still spent
+the quota: a shopkeeper who picked the wrong tax category could not run the
+backfill again until the hour was up. The route already applies the right rule to
+the Idempotency-Key header ("must run before the rate limiter so invalid requests
+don't consume quota") — the tax-category check simply could not follow it while
+it lived inside the handler.
+
+Root: `server/src/routes/gst-backfill.route.ts` — the check is now a middleware,
+ordered with the other refusals ahead of the limiter.
+Caught by TC-GSTBF-03 followed by TC-GSTBF-04. Fixed in `631ebbfc`.
