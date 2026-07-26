@@ -146,6 +146,14 @@ export type ReminderStatus = (typeof REMINDER_STATUSES)[number]
 export const PRODUCT_STATUSES = ['ACTIVE', 'INACTIVE'] as const
 export type ProductStatus = (typeof PRODUCT_STATUSES)[number]
 
+/**
+ * What a list request may ask for. Deleting a product soft-deletes it to
+ * INACTIVE, so the list defaults to ACTIVE — the same scope its own summary
+ * counts. 'ALL' is the explicit opt-in for "including the ones I removed".
+ */
+export const PRODUCT_STATUS_FILTERS = [...PRODUCT_STATUSES, 'ALL'] as const
+export type ProductStatusFilter = (typeof PRODUCT_STATUS_FILTERS)[number]
+
 export const STOCK_VALIDATION_MODES = ['GLOBAL', 'WARN_ONLY', 'HARD_BLOCK'] as const
 export type StockValidationMode = (typeof STOCK_VALIDATION_MODES)[number]
 

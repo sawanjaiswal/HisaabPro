@@ -43,7 +43,11 @@ export default defineConfig({
     env: {
       NODE_ENV: 'test',
       JWT_SECRET: 'test-secret-key-that-is-at-least-32-chars-long',
-      DATABASE_URL: 'postgresql://sawanjaiswal@localhost:5432/hisaabpro_test',
+      // Same rule as vitest.integration.config.ts: server test suites own
+      // hisaabpro_integ_test; hisaabpro_test belongs to the Playwright seed.
+      DATABASE_URL:
+        process.env.INTEGRATION_DATABASE_URL ??
+        `postgresql://${process.env.PGUSER ?? process.env.USER ?? 'postgres'}@localhost:5432/hisaabpro_integ_test`,
       CORS_ORIGIN: 'http://localhost:5173',
       // §12.1 — the mode is read ONCE at module load and `clients` is memoised onto
       // globalThis, so a test that sets this in beforeAll gets whatever the first

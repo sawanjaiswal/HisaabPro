@@ -161,6 +161,29 @@ describe('DELETE /api/products/:id', () => {
     })
     expect(dbProduct!.status).toBe('INACTIVE')
   })
+
+  it('removes the product from the default list and keeps it under status=INACTIVE', async () => {
+    const { user, business, product } = await seedFullSetup()
+    const token = generateToken(user.id, user.phone, business.id)
+
+    await authRequest(app, token).delete(`/api/products/${product.id}`)
+
+    // The default list is what the app renders. A soft delete the user cannot
+    // see is indistinguishable from a delete that did not happen.
+    const listed = await authRequest(app, token).get('/api/products')
+    expect(listed.status).toBe(200)
+    const ids = listed.body.data.products.map((p: { id: string }) => p.id)
+    expect(ids).not.toContain(product.id)
+    // …and the count must agree with the rows, which is what the header shows.
+    expect(listed.body.data.pagination.total).toBe(listed.body.data.summary.totalProducts)
+
+    // Nothing was destroyed: the row is still reachable on purpose.
+    const inactive = await authRequest(app, token).get('/api/products?status=INACTIVE')
+    expect(inactive.body.data.products.map((p: { id: string }) => p.id)).toContain(product.id)
+
+    const all = await authRequest(app, token).get('/api/products?status=ALL')
+    expect(all.body.data.products.map((p: { id: string }) => p.id)).toContain(product.id)
+  })
 })
 
 // ─── POST /api/products/:id/stock/adjust ────────────────────────────────────

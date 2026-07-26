@@ -32,7 +32,7 @@ import { getProductByBarcode } from './product.service'
 import { BarcodeScanner } from '@/components/ui/BarcodeScanner'
 import { LabelPrintDialog } from './label-print/LabelPrintDialog'
 import { ROUTES } from '@/config/routes.config'
-import type { ProductStatus } from '@/lib/types/product.types'
+import type { ProductStatusFilter } from '@/lib/types/product.types'
 import './barcode.css'
 import './products.css'
 import './products-redesign.css'
@@ -207,7 +207,7 @@ export default function ProductsPage() {
         status={filters.status}
         sortBy={filters.sortBy}
         sortOrder={filters.sortOrder}
-        onStatusChange={(s: ProductStatus | undefined) => setFilter('status', s)}
+        onStatusChange={(s: ProductStatusFilter | undefined) => setFilter('status', s)}
         onSortByChange={(sortBy) => setFilter('sortBy', sortBy)}
         onSortOrderChange={(order) => setFilter('sortOrder', order)}
         onReset={resetFilters}

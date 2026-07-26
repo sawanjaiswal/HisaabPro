@@ -10,15 +10,15 @@ import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PRODUCT_SORT_OPTIONS } from '../product.constants'
 import type { ProductSortBy } from '../product.types'
-import type { ProductStatus } from '@/lib/types/product.types'
+import type { ProductStatusFilter } from '@/lib/types/product.types'
 
 interface ProductFilterDrawerProps {
   open: boolean
   onClose: () => void
-  status: ProductStatus | undefined
+  status: ProductStatusFilter | undefined
   sortBy: ProductSortBy
   sortOrder: 'asc' | 'desc'
-  onStatusChange: (status: ProductStatus | undefined) => void
+  onStatusChange: (status: ProductStatusFilter | undefined) => void
   onSortByChange: (sortBy: ProductSortBy) => void
   onSortOrderChange: (order: 'asc' | 'desc') => void
   onReset: () => void
@@ -37,8 +37,10 @@ export const ProductFilterDrawer: React.FC<ProductFilterDrawerProps> = ({
 }) => {
   const { t } = useLanguage()
 
-  const statusOptions: { value: ProductStatus | undefined; label: string }[] = [
-    { value: undefined, label: t.all },
+  // 'ALL' is explicit, not absent: the API's default scope is ACTIVE, so an
+  // undefined status would leave deleted products hidden even under "All".
+  const statusOptions: { value: ProductStatusFilter | undefined; label: string }[] = [
+    { value: 'ALL', label: t.all },
     { value: 'ACTIVE', label: t.active },
     { value: 'INACTIVE', label: t.inactive },
   ]

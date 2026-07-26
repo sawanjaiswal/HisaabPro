@@ -1,6 +1,6 @@
 /** Basic Inventory — API responses, filters, form data, settings */
 
-import type { ProductStatus, ProductSummary } from '@/lib/types/product.types'
+import type { ProductStatus, ProductStatusFilter, ProductSummary } from '@/lib/types/product.types'
 import type {
   StockValidationMode,
   StockMovementType,
@@ -54,7 +54,7 @@ export interface ProductFilters {
   limit: number
   search: string
   categoryId?: string
-  status?: ProductStatus
+  status?: ProductStatusFilter
   lowStockOnly?: boolean
   sortBy: ProductSortBy
   sortOrder: 'asc' | 'desc'

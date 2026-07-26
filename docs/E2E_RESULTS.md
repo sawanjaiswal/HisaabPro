@@ -19,6 +19,7 @@ Last run: 2026-07-26.
 | A — App shell | `e2e/gold/shell.spec.ts` | 8 | 7 | 0 | 1 |
 | H — Parties (CRUD) | `e2e/gold/parties.spec.ts` | 5 | 5 | 0 | 0 |
 | H — Parties (list, GSTIN, offline) | `e2e/gold/parties-list.spec.ts` | 6 | 6 | 0 | 0 |
+| I — Products (create, GST fields, edit/delete) | `e2e/gold/products.spec.ts` | 5 | 5 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
 planned but not written. Remaining suites (products, invoices, GST, import,
@@ -191,6 +192,34 @@ headline promise for 2G shops. The drain is now level-triggered ("online AND
 work pending") and owned by `src/lib/offline.autosync.ts`, started once at boot.
 That also covers an item enqueued while the heartbeat still reads online, which
 had no edge coming at all.
+
+### F17 — A deleted product stayed in the products list forever — **FIXED**
+
+TC-PRD-04. `deleteProduct` is a soft delete (`status: 'INACTIVE'`), but
+`listProducts` applied a status filter only when the caller sent one, and the
+client sends none. So Delete looked like a no-op: the row came back on the next
+list, and the same response's `summary` — which counts ACTIVE only — disagreed
+with the rows beside it, `pagination.total` agreeing with neither.
+
+Root cause: the list had no default scope, so the caller's silence meant "show
+everything, including rows the user deleted". Fixed at the schema
+(`listProductsSchema.status` now defaults to `ACTIVE`) with an explicit `ALL`
+value added to `shared/enums.ts` for the filter drawer's "All" option — one rule,
+applied to every caller of the endpoint (list page, POS picker, invoice line
+lookup, import dedup), not just the products page.
+Trace: `.claude/fix-trace-deleted-product-still-listed.md`.
+
+### F18 — The server test suites truncated the E2E database — **FIXED** (infra)
+
+Not a product bug, but it produced a convincing fake one: after running
+`npm run test:integration`, every gold spec failed at login with "No account
+found with this phone or email." Both `vitest.integration.config.ts` and
+`vitest.shadow.config.ts` pointed at `hisaabpro_test` — the same database
+`scripts/e2e/db-url.mjs` declares as the Playwright database — and the
+integration `setup.ts` TRUNCATEs every table between files, deleting the seeded
+owner. The server suites now own `hisaabpro_integ_test`
+(`INTEGRATION_DATABASE_URL` overrides), so the two suites can no longer delete
+each other's fixtures.
 
 ### F7 — No language switch before login — **MEDIUM**, unfixed
 

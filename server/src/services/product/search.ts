@@ -45,7 +45,9 @@ async function listLowStockProducts(businessId: string, filters: LowStockFilters
     `p."currentStock" < p."minStockLevel"`,
   ]
 
-  if (status) {
+  // 'ALL' is the only way to include soft-deleted (INACTIVE) rows; anything
+  // else is a concrete status. See .claude/fix-trace-deleted-product-still-listed.md.
+  if (status && status !== 'ALL') {
     params.push(status)
     clauses.push(`p.status = $${params.length}`)
   }
@@ -145,7 +147,7 @@ export async function listProducts(businessId: string, filters: ListProductsQuer
 
   const where: Prisma.ProductWhereInput = { businessId }
 
-  if (status) where.status = status
+  if (status && status !== 'ALL') where.status = status
   if (categoryId) where.categoryId = categoryId
 
   if (search) {

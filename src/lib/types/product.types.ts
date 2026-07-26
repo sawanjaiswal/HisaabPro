@@ -1,6 +1,12 @@
 /** Shared product types — used by invoices and products features */
 
 export type ProductStatus = 'ACTIVE' | 'INACTIVE'
+/**
+ * What a list request may ask for. The API defaults to ACTIVE so a deleted
+ * (soft-deleted → INACTIVE) product leaves the list; 'ALL' asks for every row.
+ * Mirrors PRODUCT_STATUS_FILTERS in shared/enums.ts.
+ */
+export type ProductStatusFilter = ProductStatus | 'ALL'
 
 /** Supported barcode formats for product identification */
 export type BarcodeFormat = 'CODE128' | 'EAN13' | 'EAN8' | 'CODE39' | 'UPC'

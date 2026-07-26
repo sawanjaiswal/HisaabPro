@@ -3,6 +3,7 @@ import {
   STOCK_VALIDATION_MODES,
   BARCODE_FORMATS,
   PRODUCT_STATUSES,
+  PRODUCT_STATUS_FILTERS,
   PRODUCT_SORT_BY,
   SORT_ORDER,
 } from '../../../../shared/enums.js'
@@ -65,8 +66,11 @@ export const listProductsSchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().max(100).optional(),
   categoryId: z.string().optional(),
-  status: z.enum(PRODUCT_STATUSES).optional(),
   lowStockOnly: z.coerce.boolean().optional(),
+  // Defaults to ACTIVE: a deleted product is a product whose status is
+  // INACTIVE, and a list that returns it makes Delete look like a no-op.
+  // 'ALL' is the explicit way back to every row.
+  status: z.enum(PRODUCT_STATUS_FILTERS).default('ACTIVE'),
   sortBy: z.enum(PRODUCT_SORT_BY).default('name'),
   sortOrder: z.enum(SORT_ORDER).default('asc'),
 })
