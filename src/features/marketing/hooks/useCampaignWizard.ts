@@ -1,35 +1,14 @@
 /** useCampaignWizard — multi-step form state with sessionStorage draft */
 
 import { useState, useCallback } from 'react'
+import { createSessionDraft } from '@/lib/session-draft'
 import { generateIdempotencyKey } from '../marketing.utils'
 import type { CampaignWizardState, WizardStep, MarketingChannel, SegmentFilter } from '../marketing.types'
 
-const DRAFT_KEY = 'hp_campaign_wizard_draft'
-
-function loadDraft(): Partial<CampaignWizardState> {
-  try {
-    const raw = sessionStorage.getItem(DRAFT_KEY)
-    return raw ? (JSON.parse(raw) as Partial<CampaignWizardState>) : {}
-  } catch {
-    return {}
-  }
-}
-
-function saveDraft(state: CampaignWizardState): void {
-  try {
-    sessionStorage.setItem(DRAFT_KEY, JSON.stringify(state))
-  } catch {
-    // sessionStorage unavailable — proceed without draft
-  }
-}
-
-function clearDraft(): void {
-  try {
-    sessionStorage.removeItem(DRAFT_KEY)
-  } catch {
-    // noop
-  }
-}
+const draft = createSessionDraft<CampaignWizardState>('hp_campaign_wizard_draft')
+const loadDraft = () => draft.load()
+const saveDraft = (state: CampaignWizardState) => draft.save(state)
+const clearDraft = () => draft.clear()
 
 const DEFAULT_FILTER: SegmentFilter = { partyType: 'CUSTOMER' }
 

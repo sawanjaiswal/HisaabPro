@@ -28,6 +28,7 @@ Last run: 2026-07-26.
 | L — Payments, allocation & outstanding | `e2e/gold/payments.spec.ts` | 10 | 10 | 0 | 0 |
 | K — GST backfill | `e2e/gold/gst-backfill.spec.ts` | 5 | 5 | 0 | 0 |
 | F — Data import (upload → preview → commit) | `e2e/gold/import.spec.ts` | 6 | 6 | 0 | 0 |
+| D — Onboarding wizard | `e2e/gold/onboarding.spec.ts` | 8 | 8 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
 planned but not written. Suite K's invoice half covers TC-GST-01..08 (08 is the
@@ -551,3 +552,46 @@ Caught by TC-IMP-06. Fixed in `98870c7c`.
 rollout) and `VITE_FEATURE_DATA_IMPORT=true`, or "import your customers from
 Excel" silently does not exist for anyone. This is why none of F34–F39 had ever
 been hit by a user: nobody could reach the path.
+
+### F41 — A shopkeeper finished onboarding holding a session with no business — **BLOCKER**, FIXED
+
+Every business-scoped route reads `businessId` off the JWT, and this user's token
+was minted at registration — before their business existed. Creating the first
+business updated the database and `/auth/me`, but nothing re-issued the token, so
+the dashboard the wizard hands them to answered `403 NO_BUSINESS` on every call
+until they logged out and back in. `POST /auth/switch-business` is the one
+endpoint that re-mints the token (blacklists the old one, rotates cookies) and the
+business switcher already used it; onboarding now goes through the same path.
+Root: `src/features/onboarding/useOnboarding.ts` — `onSuccess` refreshed React
+state only. Caught by TC-ONB-01/03/04 (`GET /businesses/:id` → 403 "Business
+mismatch"). Trace: `.claude/fix-trace-onboarding-session-and-answers.md`.
+
+### F42 — The wizard asked for the shop's location and threw it away — FIXED
+
+`businessLocation` was collected on step 2 and left out of the create payload,
+though `createBusinessSchema` accepts `city` and the invoice header prints it.
+Asking and discarding is worse than not asking: the shopkeeper believes it is on
+file. Same call also ignored `startPath` — a user who chose the *recommended*
+"import my existing data" was dropped on an empty dashboard with no hint the
+importer exists; they now land on `/imports`. Caught by TC-ONB-04/05.
+
+### F43 — An interrupted setup lost every answer — FIXED
+
+The wizard's step and fields lived in component `useState`, so a reload, a back
+gesture, or an Android low-memory kill restarted setup at the welcome screen with
+the fields blank — on the one form a shopkeeper cannot skip, minutes into an app
+they do not trust yet. Fixed at the pattern level: `createSessionDraft` in
+`src/lib/session-draft.ts` is now the single storage contract for multi-step form
+drafts (sessionStorage per OFFLINE_RULES rule 4, best-effort, corrupt-payload
+tolerant); onboarding and the campaign wizard both use it. `ready` is never
+resumed (it asserts a server fact) and a successful create clears the draft, so
+adding a second business starts blank. Honest limit: sessionStorage dies with the
+tab, so a process kill still loses the draft. Caught by TC-ONB-07 and TC-ONB-01.
+
+### F44 — `dataSource` is collected and has nowhere to go — OPEN (needs a schema epic)
+
+Step 4 asks whether the shop keeps its books in a notebook / Excel / Tally / another
+app, and `Business` has no column for the answer, so it is discarded. It is the
+single most useful signal for what to offer next (an import template, a migration
+nudge), and persisting it is a `prisma/schema.prisma` change — a high-risk path
+that needs `/start-epic` before any edit. Recorded rather than silently patched.

@@ -21,6 +21,10 @@ export const ONBOARDING_STEPS: readonly { step: OnboardingStep; labelKey: Transl
   { step: 'ready',            labelKey: 'onboardingStepReady'           },
 ] as const
 
+/** Step sequence — derived from ONBOARDING_STEPS so the stepper UI and the
+ *  back/next arithmetic can never disagree about the order. */
+export const ONBOARDING_STEP_ORDER: readonly OnboardingStep[] = ONBOARDING_STEPS.map((s) => s.step)
+
 export const DATA_SOURCE_OPTIONS: readonly { value: DataSource; titleKey: TranslationKey; descKey: TranslationKey }[] = [
   { value: 'notebook', titleKey: 'onboardingSourceNotebook', descKey: 'onboardingSourceNotebookDesc' },
   { value: 'excel',    titleKey: 'onboardingSourceExcel',    descKey: 'onboardingSourceExcelDesc'    },

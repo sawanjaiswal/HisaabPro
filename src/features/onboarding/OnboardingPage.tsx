@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { ArrowLeft, Zap, FileText, Users, IndianRupee, BarChart3 } from 'lucide-react'
 import { SEO } from '../../components/layout/SEO'
 import { Button } from '../../components/ui/Button'
@@ -12,13 +11,8 @@ import { DataSourceStep } from './components/DataSourceStep'
 import { StartPathStep } from './components/StartPathStep'
 import { ReadyStep } from './components/ReadyStep'
 import { useOnboarding } from './useOnboarding'
-import type { OnboardingStep } from './onboarding.types'
 import './onboarding.css'
 import './onboarding-steps.css'
-
-const STEP_ORDER: OnboardingStep[] = [
-  'welcome', 'businessDetails', 'businessType', 'dataSource', 'startPath', 'ready',
-]
 
 const WELCOME_ICON = <Zap className="onboarding-welcome-icon__svg" aria-hidden="true" />
 const ICON_INVOICE = <FileText size={20} aria-hidden="true" />
@@ -27,27 +21,18 @@ const ICON_PAYMENT = <IndianRupee size={20} aria-hidden="true" />
 const ICON_REPORT = <BarChart3 size={20} aria-hidden="true" />
 
 export default function OnboardingPage() {
-  const [step, setStep] = useState<OnboardingStep>('welcome')
-  const [hasPickedType, setHasPickedType] = useState(false)
   const {
+    step, goTo, goBack,
     businessName, setBusinessName,
-    businessType, setBusinessType,
+    businessType, pickBusinessType, hasPickedType,
     phone, setPhone,
     businessLocation, setBusinessLocation,
     dataSource, setDataSource,
     startPath, setStartPath,
-    loading, error, created,
+    loading, error,
     handleSubmit, goToDashboard,
   } = useOnboarding()
   const { t } = useLanguage()
-
-  const stepIndex = STEP_ORDER.indexOf(step)
-  const goTo = (s: OnboardingStep) => setStep(s)
-  const goBack = () => goTo(STEP_ORDER[Math.max(0, stepIndex - 1)])
-
-  useEffect(() => {
-    if (created) setStep('ready')
-  }, [created])
 
   const features = [
     { icon: ICON_INVOICE, title: t.onboardingFeatureInvoiceTitle, desc: t.onboardingFeatureInvoiceDesc },
@@ -133,7 +118,7 @@ export default function OnboardingPage() {
 
             <VerticalPicker
               value={hasPickedType ? (businessType as BusinessType) : undefined}
-              onChange={(type) => { setBusinessType(type); setHasPickedType(true) }}
+              onChange={pickBusinessType}
             />
 
             {hasPickedType && (
