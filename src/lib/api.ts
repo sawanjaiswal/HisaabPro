@@ -68,7 +68,6 @@ export async function api<T>(
       signal: controller.signal,
       headers: await buildRequestHeaders({
         method,
-        path,
         isFormData: isFD,
         entityVersion,
         callerHeaders: fetchOptions.headers,
@@ -140,7 +139,7 @@ export async function api<T>(
   }
 
   // 403 CSRF_FAILED — token may be stale (server restart); refresh once and retry
-  if (response.status === 403 && needsCsrf(method, path) && !options._skipRefresh) {
+  if (response.status === 403 && needsCsrf(method) && !options._skipRefresh) {
     const body = await response.clone().json().catch(() => null) as { error?: { code?: string } } | null
     if (body?.error?.code === 'CSRF_FAILED') {
       invalidateCsrfToken()

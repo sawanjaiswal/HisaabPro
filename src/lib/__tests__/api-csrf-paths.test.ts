@@ -1,53 +1,40 @@
 /**
- * The client's CSRF decision must match the server's exemption list.
+ * The client never decides which routes are CSRF-exempt — the server does.
  *
- * `needsCsrf` used to exempt the whole `/auth/` prefix on the assumption that
+ * `needsCsrf` used to skip the whole `/auth/` prefix on the assumption that
  * every auth route is unauthenticated. Two are not: `/auth/logout` and
  * `/auth/switch-business` carry a session and are CSRF-protected server-side
- * (server/src/middleware/csrf.ts — CSRF_EXEMPT_AUTH_PATHS lists neither). The
- * prefix therefore made both POSTs 403 forever: logout left the session alive
- * and business switching was impossible.
- * See .claude/fix-trace-logout-session-survives.md.
+ * (server/src/middleware/csrf.ts lists neither in CSRF_EXEMPT_AUTH_PATHS). The
+ * prefix made both POSTs 403 forever: logout left the session alive and
+ * business switching was impossible.
+ *
+ * The fix is the absence of a list, not a better one — a second copy of the
+ * server's exemptions is a source of truth that drifts. These tests exist to
+ * keep it absent. See .claude/fix-trace-logout-session-survives.md.
  */
 
 import { describe, it, expect } from 'vitest'
 import { needsCsrf } from '../api-request'
 
-// Mirrors server/src/middleware/csrf.ts CSRF_EXEMPT_AUTH_PATHS, minus the
-// `/api` mount prefix the client does not include.
-const SERVER_EXEMPT = [
-  '/auth/csrf-token',
-  '/auth/send-otp',
-  '/auth/verify-otp',
-  '/auth/dev-login',
-  '/auth/refresh',
-  '/auth/login',
-  '/auth/register',
-  '/auth/verify-registration',
-  '/auth/resend-otp',
-  '/auth/forgot-password',
-  '/auth/reset-password',
-  '/auth/biometric/register',
-  '/auth/biometric/authenticate',
-  '/auth/biometric/challenge',
-]
+const MUTATIONS = ['POST', 'PUT', 'PATCH', 'DELETE']
+const SAFE = ['GET', 'HEAD', 'OPTIONS']
 
 describe('needsCsrf', () => {
-  it('sends the token on authenticated auth mutations', () => {
-    expect(needsCsrf('POST', '/auth/logout')).toBe(true)
-    expect(needsCsrf('POST', '/auth/switch-business')).toBe(true)
-  })
-
-  it('skips the token on every path the server exempts', () => {
-    for (const path of SERVER_EXEMPT) {
-      expect(needsCsrf('POST', path), `${path} is exempt server-side`).toBe(false)
+  it('sends the token on every mutation, auth routes included', () => {
+    for (const method of MUTATIONS) {
+      expect(needsCsrf(method), `${method} is state-changing`).toBe(true)
     }
   })
 
-  it('sends the token on ordinary mutations and never on safe methods', () => {
-    expect(needsCsrf('POST', '/parties')).toBe(true)
-    expect(needsCsrf('DELETE', '/invoices/1')).toBe(true)
-    expect(needsCsrf('GET', '/parties')).toBe(false)
-    expect(needsCsrf('GET', '/auth/me')).toBe(false)
+  it('never sends it on a safe method', () => {
+    for (const method of SAFE) {
+      expect(needsCsrf(method), `${method} is safe`).toBe(false)
+    }
+  })
+
+  it('takes no path argument — routing the exemption is the server’s job', () => {
+    // A path parameter is the shape the drift came in. If one is ever added
+    // back, this fails and the reviewer reads the trace above.
+    expect(needsCsrf.length, 'needsCsrf must not branch on the path').toBe(1)
   })
 })

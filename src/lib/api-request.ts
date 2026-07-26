@@ -27,37 +27,27 @@ export function isNonRefreshableAuthPath(path: string): boolean {
   return NON_REFRESHABLE_AUTH_PATHS.some((p) => path.startsWith(p))
 }
 
-// The auth routes the SERVER exempts from CSRF — all of them unauthenticated,
-// so no session cookie (and therefore no csrf cookie) exists yet. Mirrors
-// CSRF_EXEMPT_AUTH_PATHS in server/src/middleware/csrf.ts, minus the `/api`
-// mount prefix. Kept as an explicit list, NOT an `/auth/` prefix test: the
-// prefix silently exempted `/auth/logout` and `/auth/switch-business` too, and
-// those two are authenticated — the server requires the header, so both POSTs
-// 403'd. Logout in particular left the session fully alive while the UI showed
-// a logged-out state. See .claude/fix-trace-logout-session-survives.md.
-const CSRF_EXEMPT_AUTH_PATHS = new Set([
-  '/auth/csrf-token',
-  '/auth/send-otp',
-  '/auth/verify-otp',
-  '/auth/dev-login',
-  '/auth/refresh',
-  '/auth/login',
-  '/auth/register',
-  '/auth/verify-registration',
-  '/auth/resend-otp',
-  '/auth/forgot-password',
-  '/auth/reset-password',
-  '/auth/biometric/register',
-  '/auth/biometric/authenticate',
-  '/auth/biometric/challenge',
-])
-
 /**
- * CSRF: mutations require X-CSRF-Token matching the csrf-token cookie, except
- * on the unauthenticated auth routes the server exempts.
+ * CSRF: every state-changing request carries X-CSRF-Token, full stop.
+ *
+ * The client deliberately keeps NO list of exempt routes. Which paths skip the
+ * check is the server's decision alone (CSRF_EXEMPT_AUTH_PATHS in
+ * server/src/middleware/csrf.ts), and it short-circuits before validating, so a
+ * header sent to an exempt route is simply ignored — harmless. A second copy of
+ * that list here would be a source of truth that can drift, and it already did:
+ * this function used to skip the whole `/auth/` prefix on the assumption every
+ * auth route is unauthenticated. `/auth/logout` and `/auth/switch-business` are
+ * not, so both POSTs 403'd forever — logout left the session fully alive while
+ * the UI showed a logged-out state. Adding a new authenticated auth route must
+ * not require remembering to edit a client list.
+ * See .claude/fix-trace-logout-session-survives.md.
+ *
+ * Cost of always sending it: `getCsrfToken()` memoises the token in-module and
+ * de-dupes concurrent fetches (src/lib/api-csrf.ts), so this is at most one
+ * extra GET per session — and any user who mutates anything pays it anyway.
  */
-export function needsCsrf(method: string, path: string): boolean {
-  return SYNC_MUTATION_METHODS.has(method) && !CSRF_EXEMPT_AUTH_PATHS.has(path)
+export function needsCsrf(method: string): boolean {
+  return SYNC_MUTATION_METHODS.has(method)
 }
 
 /**
@@ -66,14 +56,13 @@ export function needsCsrf(method: string, path: string): boolean {
  */
 export async function buildRequestHeaders(opts: {
   method: string
-  path: string
   isFormData: boolean
   entityVersion?: number
   callerHeaders?: HeadersInit
 }): Promise<HeadersInit> {
-  const { method, path, isFormData, entityVersion, callerHeaders } = opts
+  const { method, isFormData, entityVersion, callerHeaders } = opts
 
-  const csrf = needsCsrf(method, path) ? await getCsrfToken() : null
+  const csrf = needsCsrf(method) ? await getCsrfToken() : null
 
   // Replay protection: the replayProtection middleware demands a fresh nonce +
   // timestamp on every mutation — send them so services never have to remember.

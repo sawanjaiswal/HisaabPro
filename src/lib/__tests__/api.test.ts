@@ -57,14 +57,27 @@ describe('401 refresh interceptor — /auth/me should refresh, not hard-log-out'
   it('does NOT attempt a refresh on a 401 from /auth/login (bad credentials, not expired token)', async () => {
     const fetchMock = global.fetch as unknown as ReturnType<typeof vi.fn>
 
-    fetchMock.mockResolvedValueOnce(
-      new Response(JSON.stringify({ success: false, error: { code: 'INVALID_CREDENTIALS' } }), { status: 401 }),
-    )
+    // Mutations bootstrap a CSRF token first (the client sends the header on
+    // every state-changing request and lets the server decide whether to check
+    // it — see api-request.ts). Answer that, then the login itself.
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      if (String(input).includes('/auth/csrf-token')) {
+        return new Response(JSON.stringify({ data: { csrfToken: 't' } }), { status: 200 })
+      }
+      return new Response(
+        JSON.stringify({ success: false, error: { code: 'INVALID_CREDENTIALS' } }),
+        { status: 401 },
+      )
+    })
 
     await expect(
       api('/auth/login', { method: 'POST', body: JSON.stringify({ email: 'a@b.com', password: 'wrong' }) }),
     ).rejects.toThrow(ApiError)
 
-    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const urls = fetchMock.mock.calls.map((c) => String(c[0]))
+    expect(urls.filter((u) => u.includes('/auth/login')), 'login must not be retried').toHaveLength(1)
+    expect(urls.some((u) => u.includes('/auth/refresh')), 'bad credentials must not refresh').toBe(
+      false,
+    )
   })
 })

@@ -219,6 +219,35 @@ test.describe('TC-AUTH — login and session', () => {
     )
   })
 
+  test('TC-AUTH-11 two sessions can start at the same moment', async ({ request }) => {
+    // A shop owner signs in on the counter phone and the back-office browser, or
+    // double-taps "Sign in" on a slow connection. Every attempt must produce its
+    // own session.
+    //
+    // generateTokens (server/src/lib/jwt.ts:31) signs {userId, phone,
+    // businessId, type} with a 1-second-granularity iat and no jti, so tokens
+    // issued in the same second are byte-identical — and RefreshToken.token is
+    // @unique. Concurrent logins collide on insert and return
+    // 409 DUPLICATE_ENTRY "token already exists". The same collision against an
+    // already-rotated row trips reuse-detection, which revokes the whole family
+    // and force-logs-out the user.
+    //
+    // Unfixed: lib/jwt.ts is a high-risk path and needs the architect+security
+    // design plan first. Tracked as F12 in docs/E2E_RESULTS.md.
+    const attempts = await Promise.all(
+      [0, 1, 2, 3].map(() =>
+        request.post(`${API_BASE}/auth/login`, {
+          data: { identifier: SEEDED_OWNER_PHONE, password: VALID_PASSWORD },
+        }),
+      ),
+    )
+
+    const statuses = attempts.map((r) => r.status())
+    expect(statuses, `concurrent logins must all succeed, got ${statuses.join(',')}`).toEqual([
+      200, 200, 200, 200,
+    ])
+  })
+
   test('TC-AUTH-10 login while offline fails loudly, not silently', async ({ page, context }) => {
     await page.goto(ROUTES.LOGIN)
     await page.locator('#identifier').fill(SEEDED_OWNER_PHONE)

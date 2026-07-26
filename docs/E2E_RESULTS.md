@@ -15,7 +15,7 @@ Last run: 2026-07-26.
 | Suite | Spec | Cases | Pass | Fail | Skip |
 |---|---|---|---|---|---|
 | B — Registration & OTP | `e2e/gold/registration.spec.ts` | 13 | 13 | 0 | 0 |
-| C — Login & session | `e2e/gold/auth.spec.ts` | 10 | 9 | 1 | 0 |
+| C — Login & session | `e2e/gold/auth.spec.ts` | 11 | 9 | 2 | 0 |
 | A — App shell | `e2e/gold/shell.spec.ts` | 8 | 7 | 0 | 1 |
 
 Remaining suites (parties, products, invoices, GST, import, payments,
@@ -71,8 +71,10 @@ exempts an explicit list of *unauthenticated* auth routes. `/auth/logout` and
 `/auth/switch-business` are authenticated. Business switching was broken
 outright for the same reason.
 
-Covered by TC-AUTH-06 (real UI logout) and a unit test that pins the client's
-list to the server's.
+Fixed by deleting the client's list rather than correcting it: the client now
+sends `X-CSRF-Token` on every mutation and lets the server decide which routes
+skip the check. Covered by TC-AUTH-06 (real UI logout) and unit tests that keep
+the list absent (`src/lib/__tests__/api-csrf-paths.test.ts`).
 
 ### F4 — A dead session stranded the user on a broken dashboard — **FIXED** (`b50ca0ce`)
 
@@ -97,6 +99,41 @@ Every IP-keyed limiter derived the key `rl:<ip>`, so the global (600/min), auth
 (20/min) and OTP (3/10min) limiters incremented and read one counter while each
 compared it to its own max. 25 ordinary GETs were enough to 429 the next
 `/api/auth/refresh`. Each limiter now owns a namespaced bucket.
+
+### F12 — Tokens issued in the same second are identical, so concurrent logins 409 — **HIGH**, unfixed
+
+TC-AUTH-11 (`e2e/gold/auth.spec.ts`) — failing, deliberately.
+
+`generateTokens` (`server/src/lib/jwt.ts:31`) signs `{userId, phone, businessId,
+type}` with nothing unique in the payload. JWT `iat`/`exp` are second-granular,
+so two tokens minted for the same user in the same second are **byte-identical**
+— and `RefreshToken.token` is `@unique`.
+
+Reproduced with four concurrent logins:
+
+```
+p1:409  p2:409  p3:200  p4:409
+{"success":false,"error":{"code":"DUPLICATE_ENTRY","message":"token already exists"}}
+```
+
+Three consequences, in rising order of severity:
+
+1. **Sign-in fails outright** when two sessions start together — the counter
+   phone and the back-office browser, or a double-tap on a slow connection. The
+   user sees a raw "token already exists".
+2. **Forced logout.** If the colliding token matches a row that was already
+   rotated, `refreshAccessToken` reads `revokedAt && replacedBy` and calls it
+   reuse-detection, which revokes the **entire family** and fires a Sentry
+   security warning. This is what made TC-AUTH-05 (silent refresh) fail
+   intermittently — roughly 1 run in 3 — and it is not a test flake.
+3. **Cross-device logout.** Access tokens collide the same way, and
+   `blacklistToken` is keyed by the token string, so logging out on one device
+   can blacklist another device's still-valid access token.
+
+Fix is small — a `jti: randomUUID()` in both payloads — but `server/src/lib/jwt.ts`
+is a declared high-risk path (`~/.claude/rules/HIGH_RISK_PATHS.md`), so it needs
+the `architect` + `security` design plan before the edit. Deliberately not
+touched here.
 
 ### F7 — No language switch before login — **MEDIUM**, unfixed
 
@@ -143,9 +180,6 @@ any other client.
   overlap), **TC-AUTH-07/08/09** (session revoke across devices, PIN gate,
   WebAuthn) stay manual — they need a throttled Lighthouse run, a signed build
   on a device, or a platform authenticator.
-- **TC-AUTH-05 flake:** the silent-refresh case failed once and passed on every
-  rerun, including in isolation. Watch it; if it recurs, suspect refresh-token
-  rotation racing two concurrent boot requests.
 - `documents.test.ts > POST / creates document with 201 (owner)` fails on the
   server unit suite. Verified pre-existing on HEAD via `git stash` — unrelated
   to this work.
