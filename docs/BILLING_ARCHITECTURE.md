@@ -1401,7 +1401,7 @@ Each maps to an invariant so the auditor can trace coverage.
 | B1 | Cashfree Controlled Notification/Execution semantics | **open — verify before architect** |
 | B2 | Recurring activation lead time, both gateways | **open — file tickets today** |
 | B3 | Diaspora+Gulf vs US/UK domestic | **open — blocks §16.2 only** |
-| B4 | Effective MDR per rail | **open — from term sheets, not docs** |
+| B4 | Effective MDR per rail | **open — one-time rails measured (§23.1); recurring still unpriced by both gateways** |
 
 **Retracted claims**, recorded so they do not resurface:
 
@@ -1423,6 +1423,66 @@ Each maps to an invariant so the auditor can trace coverage.
   reaching the base) an explicit migration campaign, and produced unbounded
   cohort sprawl. Replaced by policy-driven pricing (§7), which keeps pinning
   available as `PRICE_LOCK` where it is genuinely wanted.
+
+### 23.1 B4 partial — what is measured, what is still unknown
+
+Recorded 2026-07-26. Sources: the live Razorpay account (API, not docs), the
+Razorpay dashboard plan page, `razorpay.com/terms/subscription-plans/`, and
+`cashfree.com/payment-gateway-charges/`. **Everything below is one-time
+payment pricing. The recurring number B4 actually asks for is still open.**
+
+**Measured, live account (DudhHisaab, entire payment history — 26 payments):**
+11 captured / 15 failed; every captured payment `fee: 0, tax: 0`. Five
+settlements: `fees: 0, tax: 0`. Settlement recon for 2026-07: per-transaction
+`fee: 0, debit: 0, credit == amount`. All `method: "upi"`, largest capture ₹99.
+
+**This zero is a free-limit artifact, not a rate.** Lifetime captured volume is
+≈₹300 against a documented free allowance. Do not read it as a negotiated
+zero-MDR arrangement. Razorpay's own dashboard carries an FAQ titled *"Why was
+I charged even though my plan shows 0% fees?"*. The account is on **Standard**.
+
+**Razorpay plan ladder (dashboard, 2026-07-26):**
+
+| Plan | Monthly | Yearly (equiv/mo) | Free limit | Rate after |
+|---|---|---|---|---|
+| Standard *(current)* | ₹0 | — | ₹5,000/mo welcome allowance | 2.0% |
+| Plus | ₹499 | ₹416 | ₹30,000/mo | 1.9% |
+| Pro | ₹2,199 | ₹1,833 | ₹1,50,000/mo | 1.8% |
+| Enterprise | negotiated | — | — | >₹5,00,000/mo |
+
+Credits expire every 30-day cycle and do not carry forward (reissued monthly
+even on annual billing). The welcome offer excludes AMEX, Diners, **CC on
+UPI**, corporate and prepaid cards — yet several captures with
+`payer_account_type: "credit_card"` were still billed ₹0. Unexplained; not
+load-bearing at ₹300 volume, but the exclusion list is not predictive.
+
+**Cashfree:** 1.95% platform fee (struck through from 2.0%) across UPI, domestic
+Visa/MC/RuPay/Maestro, netbanking, wallets, prepaid. Anniversary **1.6%** for
+new signups **18 Sep 2025 – 31 Jul 2026**, locked 1 year, requires UPI ≥40% of
+monthly GTV, reverts to 1.95% above ₹1 crore/month GTV, excludes international.
+
+**Break-evens at ₹1,999/subscriber/month:** Plus pays for itself above
+~₹30,000/mo GTV (≈15 subscribers); Pro overtakes Plus above ~₹1.2L/mo
+(≈60 subscribers). Razorpay Pro converges to ~1.77% effective at scale —
+better than Cashfree 1.95%, worse than the 1.6% offer.
+
+**Still open, and it is the only number that matters here:** *neither* the
+Razorpay plan T&C *nor* the Cashfree offer T&C mentions Subscriptions, UPI
+AutoPay, or e-mandate at all. Razorpay's pricing page prices Subscriptions
+separately (0.9% + platform fee on cards; UPI recurring *"on request"*).
+So the term-sheet question is: **do UPI Autopay off-session debits draw down
+the Plus/Pro free credits and bill at 1.9%/1.8%, or are they billed separately
+under Subscriptions pricing?** Same question to Cashfree against the 1.6%
+offer. If recurring is billed separately on both, the table above is
+irrelevant to us and both rails are unpriced.
+
+Note also: **zero off-session autopay debits have ever run on this account.**
+Every payment is on-session `upi.flow: "intent"` (one `"collect"`). Nothing
+here is evidence about the recurring rail's behaviour, only its pricing gap.
+
+**D1 is unaffected.** No cost advantage is established for either gateway;
+Cashfree-for-India continues to rest solely on the architectural reason
+(no plan objects — D2/I2), not on price.
 
 ---
 
@@ -1454,7 +1514,10 @@ Each maps to an invariant so the auditor can trace coverage.
 - **§15 tax treatment needs an accountant**, not an architect. LUT, place of
   supply, and deferred revenue are flagged, not solved.
 - **US/UK domestic is out of scope** and this document does not pretend otherwise.
-- **No MDR figure is asserted anywhere** (B4). Unit economics are unmodelled here.
+- **No recurring MDR figure is asserted anywhere** (B4). One-time rails are
+  measured and published rates recorded in §23.1; UPI Autopay / e-mandate
+  per-debit pricing is unpublished by both gateways, so unit economics for the
+  rail we will actually use remain unmodelled here.
 
 ---
 
