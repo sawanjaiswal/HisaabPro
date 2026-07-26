@@ -21,10 +21,14 @@ Last run: 2026-07-26.
 | H — Parties (list, GSTIN, offline) | `e2e/gold/parties-list.spec.ts` | 6 | 6 | 0 | 0 |
 | I — Products (create, GST fields, edit/delete) | `e2e/gold/products.spec.ts` | 5 | 5 | 0 | 0 |
 | I — Products (stock, low stock, barcode, paging) | `e2e/gold/products-stock.spec.ts` | 5 | 5 | 0 | 0 |
+| J — Invoices (create, discounts, totals, validation) | `e2e/gold/invoices.spec.ts` | 5 | 5 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
-planned but not written. Remaining suites (products, invoices, GST, import,
-payments, reports, settings) are not written yet.
+planned but not written. Suite J is part 1 only — TC-INV-05 (draft), 06 (edit
+re-reconciles), 07 (delete/cancel reverses stock + ledger + audit), 08 (payment
+full/partial) and TC-PRD-08 (stock falls when an invoice is raised) are still to
+write. Remaining suites (GST, import, payments, reports, settings) are not
+written yet.
 
 ---
 
@@ -283,6 +287,54 @@ the page-audit checklist.
 Every field on the schema is optional, but `POST /api/auth/logout` with no body
 returns 400 `": Required"`. Harmless from the app (it sends a body) and noisy for
 any other client.
+
+### F21 — Search-dropdown results were not tappable — **HIGH**, FIXED
+
+Every direct child of `.stagger-enter` runs a transform entrance animation, which
+makes each section its own stacking context; the dropdown's z-index only ordered
+it against its own siblings, so the section it overhung painted on top and taps
+on a result hit the accordion below. Fixed by raising the hosting section (only
+while a dropdown is open) via `:has()` in the two search stylesheets — the only
+layer that can order against the following sections.
+Trace: `.claude/fix-trace-stagger-stacking-context.md`. Caught by TC-INV-02.
+
+### F22 — Every invoice save from a non-GST business returned 400 — **BLOCKER**, FIXED
+
+The line schema typed `taxCategoryId` / `hsnCode` / `sacCode` as optional
+strings, but "untagged" is a real state: the columns are nullable, the form holds
+`null`, and the builder persists `?? null`. `POST /api/documents` answered
+`taxCategoryId: Expected string, received null` — no invoice could be created on
+a business with GST off (the default for the seeded business). Fields made
+nullable, service types widened.
+Trace: `.claude/fix-trace-null-tax-category-400.md`. Caught by TC-INV-01.
+
+### F23 — A 10% discount saved as 0.1% — **BLOCKER**, FIXED
+
+The form holds percent (10 = 10%); the columns hold basis points, the same units
+POS checkout and coupons write. Nothing converted at the crossing, so the stored
+invoice total exceeded the total the seller approved on screen.
+`src/features/invoices/invoice-discount-units.ts` now owns the crossing in both
+directions (derived from `PAISE_BASIS_POINTS`), applied on save and on edit
+hydration.
+Trace: `.claude/fix-trace-discount-percent-units.md`. Caught by TC-INV-02.
+
+### F24 — The line discount was subtracted twice on screen — **BLOCKER**, FIXED
+
+`calculateSubtotal` already nets per-line discounts off (matching the server's
+`subtotal` contract), but its result was fed to `calculateGrandTotal`, which
+subtracts the discount again. A ₹675 line with a ₹75 discount showed ₹600 while
+the server stored ₹675 — every discounted invoice under-collected at the point of
+sale. The gross figure now goes to the grand-total helper, and the totals bar
+shows the gross on the subtotal row so the breakdown reconciles. Two stale unit
+expectations had encoded the bug; corrected, plus an invariant case.
+Trace: `.claude/fix-trace-discount-subtracted-twice.md`. Caught by TC-INV-02.
+
+### F25 — Preview opened on an invalid invoice — **LOW**, FIXED
+
+"Preview Invoice" bypassed validation, so an empty invoice rendered a ₹0.00
+preview with a live "Save & Send" button that only led to a rejected save the
+seller had to decode. Preview now runs the same checks as save.
+Caught by TC-INV-15.
 
 ---
 
