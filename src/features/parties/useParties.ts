@@ -7,6 +7,7 @@ import { TIMEOUTS } from '@/config/app.config'
 import { DEFAULT_FILTERS } from './party.constants'
 import { getParties, createParty, deleteParty } from './party.service'
 import { reconcilePartyCreated, optimisticRemoveParty, invalidatePartyLists } from './party-cache'
+import { queuedSuffix } from '@/lib/offline.feedback'
 import type { PartyListResponse, PartyFilters, PartyFormData } from './party.types'
 
 type Status = 'loading' | 'error' | 'success'
@@ -109,8 +110,9 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
   const createMutation = useMutation({
     mutationFn: (formData: PartyFormData) => createParty(formData),
     onSuccess: (created, formData) => {
-      toast.success(`${formData.name} added successfully`)
-      reconcilePartyCreated(queryClient, created)
+      toast.success(queuedSuffix(`${formData.name} added successfully`))
+      // `null` = queued offline; nothing to fold into the cache until it lands.
+      if (created) reconcilePartyCreated(queryClient, created)
     },
     onError: (err: Error) => {
       const message = err instanceof ApiError ? err.message : 'Failed to create party'

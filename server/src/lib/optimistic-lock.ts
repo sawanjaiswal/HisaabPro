@@ -40,8 +40,13 @@ export function parseEntityVersion(raw: string | string[] | undefined): number |
  * belongs to businessId). count !== 1 => another writer won the race (or the
  * row vanished) => 409 CONFLICT carrying the current server version.
  *
- * expectedVersion === undefined skips the lock entirely (back-compat for
- * clients that don't send X-Entity-Version — unguarded last-write-wins).
+ * expectedVersion === undefined skips the CHECK — a client that sends no
+ * X-Entity-Version has opted out of being told it lost a race — but never the
+ * BUMP. `version` is the token every other client's check reads, so a writer
+ * that changes the row without advancing it disables the lock for everyone
+ * else: the next stale save matches and silently overwrites this one. The
+ * offline queue's replay path and the importers both write that way.
+ * See .claude/fix-trace-unversioned-write-lost-update.md.
  */
 export async function bumpVersionOrConflict(
   tx: TxClient,
@@ -50,10 +55,17 @@ export async function bumpVersionOrConflict(
   businessId: string,
   expectedVersion: number | undefined,
 ): Promise<void> {
-  if (expectedVersion === undefined) return
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const delegate = (tx as any)[model]
+
+  if (expectedVersion === undefined) {
+    await delegate.updateMany({
+      where: { id, businessId },
+      data: { version: { increment: 1 } },
+    })
+    return
+  }
+
   const res = await delegate.updateMany({
     where: { id, businessId, version: expectedVersion },
     data: { version: { increment: 1 } },

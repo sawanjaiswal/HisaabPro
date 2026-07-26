@@ -31,6 +31,7 @@ Last run: 2026-07-26.
 | D — Onboarding wizard | `e2e/gold/onboarding.spec.ts` | 8 | 8 | 0 | 0 |
 | G — Dashboard | `e2e/gold/dashboard.spec.ts` | 8 | 8 | 0 | 0 |
 | E — Business & multi-business | `e2e/gold/business.spec.ts` | 5 | 5 | 0 | 0 |
+| O — Offline & sync | `e2e/gold/offline.spec.ts` | 8 | 8 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
 planned but not written. Suite K's invoice half covers TC-GST-01..08 (08 is the
@@ -42,13 +43,18 @@ tax-summary windowing, drafts and deleted documents excluded, credit notes
 reducing liability, HSN summary, GSTR-1 B2B, the stored return, GSTR-3B outward
 tax and ITC for both intra- and inter-state supply, and filing readiness. Suite L
 covers receipts, part payments, advances, every payment mode, delete reversal,
-and the three refusals an allocation must produce. GST backfill (`TC-GSTBF-01..05`) covers the read-only preview, the
+and the three refusals an allocation must produce. Suite O (`TC-OFF-01..08`)
+covers the offline banner, the queue's per-entity labelling, drain-on-reconnect,
+a stale edit refused with a 409 the UI turns into a reconcile dialog, queue
+survival across an app restart, idempotent replay, offline save feedback, and the
+read cache holding no identity plus emptying on logout. GST backfill (`TC-GSTBF-01..05`) covers the read-only preview, the
 three refusals, one real run asserting the stored parts still sum to the stored
 grand total, key replay, and the hourly limit. Note for the record: the backfill
 tags untagged **products** but deliberately leaves existing document line items
 alone, so a bill already given to a customer keeps the total it was issued with.
-Remaining suites (import, reports, settings,
-offline, responsive/a11y, security) are not written yet.
+Remaining suites (reports, settings,
+responsive/a11y, security, POS, purchases, expenses, accounting) are not written
+yet.
 
 ---
 
@@ -715,3 +721,42 @@ exists"`). Two switches in quick succession fail; two concurrent logins share an
 access token, so blacklisting one kills the other (the likely cause of TC-AUTH-11).
 `server/src/lib/jwt.ts:24` is a declared high-risk path — this needs
 `/start-epic jwt-jti` (architect + security) before any edit.
+
+### F57 — A write without a version header silently disarmed the lock for everyone — **BLOCKER**, FIXED
+
+`bumpVersionOrConflict` kept the `version` increment *inside* the guarded
+`updateMany`, so a writer that sends no `X-Entity-Version` — exactly what the
+offline queue's replay path and both bulk importers do — changed the row without
+advancing the token every other client's check reads. The next stale save then
+matched the unchanged version and overwrote the earlier change with no conflict
+raised: a classic lost update, worst on the offline path where two devices edit
+the same party. The check is now the only optional half; the bump is
+unconditional. Caught by TC-OFF-04, which could not produce a 409 at all until
+this was fixed. Contract test:
+`server/src/__tests__/integration/optimistic-lock.contract.test.ts` (3 cases).
+Root cause: `server/src/lib/optimistic-lock.ts:57`.
+Trace: `.claude/fix-trace-unversioned-write-lost-update.md`.
+
+### F58 — `conflictDetection` middleware is dead — cleanup candidate, not fixed
+
+Wired app-wide at `server/src/app.ts:107`, but it runs *before* each router's own
+`auth` (e.g. `server/src/routes/party.ts:47`), so `req.user?.businessId` is always
+undefined and the advisory pre-check never fires. Harmless — `lib/optimistic-lock.ts`
+is the live SSOT and does the real work inside the write transaction — and already
+noted as dormant in `docs/audit/FEATURE_AUDIT_phase67.md:42`. Left in place rather
+than deleted mid-suite; it should go, or move behind auth, as its own change.
+
+### F59 — Saving a party with no signal looked like a failure — **HIGH**, FIXED
+
+`createParty`/`updateParty` were typed as always returning a record, but `api()`
+resolves a queued mutation as `{}` — so both call-sites dereferenced it,
+`reconcilePartyCreated` threw, and the toast and navigation after it never ran.
+The shopkeeper sat on a filled form with an error toast, whose only sensible
+response is to press Save again and queue a duplicate. The service types are now
+honest (`Promise<PartyDetail | null>`, `null` = queued), which makes the compiler
+force both call-sites to branch, and the "— will sync when online" phrasing has a
+single owner (`src/lib/offline.feedback.ts`) instead of being re-invented per
+feature. Caught by TC-OFF-07. Unit test:
+`src/features/parties/__tests__/usePartyForm.offline.test.ts`.
+Root cause: `src/features/parties/usePartyForm.ts:179`.
+Trace: `.claude/fix-trace-offline-party-save-no-feedback.md`.

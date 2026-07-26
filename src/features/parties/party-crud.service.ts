@@ -76,12 +76,18 @@ export async function getParty(
 }
 
 /**
- * Create a new party. Returns the full party detail.
+ * Create a new party.
+ *
+ * Returns `null` when the save was queued offline — api() resolves `{}` for a
+ * mutation it has put on the queue, so there is genuinely no record yet. The
+ * type says so rather than pretending, because both call-sites used to
+ * dereference the result and turn a safely-queued save into an error toast.
+ * See .claude/fix-trace-offline-party-save-no-feedback.md.
  */
 export async function createParty(
   data: PartyFormData,
   signal?: AbortSignal
-): Promise<PartyDetail> {
+): Promise<PartyDetail | null> {
   const { party } = await api<{ party: PartyDetail }>('/parties', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -89,19 +95,19 @@ export async function createParty(
     entityType: 'party',
     entityLabel: data.name ?? 'New party',
   })
-  return party
+  return party ?? null
 }
 
 /**
  * Update an existing party. Accepts partial form data.
- * Returns the updated party detail.
+ * `null` means the change was queued offline — see {@link createParty}.
  */
 export async function updateParty(
   id: string,
   data: Partial<PartyFormData>,
   signal?: AbortSignal,
   expectedVersion?: number
-): Promise<PartyDetail> {
+): Promise<PartyDetail | null> {
   const { party } = await api<{ party: PartyDetail }>(`/parties/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
@@ -110,7 +116,7 @@ export async function updateParty(
     entityLabel: data.name ?? 'Party update',
     entityVersion: expectedVersion, // #150 optimistic lock
   })
-  return party
+  return party ?? null
 }
 
 /**

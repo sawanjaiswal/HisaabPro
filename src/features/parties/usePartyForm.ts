@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { createParty, updateParty } from './party.service'
 import { reconcilePartyCreated, reconcilePartyUpdated } from './party-cache'
+import { queuedSuffix } from '@/lib/offline.feedback'
 import {
   PHONE_REGEX,
   GSTIN_REGEX,
@@ -170,14 +171,16 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
         // instead of an error toast. versionOverride is supplied on overwrite.
         await conflictReconcile.withConflictGuard(async (versionOverride) => {
           const updated = await updateParty(editId, updatePayload, undefined, versionOverride ?? version)
-          reconcilePartyUpdated(queryClient, updated)
-          toast.success(`${form.name} updated`)
+          // `null` = queued offline; there is no record to fold into the cache
+          // yet, and the drain refetches when the connection returns.
+          if (updated) reconcilePartyUpdated(queryClient, updated)
+          toast.success(queuedSuffix(`${form.name} updated`))
           navigate(`/parties/${editId}`)
         })
       } else {
         const created = await createParty(toCreatePartyPayload(form))
-        reconcilePartyCreated(queryClient, created)
-        toast.success(`${form.name} added successfully`)
+        if (created) reconcilePartyCreated(queryClient, created)
+        toast.success(queuedSuffix(`${form.name} added successfully`))
         navigate(ROUTES.PARTIES)
       }
     } catch {
