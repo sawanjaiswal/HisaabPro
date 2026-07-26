@@ -10,9 +10,9 @@ interface LineItemInput {
   rate: number
   discountType: string
   discountValue: number
-  taxCategoryId?: string
-  hsnCode?: string
-  sacCode?: string
+  taxCategoryId?: string | null
+  hsnCode?: string | null
+  sacCode?: string | null
   isFreeItem?: boolean
 }
 

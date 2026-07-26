@@ -34,7 +34,7 @@ interface LineItemSlice {
   discountType: string
   discountValue: number
   gstRate?: number
-  taxCategoryId?: string
+  taxCategoryId?: string | null
   /** #133 BOGO — when true, line is treated as rate=0 / discount=0 (giveaway). */
   isFreeItem?: boolean
 }
