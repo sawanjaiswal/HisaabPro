@@ -87,8 +87,9 @@ export interface InvoiceDetail {
   /** paise added/removed by the business's round-off setting */
   roundOff: number
   grandTotal: number
-  amountPaid?: number
-  balanceAmount?: number
+  /** Settlement columns, named as the Document model holds them. */
+  paidAmount?: number
+  balanceDue?: number
   lineItems?: Array<{
     productId: string
     quantity: number

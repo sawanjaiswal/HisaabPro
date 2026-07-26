@@ -156,10 +156,20 @@ export function actionFailures(failures: string[]): string[] {
  * caller skipping a step the real client performs.
  */
 export async function csrfPost(page: Page, path: string, data?: unknown) {
+  return csrfRequest(page, 'post', path, data)
+}
+
+/** As {@link csrfPost}, for the other state-changing verbs (PUT / PATCH / DELETE). */
+export async function csrfRequest(
+  page: Page,
+  method: 'post' | 'put' | 'patch' | 'delete',
+  path: string,
+  data?: unknown,
+) {
   await page.request.get(`${path.replace(/\/api\/.*$/, '')}/api/auth/csrf-token`).catch(() => {})
   const cookies = await page.context().cookies()
   const token = cookies.find((c) => c.name === COOKIES.csrf)?.value ?? ''
-  return page.request.post(path, {
+  return page.request[method](path, {
     headers: {
       [CSRF_HEADER]: token,
       // replayProtection rejects a mutation without these; the real client adds
