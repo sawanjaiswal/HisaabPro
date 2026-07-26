@@ -51,6 +51,11 @@ export async function deleteDocument(businessId: string, documentId: string, use
     const updated = await tx.document.update({
       where: { id: documentId },
       data: {
+        // `isDeleted` is the fact — Document is in SOFT_DELETE_MODELS, so every
+        // reader that does not carry its own status predicate (ledger, public
+        // invoice view, share links, quota counts) hides the row off this flag
+        // alone. `status` is the recycle-bin state that rides along with it.
+        isDeleted: true,
         status: 'DELETED',
         deletedAt: new Date(),
         deletedBy: userId,

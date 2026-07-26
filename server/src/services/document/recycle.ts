@@ -16,8 +16,12 @@ export async function listRecycleBin(
   businessId: string,
   query: { type?: string; page: number; limit: number }
 ) {
+  // Explicit `isDeleted: true` is the soft-delete extension's documented
+  // bypass — without it the extension injects `isDeleted: false` and the bin
+  // reads back empty.
   const where: Record<string, unknown> = {
     businessId,
+    isDeleted: true,
     status: 'DELETED',
   }
   if (query.type) where.type = query.type
@@ -54,7 +58,7 @@ export async function listRecycleBin(
 
 export async function restoreDocument(businessId: string, documentId: string, userId: string) {
   const doc = await prisma.document.findFirst({
-    where: { id: documentId, businessId, status: 'DELETED' },
+    where: { id: documentId, businessId, isDeleted: true, status: 'DELETED' },
     select: {
       id: true, type: true, partyId: true, grandTotal: true,
       lineItems: { select: { productId: true, quantity: true } },
@@ -68,6 +72,9 @@ export async function restoreDocument(businessId: string, documentId: string, us
     await tx.document.update({
       where: { id: documentId },
       data: {
+        // Mirror of the delete: clearing the bin state without clearing the
+        // soft-delete flag would restore a document nothing can read.
+        isDeleted: false,
         status: 'SAVED',
         deletedAt: null,
         deletedBy: null,
@@ -126,7 +133,7 @@ export async function restoreDocument(businessId: string, documentId: string, us
 
 export async function permanentDeleteDocument(businessId: string, documentId: string) {
   const doc = await prisma.document.findFirst({
-    where: { id: documentId, businessId, status: 'DELETED' },
+    where: { id: documentId, businessId, isDeleted: true, status: 'DELETED' },
     select: { id: true },
   })
   if (!doc) throw notFoundError('Document')
@@ -136,7 +143,7 @@ export async function permanentDeleteDocument(businessId: string, documentId: st
 
 export async function emptyRecycleBin(businessId: string) {
   const result = await prisma.document.deleteMany({
-    where: { businessId, status: 'DELETED' },
+    where: { businessId, isDeleted: true, status: 'DELETED' },
   })
   return { deletedCount: result.count }
 }
@@ -145,6 +152,7 @@ export async function emptyRecycleBin(businessId: string) {
 export async function cleanupExpiredDocuments() {
   const result = await prisma.document.deleteMany({
     where: {
+      isDeleted: true,
       status: 'DELETED',
       permanentDeleteAt: { lte: new Date() },
     },
