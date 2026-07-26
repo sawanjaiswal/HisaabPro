@@ -51,6 +51,19 @@
   color: var(--color-gray-600);
 }
 
+/*
+ * Every direct child of `.stagger-enter` runs a transform entrance animation,
+ * which makes it its own stacking context. Inside one, `.product-search-dropdown`'s
+ * z-index only orders it against its own siblings — never against the sections
+ * that follow, which the item search's dropdown overhangs. Raising the
+ * whole section (only while a dropdown is open) is what puts the list above the
+ * next section, so a tap on a result lands on the result.
+ */
+.stagger-enter > *:has(.product-search-dropdown) {
+  position: relative;
+  z-index: 5;
+}
+
 .product-search-dropdown {
   position: absolute;
   top: calc(100% + 4px);
