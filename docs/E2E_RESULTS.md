@@ -38,6 +38,8 @@ Last run: 2026-07-26.
 | R — POS: the transaction | `e2e/gold/pos.spec.ts` | 8 | 8 | 0 | 0 |
 | R — POS: the counter | `e2e/gold/pos-ui.spec.ts` | 4 | 4 | 0 | 0 |
 | R — Receipt identity | `src/features/pos/__tests__/receipt-identity.test.tsx` | 2 | 2 | 0 | 0 |
+| S — Purchases (bill, ITC, edit, delete, payment) | `e2e/gold/purchases.spec.ts` | 6 | 6 | 0 | 0 |
+| S — Purchases (return, cost basis, valuation) | `e2e/gold/purchase-costing.spec.ts` | 4 | 4 | 0 | 0 |
 
 TC-PTY-09 (party statement: opening + transactions − payments = closing) is
 planned but not written. Suite K's invoice half covers TC-GST-01..08 (08 is the
@@ -85,8 +87,27 @@ the API rather than only by the screen.
 TC-POS-06 (hold / park a sale and resume it) has **no test because the feature
 does not exist** — nothing in `src/features/pos` holds a cart aside. See F63.
 
-Remaining suites (reports, settings, responsive/a11y, purchases, expenses,
-accounting) are not written yet.
+Suite S (`TC-PUR-01..09`) covers the buying side, which is the mirror of the
+selling side and therefore the place every sign can flip: a supplier bill raising
+stock and a **payable** (a negative party balance, not a receivable), the tax on
+it landing in GSTR-3B section 4 as input credit rather than as liability, an edit
+down from ten units to four leaving four on the shelf and not fourteen, a delete
+restoring both the stock and the balance, a purchase return taking goods back off
+the shelf and reversing the credit claimed on them (section 4(D)), the weighted
+average cost basis moving with what was actually paid, a customer return *not*
+repricing the shelf at the selling price, a payment out allocating against the
+bill, and the valuation report pricing the shelf at cost rather than at sale
+price. Every assertion reads the server's stored value: a purchase screen that
+looks right while the cost basis silently stays at zero is exactly the failure a
+UI-level assertion cannot see. Four real defects came out of it — F66 through F69
+below.
+
+Note on units: `POST /gst/returns/GSTR3B/:period/export` converts to **rupees** at
+the NIC boundary (`paiseToRupeesForNic`), so the Suite S GST assertions divide by
+100. Everything else on the wire is paise.
+
+Remaining suites (reports, settings, responsive/a11y, expenses, accounting) are
+not written yet.
 
 Suite C's third failure is TC-AUTH-05 (an expired access token should refresh
 silently; the app bounces to `/login`), tracked as part of the F12/F56 refresh
@@ -887,3 +908,81 @@ receipt surfaces for the same counter. Suite R part 2 drives the first for
 scanning and the second for receipts because that is where each behaviour lives.
 Only one of them can be the SSOT for a sale; deciding which — and deleting the
 other — is its own change, not a test fix.
+
+### F66 — Deleting a purchase bill drove stock negative — **BLOCKER**, FIXED
+
+A shop buys 20 units, sells 15, then deletes one of the two 10-unit purchase
+bills (a wrong entry, a duplicate, a supplier who never delivered). The delete
+answered 200 and the shelf read **−5**. Nothing refused, nothing warned, and the
+valuation, the low-stock alerts and every margin computed afterwards were built
+on a quantity that cannot exist.
+
+The reversal called `adjustStock`, which refuses a negative result only under
+`HARD_BLOCK`; the default `WARN_ONLY` let it through. But `WARN_ONLY` answers a
+different question — *may this shop sell more than it has on the shelf?* — and a
+reversal is not a sale. Un-receiving goods that have already been sold on is not
+a policy call at all; it is arithmetic that does not work. The reversal boundary
+had inherited a selling policy because it had no bound of its own.
+
+The fix is a new SSOT for un-receiving goods, `server/src/services/stock/
+reversal-guard.ts`: `giveBackForDocument` reads what this document actually put
+on the shelf (from its stock movements, not from its line items — a batch split
+or a later correction makes those differ), and `assertStockGiveBackPossible`
+refuses when the shelf holds less than that. It ignores `stockValidationMode`
+deliberately, and it lives at the *caller* rather than inside `adjustStock`,
+because an edit reverses and re-applies inside one transaction and only the
+**net** give-back is impossible. Wired into both `delete.ts` and `update.ts`.
+Caught by TC-PUR-04b.
+Root cause: `server/src/services/document/delete.ts:40`.
+Trace: `.claude/fix-trace-purchase-reversal-negative.md`.
+
+### F67 — A purchase return never took the goods off the shelf — **BLOCKER**, FIXED
+
+Ten units arrive, three are damaged and go back to the supplier on a debit note.
+The payable dropped correctly, the debit note printed correctly — and the shelf
+still read **ten**. `STOCK_DECREASE_TYPES` listed `SALE_INVOICE` and
+`DELIVERY_CHALLAN` but not `DEBIT_NOTE`, so a purchase return moved money and no
+goods. The shop would go on to sell stock it had already given back, and discover
+it at the counter with a customer waiting.
+
+`DEBIT_NOTE` is a purchase return: the goods physically leave, exactly as a sale.
+It is the mirror of `CREDIT_NOTE` (customer return, goods back in) and belongs in
+the opposite set. Adding it exposed a second problem — the stock helpers
+hardcoded `SALE`/`SALE_INVOICE` and `PURCHASE`/`PURCHASE_INVOICE`, so a debit
+note, a credit note and a delivery challan all filed their movements under the
+wrong document type. The movement history a shopkeeper reads to explain a
+discrepancy named a document that did not cause it. `stockMovementLabels()` in
+`document/helpers.ts` is now the one map, consulted by create and update and
+threaded through the stock helpers. Caught by TC-PUR-06.
+Root cause: `server/src/services/document/helpers.ts:24`.
+
+### F68 — GSTR-3B claimed input credit on returned goods — **BLOCKER**, FIXED
+
+Section 4(D) of GSTR-3B — ITC reversed — was `const s4d = empty()`, a hardcoded
+zero. Every purchase return the shop made reduced the payable and the stock but
+left the input credit claimed on those goods sitting in section 4, and section
+6.1 (net payable) is computed from it. The shop under-paid GST by the tax on
+everything it ever returned to a supplier, and claiming ITC on returned goods is
+what a departmental notice is made of.
+
+`fetchAggregates` now aggregates `DEBIT_NOTE` documents alongside the rest and
+returns a real `s4d`. Caught by TC-PUR-06, which asserts net ITC (4 minus 4(D))
+falls by exactly the tax on the returned units.
+Root cause: `server/src/services/gst-returns/gstr3b.service.ts` — `s4d` was never
+fetched.
+
+### F69 — A customer return repriced the shelf at the selling price — **BLOCKER**, FIXED
+
+Goods bought at Rs 1,000 and sold at Rs 3,000 come back on a credit note. The
+return flows through `addForPurchaseInvoice` — the same helper a purchase uses —
+carrying the line's **sale** price, which was averaged into
+`weightedAvgCostPaise`. The books then said the shop paid Rs 3,000 for stock it
+bought at Rs 1,000. Every margin, every valuation and every balance sheet after
+that was computed against a price that was never paid, and it compounds: each
+return moves the average further from reality.
+
+Only a real purchase moves the cost basis. The weighted-average update is now
+gated on `movementReferenceType === 'PURCHASE_INVOICE'`; a return puts the goods
+back on the shelf and leaves the cost alone. Caught by TC-PUR-09.
+Root cause: `server/src/services/stock/invoice-ops-purchase.ts` — the cost
+update was unconditional.

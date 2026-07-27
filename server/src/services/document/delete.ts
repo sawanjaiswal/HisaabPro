@@ -5,6 +5,7 @@
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
 import { reverseForInvoice, scheduleAlertChecks } from '../stock.service.js'
+import { assertStockGiveBackPossible, giveBackForDocument } from '../stock/reversal-guard.js'
 import {
   STOCK_DECREASE_TYPES, STOCK_INCREASE_TYPES, AFFECTS_OUTSTANDING,
   updateOutstanding, getOutstandingReverseDelta,
@@ -38,6 +39,15 @@ export async function deleteDocument(businessId: string, documentId: string, use
     // Reverse side effects
     if (wasSaved) {
       if (STOCK_DECREASE_TYPES.has(doc.type) || STOCK_INCREASE_TYPES.has(doc.type)) {
+        // Deleting a received-goods document un-receives the stock. If it has
+        // already been sold on, that is not possible — refuse rather than let
+        // the shelf go negative with no trace of why. See reversal-guard.ts.
+        if (STOCK_INCREASE_TYPES.has(doc.type)) {
+          await assertStockGiveBackPossible(tx, {
+            businessId,
+            needed: await giveBackForDocument(tx, { businessId, documentId }),
+          })
+        }
         await reverseForInvoice(tx, { businessId, invoiceId: documentId, userId })
       }
       if (AFFECTS_OUTSTANDING.has(doc.type)) {

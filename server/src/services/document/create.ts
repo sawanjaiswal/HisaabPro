@@ -13,7 +13,7 @@ import type { CreateDocumentInput } from '../../schemas/document.schemas.js'
 import { DOCUMENT_DETAIL_SELECT } from './selects.js'
 import {
   STOCK_DECREASE_TYPES, STOCK_INCREASE_TYPES, AFFECTS_OUTSTANDING,
-  getRoundOffSetting, updateOutstanding,
+  getRoundOffSetting, updateOutstanding, stockMovementLabels,
 } from './helpers.js'
 import { validateLineItemProducts } from './create-batch-validation.js'
 import { recordFreeItemAudit } from './create-audit.js'
@@ -150,11 +150,14 @@ export async function createDocument(
       let stockMovements: Array<{ productId: string; balanceAfter: number }> = []
       let stockWarnings: string[] = []
 
+      const labels = stockMovementLabels(data.type)
       if (STOCK_DECREASE_TYPES.has(data.type)) {
         const saleResult = await deductForSaleInvoice(tx, {
           businessId, invoiceId: doc.id, invoiceNumber: numberData!.documentNumber,
           items: data.lineItems.map(li => ({ productId: li.productId, quantity: li.quantity, unitId: li.unitId })),
           userId,
+          movementType: labels.movementType,
+          movementReferenceType: labels.referenceType,
         })
         stockMovements = saleResult.movements as Array<{ productId: string; balanceAfter: number }>
         stockWarnings = saleResult.warnings
@@ -163,6 +166,8 @@ export async function createDocument(
           businessId, invoiceId: doc.id, invoiceNumber: numberData!.documentNumber,
           items: data.lineItems.map(li => ({ productId: li.productId, quantity: li.quantity, unitId: li.unitId, unitCostPaise: li.rate })),
           userId,
+          movementType: labels.movementType,
+          movementReferenceType: labels.referenceType,
         })
       }
 

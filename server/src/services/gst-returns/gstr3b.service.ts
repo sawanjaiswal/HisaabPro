@@ -108,16 +108,23 @@ async function fetchAggregates(businessId: string, start: Date, end: Date) {
   }
   const NIL = { totalCgst: 0, totalSgst: 0, totalIgst: 0, totalCess: 0 }
 
-  const [agg31a, agg31b, agg31d, agg4, agg5, agg31c] = await Promise.all([
+  const [agg31a, agg31b, agg31d, agg4, agg5, agg31c, agg4d] = await Promise.all([
     prisma.document.aggregate({ where: { ...base, type: 'SALE_INVOICE', supplyType: { in: ['B2B', 'B2C_LARGE', 'B2C_SMALL'] }, isReverseCharge: false, ...TAXED }, ...sums }),
     prisma.document.aggregate({ where: { ...base, type: 'SALE_INVOICE', supplyType: { in: ['EXPORT', 'SEZ'] } }, ...sums }),
     prisma.document.aggregate({ where: { ...base, type: 'PURCHASE_INVOICE', isReverseCharge: true }, ...sums }),
     prisma.document.aggregate({ where: { ...base, type: 'PURCHASE_INVOICE', isReverseCharge: false, ...TAXED }, ...sums }),
     prisma.document.aggregate({ where: { ...base, type: 'PURCHASE_INVOICE', ...NIL }, ...sums }),
     prisma.document.aggregate({ where: { ...base, type: 'SALE_INVOICE', ...NIL }, ...sums }),
+    // 4(D) — ITC reversed. A debit note in this app IS a purchase return
+    // (create.ts refuses one that does not reference a PURCHASE_INVOICE), so
+    // the credit claimed on the goods that went back to the supplier has to
+    // come off. Leaving this at zero over-claimed ITC on every return the shop
+    // raised — the exact figure a department notice is issued against.
+    prisma.document.aggregate({ where: { ...base, type: 'DEBIT_NOTE', ...TAXED }, ...sums }),
   ])
 
   return {
+    s4d:  lift(agg4d),
     s31a: lift(agg31a),
     s31b: lift(agg31b),
     s31c: lift(agg31c),
@@ -134,12 +141,11 @@ export async function computeGstr3b(
   period: string,
 ): Promise<Gstr3bSummary> {
   const [start, end] = parsePeriod(period)
-  const { s31a, s31b, s31c, s31d, s4, s5 } = await fetchAggregates(businessId, start, end)
+  const { s31a, s31b, s31c, s31d, s4, s5, s4d } = await fetchAggregates(businessId, start, end)
 
   // Defaults (no schema field; manual override in UI)
   const s31e = empty()
   const s32  = empty()
-  const s4d  = empty()
   const sLateFee = empty()
 
   const outwardTax = totalTax(s31a) + totalTax(s31b) + totalTax(s31d)

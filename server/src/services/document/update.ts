@@ -2,12 +2,13 @@
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
 import { deductForSaleInvoice, addForPurchaseInvoice, reverseForInvoice, scheduleAlertChecks } from '../stock.service.js'
+import { assertStockGiveBackPossible, giveBackForDocument } from '../stock/reversal-guard.js'
 import { generateNextNumber } from '../document-number.service.js'
 import type { UpdateDocumentInput } from '../../schemas/document.schemas.js'
 import { DOCUMENT_DETAIL_SELECT } from './selects.js'
 import {
   STOCK_DECREASE_TYPES, STOCK_INCREASE_TYPES, AFFECTS_OUTSTANDING,
-  updateOutstanding, getOutstandingDelta, getOutstandingReverseDelta,
+  updateOutstanding, getOutstandingDelta, getOutstandingReverseDelta, stockMovementLabels,
 } from './helpers.js'
 import { type MoqViolation } from './moq.guard.js'
 import { persistDocumentCustomFieldValues } from './custom-fields.js'
@@ -52,6 +53,22 @@ export async function updateDocument(
     // stock reversal / recompute, so a concurrent writer 409s deterministically.
     await bumpVersionOrConflict(tx, 'document', documentId, businessId, expectedVersion)
     if (wasSaved && (STOCK_DECREASE_TYPES.has(existing.type) || STOCK_INCREASE_TYPES.has(existing.type))) {
+      // Shrinking (or un-saving) a received-goods document takes stock back off
+      // the shelf. Only the NET matters here: the edit reverses the old lines
+      // and re-applies the new ones in the same transaction, so an unchanged
+      // quantity gives nothing back. See stock/reversal-guard.ts.
+      if (STOCK_INCREASE_TYPES.has(existing.type)) {
+        const needed = await giveBackForDocument(tx, { businessId, documentId })
+        if (willBeSaved) {
+          const kept = data.lineItems ?? existing.lineItems
+          for (const li of kept) {
+            const outstanding = (needed.get(li.productId) ?? 0) - li.quantity
+            if (outstanding > 0) needed.set(li.productId, outstanding)
+            else needed.delete(li.productId)
+          }
+        }
+        await assertStockGiveBackPossible(tx, { businessId, needed })
+      }
       await reverseForInvoice(tx, { businessId, invoiceId: documentId, userId })
     }
     if (wasSaved && AFFECTS_OUTSTANDING.has(existing.type)) {
@@ -123,6 +140,7 @@ export async function updateDocument(
     const effectiveGrandTotal = totals?.grandTotal ?? existing.grandTotal
     if (willBeSaved) {
       const lineItems = data.lineItems || existing.lineItems
+      const labels = stockMovementLabels(existing.type)
       if (STOCK_DECREASE_TYPES.has(existing.type)) {
         const docNum = numberData?.documentNumber || ''
         await deductForSaleInvoice(tx, {
@@ -135,6 +153,8 @@ export async function updateDocument(
             unitId: li.productId,
           })),
           userId,
+          movementType: labels.movementType,
+          movementReferenceType: labels.referenceType,
         })
       } else if (STOCK_INCREASE_TYPES.has(existing.type)) {
         const docNum = numberData?.documentNumber || ''
@@ -149,6 +169,8 @@ export async function updateDocument(
             unitCostPaise: (li as { productId: string; quantity: number; rate?: number }).rate,
           })),
           userId,
+          movementType: labels.movementType,
+          movementReferenceType: labels.referenceType,
         })
       }
 

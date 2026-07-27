@@ -28,8 +28,9 @@ export function computeWeightedAvg(
   return BigInt(rounded)
 }
 
-/** Add stock for purchase invoice items. Call within a transaction.
- * Updates weightedAvgCostPaise per item when unitCostPaise > 0.
+/** Add stock for received goods (purchase invoice, customer return). Call
+ * within a transaction. Updates weightedAvgCostPaise per item when the movement
+ * is an actual purchase and unitCostPaise > 0.
  */
 export async function addForPurchaseInvoice(
   tx: TxClient,
@@ -39,6 +40,9 @@ export async function addForPurchaseInvoice(
     invoiceNumber: string
     items: InvoiceStockItem[]
     userId: string
+    /** Movement labels — see document/helpers.ts stockMovementLabels(). */
+    movementType?: string
+    movementReferenceType?: string
   }
 ) {
   const invSetting = await tx.inventorySetting.findUnique({
@@ -54,15 +58,20 @@ export async function addForPurchaseInvoice(
       productId: item.productId,
       businessId: params.businessId,
       quantity: item.quantity,
-      type: 'PURCHASE',
-      referenceType: 'PURCHASE_INVOICE',
+      type: params.movementType ?? 'PURCHASE',
+      referenceType: params.movementReferenceType ?? 'PURCHASE_INVOICE',
       referenceId: params.invoiceId,
       referenceNumber: params.invoiceNumber,
       userId: params.userId,
       cachedBusinessValidationMode,
     })
 
-    if (item.unitCostPaise !== undefined && item.unitCostPaise > 0) {
+    // Only a real purchase moves the cost basis. A customer return comes back
+    // in through this same helper carrying the SALE price on its line, and
+    // averaging that in would reprice the shelf at what the goods sold for —
+    // every margin after it computed against a cost the shop never paid.
+    const isPurchase = (params.movementReferenceType ?? 'PURCHASE_INVOICE') === 'PURCHASE_INVOICE'
+    if (isPurchase && item.unitCostPaise !== undefined && item.unitCostPaise > 0) {
       const prevQty = result.previousStock
       const product = await tx.product.findUnique({
         where: { id: item.productId },

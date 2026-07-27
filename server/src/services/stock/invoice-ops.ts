@@ -42,6 +42,11 @@ export async function deductForSaleInvoice(
     invoiceNumber: string
     items: InvoiceStockItem[]
     userId: string
+    /** Movement labels — see document/helpers.ts stockMovementLabels(). A
+     * delivery challan and a purchase return both deduct stock, and the
+     * movement history has to name the document that actually caused it. */
+    movementType?: string
+    movementReferenceType?: string
   }
 ): Promise<SaleInvoiceResult> {
   // Fetch business-level validation mode + expiry policy once
@@ -115,8 +120,8 @@ export async function deductForSaleInvoice(
         productId: item.productId,
         businessId: params.businessId,
         quantity: -item.quantity,
-        type: 'SALE',
-        referenceType: 'SALE_INVOICE',
+        type: params.movementType ?? 'SALE',
+        referenceType: params.movementReferenceType ?? 'SALE_INVOICE',
         referenceId: params.invoiceId,
         referenceNumber: params.invoiceNumber,
         userId: params.userId,
@@ -139,8 +144,8 @@ export async function deductForSaleInvoice(
         productId: item.productId,
         businessId: params.businessId,
         quantity: -item.quantity,
-        type: 'SALE',
-        referenceType: 'SALE_INVOICE',
+        type: params.movementType ?? 'SALE',
+        referenceType: params.movementReferenceType ?? 'SALE_INVOICE',
         referenceId: params.invoiceId,
         referenceNumber: params.invoiceNumber,
         userId: params.userId,

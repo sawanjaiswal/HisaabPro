@@ -22,6 +22,9 @@ interface ClaimParams {
   invoiceId: string
   invoiceNumber: string
   userId: string
+  /** Movement labels — see document/helpers.ts stockMovementLabels(). */
+  movementType?: string
+  movementReferenceType?: string
 }
 
 type BatchRow = { id: string; batchNumber: string; expiryDate: Date | null; currentStock: number; productId: string; costPrice: number | null }
@@ -79,9 +82,10 @@ export async function claimClientBatch(
 
   const movement = await tx.stockMovement.create({
     data: {
-      businessId: params.businessId, productId: item.productId, type: 'SALE',
+      businessId: params.businessId, productId: item.productId,
+      type: params.movementType ?? 'SALE',
       quantity: -item.quantity, balanceAfter: 0, batchId: item.batchId,
-      referenceType: 'SALE_INVOICE', referenceId: params.invoiceId,
+      referenceType: params.movementReferenceType ?? 'SALE_INVOICE', referenceId: params.invoiceId,
       referenceNumber: params.invoiceNumber, movementDate: new Date(), createdBy: params.userId,
     },
   })
@@ -106,9 +110,10 @@ export async function claimFEFO(
   for (const claim of claims) {
     const movement = await tx.stockMovement.create({
       data: {
-        businessId: params.businessId, productId: item.productId, type: 'SALE',
+        businessId: params.businessId, productId: item.productId,
+        type: params.movementType ?? 'SALE',
         quantity: -claim.qtyTaken, balanceAfter: 0, batchId: claim.batchId,
-        referenceType: 'SALE_INVOICE', referenceId: params.invoiceId,
+        referenceType: params.movementReferenceType ?? 'SALE_INVOICE', referenceId: params.invoiceId,
         referenceNumber: params.invoiceNumber, movementDate: new Date(), createdBy: params.userId,
       },
     })
