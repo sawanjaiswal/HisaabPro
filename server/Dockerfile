@@ -43,4 +43,9 @@ EXPOSE $PORT
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:$PORT/api/health || exit 1
 
-CMD ["node", "dist/index.js"]
+# Migrations run against DIRECT_DATABASE_URL (unpooled) — prisma migrate
+# deploy holds an advisory lock, which a pooled/PgBouncer endpoint can drop
+# mid-transaction. Render's old buildCommand ran this at build time; moved
+# to container start so build-time images never need DB credentials baked in
+# (same reasoning as Rent-Income's and Flint's Dockerfiles).
+CMD ["sh", "-c", "DATABASE_URL=\"$DIRECT_DATABASE_URL\" npx prisma migrate deploy && node dist/index.js"]
