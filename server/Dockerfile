@@ -14,7 +14,11 @@ RUN npx prisma generate
 # Copy source and build
 COPY tsconfig.json ./
 COPY src ./src
-RUN npm run build
+
+# V8 caps its default heap at ~460MB when it detects low physical RAM (this
+# host has 1GB), regardless of swap available — tsc OOMs before touching
+# swap otherwise. Same fix as Rent-Income's Dockerfile.
+RUN NODE_OPTIONS="--max-old-space-size=3072" npm run build
 
 # ---- Runner Stage ----
 FROM node:20-alpine AS runner
