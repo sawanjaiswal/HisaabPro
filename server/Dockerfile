@@ -5,7 +5,11 @@ WORKDIR /app
 
 # Install deps first (layer caching)
 COPY package.json package-lock.json* ./
-RUN npm ci --ignore-scripts
+# Coolify injects every is_buildtime env var (incl. NODE_ENV=production) as a
+# build ARG/ENV, which makes npm ci skip devDependencies — but prisma and
+# typescript (needed below) are both devDependencies. --include=dev forces
+# them in regardless of NODE_ENV.
+RUN npm ci --ignore-scripts --include=dev
 
 # Copy Prisma schema and generate client
 COPY prisma ./prisma
