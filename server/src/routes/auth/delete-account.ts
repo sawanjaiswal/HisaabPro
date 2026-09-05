@@ -28,8 +28,10 @@ router.delete(
     await prisma.user.update({
       where: { id: userId },
       data: {
-        isPhoneVerified: false,
+        isActive: false,
         name: 'Deleted User',
+        isSuspended: true,
+        suspendedReason: 'account_deleted',
       },
     })
 
