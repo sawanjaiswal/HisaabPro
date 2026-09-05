@@ -50,7 +50,7 @@ export function LandingFooter() {
       {/* Bottom bar */}
       <div className="mx-auto mt-10 flex max-w-5xl flex-col items-center justify-between gap-4 border-t border-gray-800 pt-6 sm:flex-row">
         <p className="text-[0.75rem] text-gray-500">
-          &copy; {year} {APP_NAME}. All rights reserved.
+          &copy; {year} {APP_NAME}. All rights reserved. — Sawan Jaiswal, Proprietor
         </p>
         <div className="flex gap-4">
           {FOOTER_LINKS.social.map((s) => (

@@ -11,9 +11,9 @@
 
 import type React from 'react'
 import {
-  Briefcase, Calculator, Calendar, ClipboardList, Cloud, Fingerprint, Key,
+  Briefcase, Calculator, Calendar, ClipboardList, Cloud, FileText, Fingerprint, Key,
   Keyboard, Languages, Lock, Moon, Package, Palette, Percent, Receipt, Ruler,
-  Shield, ShieldAlert, ShieldCheck, Sparkles, Store, Tag, Trophy, UserPlus,
+  Scale, Shield, ShieldAlert, ShieldCheck, Sparkles, Store, Tag, Trash2, Trophy, UserPlus,
   Users,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
@@ -21,8 +21,8 @@ import type { LucideProps } from 'lucide-react'
 export type IconComponent = React.FC<LucideProps>
 
 export const SETTINGS_ICONS: Record<string, IconComponent> = {
-  Briefcase, Calculator, Calendar, ClipboardList, Cloud, Fingerprint, Key,
+  Briefcase, Calculator, Calendar, ClipboardList, Cloud, FileText, Fingerprint, Key,
   Keyboard, Languages, Lock, Moon, Package, Palette, Percent, Receipt, Ruler,
-  Shield, ShieldAlert, ShieldCheck, Sparkles, Store, Tag, Trophy, UserPlus,
+  Scale, Shield, ShieldAlert, ShieldCheck, Sparkles, Store, Tag, Trash2, Trophy, UserPlus,
   Users,
 }

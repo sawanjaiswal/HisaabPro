@@ -29,6 +29,7 @@ vi.mock('../middleware/rate-limit.js', async (importOriginal) => {
 // ── Mock service layer (we test route wiring, not business logic) ───────────
 vi.mock('../services/document.service.js', () => ({
   createDocument: vi.fn(),
+  createDocumentWithPayment: vi.fn(),
   listDocuments: vi.fn(),
   getDocument: vi.fn(),
   updateDocument: vi.fn(),
@@ -184,7 +185,7 @@ describe('Document Routes — /api/documents', () => {
   // ── 4. POST /documents — success (201, owner) ──────────────────────────
   it('POST / creates document with 201 (owner)', async () => {
     mockOwnerPermission()
-    vi.mocked(documentService.createDocument).mockResolvedValue(MOCK_DOCUMENT as any)
+    vi.mocked(documentService.createDocumentWithPayment).mockResolvedValue(MOCK_DOCUMENT as any)
 
     const res = await authAgent(app)
       .post('/api/documents')
@@ -193,7 +194,7 @@ describe('Document Routes — /api/documents', () => {
 
     expect(res.body.success).toBe(true)
     expect(res.body.data.id).toBe('doc-1')
-    expect(documentService.createDocument).toHaveBeenCalledWith(
+    expect(documentService.createDocumentWithPayment).toHaveBeenCalledWith(
       TEST_USER.businessId,
       TEST_USER.userId,
       expect.objectContaining({ type: 'SALE_INVOICE', partyId: 'p-1' })

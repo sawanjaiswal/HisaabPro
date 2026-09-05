@@ -15,6 +15,7 @@ import { DashboardSkeleton } from '@/features/dashboard/components/DashboardSkel
 import { useAuth } from '@/context/AuthContext'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useEdgeSwipeBack } from '@/hooks/useEdgeSwipeBack'
+import { useHardwareBackButton } from '@/hooks/useHardwareBackButton'
 import { CalculatorOverlay, FeedbackWidget, Login, Landing, AdminCoupons } from '@/app.routes'
 
 export function PageRoute({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
@@ -82,6 +83,7 @@ const DETAIL_LEAF_PATTERN =
 // every authed screen without being tied to a route-conditional render.
 export function EdgeSwipeBack() {
   useEdgeSwipeBack()
+  useHardwareBackButton()
   return null
 }
 

@@ -163,7 +163,7 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
   },
   {
     id: 'account',
-    title: 'Account',
+    title: 'Account & Legal',
     items: [
       {
         id: 'active-sessions',
@@ -174,6 +174,9 @@ export const SETTINGS_SECTIONS: SettingsSection[] = [
         type: 'navigation',
       },
       { id: 'backup', label: 'Backup & Restore', description: 'Back up your data to Google Drive', icon: 'Cloud', route: ROUTES.SETTINGS_BACKUP, type: 'navigation' },
+      { id: 'privacy-policy', label: 'Privacy Policy', description: 'Review how we protect and handle your data', icon: 'FileText', route: '/privacy', type: 'navigation' },
+      { id: 'terms-of-service', label: 'Terms of Service', description: 'Terms and conditions for using HisaabPro', icon: 'Scale', route: '/terms', type: 'navigation' },
+      { id: 'delete-account', label: 'Delete Account', description: 'Permanently remove your account and all business data', icon: 'Trash2', type: 'select' },
     ],
   },
   {

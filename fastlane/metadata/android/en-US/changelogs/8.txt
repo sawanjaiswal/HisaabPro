@@ -1,0 +1,1 @@
+HisaabPro v1.0.6 - Core features, compliance, and stability improvements

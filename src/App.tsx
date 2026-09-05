@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { PublicLayoutRoute, PublicHealthPage, PublicInvoicePage } from '@/pages/public'
+import { PublicLayoutRoute, PublicHealthPage, PublicInvoicePage, PublicPrivacyPage, PublicTermsPage } from '@/pages/public'
 import { ROUTES } from '@/config/routes.config'
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary'
 import { ToastContainer } from '@/components/feedback/ToastContainer'
@@ -81,6 +81,9 @@ export function App() {
           <Route path="/p/invite/:token" element={<PageRoute><PublicInvitePage /></PageRoute>} />
         </Route>
         <Route path={ROUTES.HOME} element={<ErrorBoundary><PageRoute><HomeGate /></PageRoute></ErrorBoundary>} />
+        <Route path="/privacy" element={<PageRoute><PublicPrivacyPage /></PageRoute>} />
+        <Route path="/terms" element={<PageRoute><PublicTermsPage /></PageRoute>} />
+        <Route path="/delete-account" element={<Navigate to="/privacy#account-deletion" replace />} />
         <Route path={ROUTES.PRICING} element={<Navigate to="/#pricing" replace />} />
         <Route path={ROUTES.LOGIN} element={<PageRoute><GuestRoute><Login /></GuestRoute></PageRoute>} />
         <Route path={ROUTES.REGISTER} element={<PageRoute><GuestRoute><Register /></GuestRoute></PageRoute>} />

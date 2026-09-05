@@ -14,6 +14,7 @@ import { Header } from '@/components/layout/Header'
 import { HeroPage } from '@/components/layout/HeroPage'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { api } from '@/lib/api'
 import { ROUTES } from '@/config/routes.config'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/context/LanguageContext'
@@ -45,6 +46,8 @@ export default function SettingsPage() {
   const { handleLogout } = useAuth()
   const vertical = useVertical()
   const [confirmLogout, setConfirmLogout] = useState(false)
+  const [confirmDeleteAccount, setConfirmDeleteAccount] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const hasStock = vertical.defaults?.stockTracking === true
 
@@ -58,7 +61,26 @@ export default function SettingsPage() {
     navigate(ROUTES.LOGIN, { replace: true })
   }
 
+  async function doDeleteAccount() {
+    setIsDeleting(true)
+    try {
+      await api('/auth/account', { method: 'DELETE' })
+    } catch {
+      // best-effort cleanup
+    } finally {
+      setIsDeleting(false)
+      setConfirmDeleteAccount(false)
+      handleLogout()
+      navigate(ROUTES.LOGIN, { replace: true })
+    }
+  }
+
   function handleItemClick(item: SettingsItem) {
+    if (item.id === 'delete-account') {
+      setConfirmDeleteAccount(true)
+      return
+    }
+
     if (item.type === 'navigation' && item.route) {
       navigate(item.route)
       return
@@ -143,6 +165,16 @@ export default function SettingsPage() {
         title={t.logout}
         description={t.signOutConfirm}
         confirmLabel={t.logout}
+        isDanger
+      />
+
+      <ConfirmDialog
+        open={confirmDeleteAccount}
+        onClose={() => !isDeleting && setConfirmDeleteAccount(false)}
+        onConfirm={doDeleteAccount}
+        title="Delete Account & Business Data"
+        description="Are you sure you want to permanently delete your account? All business profiles, invoices, products, and customer records will be purged from our servers. This action cannot be undone."
+        confirmLabel={isDeleting ? 'Deleting...' : 'Delete Permanently'}
         isDanger
       />
     </AppShell>

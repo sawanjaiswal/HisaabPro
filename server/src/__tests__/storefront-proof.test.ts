@@ -122,10 +122,9 @@ function makeToken(businessId = 'biz-001') {
   )
 }
 
-async function getApp() {
-  const { createApp } = await import('../app.js')
-  return createApp()
-}
+import { createApp } from '../app.js'
+
+const app = createApp()
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -157,7 +156,6 @@ describe('Storefront PR4 proof gates', () => {
   // ── PATCH slug validation ────────────────────────────────────────────────
 
   it('PATCH with reserved slug "admin" → 400 RESERVED_SLUG', async () => {
-    const app = await getApp()
     const token = makeToken()
     const res = await request(app)
       .patch('/api/businesses/me/storefront')
@@ -172,7 +170,6 @@ describe('Storefront PR4 proof gates', () => {
   })
 
   it('PATCH with invalid slug "Foo Bar!" → 400 INVALID_SLUG', async () => {
-    const app = await getApp()
     const token = makeToken()
     const res = await request(app)
       .patch('/api/businesses/me/storefront')
@@ -185,7 +182,6 @@ describe('Storefront PR4 proof gates', () => {
   })
 
   it('PATCH with valid slug → 200, slug stored lowercased', async () => {
-    const app = await getApp()
     const token = makeToken()
 
     ;(prisma.business.findUniqueOrThrow as ReturnType<typeof vi.fn>).mockResolvedValue({
@@ -211,7 +207,6 @@ describe('Storefront PR4 proof gates', () => {
   })
 
   it('PATCH with taken slug (another business) → 409 SLUG_TAKEN', async () => {
-    const app = await getApp()
     const token = makeToken('biz-001')
 
     // Another business already owns this slug
@@ -232,7 +227,6 @@ describe('Storefront PR4 proof gates', () => {
   // ── Public store ─────────────────────────────────────────────────────────
 
   it('GET /api/p/store/:slug when isPublic=false → 404', async () => {
-    const app = await getApp()
 
     // findFirst returns null (store not public)
     ;(prisma.business.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null)
@@ -243,7 +237,6 @@ describe('Storefront PR4 proof gates', () => {
   })
 
   it('GET /api/p/store/:slug when isPublic=true → 200 sanitized payload (no costPrice)', async () => {
-    const app = await getApp()
 
     ;(prisma.business.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
       ...mockBusiness,

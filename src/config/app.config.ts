@@ -10,7 +10,7 @@ export const APP_NAME_MARK = {
 } as const
 export const APP_TAGLINE = 'Billing, Inventory & Payments for Indian Businesses' as const
 export const APP_DOMAIN = 'hisaabpro.in' as const
-export const APP_VERSION = '0.1.0' as const
+export const APP_VERSION = '1.0.7' as const
 
 export const API_URL = import.meta.env.VITE_API_URL || '/api'
 export const APP_ENV = import.meta.env.VITE_APP_ENV || 'development'

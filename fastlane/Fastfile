@@ -1,0 +1,72 @@
+default_platform(:android)
+
+REPO_ROOT = File.expand_path("..", __dir__)
+AAB_PATH = File.join(REPO_ROOT, "android/app/build/outputs/bundle/release/app-release.aab")
+
+platform :android do
+  desc "Build the signed release AAB"
+  lane :build do
+    Dir.chdir(REPO_ROOT) do
+      sh("npm run build")
+      sh("npx cap sync android")
+      Dir.chdir("android") do
+        sh("./gradlew bundleRelease")
+      end
+    end
+    UI.success("✓ Release AAB built successfully at #{AAB_PATH}")
+  end
+
+  desc "Upload to Internal Testing track"
+  lane :internal do |options|
+    upload_to_track(track: "internal", notes: options[:notes] || "Internal testing build v1.0.6")
+  end
+
+  desc "Upload to Closed Testing (alpha) track"
+  lane :alpha do |options|
+    upload_to_track(track: "alpha", notes: options[:notes] || "HisaabPro v1.0.6 - Core features, compliance, and stability improvements")
+  end
+
+  desc "Upload to Closed Testing (alias for alpha)"
+  lane :closed do |options|
+    alpha(options)
+  end
+
+  desc "Upload to Production track"
+  lane :production do |options|
+    rollout = options[:rollout] || "0.1"
+    upload_to_track(track: "production", notes: options[:notes], rollout: rollout)
+  end
+
+  desc "Generic track upload helper"
+  lane :upload_to_track do |options|
+    track_name = options[:track] || "alpha"
+    notes = options[:notes] || "HisaabPro v1.0.6 update"
+    rollout = options[:rollout]
+
+    UI.user_error!("AAB not found at #{AAB_PATH}. Run fastlane android build first.") unless File.exist?(AAB_PATH)
+
+    metadata_path = File.join(REPO_ROOT, "fastlane/metadata/android")
+    require "fileutils"
+    FileUtils.mkdir_p("#{metadata_path}/en-US/changelogs")
+    version_code = `grep 'versionCode' #{File.join(REPO_ROOT, 'android/app/build.gradle')} | head -1 | awk '{print $NF}'`.strip
+    changelog_file = "#{metadata_path}/en-US/changelogs/#{version_code}.txt"
+    File.write(changelog_file, notes)
+    UI.message("Wrote changelog for version #{version_code} -> #{notes}")
+
+    upload_args = {
+      track: track_name,
+      aab: AAB_PATH,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      metadata_path: metadata_path,
+      release_status: track_name == "production" ? "inProgress" : "completed",
+    }
+    upload_args[:rollout] = rollout if track_name == "production" && rollout
+
+    UI.important("Uploading #{AAB_PATH} to #{track_name} track on Google Play...")
+    upload_to_play_store(**upload_args)
+    UI.success("✓ Successfully uploaded to Google Play track: #{track_name}!")
+  end
+end

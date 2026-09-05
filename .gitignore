@@ -29,6 +29,10 @@ android/*.jks
 *.apk
 ios/
 
+# Fastlane
+fastlane/play-store-key.json
+fastlane/report.xml
+
 # Testing
 test-screenshots/
 screenshots/

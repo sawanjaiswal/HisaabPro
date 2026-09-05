@@ -3,25 +3,27 @@ import { renderHook, act } from '@testing-library/react'
 import { useLogin } from '../useLogin'
 import { createTestWrapper } from '@/test/query-wrapper'
 
-
 const mockNavigate = vi.fn()
 const mockSetUser = vi.fn()
+const mockSetBusinesses = vi.fn()
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom')
   return { ...actual, useNavigate: () => mockNavigate }
 })
 
-const mockSetBusinesses = vi.fn()
 vi.mock('@/context/AuthContext', () => ({
   useAuth: () => ({ setUser: mockSetUser, setBusinesses: mockSetBusinesses }),
 }))
 
-const mockDevLogin = vi.fn()
+const mockLogin = vi.fn()
 const mockSetCachedUser = vi.fn()
 const mockSetCachedBusinesses = vi.fn()
+
 vi.mock('@/lib/auth', () => ({
-  devLogin: (...args: unknown[]) => mockDevLogin(...args),
+  login: (...args: unknown[]) => mockLogin(...args),
+  devLogin: (...args: unknown[]) => mockLogin(...args),
+  getMe: vi.fn(),
   setCachedUser: (...args: unknown[]) => mockSetCachedUser(...args),
   setCachedBusinesses: (...args: unknown[]) => mockSetCachedBusinesses(...args),
 }))
@@ -35,7 +37,6 @@ vi.mock('@/lib/api', () => ({
 }))
 
 const wrapper = createTestWrapper()
-
 
 beforeEach(() => { vi.clearAllMocks() })
 
@@ -57,7 +58,7 @@ describe('useLogin', () => {
   })
 
   it('navigates to dashboard on successful login', async () => {
-    mockDevLogin.mockResolvedValue({ user: { id: '1' }, businesses: [{ id: 'b1' }], isNewUser: false })
+    mockLogin.mockResolvedValue({ user: { id: '1' }, businesses: [{ id: 'b1' }], isNewUser: false })
     const { result } = renderHook(() => useLogin(), { wrapper })
 
     act(() => { result.current.setUsername('admin') })
@@ -70,7 +71,7 @@ describe('useLogin', () => {
   })
 
   it('sets error on failed login', async () => {
-    mockDevLogin.mockRejectedValue(new Error('Invalid credentials'))
+    mockLogin.mockRejectedValue(new Error('Invalid credentials'))
     const { result } = renderHook(() => useLogin(), { wrapper })
 
     act(() => { result.current.setUsername('bad') })
@@ -83,7 +84,7 @@ describe('useLogin', () => {
 
   it('sets captchaRequired on CAPTCHA_REQUIRED error', async () => {
     const { ApiError } = await import('@/lib/api')
-    mockDevLogin.mockRejectedValue(new ApiError('captcha', 'CAPTCHA_REQUIRED', 429))
+    mockLogin.mockRejectedValue(new ApiError('captcha', 'CAPTCHA_REQUIRED', 429))
     const { result } = renderHook(() => useLogin(), { wrapper })
 
     await act(() => result.current.handleLogin())

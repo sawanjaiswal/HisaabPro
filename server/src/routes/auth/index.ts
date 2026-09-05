@@ -8,6 +8,7 @@ import refreshRouter from './refresh.js'
 import logoutRouter from './logout.js'
 import switchBusinessRouter from './switch-business.js'
 import meRouter from './me.js'
+import deleteAccountRouter from './delete-account.js'
 
 const router = Router()
 
@@ -20,5 +21,6 @@ router.use(refreshRouter)
 router.use(logoutRouter)
 router.use(switchBusinessRouter)
 router.use(meRouter)
+router.use(deleteAccountRouter)
 
 export default router

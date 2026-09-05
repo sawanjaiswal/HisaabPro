@@ -66,6 +66,21 @@ vi.mock('razorpay', () => ({
   })),
 }))
 
+vi.mock('bcryptjs', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('bcryptjs')>()
+  const defaultExport = actual.default || actual
+  return {
+    ...actual,
+    default: {
+      ...defaultExport,
+      hash: vi.fn().mockResolvedValue('$2a$12$e8k...mockhash'),
+      compare: vi.fn().mockResolvedValue(true),
+    },
+    hash: vi.fn().mockResolvedValue('$2a$12$e8k...mockhash'),
+    compare: vi.fn().mockResolvedValue(true),
+  }
+})
+
 // ---------------------------------------------------------------------------
 // Mock prisma — factory must be self-contained (no outer variable refs)
 // ---------------------------------------------------------------------------

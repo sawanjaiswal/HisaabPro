@@ -37,4 +37,10 @@ sed -i '' "s/\"version\": \"$CURRENT\"/\"version\": \"$NEW_VERSION\"/" "$PKG"
 sed -i '' "s/versionCode $CURRENT_CODE/versionCode $NEW_CODE/" "$GRADLE"
 sed -i '' "s/versionName \".*\"/versionName \"$NEW_VERSION\"/" "$GRADLE"
 
-echo "Updated package.json + android/app/build.gradle"
+# Update app.config.ts
+APP_CFG="$ROOT_DIR/src/config/app.config.ts"
+if [ -f "$APP_CFG" ]; then
+  sed -i '' "s/APP_VERSION = '.*'/APP_VERSION = '$NEW_VERSION'/" "$APP_CFG"
+fi
+
+echo "Updated package.json + android/app/build.gradle + src/config/app.config.ts"

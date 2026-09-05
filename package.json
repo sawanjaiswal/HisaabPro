@@ -1,7 +1,7 @@
 {
   "name": "hisaabpro",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.0.7",
   "type": "module",
   "scripts": {
     "predev": "sh scripts/free-dev-ports.sh 5002",
@@ -22,6 +22,9 @@
     "android:live": "npx cap run android --livereload --external",
     "release:apk": "./scripts/build-release.sh apk",
     "release:aab": "./scripts/build-release.sh aab",
+    "deploy:internal": "fastlane android internal",
+    "deploy:alpha": "fastlane android alpha",
+    "deploy:production": "fastlane android production",
     "version:bump": "./scripts/bump-version.sh",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -46,6 +49,7 @@
   "dependencies": {
     "@capacitor-mlkit/barcode-scanning": "^8.1.0",
     "@capacitor/android": "^8.2.0",
+    "@capacitor/app": "^8.1.1",
     "@capacitor/core": "^8.2.0",
     "@capacitor/keyboard": "^8.0.3",
     "@radix-ui/react-accordion": "^1.2.12",
