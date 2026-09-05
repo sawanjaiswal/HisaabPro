@@ -1,5 +1,28 @@
-# Backlog — resume 2026-06-01
+# Backlog — HisaabPro
 
+> **2026-09-06 — Google Play 14-day Testing Audit & Release SHIPPED (commit `62ff40b9`).**
+> - **Google Play Track:** v1.0.7 (versionCode 8) signed `.aab` deployed to Closed Testing (`alpha`).
+> - **Compliance & Usability:** In-app and public web account deletion flow (`DELETE /api/auth/account`, `/privacy`, `/terms`, `/delete-account`), native hardware back button handling via `@capacitor/app`.
+> - **All Feature Flags Active (100%):** `STAFF_HR`, `TRANSACTION_PIN`, `DATA_IMPORT`, `V2_APPOINTMENTS`, `INVOICE_TEMPLATES` enabled by default across frontend & backend.
+> - **Mechanical & Test Health:** 17/17 repo enforcement checks green, 100% passing tests (157 frontend test files / 1,497 tests + 169 backend test files / 1,407 tests).
+>
+> 🔵 **PRIORITIES FOR TOMORROW (2026-09-07):**
+> 1. ⬜ **Feature #143 — WhatsApp Inbound Billing Bot**:
+>    - Add `POST /api/webhooks/aisensy/inbound` with HMAC-SHA256 signature verification.
+>    - Build NLP parser service extracting party + item + quantity to create `Document` (`status: DRAFT`).
+>    - Respond via WhatsApp template with one-tap invoice review/payment link.
+> 2. ⬜ **Vertical Epic V4 — Staff Assignment & Commission Split on Jobs/Orders**:
+>    - Create `JobStaffAssignment` Prisma model and migration.
+>    - Build `commission-split.service.ts` with percentage/flat split computation.
+>    - Wire staff assignment picker into `JobFormDrawer.tsx` + automated ledger credit on invoice settlement.
+> 3. ⬜ **Full 12,000+ HSN/SAC Master Catalog**:
+>    - Seed `HsnMaster` table with complete CBIC dataset.
+>    - Add PostgreSQL `pg_trgm` GIN index for instant fuzzy search.
+> 4. ⬜ **Production Credentials Activation**:
+>    - Set Render environment variables: Razorpay Webhook Secret, FCM server key, Resend API key, Aisensy credentials.
+>
+> ---
+>
 > **2026-07-25 — Create-Invoice gold-standard SHIPPED (commit `c9e48b6f`).** Master
 > doc: `docs/INVOICE_GOLD_STANDARD.md`. Phases 0–4 (keyboard grid) landed on
 > `redesign/mobile-first-sweep`: GST-first-class summary + payment-at-creation
