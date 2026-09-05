@@ -42,25 +42,15 @@ export const FEATURES = {
   /**
    * Phase 6 Staff & HR (#135 Attendance, #136 Payroll, #137 Slips, #138
    * Multi-firm tenancy elevation, #139 Audit Trail).
-   *
-   * Gates: /api/hr/*, /api/payroll/*, /api/audit/*, multi-firm switch UI.
-   * Independent of TRANSACTION_PIN (a tenant can have HR on without PIN —
-   * though FINALIZE will then run without PIN protection; we recommend
-   * shipping both flags together per architecture §16).
    */
   STAFF_HR: {
-    enabled: envBool('FEATURE_STAFF_HR', false),
-    cohortPercent: envInt('FEATURE_STAFF_HR_COHORT_PCT', 0),
+    enabled: envBool('FEATURE_STAFF_HR', true),
+    cohortPercent: envInt('FEATURE_STAFF_HR_COHORT_PCT', 100),
   },
 
   /**
    * Phase 6 Transaction PIN (#140). Gates: requireRecentPin middleware
-   * activation. When disabled, PIN-gated routes pass through without
-   * grace-cookie checks — useful for emergency rollback if PIN issuance
-   * breaks for a cohort.
-   *
-   * Default ON: existing tenants have already enrolled in PIN through
-   * PR3, so flipping it off would silently widen the attack surface.
+   * activation.
    */
   TRANSACTION_PIN: {
     enabled: envBool('FEATURE_TRANSACTION_PIN', true),
@@ -68,30 +58,24 @@ export const FEATURES = {
   },
 
   /**
-   * Phase 7 slice 7.1A — Party Import. Gates: /api/imports/*.
-   * Default OFF; rollout playbook lives in ROLLOUT_PHASE7.md (#TBD).
+   * Phase 7 slice 7.1A — Party & Data Import. Gates: /api/imports/*.
    */
   DATA_IMPORT: {
-    enabled: envBool('FEATURE_DATA_IMPORT', false),
-    cohortPercent: envInt('FEATURE_DATA_IMPORT_COHORT_PCT', 0),
+    enabled: envBool('FEATURE_DATA_IMPORT', true),
+    cohortPercent: envInt('FEATURE_DATA_IMPORT_COHORT_PCT', 100),
   },
 
   /**
-   * V2 Appointments (Phase 1B). Gates /api/appointments/*, /api/p/booking/*,
-   * and the rotate-booking-secret endpoint. SALON+CLINIC verticals only —
-   * route layer enforces vertical scope on top of this flag.
-   * Default OFF; 4-stage cohort ramp via `FEATURE_V2_APPOINTMENTS_COHORT_PCT`.
+   * V2 Appointments. Gates /api/appointments/*, /api/p/booking/*.
    */
   V2_APPOINTMENTS: {
-    enabled: envBool('FEATURE_V2_APPOINTMENTS', false),
-    cohortPercent: envInt('FEATURE_V2_APPOINTMENTS_COHORT_PCT', 0),
+    enabled: envBool('FEATURE_V2_APPOINTMENTS', true),
+    cohortPercent: envInt('FEATURE_V2_APPOINTMENTS_COHORT_PCT', 100),
   },
 
   /**
    * Invoice Templates & Settings. Gates /api/templates/* and
-   * /api/invoice-settings/*. Default ON — it closes a live 404 for the
-   * already-shipped `/settings/templates` + `/settings/invoice` FE. Flip
-   * `FEATURE_INVOICE_TEMPLATES=false` to instantly dark-launch off.
+   * /api/invoice-settings/*.
    */
   INVOICE_TEMPLATES: {
     enabled: envBool('FEATURE_INVOICE_TEMPLATES', true),

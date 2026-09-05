@@ -36,21 +36,15 @@ export const FEATURES = {
   /**
    * Phase 6 Staff & HR. Gates BottomNav "HR" entry, Side-nav HR section,
    * dashboard "Payroll" tile, /hr/* routes in App.tsx.
-   *
-   * When disabled, the routes still mount (lazy chunks) but the entry
-   * points are hidden. A direct URL paste still loads the page — server
-   * will return 404 NOT_AVAILABLE per FEATURES.STAFF_HR on the BE.
    */
   STAFF_HR: {
-    enabled: envBool(import.meta.env.VITE_FEATURE_STAFF_HR, false),
-    cohortPercent: envInt(import.meta.env.VITE_FEATURE_STAFF_HR_COHORT_PCT, 0),
+    enabled: envBool(import.meta.env.VITE_FEATURE_STAFF_HR, true),
+    cohortPercent: envInt(import.meta.env.VITE_FEATURE_STAFF_HR_COHORT_PCT, 100),
   },
 
   /**
    * Phase 6 Transaction PIN. Gates the PIN-setup nudge on dashboard +
-   * the PIN modal route. When disabled, PIN-protected routes simply don't
-   * pop the modal (server-side check is also off via FEATURES.TRANSACTION_PIN
-   * on the BE).
+   * the PIN modal route.
    */
   TRANSACTION_PIN: {
     enabled: envBool(import.meta.env.VITE_FEATURE_TRANSACTION_PIN, true),
@@ -58,15 +52,11 @@ export const FEATURES = {
   },
 
   /**
-   * V2 Appointments — gates BottomNav "Calendar" entry and /appointments
-   * routes. Server enforces the real per-business cohort via
-   * FEATURES.V2_APPOINTMENTS on the BE — the FE flag hides entry points so
-   * out-of-cohort users don't see broken-when-clicked links. Default OFF
-   * until FE-2 ships the full surface.
+   * V2 Appointments — gates BottomNav "Calendar" entry and /appointments routes.
    */
   V2_APPOINTMENTS: {
-    enabled: envBool(import.meta.env.VITE_FEATURE_V2_APPOINTMENTS, false),
-    cohortPercent: envInt(import.meta.env.VITE_FEATURE_V2_APPOINTMENTS_COHORT_PCT, 0),
+    enabled: envBool(import.meta.env.VITE_FEATURE_V2_APPOINTMENTS, true),
+    cohortPercent: envInt(import.meta.env.VITE_FEATURE_V2_APPOINTMENTS_COHORT_PCT, 100),
   },
 } as const
 
