@@ -16,7 +16,7 @@
 -- migration is considered applied.
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "hsn_description_trgm"
+CREATE INDEX IF NOT EXISTS "hsn_description_trgm"
   ON "HsnCode" USING gin ("description" gin_trgm_ops);
 
 DROP INDEX IF EXISTS "HsnCode_description_idx";

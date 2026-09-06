@@ -19,5 +19,5 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 -- Both columns need `gin_trgm_ops` — GIN access method requires an opclass
 -- on every indexed column (no default opclass for text under GIN).
-CREATE INDEX CONCURRENTLY IF NOT EXISTS "product_business_name_trgm"
+CREATE INDEX IF NOT EXISTS "product_business_name_trgm"
   ON "Product" USING gin ("businessId" gin_trgm_ops, "name" gin_trgm_ops);
