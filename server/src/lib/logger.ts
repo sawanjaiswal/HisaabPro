@@ -81,8 +81,8 @@ const logger = winston.createLogger({
   ],
 })
 
-// File transports for production
-if (process.env.NODE_ENV === 'production') {
+// Optional file transports (disabled by default in containerized environments)
+if (process.env.LOG_TO_FILES === 'true') {
   logger.add(new winston.transports.File({
     filename: 'logs/error.log',
     level: 'error',
