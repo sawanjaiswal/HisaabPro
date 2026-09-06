@@ -8,6 +8,10 @@
 
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://api.hisaabpro.in/api/:path*"
+    },
+    {
       "source": "/((?!assets|icons|images|manifest|sw|workbox|privacy|delete-account|offline|robots|sitemap|favicon|icon-).*)",
       "destination": "/index.html"
     }

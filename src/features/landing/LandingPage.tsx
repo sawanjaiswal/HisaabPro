@@ -1,6 +1,6 @@
 /** Landing Page — HisaabPro conversion flow: Hero → Social Proof → Features → How It Works → Pricing → Testimonials → FAQ → CTA */
 
-import { useState, useLayoutEffect, useEffect, lazy, Suspense } from 'react'
+import { useLayoutEffect, useEffect, lazy, Suspense } from 'react'
 import { LandingSEO } from './components/LandingSEO'
 import { LP_SECTIONS } from '@/config/landing-links.config'
 
@@ -21,12 +21,12 @@ const LazyCTA = lazy(() => import('@/components/ui/cta-section').then(m => ({ de
 const LazyFooter = lazy(() => import('@/components/ui/footer-section').then(m => ({ default: m.Footer })))
 const LazyStickyMobileCTA = lazy(() => import('@/components/ui/sticky-mobile-cta').then(m => ({ default: m.StickyMobileCTA })))
 
+import { useTheme } from '@/context/ThemeContext'
 import './landing.css'
 
 export default function LandingPage() {
-  const [isDark, setIsDark] = useState(true)
-
-  const toggleTheme = () => setIsDark(prev => !prev)
+  const { theme, toggleTheme } = useTheme()
+  const isDark = theme === 'dark'
 
   // Restore scroll position on mount + throttled scroll save.
   // Hash (#pricing, #features, …) wins over saved position — poll for the
@@ -63,15 +63,12 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Toggle dark class on <html> — useLayoutEffect to avoid flash
+  // Toggle dark class on <html> — useLayoutEffect to keep class in sync
   useLayoutEffect(() => {
     if (isDark) {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
-    }
-    return () => {
-      document.documentElement.classList.add('dark')
     }
   }, [isDark])
 

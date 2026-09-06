@@ -16,6 +16,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useEdgeSwipeBack } from '@/hooks/useEdgeSwipeBack'
 import { useHardwareBackButton } from '@/hooks/useHardwareBackButton'
+import { hasCachedSession } from '@/lib/auth'
 import { CalculatorOverlay, FeedbackWidget, Login, Landing, AdminCoupons } from '@/app.routes'
 
 export function PageRoute({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
@@ -53,7 +54,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
 export function GuestRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth()
-  if (isLoading) return <Spinner fullScreen />
+  if (isLoading && hasCachedSession()) return <Spinner fullScreen />
   if (isAuthenticated) return <Navigate to={ROUTES.DASHBOARD} replace />
   return <>{children}</>
 }
