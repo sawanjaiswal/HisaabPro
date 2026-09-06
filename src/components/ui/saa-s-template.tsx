@@ -233,11 +233,11 @@ const Hero = React.memo(({ isDark }: { isDark: boolean }) => {
       </motion.aside>
 
       {/* h1 gradient controlled by landing.css tokens */}
-      <motion.h1 {...fade(0.2)} className="text-center max-w-3xl px-6 leading-tight mb-6 font-medium" style={{ fontSize: 'var(--fs-2xl)' }}>
+      <motion.h1 {...fade(0.2)} className="text-center max-w-4xl px-6 leading-tight mb-6 font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight">
         Your Entire Business.<br />In Your Pocket.
       </motion.h1>
 
-      <motion.p {...fade(0.3)} className="text-sm md:text-base text-center max-w-2xl px-6 mb-10 lp-text-muted">
+      <motion.p {...fade(0.3)} className="text-base sm:text-lg md:text-xl text-center max-w-2xl px-6 mb-10 lp-text-muted leading-relaxed">
         Invoices, inventory, payments, WhatsApp sharing — all from your phone. Built for Indian businesses.
       </motion.p>
 

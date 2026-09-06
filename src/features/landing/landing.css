@@ -263,12 +263,12 @@ body:has(.landing-root) {
   letter-spacing: -0.03em;
 }
 
-.landing-root h1 { font-size: 3.5rem; font-weight: 600; line-height: 1.1; }
-.landing-root h2 { font-size: var(--fs-5xl); font-weight: 600; line-height: 1.15; }
-.landing-root h3 { font-size: var(--fs-4xl); font-weight: 600; line-height: 1.2; }
-.landing-root h4 { font-size: var(--fs-2xl); font-weight: 500; line-height: 1.3; }
-.landing-root h5 { font-size: var(--fs-xl); font-weight: 500; line-height: 1.4; }
-.landing-root h6 { font-size: var(--fs-base); font-weight: 500; line-height: 1.4; }
+.landing-root h1 { font-size: clamp(2.25rem, 5vw + 0.5rem, 3.75rem); font-weight: 700; line-height: 1.15; }
+.landing-root h2 { font-size: clamp(1.875rem, 3.5vw + 0.5rem, 2.75rem); font-weight: 700; line-height: 1.2; }
+.landing-root h3 { font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2rem); font-weight: 600; line-height: 1.25; }
+.landing-root h4 { font-size: 1.25rem; font-weight: 600; line-height: 1.3; }
+.landing-root h5 { font-size: 1.125rem; font-weight: 500; line-height: 1.4; }
+.landing-root h6 { font-size: 1rem; font-weight: 500; line-height: 1.4; }
 
 /* Reset heading gradient for sections with their own text colors */
 .landing-root .lp-heading-plain,
