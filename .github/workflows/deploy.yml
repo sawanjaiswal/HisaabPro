@@ -1,0 +1,27 @@
+name: deploy-production
+
+on:
+  push:
+    branches:
+      - deploy/production
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Coolify (AWS Lightsail)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Trigger Backend Deployment
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+        run: |
+          echo "Triggering hisaabpro-backend deploy on Coolify (AWS Lightsail)..."
+          RESPONSE=$(curl -s -X POST \
+            -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
+            "http://13.200.234.40:8000/api/v1/deploy?uuid=aokz8bhkdqv1s67cxpbi46he&force=true")
+          echo "Backend deploy response: ${RESPONSE}"

@@ -1,8 +1,10 @@
+import { useEffect } from 'react'
 import { Phone } from 'lucide-react'
 import { Input } from '../../../components/ui/Input'
 import { Button } from '../../../components/ui/Button'
 import { PHONE_MAX_LENGTH, PHONE_REGEX } from '../auth.constants'
 import { useLanguage } from '@/hooks/useLanguage'
+import { requestPhoneNumberHint, extractTenDigitNumber, isPhoneHintAvailable } from '../phone-number-hint'
 
 interface PhoneStepProps {
   phone: string
@@ -15,6 +17,21 @@ interface PhoneStepProps {
 export function PhoneStep({ phone, onPhoneChange, onSubmit, loading, error }: PhoneStepProps) {
   const { t } = useLanguage()
   const isValid = PHONE_REGEX.test(phone)
+
+  useEffect(() => {
+    if (!phone && isPhoneHintAvailable()) {
+      requestPhoneNumberHint()
+        .then((outcome) => {
+          if (outcome.kind === 'ok') {
+            const tenDigit = extractTenDigitNumber(outcome.phoneNumber)
+            if (tenDigit) {
+              onPhoneChange(tenDigit)
+            }
+          }
+        })
+        .catch(() => {})
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, PHONE_MAX_LENGTH)

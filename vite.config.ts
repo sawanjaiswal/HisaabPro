@@ -28,6 +28,9 @@ export default defineConfig({
         ],
       },
       workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        globIgnores: ['**/vendor-pdf-*.js', '**/vendor-ocr-*.js', '**/vendor-scan-*.js', '**/react-pdf.*.js', '**/*.map'],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         // Cache navigation requests → offline fallback
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
@@ -86,6 +89,24 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    target: 'esnext',
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-query': ['@tanstack/react-query'],
+          'vendor-ui': ['lucide-react', 'clsx', 'tailwind-merge', 'class-variance-authority'],
+          'vendor-motion': ['motion'],
+          'vendor-db': ['dexie'],
+          'vendor-sentry': ['@sentry/react'],
+          'vendor-pdf': ['@react-pdf/renderer'],
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),

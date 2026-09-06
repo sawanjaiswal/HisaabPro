@@ -1,8 +1,8 @@
 /**
  * Razorpay Webhook Event Handlers — routes events through state-machine writer.
  *
- * SECURITY P1-A: Replay-age check — created_at must be ≤ 5 min old.
- * SECURITY P1-F: businessId resolved from razorpaySubscriptionId DB lookup (never from payload).
+ * SECURITY P1-A: Replay-age check — created_at must be <= 5 min old.
+ * SECURITY P1-F: businessId resolved from razorpaySubscriptionId DB lookup.
  * SECURITY P2-A: payload.id presence validated before idempotency insert.
  * SECURITY P2-I: amount parsed as Int paise; currency validated = INR.
  */
@@ -12,13 +12,22 @@ import logger from '../lib/logger.js'
 import type { PlanTier } from '../config/plans.js'
 import { applySubscriptionEvent } from './subscription/subscription.writer.js'
 import type { StateTrigger, SubscriptionPlanTier } from './subscription/subscription.types.js'
+import {
+  resolveTokenPaymentContext,
+  resolveTokenTokenContext,
+} from './subscription/token-engine/token-webhook.resolve.js'
+import {
+  handleTokenConfirmed,
+  handleTokenStatusChange,
+  handleTokenPaymentCaptured,
+  handleTokenPaymentFailed,
+} from './subscription/token-engine/token-webhook.handlers.js'
+import type {
+  TokenWebhookPaymentEntity,
+  TokenWebhookTokenEntity,
+} from './subscription/token-engine/token-engine.types.js'
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-/** Max age of a Razorpay webhook event (5 minutes). P1-A */
 const MAX_EVENT_AGE_MS = 5 * 60 * 1000
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface SubscriptionEntity {
   id: string
@@ -37,12 +46,13 @@ interface PaymentEntity {
 }
 
 export interface WebhookPayload {
-  id?: string           // Razorpay event ID — required (P2-A)
+  id?: string
   event: string
-  created_at?: number   // Unix seconds — used for replay-age check (P1-A)
+  created_at?: number
   payload: {
     subscription?: { entity: SubscriptionEntity }
     payment?: { entity: PaymentEntity }
+    token?: { entity: TokenWebhookTokenEntity }
   }
 }
 
@@ -52,15 +62,10 @@ export interface WebhookResult {
   stale?: boolean
 }
 
-// ─── Replay-age check (P1-A) ─────────────────────────────────────────────────
-
 function isStale(createdAt: number | undefined): boolean {
-  if (!createdAt) return false  // No timestamp = trust it (Razorpay may omit on test)
-  const ageMs = Date.now() - createdAt * 1000
-  return ageMs > MAX_EVENT_AGE_MS
+  if (!createdAt) return false
+  return Date.now() - createdAt * 1000 > MAX_EVENT_AGE_MS
 }
-
-// ─── Plan tier resolver ───────────────────────────────────────────────────────
 
 function resolvePlanTier(razorpayPlanId: string | undefined): PlanTier {
   if (!razorpayPlanId) return 'FREE'
@@ -70,12 +75,7 @@ function resolvePlanTier(razorpayPlanId: string | undefined): PlanTier {
   return 'FREE'
 }
 
-// ─── businessId + subscriptionId resolution (P1-F) ───────────────────────────
-
-async function resolveSubscription(
-  razorpaySubId: string,
-): Promise<{ businessId: string; subscriptionId: string } | null> {
-  // SECURITY P1-F: NEVER use businessId from payload — resolve from DB
+async function resolveSubscription(razorpaySubId: string) {
   const sub = await prisma.subscription.findFirst({
     where: { razorpaySubId },
     select: { businessId: true, id: true },
@@ -83,8 +83,6 @@ async function resolveSubscription(
   if (!sub) return null
   return { businessId: sub.businessId, subscriptionId: sub.id }
 }
-
-// ─── Amount parse (P2-I) ─────────────────────────────────────────────────────
 
 function parsePaiseAmount(raw: number | undefined): number {
   if (!raw) return 0
@@ -95,23 +93,14 @@ function parsePaiseAmount(raw: number | undefined): number {
   return parsed
 }
 
-// ─── Main dispatcher ──────────────────────────────────────────────────────────
-
 export async function processWebhookEvent(payload: WebhookPayload): Promise<WebhookResult> {
-  // P2-A: require event ID
   if (!payload.id || typeof payload.id !== 'string') {
     logger.warn('razorpay.webhook_missing_event_id', { event: payload.event })
     return { handled: false }
   }
 
-  // P1-A: replay-age check
   if (isStale(payload.created_at)) {
-    logger.warn('razorpay.webhook_stale', {
-      eventId: payload.id,
-      event: payload.event,
-      createdAt: payload.created_at,
-      ageMs: payload.created_at ? Date.now() - payload.created_at * 1000 : null,
-    })
+    logger.warn('razorpay.webhook_stale', { eventId: payload.id, event: payload.event })
     return { handled: true, stale: true }
   }
 
@@ -120,14 +109,46 @@ export async function processWebhookEvent(payload: WebhookPayload): Promise<Webh
 
   try {
     switch (payload.event) {
+      case 'token.confirmed': {
+        const token = payload.payload.token?.entity
+        if (!token) return { handled: false }
+        const ctx = await resolveTokenTokenContext(token)
+        if (!ctx) return { handled: false }
+        await handleTokenConfirmed(ctx, token)
+        return { handled: true }
+      }
+
+      case 'token.rejected':
+      case 'token.paused':
+      case 'token.cancelled': {
+        const token = payload.payload.token?.entity
+        if (!token) return { handled: false }
+        const ctx = await resolveTokenTokenContext(token)
+        if (!ctx) return { handled: false }
+        const status = payload.event === 'token.paused' ? 'PAUSED' : payload.event === 'token.cancelled' ? 'REVOKED' : 'FAILED'
+        const reason = payload.event === 'token.cancelled' ? 'user_cancelled' : 'provider_declined'
+        await handleTokenStatusChange(ctx, status, reason)
+        return { handled: true }
+      }
+
+      case 'payment.captured':
+      case 'payment.authorized':
+      case 'order.paid': {
+        if (payment) {
+          const ctx = await resolveTokenPaymentContext(payment as TokenWebhookPaymentEntity)
+          if (ctx) {
+            await handleTokenPaymentCaptured(ctx, payment as TokenWebhookPaymentEntity)
+            return { handled: true }
+          }
+        }
+        return { handled: false }
+      }
+
       case 'subscription.activated':
       case 'subscription.charged': {
         if (!sub) return { handled: false }
         const resolved = await resolveSubscription(sub.id)
-        if (!resolved) {
-          logger.warn('razorpay.webhook_no_subscription', { event: payload.event, subId: sub.id })
-          return { handled: false }
-        }
+        if (!resolved) return { handled: false }
         const planTier = resolvePlanTier(sub.plan_id) as SubscriptionPlanTier
         const trigger: StateTrigger = payload.event === 'subscription.charged'
           ? 'payment.captured.recurring'
@@ -140,10 +161,7 @@ export async function processWebhookEvent(payload: WebhookPayload): Promise<Webh
           razorpayEventId: payload.id,
           actorType: 'WEBHOOK',
           planTier,
-          payload: {
-            razorpaySubId: sub.id,
-            currentEnd: sub.current_end,
-          },
+          payload: { razorpaySubId: sub.id, currentEnd: sub.current_end },
         })
         return { handled: true }
       }
@@ -166,17 +184,20 @@ export async function processWebhookEvent(payload: WebhookPayload): Promise<Webh
 
       case 'subscription.paused':
       case 'payment.failed': {
+        if (payment) {
+          const tokenCtx = await resolveTokenPaymentContext(payment as TokenWebhookPaymentEntity)
+          if (tokenCtx) {
+            await handleTokenPaymentFailed(tokenCtx, payment as TokenWebhookPaymentEntity)
+            return { handled: true }
+          }
+        }
         const subId = sub?.id ?? payment?.subscription_id
         if (!subId) return { handled: false }
         const resolved = await resolveSubscription(subId)
         if (!resolved) return { handled: false }
 
-        // P2-I: validate amount is INR
-        if (payment?.currency && payment.currency !== 'INR') {
-          logger.warn('razorpay.webhook_non_inr', { currency: payment.currency, eventId: payload.id })
-          return { handled: false }
-        }
-        parsePaiseAmount(payment?.amount) // validate paise format (P2-I)
+        if (payment?.currency && payment.currency !== 'INR') return { handled: false }
+        parsePaiseAmount(payment?.amount)
 
         await applySubscriptionEvent({
           businessId: resolved.businessId,
@@ -190,11 +211,9 @@ export async function processWebhookEvent(payload: WebhookPayload): Promise<Webh
       }
 
       default:
-        logger.debug('razorpay.webhook_unhandled', { event: payload.event, eventId: payload.id })
         return { handled: false }
     }
   } catch (err) {
-    // P2002 = duplicate razorpayEventId = idempotent
     const e = err as { code?: string }
     if (e.code === 'P2002') {
       logger.info('razorpay.webhook_idempotent', { eventId: payload.id, event: payload.event })

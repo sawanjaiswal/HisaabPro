@@ -6,19 +6,23 @@
 > - **All Feature Flags Active (100%):** `STAFF_HR`, `TRANSACTION_PIN`, `DATA_IMPORT`, `V2_APPOINTMENTS`, `INVOICE_TEMPLATES` enabled by default across frontend & backend.
 > - **Mechanical & Test Health:** 17/17 repo enforcement checks green, 100% passing tests (157 frontend test files / 1,497 tests + 169 backend test files / 1,407 tests).
 >
-> 🔵 **PRIORITIES FOR TOMORROW (2026-09-07):**
-> 1. ⬜ **Feature #143 — WhatsApp Inbound Billing Bot**:
->    - Add `POST /api/webhooks/aisensy/inbound` with HMAC-SHA256 signature verification.
->    - Build NLP parser service extracting party + item + quantity to create `Document` (`status: DRAFT`).
->    - Respond via WhatsApp template with one-tap invoice review/payment link.
-> 2. ⬜ **Vertical Epic V4 — Staff Assignment & Commission Split on Jobs/Orders**:
+> 🔵 **STATUS & PRIORITIES:**
+> 1. ✅ **Razorpay S2S Token Mandate Billing Engine (DudhHisaab Port)**:
+>    - `TokenChargeAttempt` and extended `UpiMandate` models in schema.
+>    - Token billing client (`razorpay-token.client.ts`), registration adapters (`checkout_order`, `reglink`).
+>    - Token mandate service, lifecycle transitions, activation, retry ladder, poison resolver, and hourly scheduler.
+>    - Webhook event dispatcher (`token.confirmed`, `token.cancelled`, `payment.authorized`, `payment.failed`).
+>    - API routes (`GET /availability`, `POST /token-checkout`, `POST /mandate/cancel`, `POST /mandate/abandon`) + FE hook `useTokenBillingAvailability`.
+> 2. ⏸️ **Feature #143 — WhatsApp Inbound Billing Bot (Deferred — Creds Pending)**:
+>    - Blocked on Aisensy WhatsApp credentials & verification.
+> 3. ⬜ **Vertical Epic V4 — Staff Assignment & Commission Split on Jobs/Orders**:
 >    - Create `JobStaffAssignment` Prisma model and migration.
 >    - Build `commission-split.service.ts` with percentage/flat split computation.
 >    - Wire staff assignment picker into `JobFormDrawer.tsx` + automated ledger credit on invoice settlement.
-> 3. ⬜ **Full 12,000+ HSN/SAC Master Catalog**:
+> 4. ⬜ **Full 12,000+ HSN/SAC Master Catalog**:
 >    - Seed `HsnMaster` table with complete CBIC dataset.
 >    - Add PostgreSQL `pg_trgm` GIN index for instant fuzzy search.
-> 4. ⬜ **Production Credentials Activation**:
+> 5. ⬜ **Production Credentials Activation**:
 >    - Set Render environment variables: Razorpay Webhook Secret, FCM server key, Resend API key, Aisensy credentials.
 >
 > ---

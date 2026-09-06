@@ -81,6 +81,15 @@ export const FEATURES = {
     enabled: envBool('FEATURE_INVOICE_TEMPLATES', true),
     cohortPercent: envInt('FEATURE_INVOICE_TEMPLATES_COHORT_PCT', 100),
   },
+
+  /**
+   * Token Billing Engine. Gates /api/subscription/token-checkout and
+   * recurring token mandate processing.
+   */
+  TOKEN_BILLING: {
+    enabled: envBool('FEATURE_TOKEN_BILLING', true),
+    cohortPercent: envInt('FEATURE_TOKEN_BILLING_COHORT_PCT', 100),
+  },
 } as const
 
 export type FeatureKey = keyof typeof FEATURES

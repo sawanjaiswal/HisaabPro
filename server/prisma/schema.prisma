@@ -291,9 +291,10 @@ model Business {
   sharedLinks SharedLink[]
 
   // subscription-port — new relations
-  subscriptionEvents SubscriptionEvent[]
-  businessAddons     BusinessAddon[]
-  upiMandates        UpiMandate[]
+  subscriptionEvents  SubscriptionEvent[]
+  businessAddons      BusinessAddon[]
+  upiMandates         UpiMandate[]
+  tokenChargeAttempts TokenChargeAttempt[]
 
   // Epic C PR4 — Online Storefront (#121, migration: epic_c_storefront_fields)
   storefrontSlug     String? @unique // null = not configured; stored lowercased at write time
@@ -2922,9 +2923,10 @@ model Subscription {
   overflowGraceUntil      DateTime? // when overflow grace period ends
   lastWebhookEventId      String? // last Razorpay event ID processed
 
-  business           Business            @relation(fields: [businessId], references: [id])
-  subscriptionEvents SubscriptionEvent[]
-  upiMandates        UpiMandate[]
+  business            Business             @relation(fields: [businessId], references: [id])
+  subscriptionEvents  SubscriptionEvent[]
+  upiMandates         UpiMandate[]
+  tokenChargeAttempts TokenChargeAttempt[]
 
   @@index([businessId])
   @@index([status])
@@ -2993,27 +2995,68 @@ model BusinessAddon {
   @@index([businessId, status])
 }
 
-/// UPI Autopay mandate records.
+/// UPI Autopay mandate records (supports token billing engine).
 model UpiMandate {
+  id                 String    @id @default(cuid())
+  businessId         String
+  subscriptionId     String
+  userId             String?
+  razorpayCustomerId String?
+  razorpayMandateId  String?   @unique
+  razorpayTokenId    String?   @unique
+  status             String    @default("PENDING") // PENDING | ACTIVE | PAUSED | REVOKED | FAILED | CANCELLED | EXPIRED
+  statusReason       String?   // user_abandoned | ttl_expired | superseded_by_retry | provider_declined | provider_confirmed | user_cancelled
+  planTier           String?   // PRO | BUSINESS | PRO_MAX
+  billingCycle       String?   // MONTHLY | YEARLY
+  maxAmountPaise     Int
+  frequency          String    @default("as_presented") // as_presented | MONTHLY | YEARLY
+  nextChargeAt       DateTime?
+  lastChargeAt       DateTime?
+  vpaLast4           String?   // masked — last 4 chars of VPA only, never full VPA
+  vpa                String?
+  expireAt           DateTime?
+  registrationMode   String    @default("checkout_order") // checkout_order | reglink | s2s_intent
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  business            Business             @relation(fields: [businessId], references: [id], onDelete: Restrict)
+  subscription        Subscription         @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
+  tokenChargeAttempts TokenChargeAttempt[]
+
+  @@index([businessId, status])
+  @@index([status, nextChargeAt])
+  @@index([status, createdAt])
+}
+
+/// Token billing ledger — One row per debit attempt.
+/// receiptKey (20-char nanoid) is BOTH the Razorpay order receipt (<=40-char cap) and the resolver's exact lookup key.
+model TokenChargeAttempt {
   id                String    @id @default(cuid())
   businessId        String
+  userId            String
   subscriptionId    String
-  razorpayMandateId String?   @unique
-  razorpayTokenId   String?
-  status            String    @default("PENDING") // PENDING | ACTIVE | PAUSED | REVOKED | FAILED
-  maxAmountPaise    Int
-  frequency         String // MONTHLY | YEARLY
-  nextChargeAt      DateTime?
-  lastChargeAt      DateTime?
-  vpaLast4          String? // masked — last 4 chars of VPA only, never full VPA
+  mandateId         String
+  cycleKey          String
+  attemptNo         Int
+  amountPaise       Int
+  status            String    @default("SCHEDULED") // SCHEDULED | CALLED | CAPTURED | FAILED | ABANDONED
+  receiptKey        String    @unique
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  chargeAt          DateTime
+  calledAt          DateTime?
+  settledAt         DateTime?
+  failureReason     String?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
   business     Business     @relation(fields: [businessId], references: [id], onDelete: Restrict)
   subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Restrict)
+  mandate      UpiMandate   @relation(fields: [mandateId], references: [id], onDelete: Restrict)
 
   @@index([businessId, status])
-  @@index([status, nextChargeAt])
+  @@index([mandateId, cycleKey])
+  @@index([status, chargeAt])
 }
 
 // ─── Business-Verticals Phase 3 — Jobs (services vertical) ────────────────────

@@ -11,7 +11,7 @@ import { useRoutePreload } from '@/hooks/useRoutePreload'
 import { useSSE } from '@/hooks/useSSE'
 import { PlanGate } from '@/features/subscription/PlanGate'
 import {
-  Login, Register, VerifyOtp, ForgotPassword, Onboarding, Dashboard,
+  Login, Register, VerifyOtp, ForgotPassword, Onboarding, Dashboard, DashboardPreview,
   Parties, CreateParty, PartyDetail, EditParty, FollowUps,
   Products, CreateProduct, Categories, StockAdjustments, ProductDetail, EditProduct,
   Invoices, CreateInvoice, InvoiceDetail, EditInvoice, DraftInvoices,
@@ -91,6 +91,7 @@ export function App() {
         <Route path={ROUTES.FORGOT_PASSWORD} element={<PageRoute><GuestRoute><ForgotPassword /></GuestRoute></PageRoute>} />
         <Route path={ROUTES.ONBOARDING} element={<PageRoute><ProtectedRoute><Onboarding /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.DASHBOARD} element={<PageRoute fallback={<DashboardFallback />}><ProtectedRoute><Dashboard /></ProtectedRoute></PageRoute>} />
+        <Route path="/dashboard/preview" element={<PageRoute fallback={<DashboardFallback />}><ProtectedRoute><DashboardPreview /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTIES} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><Parties /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTY_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><CreateParty /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PARTY_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="parties" featureLabel="Parties"><PartyDetail /></PlanGate></ProtectedRoute></PageRoute>} />

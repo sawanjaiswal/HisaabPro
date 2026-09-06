@@ -84,6 +84,20 @@ export async function applySubscriptionEvent(input: ApplyEventInput): Promise<vo
     if (input.planTier) {
       updateFields.planTier = input.planTier
     }
+    if (input.payload?.mandateId) {
+      updateFields.mandateId = input.payload.mandateId as string
+    }
+    if (input.payload?.nextBillingAt) {
+      const dateVal = new Date(input.payload.nextBillingAt as string)
+      updateFields.nextBillingAt = dateVal
+      updateFields.expiresAt = dateVal
+    }
+    if (input.payload?.autoRenew !== undefined) {
+      updateFields.autoRenew = Boolean(input.payload.autoRenew)
+    }
+    if (input.payload?.paymentMethod) {
+      updateFields.paymentMethod = input.payload.paymentMethod as string
+    }
     if (trigger === 'user.cancel') {
       updateFields.cancelledAt = new Date()
     }
