@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="gradC1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#065F46"/>
+      <stop offset="100%" stop-color="#026F39"/>
+    </linearGradient>
+    <linearGradient id="gradC2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="gradCArrow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A3E635"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+    <filter id="shadowC" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#026F39" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Left Pillar with Base and Capital -->
+  <path d="M 80 130 C 80 115 95 100 110 100 L 160 100 C 175 100 190 115 190 130 L 190 380 C 190 395 175 410 160 410 L 110 410 C 95 410 80 395 80 380 Z" fill="url(#gradC1)" filter="url(#shadowC)"/>
+  
+  <!-- Right Pillar -->
+  <path d="M 322 130 C 322 115 337 100 352 100 L 402 100 C 417 100 432 115 432 130 L 432 380 C 432 395 417 410 402 410 L 352 410 C 337 410 322 395 322 380 Z" fill="url(#gradC1)" filter="url(#shadowC)"/>
+
+  <!-- Dynamic Chevron Growth Chart Traversing Pillars -->
+  <path d="M 50 370 L 195 240 L 290 310 L 435 110" fill="none" stroke="url(#gradCArrow)" stroke-width="46" stroke-linecap="round" stroke-linejoin="round" filter="url(#shadowC)"/>
+  
+  <!-- Growth Arrowhead -->
+  <polygon points="475,80 405,100 445,160" fill="#10B981" filter="url(#shadowC)"/>
+  
+  <!-- Center Rupee Symbol Cutout/Badge -->
+  <circle cx="256" cy="256" r="42" fill="#FFFFFF" filter="url(#shadowC)"/>
+  <text x="256" y="272" font-family="sans-serif" font-size="44" font-weight="900" fill="#026F39" text-anchor="middle">₹</text>
+</svg>

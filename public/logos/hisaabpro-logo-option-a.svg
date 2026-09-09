@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="gradA1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#026F39"/>
+    </linearGradient>
+    <linearGradient id="gradA2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="gradAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#84CC16"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+    <filter id="shadowA" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#026F39" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  
+  <!-- Left Pillar of H -->
+  <rect x="80" y="70" width="70" height="372" rx="20" fill="url(#gradA1)" filter="url(#shadowA)"/>
+  
+  <!-- Right Pillar of H with Growth Arrow Top -->
+  <path d="M 362 170 L 362 422 C 362 433 353 442 342 442 L 312 442 C 301 442 292 433 292 422 L 292 170 Z" fill="url(#gradA1)" filter="url(#shadowA)"/>
+  
+  <!-- Top Growth Arrow on Right Pillar -->
+  <path d="M 327 70 L 415 170 L 239 170 Z" fill="url(#gradAccent)" filter="url(#shadowA)"/>
+  
+  <!-- Interlocking ₹ Rupee / Central Crossbar -->
+  <rect x="80" y="215" width="282" height="42" rx="10" fill="url(#gradA2)"/>
+  <rect x="130" y="275" width="200" height="36" rx="10" fill="url(#gradAccent)"/>
+  
+  <!-- Rupee diagonal leg -->
+  <path d="M 230 257 Q 310 280 345 375 L 305 390 Q 275 315 220 295 Z" fill="url(#gradA1)"/>
+  
+  <!-- Circular Accent Node -->
+  <circle cx="327" cy="115" r="14" fill="#FFFFFF"/>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="1200" height="400">
+  <defs>
+    <linearGradient id="gradA1_f" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#026F39"/>
+    </linearGradient>
+    <linearGradient id="gradA2_f" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="gradAccent_f" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#84CC16"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(60, 40) scale(0.62)">
+    <!-- Icon from Option A -->
+    <rect x="80" y="70" width="70" height="372" rx="20" fill="url(#gradA1_f)"/>
+    <path d="M 362 170 L 362 422 C 362 433 353 442 342 442 L 312 442 C 301 442 292 433 292 422 L 292 170 Z" fill="url(#gradA1_f)"/>
+    <path d="M 327 70 L 415 170 L 239 170 Z" fill="url(#gradAccent_f)"/>
+    <rect x="80" y="215" width="282" height="42" rx="10" fill="url(#gradA2_f)"/>
+    <rect x="130" y="275" width="200" height="36" rx="10" fill="url(#gradAccent_f)"/>
+    <path d="M 230 257 Q 310 280 345 375 L 305 390 Q 275 315 220 295 Z" fill="url(#gradA1_f)"/>
+    <circle cx="327" cy="115" r="14" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Typography -->
+  <text x="390" y="225" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Inter', 'Segoe UI', sans-serif" font-size="106" font-weight="900" fill="#0F172A" letter-spacing="-2">Hisaab<tspan fill="#026F39">Pro</tspan></text>
+  <text x="395" y="280" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif" font-size="28" font-weight="700" fill="#64748B" letter-spacing="6">SMART BILLING &amp; LEDGER</text>
+  
+  <!-- Subtle Badge -->
+  <rect x="1000" y="160" width="130" height="42" rx="21" fill="#DCFCE7"/>
+  <text x="1065" y="188" font-family="sans-serif" font-size="18" font-weight="800" fill="#15803D" text-anchor="middle" letter-spacing="1">GST READY</text>
+</svg>

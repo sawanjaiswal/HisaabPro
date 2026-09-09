@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="gradD1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#026F39"/>
+    </linearGradient>
+    <linearGradient id="gradD2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#84CC16"/>
+    </linearGradient>
+    <filter id="shadowD" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#026F39" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Outer Concentric Ledger Rings -->
+  <circle cx="256" cy="256" r="215" fill="none" stroke="url(#gradD1)" stroke-width="26" filter="url(#shadowD)"/>
+  <circle cx="256" cy="256" r="175" fill="none" stroke="url(#gradD2)" stroke-width="12" stroke-dasharray="24 16"/>
+
+  <!-- Circular Base -->
+  <circle cx="256" cy="256" r="148" fill="#F0FDF4"/>
+
+  <!-- Integrated HP Monogram -->
+  <!-- Left leg of H -->
+  <rect x="175" y="170" width="34" height="172" rx="14" fill="url(#gradD1)"/>
+  <!-- Central crossbar -->
+  <rect x="175" y="240" width="105" height="32" rx="10" fill="url(#gradD1)"/>
+  <!-- Middle bar (Right of H / Stem of P) -->
+  <rect x="250" y="150" width="34" height="212" rx="14" fill="url(#gradD1)"/>
+  <!-- Loop of P -->
+  <path d="M 270 150 C 330 150 355 180 355 215 C 355 250 330 275 270 275 Z" fill="none" stroke="url(#gradD2)" stroke-width="32" stroke-linecap="round"/>
+</svg>

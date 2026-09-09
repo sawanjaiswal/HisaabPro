@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="1200" height="400">
+  <defs>
+    <linearGradient id="gradC1_f" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#065F46"/>
+      <stop offset="100%" stop-color="#026F39"/>
+    </linearGradient>
+    <linearGradient id="gradCArrow_f" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A3E635"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(60, 40) scale(0.62)">
+    <path d="M 80 130 C 80 115 95 100 110 100 L 160 100 C 175 100 190 115 190 130 L 190 380 C 190 395 175 410 160 410 L 110 410 C 95 410 80 395 80 380 Z" fill="url(#gradC1_f)"/>
+    <path d="M 322 130 C 322 115 337 100 352 100 L 402 100 C 417 100 432 115 432 130 L 432 380 C 432 395 417 410 402 410 L 352 410 C 337 410 322 395 322 380 Z" fill="url(#gradC1_f)"/>
+    <path d="M 50 370 L 195 240 L 290 310 L 435 110" fill="none" stroke="url(#gradCArrow_f)" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="475,80 405,100 445,160" fill="#10B981"/>
+    <circle cx="256" cy="256" r="42" fill="#FFFFFF"/>
+    <text x="256" y="272" font-family="sans-serif" font-size="44" font-weight="900" fill="#026F39" text-anchor="middle">₹</text>
+  </g>
+
+  <text x="390" y="225" font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Inter', 'Segoe UI', sans-serif" font-size="106" font-weight="900" fill="#0F172A" letter-spacing="-2">Hisaab<tspan fill="#026F39">Pro</tspan></text>
+  <text x="395" y="280" font-family="-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif" font-size="28" font-weight="700" fill="#64748B" letter-spacing="6">GROWTH &amp; CASH FLOW</text>
+</svg>

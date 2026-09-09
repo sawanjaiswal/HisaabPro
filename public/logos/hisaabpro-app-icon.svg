@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B"/>
+      <stop offset="50%" stop-color="#026F39"/>
+      <stop offset="100%" stop-color="#024D28"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#BEF264"/>
+      <stop offset="100%" stop-color="#22C55E"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background Squircle -->
+  <rect x="0" y="0" width="512" height="512" rx="115" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle Grid Accent -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.08"/>
+  <circle cx="256" cy="256" r="140" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.06"/>
+
+  <g transform="translate(45, 45) scale(0.82)">
+    <!-- Left Pillar of H -->
+    <rect x="80" y="70" width="70" height="372" rx="22" fill="#FFFFFF"/>
+    
+    <!-- Right Pillar of H -->
+    <path d="M 362 170 L 362 420 C 362 432 352 442 340 442 L 314 442 C 302 442 292 432 292 420 L 292 170 Z" fill="#FFFFFF"/>
+    
+    <!-- Top Growth Arrow -->
+    <path d="M 327 65 L 420 170 L 234 170 Z" fill="url(#goldGrad)"/>
+    
+    <!-- Rupee Bars -->
+    <rect x="80" y="215" width="282" height="42" rx="12" fill="url(#goldGrad)"/>
+    <rect x="130" y="275" width="200" height="36" rx="10" fill="#FFFFFF"/>
+    
+    <!-- Diagonal Leg -->
+    <path d="M 230 257 Q 310 280 345 375 L 305 390 Q 275 315 220 295 Z" fill="#FFFFFF"/>
+    <circle cx="327" cy="112" r="14" fill="#064E3B"/>
+  </g>
+</svg>

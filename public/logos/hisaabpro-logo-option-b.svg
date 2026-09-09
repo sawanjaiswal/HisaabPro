@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="gradB1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#026F39"/>
+    </linearGradient>
+    <linearGradient id="gradB2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="gradShield" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#84CC16"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+    <filter id="shadowB" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#026F39" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Ledger Book Backing -->
+  <rect x="90" y="70" width="310" height="370" rx="36" fill="url(#gradB1)" filter="url(#shadowB)"/>
+  <rect x="125" y="105" width="240" height="300" rx="20" fill="#FFFFFF" opacity="0.95"/>
+  
+  <!-- Ledger Rows / Horizontal lines -->
+  <rect x="155" y="145" width="130" height="18" rx="9" fill="#E2E8F0"/>
+  <rect x="155" y="180" width="90" height="16" rx="8" fill="#E2E8F0"/>
+  
+  <!-- Upward Trend Chart Line with Arrow -->
+  <path d="M 155 330 L 225 260 L 285 295 L 375 160" fill="none" stroke="url(#gradB2)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+  <polygon points="395,140 350,155 380,185" fill="#059669"/>
+
+  <!-- Shield of Trust Overlay -->
+  <g transform="translate(280, 260) scale(0.9)" filter="url(#shadowB)">
+    <path d="M 100 10 Q 180 10 180 70 C 180 145 100 190 100 190 C 100 190 20 145 20 70 Q 20 10 100 10 Z" fill="url(#gradShield)"/>
+    <!-- Checkmark in shield -->
+    <path d="M 65 95 L 90 120 L 140 65" fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
