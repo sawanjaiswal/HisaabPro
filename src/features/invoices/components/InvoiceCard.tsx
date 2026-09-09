@@ -99,7 +99,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
       className={`txn-row invoice-list-item${isSelected ? ' txn-row--selected' : ''}`}
       role="button"
       tabIndex={0}
-      aria-label={`${isBulkMode ? (isSelected ? t.deselectLabel : t.selectLabel) : t.viewDetailsFor} ${typeLabel} ${document.documentNumber} for ${document.party.name}, ${formatInvoiceAmount(document.grandTotal)}`}
+      aria-label={`${isBulkMode ? (isSelected ? t.deselectLabel : t.selectLabel) : t.viewDetailsFor} ${typeLabel} ${document.documentNumber} for ${document.party?.name ?? 'Customer'}, ${formatInvoiceAmount(document.grandTotal)}`}
       onClick={handleClick}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClick() }}
       onPointerDown={handlePointerDown}
@@ -122,7 +122,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
 
       <div className="txn-info">
         <div className="invoice-card-header">
-          <span className="txn-name">{document.party.name}</span>
+          <span className="txn-name">{document.party?.name ?? 'Customer'}</span>
           <span
             className={statusBadgeClass}
             aria-label={`${t.documentStatusPrefix} ${statusLabel}`}

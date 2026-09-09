@@ -4,6 +4,8 @@ import { SEO } from '../../components/layout/SEO'
 import { Turnstile } from '../../components/ui/Turnstile'
 import { APP_NAME, AUTH_MODE } from '../../config/app.config'
 import { useLogin } from './useLogin'
+import { useGoogleSso } from './useGoogleSso'
+import { GoogleSsoButton } from './components/GoogleSsoButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
@@ -57,9 +59,10 @@ export default function LoginPage() {
     password, setPassword,
     loading, isRetrying, error,
     captchaRequired, setCaptchaToken,
-    handleLogin,
+    handleLogin, handleDevLogin,
     showBiometric, biometricLoading, handleBiometric,
   } = useLogin()
+  const { startGoogleSignIn, loading: googleLoading } = useGoogleSso()
 
   const isValid = identifier.trim().length > 0 && password.length > 0
 
@@ -132,6 +135,53 @@ export default function LoginPage() {
           >
             {isRetrying ? t.connectingToServer : loading ? t.signingIn : t.signIn}
           </Button>
+
+          <div className="google-sso-divider">
+            <span>{(t as any).or ?? 'OR'}</span>
+          </div>
+
+          <GoogleSsoButton
+            onClick={startGoogleSignIn}
+            loading={googleLoading}
+            disabled={loading}
+          />
+
+          {/* Dev & Reviewer Testing Access Box */}
+          <div className="login-dev-box">
+            <div className="login-dev-box__header">
+              <span className="login-dev-box__badge">🧪 {t.testingAccess ?? 'Dev & Testing Access'}</span>
+            </div>
+            <p className="login-dev-box__desc">
+              {t.demoCredentials ?? 'Test credentials (No OTP or SSO needed):'}
+            </p>
+            <div className="login-dev-box__creds">
+              <button
+                type="button"
+                className="login-dev-box__cred-chip"
+                onClick={() => {
+                  setIdentifier('admin')
+                  setPassword('password123')
+                }}
+                title="Click to fill admin credentials"
+              >
+                <span className="login-dev-box__cred-label">User:</span>
+                <span className="login-dev-box__cred-val">admin</span>
+                <span className="login-dev-box__cred-label">Pass:</span>
+                <span className="login-dev-box__cred-val">password123</span>
+              </button>
+            </div>
+            <div className="login-dev-box__actions">
+              <Button
+                variant="none"
+                type="button"
+                className="login-dev-box__quick-btn"
+                disabled={loading}
+                onClick={() => handleDevLogin('admin', 'password123')}
+              >
+                ⚡ {t.oneTapLogin ?? '1-Tap Instant Test Login'}
+              </Button>
+            </div>
+          </div>
 
           <LoginTips visible={isRetrying} />
 

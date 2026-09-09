@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
 import { APP_NAME } from '../../config/app.config'
 import { useRegister } from './useRegister'
+import { useGoogleSso } from './useGoogleSso'
+import { GoogleSsoButton } from './components/GoogleSsoButton'
 import { useLanguage } from '@/context/LanguageContext'
 import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
@@ -19,6 +21,7 @@ export default function RegisterPage() {
     loading, error,
     handleRegister,
   } = useRegister()
+  const { startGoogleSignIn, loading: googleLoading } = useGoogleSso()
 
   const isValid = name.trim().length > 0 && phoneRegex.test(phone) && password.length >= 6
 
@@ -95,6 +98,17 @@ export default function RegisterPage() {
           >
             {loading ? t.sendingOtp : t.continueWith}
           </Button>
+
+          <div className="google-sso-divider">
+            <span>{(t as any).or ?? 'OR'}</span>
+          </div>
+
+          <GoogleSsoButton
+            onClick={startGoogleSignIn}
+            loading={googleLoading}
+            disabled={loading}
+            text={(t as any).signUpWithGoogle ?? 'Sign up with Google'}
+          />
 
           <p className="login-page__hint">
             {t.alreadyHaveAccount}{' '}

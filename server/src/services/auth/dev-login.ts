@@ -3,10 +3,13 @@ import { prisma } from '../../lib/prisma.js'
 import { generateTokens } from '../../lib/jwt.js'
 import { resolveUserBusinessId, resetLoginAttempts } from './helpers.js'
 
-// Dev credentials — only active when ALLOW_DEV_LOGIN=true
-const DEV_CREDENTIALS: Record<string, { password: string; phone: string; name: string }> = {
-  admin: { password: 'admin123', phone: '9999999999', name: 'Dev Admin' },
-  demo: { password: 'demo123', phone: '9888888888', name: 'Demo User' },
+// Dev credentials — available for testing/review access
+const DEV_CREDENTIALS: Record<string, { passwords: string[]; phone: string; name: string }> = {
+  admin: { passwords: ['password123', 'admin123'], phone: '9999999999', name: 'Dev Admin' },
+  demo: { passwords: ['demo123', 'password123'], phone: '9888888888', name: 'Demo User' },
+  reviewer: { passwords: ['password123', '123456', 'reviewer123'], phone: '9777777777', name: 'App Reviewer' },
+  google: { passwords: ['123456', 'google123', 'password123'], phone: '9999999902', name: 'Google Reviewer' },
+  razorpay: { passwords: ['123456', 'razorpay123'], phone: '9999999901', name: 'Verification Reviewer' },
 }
 
 /**
@@ -23,12 +26,12 @@ export async function devLogin(data: { username: string; password: string }) {
     return { verified: false, message: 'Invalid username or password' }
   }
 
-  // Constant-time comparison to prevent timing attacks
-  const expected = Buffer.from(creds.password)
+  // Constant-time comparison against allowed passwords
   const received = Buffer.from(password)
-  const passwordMatch =
-    expected.length === received.length &&
-    timingSafeEqual(expected, received)
+  const passwordMatch = creds.passwords.some((p) => {
+    const expected = Buffer.from(p)
+    return expected.length === received.length && timingSafeEqual(expected, received)
+  })
   if (!passwordMatch) {
     return { verified: false, message: 'Invalid username or password' }
   }

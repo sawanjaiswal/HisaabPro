@@ -21,7 +21,8 @@ interface DashboardSalesHeroProps {
 
 export const DashboardSalesHero: React.FC<DashboardSalesHeroProps> = ({ trend }) => {
   const { t } = useLanguage()
-  const { today, deltaPct } = trend.todayVsYesterday
+  const today = trend?.todayVsYesterday?.today ?? 0
+  const deltaPct = trend?.todayVsYesterday?.deltaPct ?? null
   const up = (deltaPct ?? 0) >= 0
 
   return (

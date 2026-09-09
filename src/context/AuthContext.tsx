@@ -127,6 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     authLib.logout()
     setUser(null)
     setBusinesses([])
+    setActiveBusiness(null)
   }, [])
 
   const switchBusiness = useCallback(async (businessId: string) => {

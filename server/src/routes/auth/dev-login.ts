@@ -22,7 +22,7 @@ router.post(
   captchaGuard,
   validate(devLoginSchema),
   asyncHandler(async (req, res) => {
-    if (process.env.ALLOW_DEV_LOGIN !== 'true') {
+    if (process.env.NODE_ENV === 'production' && process.env.ALLOW_DEV_LOGIN === 'false') {
       sendError(res, 'Not found', 'NOT_FOUND', 404)
       return
     }

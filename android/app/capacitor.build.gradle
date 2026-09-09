@@ -12,6 +12,7 @@ dependencies {
     implementation project(':capacitor-mlkit-barcode-scanning')
     implementation project(':capacitor-app')
     implementation project(':capacitor-keyboard')
+    implementation project(':capawesome-capacitor-google-sign-in')
     implementation project(':capacitor-razorpay')
 
 }

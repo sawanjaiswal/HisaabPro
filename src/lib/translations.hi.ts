@@ -69,6 +69,10 @@ export const hi = {
   forgotPassword:     'पासवर्ड भूल गए?',
   newHere:            'नए हैं?',
   createAccount:      'खाता बनाएं',
+  testingAccess:      'डेव और परीक्षक एक्सेस',
+  demoCredentials:    'टेस्ट क्रेडेंशियल (बिना OTP या SSO)',
+  oneTapLogin:        '1-टैप त्वरित टेस्ट लॉगिन',
+  quickFillCredentials: 'टेस्ट खाता स्वतः भरें',
   // Register / OTP / reset
   createFreeAccount:  'अपना निःशुल्क खाता बनाएं',
   fullName:           'पूरा नाम',

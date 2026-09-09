@@ -9,6 +9,7 @@ import logoutRouter from './logout.js'
 import switchBusinessRouter from './switch-business.js'
 import meRouter from './me.js'
 import deleteAccountRouter from './delete-account.js'
+import ssoRouter from './sso.js'
 
 const router = Router()
 
@@ -16,6 +17,7 @@ router.use(csrfRouter)
 router.use(devLoginRouter)
 router.use(registerRouter)
 router.use(loginRouter)
+router.use(ssoRouter)
 router.use(passwordResetRouter)
 router.use(refreshRouter)
 router.use(logoutRouter)

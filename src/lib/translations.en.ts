@@ -69,6 +69,10 @@ export const en = {
   forgotPassword:     'Forgot password?',
   newHere:            'New here?',
   createAccount:      'Create account',
+  testingAccess:      'Dev & Reviewer Access',
+  demoCredentials:    'Test credentials (No OTP or SSO needed)',
+  oneTapLogin:        '1-Tap Instant Test Login',
+  quickFillCredentials: 'Auto-Fill Test Account',
   // Register / OTP / reset
   createFreeAccount:  'Create your free account',
   fullName:           'Full Name',

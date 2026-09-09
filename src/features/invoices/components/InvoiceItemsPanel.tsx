@@ -34,11 +34,11 @@ export function InvoiceItemsPanel({ lineItems }: InvoiceItemsPanelProps) {
         {lineItems.map((item) => (
           <div key={item.id} className="card invoice-item-card" role="listitem">
             <div className="invoice-item-header">
-              <span className="invoice-item-name">{item.product.name}</span>
+              <span className="invoice-item-name">{item.product?.name ?? (item as any).productName ?? 'Item'}</span>
               <span className="invoice-item-total">{formatInvoiceAmount(item.lineTotal)}</span>
             </div>
             <div className="invoice-item-meta">
-              <span>{item.quantity} {item.product.unit} x {formatInvoiceAmount(item.rate)}</span>
+              <span>{item.quantity} {item.product?.unit ?? 'pcs'} x {formatInvoiceAmount(item.rate)}</span>
               {item.discountAmount > 0 && (
                 <span style={{ color: 'var(--color-error-600)' }}>
                   {t.discLabel} -{formatInvoiceAmount(item.discountAmount)}
