@@ -7,6 +7,7 @@ import { useLogin } from './useLogin'
 import { useGoogleSso } from './useGoogleSso'
 import { GoogleSsoButton } from './components/GoogleSsoButton'
 import { useLanguage } from '@/context/LanguageContext'
+import { BrandLogo } from '@/components/brand/BrandLogo'
 import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
@@ -72,9 +73,9 @@ export default function LoginPage() {
 
       <div className="login-page__card stagger-enter">
         <div className="login-page__header">
-          <img
-            src="/logos/official/hisaabpro-logo-horizontal.png"
-            alt="HisaabPro - Business Ka Hisaab, Ab Easy"
+          <BrandLogo
+            variant="horizontal"
+            size={48}
             className="login-page__brand-logo"
             style={{ maxWidth: '210px', height: 'auto', margin: '0 auto 8px auto', display: 'block' }}
           />

@@ -15,6 +15,7 @@
     "preview": "vite preview --host",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "brand:sync": "python3 scripts/brand/sync-brand-assets.py",
     "cap:sync": "npx cap sync android",
     "cap:open": "npx cap open android",
     "cap:run": "npx cap run android",

@@ -15,6 +15,7 @@ import { ROUTES } from '@/config/routes.config'
 import { OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
 import { SyncStatusIcon } from '@/components/feedback/SyncStatusIcon'
 import { NotificationBell } from '@/features/notifications/components/NotificationBell'
+import { BrandLogo } from '@/components/brand/BrandLogo'
 
 interface HeaderProps {
   /** Page title — shown when `backTo` is set (sub-page mode). */
@@ -95,12 +96,11 @@ export function Header({
             onClick={() => navigate(ROUTES.DASHBOARD)}
             aria-label={`${APP_NAME} home`}
           >
-            <img
-              src="/favicon.svg"
-              alt=""
+            <BrandLogo
+              variant="favicon"
+              size={28}
               className="header-brand-logo"
-              width={28}
-              height={28}
+              alt=""
               aria-hidden="true"
             />
             <span className="header-brand-name">
