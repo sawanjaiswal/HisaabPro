@@ -184,7 +184,7 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
           />
         )}
 
-        {status === 'success' && data && data.documents.length === 0 && (
+        {status === 'success' && data && visibleDocuments.length === 0 && (
           <EmptyState
             icon={<FileText size={40} aria-hidden="true" />}
             title={t.noInvoicesYet}
@@ -199,7 +199,7 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
 
         {status === 'success' && data && (
           <div role="status" aria-live="polite" className="sr-only">
-            {data.documents.length} {data.documents.length === 1 ? t.invoiceFoundSingular : t.invoiceFoundPlural}
+            {visibleDocuments.length} {visibleDocuments.length === 1 ? t.invoiceFoundSingular : t.invoiceFoundPlural}
           </div>
         )}
 
@@ -220,7 +220,7 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
         )}
       </PageContainer>
 
-      {!bulk.isActive && status === 'success' && data && data.documents.length > 0 && (
+      {!bulk.isActive && status === 'success' && data && visibleDocuments.length > 0 && (
         <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.createNewInvoiceAriaLabel}>
           <Plus size={24} aria-hidden="true" />
         </Button>

@@ -61,11 +61,14 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
   const data = useMemo<PartyListResponse | null>(() => {
     const pages = query.data?.pages
     if (!pages?.length) return null
+    const parties = pages.flatMap((p) => p?.parties ?? [])
+    const lastPage = pages[pages.length - 1]
+    const firstPage = pages[0]
     return {
-      parties: pages.flatMap((p) => p.parties),
-      pagination: pages[pages.length - 1].pagination,
-      summary: pages[0].summary,
-    }
+      parties,
+      pagination: lastPage?.pagination ?? { page: 1, limit: 20, total: parties.length, totalPages: 1 },
+      summary: firstPage?.summary,
+    } as unknown as PartyListResponse
   }, [query.data])
 
   const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'

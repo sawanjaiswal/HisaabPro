@@ -64,11 +64,14 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
   const data = useMemo<ProductListResponse | null>(() => {
     const pages = query.data?.pages
     if (!pages?.length) return null
+    const products = pages.flatMap((p) => p?.products ?? [])
+    const lastPage = pages[pages.length - 1]
+    const firstPage = pages[0]
     return {
-      products: pages.flatMap((p) => p.products),
-      pagination: pages[pages.length - 1].pagination,
-      summary: pages[0].summary,
-    }
+      products,
+      pagination: lastPage?.pagination ?? { page: 1, limit: 20, total: products.length, totalPages: 1 },
+      summary: firstPage?.summary,
+    } as unknown as ProductListResponse
   }, [query.data])
   const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 

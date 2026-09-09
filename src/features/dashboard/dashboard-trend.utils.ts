@@ -17,55 +17,63 @@ import type { DashboardTrend, MetricTile, OverviewCard } from './dashboard.types
  * does not track yet — an "estimate" derived from nothing is the exact class of
  * number a shopkeeper would make a decision on and be wrong.
  */
-export function buildMetricTiles(trend: DashboardTrend): MetricTile[] {
+export function buildMetricTiles(trend?: DashboardTrend | null): MetricTile[] {
+  const collections = trend?.collections
+  const expenses = trend?.expenses
+  const cashInHand = trend?.cashInHand ?? 0
+
   return [
     {
       id: 'collections',
       labelKey: 'collections',
       icon: 'Wallet',
-      amount: trend.collections.total,
-      deltaPct: trend.collections.deltaPct,
+      amount: collections?.total ?? 0,
+      deltaPct: collections?.deltaPct ?? null,
       tone: 'teal',
     },
     {
       id: 'cash',
       labelKey: 'cashInHand',
       icon: 'Landmark',
-      amount: trend.cashInHand,
+      amount: cashInHand,
       // Cash in hand is a balance, not a flow — there is no prior window to
       // compare it against, so it shows a status pill instead of a delta.
       deltaPct: null,
-      ...(trend.cashInHand > 0 ? { statusKey: 'statusGood' as const } : {}),
+      ...(cashInHand > 0 ? { statusKey: 'statusGood' as const } : {}),
       tone: 'success',
     },
     {
       id: 'expenses',
       labelKey: 'expenses',
       icon: 'Receipt',
-      amount: trend.expenses.total,
-      deltaPct: trend.expenses.deltaPct,
+      amount: expenses?.total ?? 0,
+      deltaPct: expenses?.deltaPct ?? null,
       tone: 'coral',
       hidden: true,
     },
   ]
 }
 
-export function buildOverviewCards(trend: DashboardTrend): OverviewCard[] {
+export function buildOverviewCards(trend?: DashboardTrend | null): OverviewCard[] {
+  const sales = trend?.sales
+  const collections = trend?.collections
+  const expenses = trend?.expenses
+
   return [
     {
       id: 'sales',
       labelKey: 'totalSales',
-      amount: trend.sales.total,
-      deltaPct: trend.sales.deltaPct,
-      series: trend.sales.series,
+      amount: sales?.total ?? 0,
+      deltaPct: sales?.deltaPct ?? null,
+      series: sales?.series ?? [],
       positive: true,
     },
     {
       id: 'collections',
       labelKey: 'collections',
-      amount: trend.collections.total,
-      deltaPct: trend.collections.deltaPct,
-      series: trend.collections.series,
+      amount: collections?.total ?? 0,
+      deltaPct: collections?.deltaPct ?? null,
+      series: collections?.series ?? [],
       positive: true,
     },
     {
@@ -73,9 +81,9 @@ export function buildOverviewCards(trend: DashboardTrend): OverviewCard[] {
       // meaning of the movement, not by its sign.
       id: 'expenses',
       labelKey: 'expenses',
-      amount: trend.expenses.total,
-      deltaPct: trend.expenses.deltaPct,
-      series: trend.expenses.series,
+      amount: expenses?.total ?? 0,
+      deltaPct: expenses?.deltaPct ?? null,
+      series: expenses?.series ?? [],
       positive: false,
     },
   ]

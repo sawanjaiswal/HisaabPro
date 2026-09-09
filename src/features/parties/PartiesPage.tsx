@@ -82,7 +82,8 @@ export default function PartiesPage() {
     }
   }
 
-  const allPartyIds = data?.parties.map((p) => p.id) ?? []
+  const partiesList = data?.parties ?? []
+  const allPartyIds = partiesList.map((p) => p.id)
 
   const bulkActions: BulkAction[] = [
     {
@@ -156,7 +157,7 @@ export default function PartiesPage() {
           />
         )}
 
-        {status === 'success' && data && data.parties.length === 0 && (
+        {status === 'success' && data && partiesList.length === 0 && (
           <EmptyState
             icon={<Users size={40} aria-hidden="true" />}
             title={t.noParties}
@@ -171,16 +172,16 @@ export default function PartiesPage() {
 
         {status === 'success' && data && (
           <div role="status" aria-live="polite" className="sr-only">
-            {data.parties.length} {data.parties.length === 1 ? t.partyFound : t.partiesFound}
+            {partiesList.length} {partiesList.length === 1 ? t.partyFound : t.partiesFound}
           </div>
         )}
 
-        {status === 'success' && data && data.parties.length > 0 && (
+        {status === 'success' && data && partiesList.length > 0 && (
           <>
           <div className="party-list-section">
           <PartyListHeader onSortChange={(sortBy) => setFilter('sortBy', sortBy)} />
           <div className="party-list stagger-list" role="list" aria-label={t.parties}>
-            {data.parties.map((party) => (
+            {partiesList.map((party) => (
               <div
                 key={party.id}
                 className={`party-list-item${bulk.isSelected(party.id) ? ' bulk-selected' : ''}`}
@@ -207,9 +208,9 @@ export default function PartiesPage() {
           {!bulk.isActive && (
             <OutstandingTotalCard
               label={t.totalOutstandingLabel}
-              totalPaise={data.summary.netOutstanding}
-              caption={`${data.summary.totalParties} ${
-                data.summary.totalParties === 1 ? t.party : t.parties
+              totalPaise={data.summary?.netOutstanding ?? 0}
+              caption={`${data.summary?.totalParties ?? 0} ${
+                (data.summary?.totalParties ?? 0) === 1 ? t.party : t.parties
               }`}
             />
           )}
@@ -218,7 +219,7 @@ export default function PartiesPage() {
         )}
       </HeroPage>
 
-      {!bulk.isActive && status === 'success' && data && data.parties.length > 0 && (
+      {!bulk.isActive && status === 'success' && data && partiesList.length > 0 && (
         <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewPartyLabel}>
           <Plus size={24} aria-hidden="true" />
         </Button>

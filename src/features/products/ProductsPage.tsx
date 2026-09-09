@@ -84,7 +84,8 @@ export default function ProductsPage() {
   const goToCreate = () => navigate(ROUTES.PRODUCT_NEW)
   const goToEdit = (id: string) => navigate(`/products/${id}/edit`)
 
-  const allProductIds = data?.products.map((p) => p.id) ?? []
+  const productsList = data?.products ?? []
+  const allProductIds = productsList.map((p) => p.id)
 
   return (
     <AppShell>
@@ -134,7 +135,7 @@ export default function ProductsPage() {
           />
         )}
 
-        {status === 'success' && data && data.products.length === 0 && (
+        {status === 'success' && data && productsList.length === 0 && (
           <EmptyState
             icon={<Package size={40} aria-hidden="true" />}
             title={t.noProductsYet}
@@ -147,16 +148,16 @@ export default function ProductsPage() {
           />
         )}
 
-        {status === 'success' && data && data.products.length > 0 && (
+        {status === 'success' && data && productsList.length > 0 && (
           <div className="product-list-section" role="status" aria-live="polite">
             <ProductListHeader
-              total={data.pagination.total}
+              total={data.pagination?.total ?? productsList.length}
               activeSortBy={filters.sortBy}
               onSortChange={(sortBy) => setFilter('sortBy', sortBy)}
             />
             <h2 className="sr-only">{t.productList}</h2>
             <div className="product-list stagger-list" role="list" aria-label={t.products}>
-              {data.products.map((product) => (
+              {productsList.map((product) => (
                 <div
                   key={product.id}
                   className={`product-list-item${bulk.isSelected(product.id) ? ' bulk-selected' : ''}`}

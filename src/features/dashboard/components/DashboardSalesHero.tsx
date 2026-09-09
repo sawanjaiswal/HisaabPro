@@ -16,7 +16,7 @@ import type { DashboardTrend } from '../dashboard.types'
 import '../dashboard-sales-hero.css'
 
 interface DashboardSalesHeroProps {
-  trend: DashboardTrend
+  trend?: DashboardTrend | null
 }
 
 export const DashboardSalesHero: React.FC<DashboardSalesHeroProps> = ({ trend }) => {
@@ -54,7 +54,7 @@ export const DashboardSalesHero: React.FC<DashboardSalesHeroProps> = ({ trend })
 
         <AreaChart
           className="dashboard-biz-hero__chart"
-          data={trend.sales.series}
+          data={trend?.sales?.series ?? []}
           color="var(--color-success-400, #4ade80)"
           height={112}
         />

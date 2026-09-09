@@ -15,7 +15,7 @@ import type { DashboardTrend } from '../dashboard.types'
 import '../dashboard-overview-carousel.css'
 
 interface BusinessOverviewCarouselProps {
-  trend: DashboardTrend
+  trend?: DashboardTrend | null
 }
 
 export const BusinessOverviewCarousel: React.FC<BusinessOverviewCarouselProps> = ({ trend }) => {
@@ -23,6 +23,8 @@ export const BusinessOverviewCarousel: React.FC<BusinessOverviewCarouselProps> =
   const cards = buildOverviewCards(trend)
   const trackRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
+
+  if (!cards.length) return null
 
   const handleScroll = () => {
     const el = trackRef.current

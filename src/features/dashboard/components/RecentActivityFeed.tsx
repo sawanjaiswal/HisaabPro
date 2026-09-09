@@ -33,18 +33,19 @@ function filterLocally(items: RecentActivityItem[], q: string): RecentActivityIt
 }
 
 interface RecentActivityFeedProps {
-  items: RecentActivityItem[]
+  items?: RecentActivityItem[] | null
   onItemClick: (item: RecentActivityItem) => void
   onAddPayment: (item: RecentActivityItem) => void
   onViewAll: () => void
 }
 
 export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
-  items,
+  items: rawItems,
   onItemClick,
   onAddPayment,
   onViewAll,
 }) => {
+  const items = rawItems ?? []
   const { t } = useLanguage()
   const [query, setQuery] = useState('')
   const [searchResults, setSearchResults] = useState<RecentActivityItem[] | null>(null)

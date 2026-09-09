@@ -14,7 +14,7 @@ import type { TopDebtor } from '../dashboard.types'
 import { Button } from '@/components/ui/Button'
 
 interface TopDebtorsProps {
-  debtors: TopDebtor[]
+  debtors?: TopDebtor[] | null
   totalOutstanding: number
   onViewAll: () => void
   onDebtorClick: (partyId: string) => void
@@ -27,7 +27,8 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
   onDebtorClick,
 }) => {
   const { t } = useLanguage()
-  if (debtors.length === 0) return null
+  const list = debtors ?? []
+  if (list.length === 0) return null
 
   return (
     <div className="dashboard-starred">
@@ -35,7 +36,7 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
         <div className="dashboard-section-title-group py-0">
           <span className="dashboard-section-title py-0">{t.whoOwesYou}</span>
           <span className="dashboard-section-subtitle py-0">
-            {debtors.length} {debtors.length === 1 ? t.party : t.parties} &middot; {formatCompactAmount(totalOutstanding)}
+            {list.length} {list.length === 1 ? t.party : t.parties} &middot; {formatCompactAmount(totalOutstanding)}
           </span>
         </div>
         <Button variant="none"
@@ -61,7 +62,7 @@ export const TopDebtors: React.FC<TopDebtorsProps> = ({
           <span className="dashboard-starred-name">{t.add}</span>
         </div>
 
-        {debtors.map((debtor) => (
+        {list.map((debtor) => (
           <Button variant="none"
             key={debtor.partyId}
             className="dashboard-starred-item"
