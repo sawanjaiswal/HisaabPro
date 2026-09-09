@@ -85,17 +85,31 @@ def main():
         print("Please place 'master-sheet.png' or 'master-icon.png' in assets/branding/")
         sys.exit(1)
 
+    if os.path.exists(master_icon):
+        print(f"📦 Processing Master Icon: {master_icon}")
+        icon_img = Image.open(master_icon)
+        icon_img.resize((512, 512), Image.Resampling.LANCZOS).save(os.path.join(OFFICIAL_LOGOS_DIR, 'hisaabpro-icon-dark.png'))
+        icon_img.resize((512, 512), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'icon-512.png'))
+        icon_img.resize((192, 192), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'icon-192.png'))
+        icon_img.resize((64, 64), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'favicon.png'))
+        print("  ✓ Web & PWA icons generated from master-icon.png (icon-512.png, icon-192.png, favicon.png)")
+        print("📱 Generating Android launcher icon densities...")
+        generate_android_icons(icon_img)
+
     if os.path.exists(master_sheet):
         print(f"📦 Processing Master Logo Sheet: {master_sheet}")
         sheet = Image.open(master_sheet).convert('RGB')
         
-        # 1. Dark App Icon Squircle
-        dark_squircle = sheet.crop((58, 58, 374, 374))
-        dark_squircle.save(os.path.join(OFFICIAL_LOGOS_DIR, 'hisaabpro-icon-dark.png'))
-        dark_squircle.save(os.path.join(PUBLIC_DIR, 'icon-512.png'))
-        dark_squircle.resize((192, 192), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'icon-192.png'))
-        dark_squircle.resize((64, 64), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'favicon.png'))
-        print("  ✓ Web & PWA icons generated (icon-512.png, icon-192.png, favicon.png)")
+        # 1. Dark App Icon Squircle (if no standalone master-icon)
+        if not os.path.exists(master_icon):
+            dark_squircle = sheet.crop((58, 58, 374, 374))
+            dark_squircle.save(os.path.join(OFFICIAL_LOGOS_DIR, 'hisaabpro-icon-dark.png'))
+            dark_squircle.save(os.path.join(PUBLIC_DIR, 'icon-512.png'))
+            dark_squircle.resize((192, 192), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'icon-192.png'))
+            dark_squircle.resize((64, 64), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'favicon.png'))
+            print("  ✓ Web & PWA icons generated (icon-512.png, icon-192.png, favicon.png)")
+            print("📱 Generating Android launcher icon densities...")
+            generate_android_icons(dark_squircle)
 
         # 2. Light App Icon Squircle
         light_squircle = sheet.crop((398, 58, 714, 374))
@@ -120,10 +134,6 @@ def main():
         mark = extract_smooth(sheet, (582, 698, 686, 820), (247, 245, 239), is_dark_bg=False)
         mark.save(os.path.join(OFFICIAL_LOGOS_DIR, 'hisaabpro-h-mark.png'))
         print("  ✓ Isolated brand mark generated (hisaabpro-h-mark.png)")
-
-        # 7. Android Launcher Icons
-        print("📱 Generating Android launcher icon densities...")
-        generate_android_icons(dark_squircle)
 
     print("✨ All brand assets generated and synced across Web, PWA, and Android successfully!")
 
