@@ -23,7 +23,6 @@ import { TopDebtors } from './components/TopDebtors'
 import { RecentActivityFeed } from './components/RecentActivityFeed'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
 import { StaffDashboardSection } from './components/StaffDashboardSection'
-import { DashboardViewSwitcher } from '../dashboard-preview/components/DashboardViewSwitcher'
 import type { RecentActivityItem, PriorityItem } from './dashboard.types'
 import './dashboard-page.css'
 import './dashboard-hero.css'
@@ -67,7 +66,6 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <DashboardViewSwitcher />
       <DashboardHeader />
 
       <div className="dashboard-page stagger-enter">

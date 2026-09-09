@@ -53,8 +53,7 @@
       /* App-shell skeleton — paints in <100ms before React hydrates, regardless
          of backend/network state. Values are literal (not CSS vars) on purpose:
          this must render before the app stylesheet loads. Hidden by
-         [data-app-ready] on #root once main.tsx mounts. Mirrors RentIncome's
-         proven pattern (frontend/index.html) — same fix, HisaabPro's own tokens.
+         [data-app-ready] on #root once main.tsx mounts. Fast app-shell skeleton with HisaabPro's own tokens.
 
          Layered on purpose: src/styles/base.css's real body background lives
          in `@layer base` (Tailwind v4 reserved layer). An unlayered rule here

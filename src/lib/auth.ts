@@ -1,6 +1,7 @@
 import { api } from './api'
 import { clearApiCache } from './api-cache'
 import { clearPrefs } from './prefs-store'
+import { clearReadCache } from '@/db'
 import { OFFLINE_MOCK } from './playstore-mock'
 import { TIMEOUTS, API_URL } from '@/config/app.config'
 import type { AuthUser, BusinessSummary } from '../features/auth/auth.types'
@@ -26,6 +27,7 @@ export function clearAuth() {
   // Drop the offline read cache too — the next user signing in on this
   // device must not see the previous user's PII (parties, balances, etc.).
   void clearApiCache()
+  void clearReadCache()
   // UI preferences (favourite reports, etc.) are per-user too.
   void clearPrefs()
 }

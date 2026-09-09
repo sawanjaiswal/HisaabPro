@@ -41,3 +41,18 @@
 -dontwarn com.google.android.gms.**
 -dontwarn com.getcapacitor.**
 
+# Razorpay SDK rules
+-keepattributes *Annotation*
+-dontwarn com.razorpay.**
+-keep class com.razorpay.** { *; }
+-keepclasseswithmembers class * {
+    public void onPaymentSuccess(java.lang.String);
+    public void onPaymentError(int, java.lang.String);
+}
+
+# R8 Performance & Obfuscation Optimizations
+-optimizationpasses 5
+-allowaccessmodification
+-repackageclasses ''
+-dontusemixedcaseclassnames
+

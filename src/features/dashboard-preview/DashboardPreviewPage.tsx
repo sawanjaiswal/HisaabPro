@@ -4,7 +4,6 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useHomeDashboard } from '../dashboard/useDashboard'
 import { DashboardSkeleton } from '../dashboard/components/DashboardSkeleton'
 import { DashboardHeader } from '../dashboard/components/DashboardHeader'
-import { DashboardViewSwitcher } from './components/DashboardViewSwitcher'
 import { PreviewExecutiveHero } from './components/PreviewExecutiveHero'
 import { PreviewQuickDock } from './components/PreviewQuickDock'
 import { PreviewActionableRail } from './components/PreviewActionableRail'
@@ -17,7 +16,6 @@ export default function DashboardPreviewPage() {
 
   return (
     <AppShell>
-      <DashboardViewSwitcher />
       <DashboardHeader />
 
       <main className="dash-preview-page">

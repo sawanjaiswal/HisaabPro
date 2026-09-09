@@ -6,6 +6,9 @@
 - **What:** Billing, inventory, payments, reports for Indian MSMEs
 - **Name:** HisaabPro (hisaabpro.in) — see `docs/APP_CONFIG.md`
 - **Stack:** React 19 + TS + Tailwind 4 | Capacitor 8 | Express + Prisma | PostgreSQL | Razorpay | React-PDF
+- **Port Allocation SSOT (5000 series):** Backend API `:5001` · Frontend Web `:5002` · Database `hisaabpro_dev`
+- **Global Port Matrix:** DudhHisaab (4000 series: :4001/:4002) · HisaabPro (5000 series: :5001/:5002) · Flint (6000 series: :6001/:6100) · RentIncome (7000 series: :7001/:7002)
+- **Local Dev:** `./start-all.sh` (start all) · `./stop-all.sh` (stop all)
 
 ## Design Direction
 - Premium Cred/Jupiter polish — NOT Vyapar's dated UI
