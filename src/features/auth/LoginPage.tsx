@@ -72,7 +72,13 @@ export default function LoginPage() {
 
       <div className="login-page__card stagger-enter">
         <div className="login-page__header">
-          <h1 className="login-page__title">{APP_NAME}</h1>
+          <img
+            src="/logos/official/hisaabpro-logo-horizontal.png"
+            alt="HisaabPro - Business Ka Hisaab, Ab Easy"
+            className="login-page__brand-logo"
+            style={{ maxWidth: '210px', height: 'auto', margin: '0 auto 8px auto', display: 'block' }}
+          />
+          <h1 className="login-page__title sr-only">{APP_NAME}</h1>
           <p className="login-page__subtitle">{t.signInToAccount}</p>
         </div>
 

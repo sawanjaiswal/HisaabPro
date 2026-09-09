@@ -1,4 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
-  <rect width="192" height="192" rx="24" fill="#0f3638"/>
-  <text x="96" y="128" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="110" fill="#ffffff">H</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="hpBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#073B2C"/>
+      <stop offset="100%" stop-color="#022E22"/>
+    </linearGradient>
+    <linearGradient id="hpLeafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ADE80"/>
+      <stop offset="50%" stop-color="#22C55E"/>
+      <stop offset="100%" stop-color="#15803D"/>
+    </linearGradient>
+    <filter id="hpShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background Squircle -->
+  <rect width="512" height="512" rx="118" fill="url(#hpBgGrad)"/>
+
+  <!-- Left Pillar of H (White) -->
+  <rect x="110" y="115" width="76" height="282" rx="38" fill="#FFFFFF" filter="url(#hpShadow)"/>
+
+  <!-- Right Pillar of H (White) -->
+  <rect x="326" y="115" width="76" height="282" rx="38" fill="#FFFFFF" filter="url(#hpShadow)"/>
+
+  <!-- Green Leaf Bridge / Crossbar -->
+  <path d="M 125 330 C 120 280 210 215 370 218 C 370 218 310 325 125 330 Z" fill="url(#hpLeafGrad)" filter="url(#hpShadow)"/>
+  
+  <!-- Leaf Central Spine / Highlight -->
+  <path d="M 132 322 C 170 290 260 250 360 224" fill="none" stroke="#BBF7D0" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
 </svg>
