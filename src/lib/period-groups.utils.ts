@@ -73,10 +73,17 @@ export function groupByPeriod<T>(
 
   const byKey = new Map<string, PeriodGroup<T>>()
 
-  for (const item of items) {
-    const raw = getDate(item)
+  for (const item of (items || [])) {
+    if (!item) continue
+    let raw: string | Date | undefined
+    try {
+      raw = getDate(item)
+    } catch {
+      continue
+    }
+    if (!raw) continue
     const date = typeof raw === 'string' ? new Date(raw) : raw
-    if (Number.isNaN(date.getTime())) continue
+    if (!date || Number.isNaN(date.getTime())) continue
 
     const key = keyOf(date, granularity)
     let group = byKey.get(key)
@@ -92,7 +99,13 @@ export function groupByPeriod<T>(
       }
       byKey.set(key, group)
     }
-    group.totalPaise += getAmountPaise(item)
+    let amount = 0
+    try {
+      amount = getAmountPaise(item) || 0
+    } catch {
+      amount = 0
+    }
+    group.totalPaise += amount
     group.items.push(item)
   }
 

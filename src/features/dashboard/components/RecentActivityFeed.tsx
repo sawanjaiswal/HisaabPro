@@ -23,13 +23,15 @@ const SKELETON_COUNT = 4
 /** Client-side fallback when backend search is unavailable */
 function filterLocally(items: RecentActivityItem[], q: string): RecentActivityItem[] {
   const lower = q.toLowerCase()
-  return items.filter((item) =>
-    item.partyName.toLowerCase().includes(lower) ||
-    item.reference.toLowerCase().includes(lower) ||
-    formatDate(item.date).toLowerCase().includes(lower) ||
-    formatAmount(item.amount).includes(lower) ||
-    formatCompactAmount(item.amount).includes(lower)
-  )
+  return (items || []).filter((item) => {
+    if (!item) return false
+    const name = (item.partyName || '').toLowerCase()
+    const ref = (item.reference || '').toLowerCase()
+    const dateStr = item.date ? formatDate(item.date).toLowerCase() : ''
+    const amountStr = item.amount != null ? formatAmount(item.amount) : ''
+    const compactStr = item.amount != null ? formatCompactAmount(item.amount) : ''
+    return name.includes(lower) || ref.includes(lower) || dateStr.includes(lower) || amountStr.includes(lower) || compactStr.includes(lower)
+  })
 }
 
 interface RecentActivityFeedProps {
@@ -107,7 +109,6 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
   const displayItems = searchResults ?? items
   const isSearchActive = query.trim().length > 0
 
-  // Group items by date (Today / Yesterday / date) — only when not searching
   const groupedItems = useMemo(
     () => (!isSearchActive ? buildDateGroups(displayItems) : null),
     [isSearchActive, displayItems]
@@ -141,7 +142,6 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
         </Button>
       </div>
 
-      {/* Search bar */}
       <div className="dashboard-txn-search">
         <Search size={16} className="dashboard-txn-search-icon" aria-hidden="true" />
         <Input
@@ -163,14 +163,12 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
         )}
       </div>
 
-      {/* Result count when searching */}
       {isSearchActive && !searching && searchResults && (
         <span className="dashboard-txn-search-count">
           {searchResults.length} {searchResults.length === 1 ? t.result : t.results}
         </span>
       )}
 
-      {/* Skeleton loading state */}
       {searching && (
         <div className="dashboard-txn-list" aria-busy="true" aria-label={t.loadingSearch}>
           {Array.from({ length: SKELETON_COUNT }, (_, i) => (
@@ -190,7 +188,6 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
         </div>
       )}
 
-      {/* Results */}
       {!searching && (
         <div className="dashboard-txn-list" role="list" aria-label={t.recentTransactions}>
           {displayItems.length === 0 && isSearchActive && (
@@ -218,8 +215,6 @@ export const RecentActivityFeed: React.FC<RecentActivityFeedProps> = ({
   )
 }
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
 interface DateGroup {
   label: string
   items: RecentActivityItem[]
@@ -228,8 +223,9 @@ interface DateGroup {
 function buildDateGroups(items: RecentActivityItem[]): DateGroup[] {
   const groups: DateGroup[] = []
   let currentLabel = ''
-  for (const item of items) {
-    const label = getDateGroup(item.date)
+  for (const item of (items || [])) {
+    if (!item) continue
+    const label = getDateGroup(item.date) || 'Recent'
     if (label !== currentLabel) {
       groups.push({ label, items: [item] })
       currentLabel = label
@@ -239,4 +235,3 @@ function buildDateGroups(items: RecentActivityItem[]): DateGroup[] {
   }
   return groups
 }
-

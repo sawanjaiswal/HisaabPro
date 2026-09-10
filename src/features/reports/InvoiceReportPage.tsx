@@ -133,10 +133,10 @@ export default function InvoiceReportPage() {
 
   const isGrouped = filters.groupBy !== 'none'
   const hasData =
-    data !== null &&
+    data != null &&
     (isGrouped
-      ? (data.data.groups?.length ?? 0) > 0
-      : (data.data.items?.length ?? 0) > 0)
+      ? (data?.data?.groups?.length ?? 0) > 0
+      : (data?.data?.items?.length ?? 0) > 0)
 
   const hero = (
     <ReportPeriodSelect
@@ -153,11 +153,11 @@ export default function InvoiceReportPage() {
 
       <HeroPage hero={hero}>
         <PageContainer variant="list" className="space-y-6">
-          {status === 'success' && data && (
+          {status === 'success' && data && data.data && data.data.summary && (
             <>
               <InvoiceReportHero
                 type={type}
-                totalAmount={data.data.summary.totalAmount}
+                totalAmount={data.data.summary.totalAmount ?? 0}
                 trend={data.data.trend}
               />
               <InvoiceReportBreakup summary={data.data.summary} />

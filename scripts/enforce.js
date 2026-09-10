@@ -895,6 +895,27 @@ if (webhookStringifyOffenders.length === 0) {
   }
 }
 
+// ─── Check 18: Real-Device Crawler Gate ─────────────────────────────────────────
+
+console.log('\n🔍 Check 18: Device crawler & QA infrastructure')
+const crawlerPath = join(ROOT, 'scripts', 'qa', 'device-crawler.mjs')
+if (!existsSync(crawlerPath)) {
+  errors.push('Check 18: scripts/qa/device-crawler.mjs is missing')
+} else {
+  console.log('  ✅ Device crawler script present at scripts/qa/device-crawler.mjs')
+}
+
+try {
+  const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'))
+  if (!pkg.scripts || !pkg.scripts['test:device']) {
+    errors.push('Check 18: package.json missing "test:device" script')
+  } else {
+    console.log('  ✅ "test:device" script wired in package.json')
+  }
+} catch (e) {
+  errors.push('Check 18: Failed to parse package.json: ' + e.message)
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────────
 
 console.log('\n' + '═'.repeat(60))

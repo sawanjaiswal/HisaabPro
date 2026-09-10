@@ -154,7 +154,7 @@ export default function AuditLogPage() {
               />
             ) : (
               <div className="audit-list stagger-list">
-                {rows.map((row) => (
+                {(rows || []).filter((r) => r && r.id).map((row) => (
                   <AuditLogEntry
                     key={row.id}
                     entry={row}

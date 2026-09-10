@@ -75,17 +75,17 @@ export function useInvoiceReport({
     } else {
       setMergedData((prev) => {
         if (!prev) return query.data!
-        const prevItems = prev.data.items ?? []
-        const nextItems = query.data!.data.items ?? []
-        const prevGroups = prev.data.groups ?? []
-        const nextGroups = query.data!.data.groups ?? []
+        const prevItems = prev?.data?.items ?? []
+        const nextItems = query.data?.data?.items ?? []
+        const prevGroups = prev?.data?.groups ?? []
+        const nextGroups = query.data?.data?.groups ?? []
         return {
           ...query.data!,
           data: {
-            summary: query.data!.data.summary,
+            summary: query.data?.data?.summary ?? { totalAmount: 0, count: 0, paidAmount: 0, unpaidAmount: 0, overdueAmount: 0 },
             // Load-more responses omit the analytics aggregate — keep the copy
             // fetched with the first page of this filter set.
-            trend: query.data!.data.trend ?? prev.data.trend,
+            trend: query.data?.data?.trend ?? prev?.data?.trend,
             items: nextItems.length > 0 ? [...prevItems, ...nextItems] : undefined,
             groups: nextGroups.length > 0 ? [...prevGroups, ...nextGroups] : undefined,
           },

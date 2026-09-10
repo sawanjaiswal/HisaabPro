@@ -71,7 +71,7 @@ export function useAuditLog(): UseAuditLogReturn {
   })
 
   const rows = useMemo<AuditSearchRow[]>(
-    () => query.data?.pages.flatMap((page) => page.rows) ?? [],
+    () => (query.data?.pages.flatMap((page) => page?.rows ?? []) ?? []).filter(Boolean),
     [query.data],
   )
 

@@ -22,12 +22,12 @@ export function CashSummaryHeader({ summary, isLoading, isError }: Props) {
     )
   }
 
-  const todayIn = isError ? 0 : (summary?.today.inPaise ?? 0)
-  const todayOut = isError ? 0 : (summary?.today.outPaise ?? 0)
-  const todayNet = isError ? 0 : (summary?.today.netPaise ?? 0)
-  const last30 = isError ? 0 : (summary?.last30.netPaise ?? 0)
+  const todayIn = isError ? 0 : (summary?.today?.inPaise ?? 0)
+  const todayOut = isError ? 0 : (summary?.today?.outPaise ?? 0)
+  const todayNet = isError ? 0 : (summary?.today?.netPaise ?? 0)
+  const last30 = isError ? 0 : (summary?.last30?.netPaise ?? 0)
   const barDays = summary?.last7Days ?? []
-  const maxBar = Math.max(...barDays.map((d) => d.inPaise + d.outPaise), 1)
+  const maxBar = Math.max(...barDays.map((d) => (d?.inPaise ?? 0) + (d?.outPaise ?? 0)), 1)
 
   return (
     <div className="cr-summary">
@@ -47,14 +47,14 @@ export function CashSummaryHeader({ summary, isLoading, isError }: Props) {
       {barDays.length > 0 && (
         <div className="cr-summary__bars" aria-label={t.cashRegLast7Aria}>
           {barDays.map((day) => {
-            const total = day.inPaise + day.outPaise
+            const total = (day?.inPaise ?? 0) + (day?.outPaise ?? 0)
             const heightPct = (total / maxBar) * 100
-            const dayLabel = new Date(day.date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short' })
+            const dayLabel = day?.date ? new Date(day.date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short' }) : '—'
             return (
-              <div key={day.date} className="cr-summary__bar-col">
+              <div key={day?.date || Math.random()} className="cr-summary__bar-col">
                 <div className="cr-summary__bar-track">
                   <div
-                    className={`cr-summary__bar-fill ${day.netPaise >= 0 ? 'cr-summary__bar-fill--pos' : 'cr-summary__bar-fill--neg'}`}
+                    className={`cr-summary__bar-fill ${(day?.netPaise ?? 0) >= 0 ? 'cr-summary__bar-fill--pos' : 'cr-summary__bar-fill--neg'}`}
                     style={{ height: `${heightPct}%` }}
                     aria-label={`${dayLabel}: ${formatPaise(total)}`}
                   />
