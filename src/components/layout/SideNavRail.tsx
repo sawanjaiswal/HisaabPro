@@ -21,6 +21,7 @@ import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { APP_NAME } from '@/config/app.config'
+import { BrandLogo } from '@/components/brand/BrandLogo'
 import { MORE_MENU_ITEMS, MORE_MENU_GROUPS } from '@/features/more/more.constants'
 import { ICON_REGISTRY } from '@/features/more/more.icons'
 import { useVertical } from '@/hooks/useVertical'
@@ -49,7 +50,7 @@ export function SideNavRail() {
         onClick={() => navigate(ROUTES.DASHBOARD)}
         aria-label={`${APP_NAME} home`}
       >
-        <img src="/favicon.svg" alt="" className="side-nav-rail__brand-logo" width={28} height={28} aria-hidden="true" />
+        <BrandLogo variant="favicon" size={28} className="side-nav-rail__brand-logo" alt="" aria-hidden="true" />
         <span className="side-nav-rail__brand-name">{APP_NAME}</span>
       </button>
 

@@ -1,16 +1,5 @@
 // Canonical local-first read-cache module (SSOT: src/db/read-cache.ts).
-//
-// Owns BOTH tiers of the read-cache architecture:
-// - T0: in-memory Map (< 1 ms), scoped to the tab lifecycle.
-// - T1: Dexie IndexedDB (< 5 ms), survives page reloads, process restarts and offline.
-//
-// Contract:
-// 1. Keyed by scope (e.g. 'business:<id>', 'user:<id>', 'global'), never global without intent.
-// 2. schemaVersion validation: a stored payload from an older schema version is treated
-//    as a cache miss and evicted.
-// 3. Best-effort resilience: IndexedDB errors are caught and return null gracefully.
-// 4. Scope-based eviction on business switch and full clearance on logout.
-// 5. Device-local kill-switch (hisaabpro.readcache.off) degrades cleanly to network-only.
+// Owns BOTH tiers: T0 in-memory Map (< 1 ms), T1 Dexie IndexedDB (< 5 ms).
 import { db, type ReadCacheEntry } from './db'
 
 export type LoadStatus = 'LOADING' | 'STALE' | 'READY' | 'ERROR'
@@ -19,10 +8,7 @@ export type { ReadCacheEntry }
 export const STALE_AFTER_MS = 5 * 60_000
 export const CACHE_SCHEMA_VERSION = 1
 
-/**
- * Device-local kill-switch. `localStorage.setItem('hisaabpro.readcache.off','1')` then reload
- * makes every read a miss and every write a no-op — the app falls back to network-only.
- */
+/** Device-local kill-switch. 'hisaabpro.readcache.off'='1' degrades cleanly to network-only. */
 export const DISABLED = (() => {
   try {
     return typeof localStorage !== 'undefined' && localStorage.getItem('hisaabpro.readcache.off') === '1'

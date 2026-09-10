@@ -187,7 +187,7 @@ export default function ProductsPage() {
 
         {status === 'success' && data && !bulk.isActive && (
           <ProductStockHealthCard
-            lowStockCount={data.summary.lowStockCount}
+            lowStockCount={data.summary?.lowStockCount ?? 0}
             onViewLowStock={enableLowStock}
           />
         )}

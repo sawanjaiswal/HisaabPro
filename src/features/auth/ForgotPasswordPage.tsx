@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
 import { APP_NAME } from '../../config/app.config'
+import { BrandLogo } from '@/components/brand/BrandLogo'
 import { api, ApiError } from '@/lib/api'
 import { useLanguage } from '@/context/LanguageContext'
 import { ROUTES } from '@/config/routes.config'
@@ -142,7 +143,13 @@ export default function ForgotPasswordPage() {
         {step === 'phone' && (
           <>
             <div className="login-page__header">
-              <h1 className="login-page__title">{APP_NAME}</h1>
+              <BrandLogo
+                variant="horizontal"
+                size={48}
+                className="login-page__brand-logo"
+                style={{ maxWidth: '210px', height: 'auto', margin: '0 auto 8px auto', display: 'block' }}
+              />
+              <h1 className="login-page__title sr-only">{APP_NAME}</h1>
               <p className="login-page__subtitle">{t.resetYourPassword}</p>
             </div>
             <form className="login-page__form" onSubmit={(e) => { e.preventDefault(); if (phoneRegex.test(phone) && !loading) handleSendOtp() }}>

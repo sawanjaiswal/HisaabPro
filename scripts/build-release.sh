@@ -32,7 +32,7 @@ echo "  dist/ ready"
 
 # Step 3: Sync to Android
 echo "[2/4] Syncing to Android..."
-npx cap sync android
+./scripts/cap.sh sync android
 echo "  Android assets synced"
 
 # Step 4: Build release

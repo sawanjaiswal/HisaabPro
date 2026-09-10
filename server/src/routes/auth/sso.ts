@@ -7,8 +7,13 @@ import { generateTokens } from '../../lib/jwt.js'
 import { setTokenCookies } from '../../services/auth/tokens.js'
 import { getMe } from '../../services/auth/me.js'
 import { persistRefreshTokenFamily, resolveUserBusinessId } from '../../services/auth/helpers.js'
+import { z } from 'zod'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
+
+const googleExchangeSchema = z.object({
+  idToken: z.string().min(1),
+})
 
 const router = Router()
 
@@ -34,11 +39,7 @@ router.post(
  * POST /api/auth/google
  */
 async function handleGoogleExchange(req: any, res: any) {
-  const { idToken } = req.body
-  if (!idToken || typeof idToken !== 'string') {
-    sendError(res, 'idToken is required', 'INVALID_INPUT', 400)
-    return
-  }
+  const { idToken } = googleExchangeSchema.parse(req.body)
 
   try {
     const decoded = jwt.decode(idToken) as {

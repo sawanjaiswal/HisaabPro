@@ -57,7 +57,7 @@ export function TagFilterBar({ activeTag, onTagChange }: TagFilterBarProps) {
   }
 
   // Empty — no tags exist for this tenant. Hide the bar entirely.
-  if (!data || data.tags.length === 0) return null
+  if (!data || !data.tags || data.tags.length === 0) return null
 
   return (
     <div className="tag-filter-bar" role="tablist" aria-label={t.crmTagFilter}>

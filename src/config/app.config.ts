@@ -61,9 +61,9 @@ export const THEME_COLOR = '#0f3638' as const
 
 /** Timeouts */
 export const TIMEOUTS = {
-  fetchMs: 10_000,
+  fetchMs: 20_000,
   /** Auth endpoints on dedicated server */
-  authMs: 10_000,
+  authMs: 20_000,
   debounceMs: 300,
   toastMs: 4_000,
   retryDelayMs: [1_000, 3_000],

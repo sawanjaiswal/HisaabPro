@@ -68,4 +68,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 # mid-transaction. Render's old buildCommand ran this at build time; moved
 # to container start so build-time images never need DB credentials baked in
 # (same reasoning as Rent-Income's and Flint's Dockerfiles).
-CMD ["sh", "-c", "DATABASE_URL=\"$DIRECT_DATABASE_URL\" npx prisma migrate deploy && node dist/server/src/index.js"]
+CMD ["sh", "-c", "DATABASE_URL=\"${DIRECT_DATABASE_URL:-$DATABASE_URL}\" npx prisma migrate deploy && node dist/server/src/index.js"]

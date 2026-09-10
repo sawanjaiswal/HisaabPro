@@ -162,7 +162,8 @@ export default function LoginPage() {
               {t.demoCredentials ?? 'Test credentials (No OTP or SSO needed):'}
             </p>
             <div className="login-dev-box__creds">
-              <button
+              <Button
+                variant="none"
                 type="button"
                 className="login-dev-box__cred-chip"
                 onClick={() => {
@@ -175,7 +176,7 @@ export default function LoginPage() {
                 <span className="login-dev-box__cred-val">admin</span>
                 <span className="login-dev-box__cred-label">Pass:</span>
                 <span className="login-dev-box__cred-val">password123</span>
-              </button>
+              </Button>
             </div>
             <div className="login-dev-box__actions">
               <Button

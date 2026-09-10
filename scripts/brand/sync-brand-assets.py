@@ -68,10 +68,59 @@ def generate_android_icons(dark_squircle_img):
             round_icon.putalpha(mask)
             round_icon.save(os.path.join(folder_path, 'ic_launcher_round.png'))
 
-            # Foreground adaptive icon
-            fg = dark_squircle_img.resize((size, size), Image.Resampling.LANCZOS)
-            fg.save(os.path.join(folder_path, 'ic_launcher_foreground.png'))
+            # Adaptive icon foreground — 108dp canvas with 72dp safe area (~66-70%)
+            fg_canvas = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+            inner_size = int(size * 0.72)
+            fg_symbol = dark_squircle_img.resize((inner_size, inner_size), Image.Resampling.LANCZOS)
+            offset = (size - inner_size) // 2
+            if fg_symbol.mode == 'RGBA':
+                fg_canvas.paste(fg_symbol, (offset, offset), fg_symbol)
+            else:
+                fg_canvas.paste(fg_symbol, (offset, offset))
+            fg_canvas.save(os.path.join(folder_path, 'ic_launcher_foreground.png'))
             print(f"  ✓ Android {folder} ({size}x{size}) updated")
+
+def generate_android_splash(logo_img):
+    """Generate Android splash screens with centered logo on #F8F7F4 background."""
+    splash_sizes = {
+        'drawable': (480, 320),
+        'drawable-port-mdpi': (320, 480),
+        'drawable-port-hdpi': (480, 800),
+        'drawable-port-xhdpi': (720, 1280),
+        'drawable-port-xxhdpi': (960, 1600),
+        'drawable-port-xxxhdpi': (1280, 1920),
+        'drawable-land-mdpi': (480, 320),
+        'drawable-land-hdpi': (800, 480),
+        'drawable-land-xhdpi': (1280, 720),
+        'drawable-land-xxhdpi': (1600, 960),
+        'drawable-land-xxxhdpi': (1920, 1280),
+    }
+    bg_color = (248, 247, 244) # #F8F7F4 cream
+
+    for folder, (width, height) in splash_sizes.items():
+        folder_path = os.path.join(ANDROID_RES_DIR, folder)
+        if os.path.exists(folder_path):
+            canvas = Image.new('RGB', (width, height), bg_color)
+            
+            # Target logo width ~ 55% of canvas width or max 480px
+            target_w = min(int(width * 0.55), 480)
+            aspect = logo_img.width / logo_img.height
+            target_h = int(target_w / aspect)
+            
+            # Resize logo
+            resized_logo = logo_img.resize((target_w, target_h), Image.Resampling.LANCZOS)
+            
+            # Center on canvas
+            x = (width - target_w) // 2
+            y = (height - target_h) // 2
+            
+            if resized_logo.mode == 'RGBA':
+                canvas.paste(resized_logo, (x, y), resized_logo)
+            else:
+                canvas.paste(resized_logo, (x, y))
+                
+            canvas.save(os.path.join(folder_path, 'splash.png'), optimize=True)
+            print(f"  ✓ Android splash {folder} ({width}x{height}) updated")
 
 def main():
     print("🚀 Starting HisaabPro Brand Asset Sync Engine...")
@@ -85,6 +134,8 @@ def main():
         print("Please place 'master-sheet.png' or 'master-icon.png' in assets/branding/")
         sys.exit(1)
 
+    logo_for_splash = None
+
     if os.path.exists(master_icon):
         print(f"📦 Processing Master Icon: {master_icon}")
         icon_img = Image.open(master_icon)
@@ -95,6 +146,7 @@ def main():
         print("  ✓ Web & PWA icons generated from master-icon.png (icon-512.png, icon-192.png, favicon.png)")
         print("📱 Generating Android launcher icon densities...")
         generate_android_icons(icon_img)
+        logo_for_splash = icon_img
 
     if os.path.exists(master_sheet):
         print(f"📦 Processing Master Logo Sheet: {master_sheet}")
@@ -123,6 +175,7 @@ def main():
         logo_light = extract_smooth(sheet, (562, 692, 988, 830), (247, 245, 239), is_dark_bg=False)
         logo_light.save(os.path.join(OFFICIAL_LOGOS_DIR, 'hisaabpro-logo-horizontal.png'))
         logo_light.save(os.path.join(PUBLIC_DIR, 'hisaabpro-logo.png'))
+        logo_for_splash = logo_light
         print("  ✓ Horizontal brand logo generated (hisaabpro-logo-horizontal.png)")
 
         # 5. White / Dark Surface Horizontal Logo
@@ -134,6 +187,10 @@ def main():
         mark = extract_smooth(sheet, (582, 698, 686, 820), (247, 245, 239), is_dark_bg=False)
         mark.save(os.path.join(OFFICIAL_LOGOS_DIR, 'hisaabpro-h-mark.png'))
         print("  ✓ Isolated brand mark generated (hisaabpro-h-mark.png)")
+
+    if logo_for_splash:
+        print("📱 Generating Android Splash screens...")
+        generate_android_splash(logo_for_splash)
 
     print("✨ All brand assets generated and synced across Web, PWA, and Android successfully!")
 

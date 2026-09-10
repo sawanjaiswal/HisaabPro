@@ -152,6 +152,14 @@
   background: var(--overlay-white-15);
 }
 
+.header--emerald .header-brand-name {
+  color: var(--color-white-inverse);
+}
+
+.header--emerald .header-brand-accent {
+  color: var(--color-lime-accent);
+}
+
 .header--emerald .header-title {
   color: var(--color-white-inverse);
 }

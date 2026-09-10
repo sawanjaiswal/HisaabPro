@@ -87,9 +87,14 @@ public class MainActivity extends BridgeActivity {
         controller.setAppearanceLightStatusBars(!isNight);
         controller.setAppearanceLightNavigationBars(!isNight);
 
-        int windowBg = isNight ? 0xFF0F172A : 0xFFFFFFFF;
+        int windowBg = isNight ? 0xFF0E0E0F : 0xFFF8F7F4;
         getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(windowBg));
         getWindow().getDecorView().setBackgroundColor(windowBg);
+
+        WebView wv = getBridge() != null ? getBridge().getWebView() : null;
+        if (wv != null) {
+            wv.setBackgroundColor(windowBg);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             getWindow().setNavigationBarContrastEnforced(false);

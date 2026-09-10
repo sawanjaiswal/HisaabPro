@@ -748,6 +748,38 @@ export function handleMockRequest(
     }
   }
 
+  if (path === '/parties/tags' && m === 'GET') {
+    const tagMap = new Map<string, number>()
+    for (const p of db.parties) {
+      for (const t of p.tags || []) {
+        tagMap.set(t, (tagMap.get(t) ?? 0) + 1)
+      }
+    }
+    const tags = Array.from(tagMap.entries()).map(([tag, partyCount]) => ({ tag, partyCount }))
+    return { tags, totalParties: db.parties.length }
+  }
+
+  if (path === '/parties/follow-ups' && m === 'GET') {
+    return {
+      followUps: [],
+      nextCursor: null,
+      totalCount: 0,
+    }
+  }
+
+  // ─── Notifications ──────────────────────────────────────────────────────────
+  if (path === '/notifications' && m === 'GET') {
+    return { items: [], nextCursor: null }
+  }
+
+  if (path === '/notifications/unread-count' && m === 'GET') {
+    return { count: 0 }
+  }
+
+  if (path.startsWith('/notifications/') && m === 'POST') {
+    return { ok: true }
+  }
+
   // ─── Products ──────────────────────────────────────────────────────────────
   if (path === '/products' && m === 'GET') {
     const lowStockOnly = param(rawPath, 'lowStockOnly') === 'true'

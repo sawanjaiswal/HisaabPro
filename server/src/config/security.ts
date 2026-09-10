@@ -88,20 +88,28 @@ export const CSRF_COOKIE_TTL_MS = 24 * 60 * 60 * 1000
 
 // --- Origin allowlist (CORS + same-site verification) ---
 
+const envOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((s) => s.trim()).filter(Boolean)
+  : [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5001',
+      'http://localhost:5002',
+      'http://localhost:5173',
+    ]
+
 /** Origins allowed to call the API. Used by CORS middleware AND Origin-header
  *  checks on cookie-only endpoints (refresh) where CSRF is not feasible. */
-export const ALLOWED_ORIGINS: readonly string[] = [
-  ...(process.env.CORS_ORIGIN?.split(',') ?? [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:5173',
-  ]),
+export const ALLOWED_ORIGINS: readonly string[] = Array.from(new Set([
+  ...envOrigins,
   'https://hisaabpro.in',
   'https://app.hisaabpro.in',
   'https://admin.hisaabpro.in',
   'https://localhost',
   'capacitor://localhost',
-]
+  'http://localhost:5002',
+  'http://localhost:5001',
+]))
 
 // --- Multi-business ---
 
