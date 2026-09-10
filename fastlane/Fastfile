@@ -8,7 +8,7 @@ platform :android do
   lane :build do
     Dir.chdir(REPO_ROOT) do
       sh("npm run build")
-      sh("npx cap sync android")
+      sh("./scripts/cap.sh sync android")
       Dir.chdir("android") do
         sh("./gradlew bundleRelease")
       end
