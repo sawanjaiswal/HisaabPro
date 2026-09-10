@@ -1,0 +1,50 @@
+{
+  "id": "JC-001",
+  "name": "Dashboard Merchant Overview & Feed Interaction",
+  "route": "/dashboard",
+  "preconditions": [
+    "authenticated",
+    "app_loaded"
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "route": "/dashboard"
+    },
+    {
+      "action": "test_period_filters",
+      "buttons": [
+        "Today",
+        "This Week",
+        "This Month"
+      ]
+    },
+    {
+      "action": "type_search",
+      "selector": "input[placeholder*=\"search\" i]",
+      "text": "Test"
+    },
+    {
+      "action": "assert_hero_cards_visible"
+    }
+  ],
+  "assertions": [
+    {
+      "type": "SEMANTIC_VISIBILITY",
+      "selector": "header, [data-hero], .hero-card",
+      "description": "Hero surface must be visible and >0px height"
+    },
+    {
+      "type": "NO_CONSOLE_ERRORS",
+      "description": "Dashboard period switching must not throw"
+    },
+    {
+      "type": "LAYOUT_NO_HORIZONTAL_OVERFLOW",
+      "description": "Dashboard body must not scroll horizontally"
+    }
+  ],
+  "screenshots": [
+    "dashboard_overview",
+    "dashboard_search_active"
+  ]
+}

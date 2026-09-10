@@ -1,0 +1,34 @@
+{
+  "id": "JC-006",
+  "name": "Android Virtual Keyboard Inset & CTA Occlusion Verification",
+  "route": "/parties/new",
+  "preconditions": [
+    "authenticated"
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "route": "/parties/new"
+    },
+    {
+      "action": "focus_input",
+      "selector": "input[name=\"name\"], input[placeholder*=\"Name\" i]"
+    },
+    {
+      "action": "measure_viewport_and_cta_visibility"
+    },
+    {
+      "action": "dismiss_keyboard"
+    }
+  ],
+  "assertions": [
+    {
+      "type": "KEYBOARD_INSET_SAFETY",
+      "description": "Primary action CTA must remain visible and accessible when Android keyboard is active"
+    }
+  ],
+  "screenshots": [
+    "keyboard_active_screen",
+    "keyboard_dismissed_screen"
+  ]
+}

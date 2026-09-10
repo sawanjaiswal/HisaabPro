@@ -105,9 +105,9 @@ export function usePaymentHistoryReport(): UsePaymentHistoryReportReturn {
   )
 
   const loadMore = useCallback(() => {
-    if (!mergedData?.meta.hasMore || !mergedData.meta.cursor) return
+    if (!mergedData?.meta?.hasMore || !mergedData?.meta?.cursor) return
     isLoadMore.current = true
-    setFilters((prev) => ({ ...prev, cursor: mergedData.meta.cursor ?? undefined }))
+    setFilters((prev) => ({ ...prev, cursor: mergedData.meta?.cursor ?? undefined }))
   }, [mergedData])
 
   const refresh = useCallback(() => {

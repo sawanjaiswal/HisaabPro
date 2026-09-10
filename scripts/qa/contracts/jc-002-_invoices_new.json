@@ -1,0 +1,57 @@
+{
+  "id": "JC-002",
+  "name": "GST Invoice Creation & Real-Time Business Calculation",
+  "route": "/invoices/new",
+  "preconditions": [
+    "authenticated"
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "route": "/invoices/new"
+    },
+    {
+      "action": "fill_party_name",
+      "value": "Sharma Electronics"
+    },
+    {
+      "action": "fill_line_item",
+      "item": "Samsung Galaxy A15",
+      "rate": 1000,
+      "qty": 2,
+      "taxPercent": 18
+    },
+    {
+      "action": "assert_business_math",
+      "expectedSubtotal": 2000,
+      "expectedTax": 360,
+      "expectedGrandTotal": 2360
+    },
+    {
+      "action": "scroll_to_bottom"
+    },
+    {
+      "action": "assert_sticky_action_bar_pinned"
+    }
+  ],
+  "assertions": [
+    {
+      "type": "BUSINESS_MATH",
+      "formula": "rate * qty + tax == total",
+      "description": "Line item math must match Indian GST calculation exactly"
+    },
+    {
+      "type": "SEMANTIC_VISIBILITY",
+      "selector": "button:has-text(\"Save\"), button:has-text(\"Generate\"), button.bg-primary",
+      "description": "Save CTA must be rendered and visible"
+    },
+    {
+      "type": "STICKY_INSET",
+      "description": "Action toolbar must be pinned above Android system navigation bar"
+    }
+  ],
+  "screenshots": [
+    "invoice_form_filled",
+    "invoice_sticky_footer"
+  ]
+}

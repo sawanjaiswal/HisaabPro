@@ -1,0 +1,49 @@
+{
+  "id": "JC-004",
+  "name": "Cash Register Calculator Engine & Concurrency Stress",
+  "route": "/cash-register",
+  "preconditions": [
+    "authenticated"
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "route": "/cash-register"
+    },
+    {
+      "action": "simulate_keypad_math",
+      "sequence": [
+        "2",
+        "5",
+        "0",
+        "+",
+        "1",
+        "5",
+        "0",
+        "="
+      ],
+      "expectedResult": 400
+    },
+    {
+      "action": "rapid_tab_switch",
+      "tabA": "Calculator",
+      "tabB": "History",
+      "cycles": 4
+    }
+  ],
+  "assertions": [
+    {
+      "type": "BUSINESS_MATH",
+      "formula": "250 + 150 == 400",
+      "description": "Calculator virtual keypad engine must compute live paise total correctly"
+    },
+    {
+      "type": "CONCURRENCY_RESILIENCE",
+      "description": "Rapid tab switching must not cause race conditions or unhandled query rejections"
+    }
+  ],
+  "screenshots": [
+    "cash_register_calculator",
+    "cash_register_history"
+  ]
+}

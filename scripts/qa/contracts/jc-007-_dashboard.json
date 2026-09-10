@@ -1,0 +1,28 @@
+{
+  "id": "JC-007",
+  "name": "Cold Crash / Force-Stop App Persistence & Session Recovery",
+  "route": "/dashboard",
+  "preconditions": [
+    "authenticated"
+  ],
+  "steps": [
+    {
+      "action": "force_stop_app"
+    },
+    {
+      "action": "restart_app"
+    },
+    {
+      "action": "verify_session_intact"
+    }
+  ],
+  "assertions": [
+    {
+      "type": "SESSION_PERSISTENCE",
+      "description": "Auth token and active business context must survive Android process death"
+    }
+  ],
+  "screenshots": [
+    "post_restart_screen"
+  ]
+}

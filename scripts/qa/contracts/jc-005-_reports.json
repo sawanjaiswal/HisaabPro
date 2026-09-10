@@ -1,0 +1,40 @@
+{
+  "id": "JC-005",
+  "name": "Financial Reports & Security Audit Log Traversal",
+  "route": "/reports",
+  "preconditions": [
+    "authenticated"
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "route": "/reports"
+    },
+    {
+      "action": "test_report_categories"
+    },
+    {
+      "action": "navigate",
+      "route": "/settings/audit-log"
+    },
+    {
+      "action": "scroll_audit_events"
+    }
+  ],
+  "assertions": [
+    {
+      "type": "REGRESSION_CHECK",
+      "id": "REG-001",
+      "description": "No undefined hasMore cursor crash on reports pagination"
+    },
+    {
+      "type": "REGRESSION_CHECK",
+      "id": "REG-004",
+      "description": "Audit log table must render timestamped actions safely"
+    }
+  ],
+  "screenshots": [
+    "reports_overview",
+    "audit_log_view"
+  ]
+}

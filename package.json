@@ -1,7 +1,7 @@
 {
   "name": "hisaabpro",
   "private": true,
-  "version": "1.0.7",
+  "version": "1.0.8",
   "type": "module",
   "scripts": {
     "predev": "sh scripts/free-dev-ports.sh 5002",

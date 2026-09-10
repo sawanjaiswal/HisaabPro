@@ -1,0 +1,34 @@
+[
+  {
+    "id": "REG-001",
+    "description": "Reports page crash on empty/undefined meta.hasMore cursor",
+    "route": "/reports",
+    "source": "src/features/reports/InvoiceReportPage.tsx",
+    "assertion": "page_rendered_without_exception",
+    "fixedAt": "2026-09-10"
+  },
+  {
+    "id": "REG-002",
+    "description": "CashSummaryHeader crash on undefined summary.today.inPaise in cash register",
+    "route": "/cash-register",
+    "source": "src/features/cash-register/components/CashSummaryHeader.tsx",
+    "assertion": "cash_summary_header_rendered",
+    "fixedAt": "2026-09-10"
+  },
+  {
+    "id": "REG-003",
+    "description": "RecentActivityFeed date group crash on malformed audit log entry",
+    "route": "/dashboard",
+    "source": "src/features/dashboard/components/RecentActivityFeed.tsx",
+    "assertion": "activity_feed_visible",
+    "fixedAt": "2026-09-10"
+  },
+  {
+    "id": "REG-004",
+    "description": "AuditLogPage row mapping crash on null timestamp rows",
+    "route": "/settings/audit-log",
+    "source": "src/features/settings/AuditLogPage.tsx",
+    "assertion": "audit_table_rendered",
+    "fixedAt": "2026-09-10"
+  }
+]

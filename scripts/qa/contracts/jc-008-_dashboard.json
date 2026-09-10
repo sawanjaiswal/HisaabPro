@@ -1,0 +1,32 @@
+{
+  "id": "JC-008",
+  "name": "Offline Mutation Queue & Network Reconnect Synchronization",
+  "route": "/dashboard",
+  "preconditions": [
+    "authenticated"
+  ],
+  "steps": [
+    {
+      "action": "emulate_offline"
+    },
+    {
+      "action": "verify_offline_banner_present"
+    },
+    {
+      "action": "emulate_online"
+    },
+    {
+      "action": "verify_online_sync_recovery"
+    }
+  ],
+  "assertions": [
+    {
+      "type": "OFFLINE_RESILIENCE",
+      "description": "App must display offline indicator and prevent catastrophic API failure loops"
+    }
+  ],
+  "screenshots": [
+    "offline_banner_screen",
+    "online_restored_screen"
+  ]
+}

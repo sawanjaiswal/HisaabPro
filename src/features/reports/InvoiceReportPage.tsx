@@ -218,7 +218,7 @@ export default function InvoiceReportPage() {
 
           {status === 'success' && (
             <ReportLoadMore
-              hasMore={data?.meta.hasMore ?? false}
+              hasMore={data?.meta?.hasMore ?? false}
               isLoading={false}
               onLoadMore={loadMore}
             />

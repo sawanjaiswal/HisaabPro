@@ -1,0 +1,45 @@
+{
+  "id": "JC-003",
+  "name": "Parties Ledger & Balance Accounting",
+  "route": "/parties",
+  "preconditions": [
+    "authenticated"
+  ],
+  "steps": [
+    {
+      "action": "navigate",
+      "route": "/parties"
+    },
+    {
+      "action": "toggle_tabs",
+      "tabs": [
+        "All",
+        "Customers",
+        "Suppliers"
+      ]
+    },
+    {
+      "action": "open_quick_create_drawer"
+    },
+    {
+      "action": "fill_party_details",
+      "name": "Gupta Enterprises",
+      "phone": "9876543210"
+    }
+  ],
+  "assertions": [
+    {
+      "type": "SEMANTIC_VISIBILITY",
+      "selector": "button, [role=\"tab\"]",
+      "description": "Tabs must toggle active class"
+    },
+    {
+      "type": "NO_CONSOLE_ERRORS",
+      "description": "Party drawer open/close must not crash"
+    }
+  ],
+  "screenshots": [
+    "parties_list",
+    "party_quick_drawer"
+  ]
+}
