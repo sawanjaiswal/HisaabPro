@@ -46,39 +46,42 @@ def extract_smooth(img, crop_box, bg_color_sample, is_dark_bg=False):
     return Image.fromarray(res)
 
 def generate_android_icons(dark_squircle_img):
+    # Android launcher icon dimensions:
+    # - Legacy full-bleed square / round icon size: 48, 72, 96, 144, 192
+    # - Adaptive icon foreground size (108dp): 108, 162, 216, 324, 432
     densities = {
-        'mipmap-mdpi': 48,
-        'mipmap-hdpi': 72,
-        'mipmap-xhdpi': 96,
-        'mipmap-xxhdpi': 144,
-        'mipmap-xxxhdpi': 192,
+        'mipmap-mdpi': (48, 108),
+        'mipmap-hdpi': (72, 162),
+        'mipmap-xhdpi': (96, 216),
+        'mipmap-xxhdpi': (144, 324),
+        'mipmap-xxxhdpi': (192, 432),
     }
-    for folder, size in densities.items():
+    for folder, (legacy_size, fg_size) in densities.items():
         folder_path = os.path.join(ANDROID_RES_DIR, folder)
         if os.path.exists(folder_path):
-            # Square icon
-            sq = dark_squircle_img.resize((size, size), Image.Resampling.LANCZOS)
-            sq.save(os.path.join(folder_path, 'ic_launcher.png'))
+            # Square legacy icon
+            sq = dark_squircle_img.resize((legacy_size, legacy_size), Image.Resampling.LANCZOS)
+            sq.save(os.path.join(folder_path, 'ic_launcher.png'), optimize=True)
 
-            # Round icon
-            mask = Image.new('L', (size, size), 0)
+            # Round legacy icon
+            mask = Image.new('L', (legacy_size, legacy_size), 0)
             draw = ImageDraw.Draw(mask)
-            draw.ellipse((0, 0, size, size), fill=255)
-            round_icon = ImageOps.fit(dark_squircle_img, (size, size), centering=(0.5, 0.5))
+            draw.ellipse((0, 0, legacy_size, legacy_size), fill=255)
+            round_icon = ImageOps.fit(dark_squircle_img, (legacy_size, legacy_size), centering=(0.5, 0.5))
             round_icon.putalpha(mask)
-            round_icon.save(os.path.join(folder_path, 'ic_launcher_round.png'))
+            round_icon.save(os.path.join(folder_path, 'ic_launcher_round.png'), optimize=True)
 
             # Adaptive icon foreground — 108dp canvas with 72dp safe area (~66-70%)
-            fg_canvas = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-            inner_size = int(size * 0.72)
+            fg_canvas = Image.new('RGBA', (fg_size, fg_size), (0, 0, 0, 0))
+            inner_size = int(fg_size * 0.72)
             fg_symbol = dark_squircle_img.resize((inner_size, inner_size), Image.Resampling.LANCZOS)
-            offset = (size - inner_size) // 2
+            offset = (fg_size - inner_size) // 2
             if fg_symbol.mode == 'RGBA':
                 fg_canvas.paste(fg_symbol, (offset, offset), fg_symbol)
             else:
                 fg_canvas.paste(fg_symbol, (offset, offset))
-            fg_canvas.save(os.path.join(folder_path, 'ic_launcher_foreground.png'))
-            print(f"  ✓ Android {folder} ({size}x{size}) updated")
+            fg_canvas.save(os.path.join(folder_path, 'ic_launcher_foreground.png'), optimize=True)
+            print(f"  ✓ Android {folder} (legacy {legacy_size}x{legacy_size}, adaptive {fg_size}x{fg_size}) updated")
 
 def generate_android_splash(logo_img):
     """Generate Android splash screens with centered logo on #F8F7F4 background."""
@@ -139,11 +142,13 @@ def main():
     if os.path.exists(master_icon):
         print(f"📦 Processing Master Icon: {master_icon}")
         icon_img = Image.open(master_icon)
-        icon_img.resize((512, 512), Image.Resampling.LANCZOS).save(os.path.join(OFFICIAL_LOGOS_DIR, 'hisaabpro-icon-dark.png'))
-        icon_img.resize((512, 512), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'icon-512.png'))
-        icon_img.resize((192, 192), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'icon-192.png'))
-        icon_img.resize((64, 64), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'favicon.png'))
-        print("  ✓ Web & PWA icons generated from master-icon.png (icon-512.png, icon-192.png, favicon.png)")
+        # Full 1024x1024 high quality master icon without downsizing
+        icon_img.save(os.path.join(OFFICIAL_LOGOS_DIR, 'hisaabpro-icon-dark.png'), optimize=True)
+        icon_img.save(os.path.join(OFFICIAL_LOGOS_DIR, 'hisaabpro-icon-1024.png'), optimize=True)
+        icon_img.resize((512, 512), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'icon-512.png'), optimize=True)
+        icon_img.resize((192, 192), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'icon-192.png'), optimize=True)
+        icon_img.resize((64, 64), Image.Resampling.LANCZOS).save(os.path.join(PUBLIC_DIR, 'favicon.png'), optimize=True)
+        print("  ✓ Full 1024px icon and Web/PWA icons generated (hisaabpro-icon-dark.png, icon-512.png, icon-192.png, favicon.png)")
         print("📱 Generating Android launcher icon densities...")
         generate_android_icons(icon_img)
         logo_for_splash = icon_img
