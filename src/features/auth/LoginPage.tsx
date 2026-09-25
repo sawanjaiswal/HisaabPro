@@ -65,8 +65,6 @@ export default function LoginPage() {
   } = useLogin()
   const { startGoogleSignIn, loading: googleLoading } = useGoogleSso()
 
-  const isValid = identifier.trim().length > 0 && password.length > 0
-
   return (
     <div className="login-page">
       <SEO title={t.login} />
@@ -87,7 +85,7 @@ export default function LoginPage() {
           className="login-page__form"
           onSubmit={(e) => {
             e.preventDefault()
-            if (isValid && !loading) handleLogin()
+            if (!loading) handleLogin()
           }}
         >
           <div className="login-page__field">
@@ -138,7 +136,7 @@ export default function LoginPage() {
           <Button variant="none"
             type="submit"
             className="login-page__submit"
-            disabled={!isValid || loading}
+            disabled={loading}
           >
             {isRetrying ? t.connectingToServer : loading ? t.signingIn : t.signIn}
           </Button>

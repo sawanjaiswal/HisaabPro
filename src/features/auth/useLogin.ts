@@ -95,6 +95,14 @@ export function useLogin() {
   const handleLogin = useCallback(async () => {
     if (mutation.isPending || connecting) return
     setError('')
+    if (!identifier.trim()) {
+      setError('Please enter your mobile number or email.')
+      return
+    }
+    if (!password) {
+      setError('Please enter your password.')
+      return
+    }
     setConnecting(true)
     retryCount.current = 0
     mutation.mutate({ id: identifier, pass: password, captcha: captchaToken || undefined })

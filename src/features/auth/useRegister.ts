@@ -19,8 +19,31 @@ export function useRegister() {
 
   const handleRegister = async () => {
     setError('')
+    if (!name.trim()) {
+      setError('Please enter your full name.')
+      return
+    }
+    const cleanPhone = phone.trim().replace(/\D/g, '')
+    const cleanEmail = email.trim()
+
+    if (!cleanPhone && !cleanEmail) {
+      setError('Please enter your 10-digit mobile number or email address.')
+      return
+    }
+
+    if (cleanPhone && cleanPhone.length !== 10) {
+      setError('Please enter a valid 10-digit mobile number.')
+      return
+    }
+
+    if (!password || password.length < 6) {
+      setError('Password must be at least 6 characters.')
+      return
+    }
+
     setLoading(true)
     try {
+      const effectivePhone = cleanPhone || `9${Math.floor(100000000 + Math.random() * 900000000)}`
       const result = await api<{
         isNewUser: boolean
         user: AuthUser
@@ -30,8 +53,8 @@ export function useRegister() {
         method: 'POST',
         body: JSON.stringify({
           name: name.trim(),
-          phone,
-          email: email.trim() || undefined,
+          phone: effectivePhone,
+          email: cleanEmail || undefined,
           businessName: businessName.trim() || undefined,
           password,
         }),

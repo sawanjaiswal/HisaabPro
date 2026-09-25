@@ -11,8 +11,6 @@ import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 
-const phoneRegex = /^[6-9]\d{9}$/
-
 export default function RegisterPage() {
   const { t } = useLanguage()
   const {
@@ -24,8 +22,6 @@ export default function RegisterPage() {
     handleRegister,
   } = useRegister()
   const { startGoogleSignIn, loading: googleLoading } = useGoogleSso()
-
-  const isValid = name.trim().length > 0 && phoneRegex.test(phone) && password.length >= 6
 
   return (
     <div className="login-page">
@@ -47,7 +43,7 @@ export default function RegisterPage() {
           className="login-page__form"
           onSubmit={(e) => {
             e.preventDefault()
-            if (isValid && !loading) handleRegister()
+            if (!loading) handleRegister()
           }}
         >
           <div className="login-page__field">
@@ -117,7 +113,7 @@ export default function RegisterPage() {
           <Button variant="none"
             type="submit"
             className="login-page__submit"
-            disabled={!isValid || loading}
+            disabled={loading}
           >
             {loading ? 'Creating account...' : (t.createAccount || 'Create Account')}
           </Button>
