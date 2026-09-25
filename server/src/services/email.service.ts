@@ -12,7 +12,7 @@ export async function sendEmailOtp(
 ): Promise<{ success: boolean; id?: string }> {
   const name = fullName || email.split('@')[0] || 'Business Owner'
   const apiKey = process.env.RESEND_API_KEY?.trim()
-  const fromEmail = (process.env.EMAIL_FROM || 'onboarding@resend.dev').trim()
+  const fromEmail = (process.env.RESEND_FROM_EMAIL || process.env.EMAIL_FROM || 'onboarding@resend.dev').trim()
 
   logger.info('email.otp_dispatch', { to: email })
 
