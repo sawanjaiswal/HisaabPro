@@ -42,7 +42,7 @@ router.post(
       const tokens = await authService.refreshAccessToken(refreshToken)
       authService.setTokenCookies(res, tokens)
       res.set('Cache-Control', 'no-store')
-      sendSuccess(res, {})
+      sendSuccess(res, { tokens })
     } catch (err) {
       // RefreshReuseError + verifyRefreshToken JsonWebTokenError both collapse
       // to generic 401. Server-side reason already logged to Sentry inside the

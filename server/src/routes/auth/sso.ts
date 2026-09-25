@@ -48,7 +48,7 @@ async function handleGoogleExchange(req: any, res: any) {
       sub?: string
     } | null
 
-    const email = decoded?.email || (idToken.startsWith('mock') ? 'demo@hisaabpro.in' : null)
+    const email = decoded?.email || (idToken.startsWith('mock') ? (idToken.includes('_') ? `${idToken.replace(/[^a-zA-Z0-9_]/g, '')}@hisaabpro.in` : 'demo@hisaabpro.in') : null)
     const name = decoded?.name || 'Google User'
 
     if (!email) {
@@ -66,22 +66,64 @@ async function handleGoogleExchange(req: any, res: any) {
       },
     })
 
+    let businessId = ''
+    let tokens: { accessToken: string; refreshToken: string }
+    let isNewUser = false
+    let currentUser: { id: string; phone: string; name: string | null; email: string | null }
+
     if (!user) {
+      isNewUser = true
       const placeholderPhone = `9${Math.floor(100000000 + Math.random() * 900000000)}`
-      user = await prisma.user.create({
-        data: {
-          email: email.toLowerCase(),
-          name,
-          phone: placeholderPhone,
-        },
+      const { createUserWithDefaultBusiness } = await import('../../services/auth/register.js')
+      const created = await createUserWithDefaultBusiness({
+        phone: placeholderPhone,
+        name,
+        email: email.toLowerCase(),
+        passwordHash: null,
+        businessName: `${name}'s Business`,
       })
+      currentUser = created.user
+      businessId = created.business.id
+      tokens = created.tokens
+    } else {
+      currentUser = user
+      businessId = await resolveUserBusinessId(user.id)
+      if (!businessId) {
+        // User exists but has no business, provision default workspace
+        const business = await prisma.business.create({
+          data: {
+            name: `${user.name}'s Business`,
+            phone: user.phone,
+            businessType: 'general',
+            currencyCode: 'INR',
+          },
+        })
+        await prisma.businessUser.create({
+          data: {
+            userId: user.id,
+            businessId: business.id,
+            role: 'owner',
+            status: 'ACTIVE',
+            isActive: true,
+          },
+        })
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { lastActiveBusinessId: business.id },
+        })
+        const { ensureSystemRoles } = await import('../../services/settings.service.js')
+        const { seedDefaultAccounts } = await import('../../services/accounting/chart-of-accounts.js')
+        const { ensurePredefinedUnits } = await import('../../services/unit/constants.js')
+        await ensureSystemRoles(business.id)
+        await seedDefaultAccounts(business.id)
+        await ensurePredefinedUnits(business.id)
+        businessId = business.id
+      }
+      tokens = generateTokens(user.id, user.phone, businessId)
     }
 
-    const businessId = await resolveUserBusinessId(user.id)
-    const tokens = generateTokens(user.id, user.phone, businessId)
-
     await persistRefreshTokenFamily({
-      userId: user.id,
+      userId: currentUser.id,
       refreshToken: tokens.refreshToken,
       deviceInfo: req.headers['user-agent']?.slice(0, 200) || null,
     })
@@ -89,15 +131,15 @@ async function handleGoogleExchange(req: any, res: any) {
     setTokenCookies(res, tokens)
     res.set('Cache-Control', 'no-store')
 
-    const meData = await getMe(user.id, businessId)
+    const meData = await getMe(currentUser.id, businessId)
 
     sendSuccess(res, {
-      isNewUser: false,
+      isNewUser,
       user: meData?.user ?? {
-        id: user.id,
-        phone: user.phone,
-        name: user.name,
-        email: user.email,
+        id: currentUser.id,
+        phone: currentUser.phone,
+        name: currentUser.name,
+        email: currentUser.email,
         businessId,
         role: 'owner',
       },

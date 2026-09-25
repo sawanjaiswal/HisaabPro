@@ -28,7 +28,7 @@ const app = createApp()
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const MOCK_USER = { id: TEST_USER.userId, phone: TEST_USER.phone, name: 'Dev Admin' as string | null }
+const MOCK_USER = { id: TEST_USER.userId, phone: TEST_USER.phone, name: 'Dev Admin' as string | null, email: 'admin@example.com' as string | null }
 const MOCK_TOKENS = { accessToken: 'access-tok', refreshToken: 'refresh-tok' }
 const MOCK_BIZ = {
   id: TEST_USER.businessId,

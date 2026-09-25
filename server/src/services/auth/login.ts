@@ -51,7 +51,7 @@ export async function login(data: LoginInput) {
   const isPhone = phoneRegex.test(identifier)
 
   const user = await prisma.user.findFirst({
-    where: isPhone ? { phone: identifier } : { email: identifier },
+    where: isPhone ? { phone: identifier.trim() } : { email: identifier.trim().toLowerCase() },
     select: {
       id: true,
       phone: true,

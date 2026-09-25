@@ -25,13 +25,13 @@ export function generateTokens(userId: string, phone: string, businessId = '') {
   const accessToken = jwt.sign(
     { userId, phone, businessId, type: 'access' } satisfies TokenPayload,
     JWT_SECRET,
-    { algorithm: 'HS256', expiresIn: ACCESS_TOKEN_EXPIRY } as jwt.SignOptions
+    { algorithm: 'HS256', expiresIn: ACCESS_TOKEN_EXPIRY, jwtid: crypto.randomUUID() } as jwt.SignOptions
   )
 
   const refreshToken = jwt.sign(
     { userId, phone, businessId, type: 'refresh' } satisfies TokenPayload,
     JWT_SECRET,
-    { algorithm: 'HS256', expiresIn: REFRESH_TOKEN_EXPIRY } as jwt.SignOptions
+    { algorithm: 'HS256', expiresIn: REFRESH_TOKEN_EXPIRY, jwtid: crypto.randomUUID() } as jwt.SignOptions
   )
 
   return { accessToken, refreshToken }

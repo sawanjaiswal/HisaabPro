@@ -11,6 +11,8 @@ export function useRegister() {
   const { setUser, setBusinesses } = useAuth()
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [businessName, setBusinessName] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -26,7 +28,13 @@ export function useRegister() {
         activeBusiness: BusinessSummary | null
       }>('/auth/direct-register', {
         method: 'POST',
-        body: JSON.stringify({ name: name.trim(), phone, password }),
+        body: JSON.stringify({
+          name: name.trim(),
+          phone,
+          email: email.trim() || undefined,
+          businessName: businessName.trim() || undefined,
+          password,
+        }),
         offlineQueue: false,
       })
 
@@ -46,5 +54,13 @@ export function useRegister() {
     }
   }
 
-  return { name, setName, phone, setPhone, password, setPassword, loading, error, handleRegister }
+  return {
+    name, setName,
+    phone, setPhone,
+    email, setEmail,
+    businessName, setBusinessName,
+    password, setPassword,
+    loading, error,
+    handleRegister,
+  }
 }

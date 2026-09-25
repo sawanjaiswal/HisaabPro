@@ -18,6 +18,7 @@ export default function RegisterPage() {
   const {
     name, setName,
     phone, setPhone,
+    email, setEmail,
     password, setPassword,
     loading, error,
     handleRegister,
@@ -77,6 +78,21 @@ export default function RegisterPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                 autoComplete="tel"
+              />
+            </div>
+          </div>
+
+          <div className="login-page__field">
+            <label className="login-page__label" htmlFor="email">Email Address <span style={{ opacity: 0.6, fontSize: '0.85em' }}>(Optional)</span></label>
+            <div className="login-page__input-wrapper">
+              <Input
+                id="email"
+                type="email"
+                className="login-page__input"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
               />
             </div>
           </div>

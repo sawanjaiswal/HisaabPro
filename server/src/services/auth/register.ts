@@ -18,10 +18,11 @@ const PASSWORD_BCRYPT_ROUNDS = 10
 export async function createUserWithDefaultBusiness(params: {
   phone: string
   name: string
-  passwordHash: string
+  passwordHash?: string | null
+  email?: string | null
   businessName?: string
 }) {
-  const { phone, name, passwordHash, businessName } = params
+  const { phone, name, passwordHash, email, businessName } = params
   const firmName = businessName?.trim() || `${name}'s Business`
 
   const result = await prisma.$transaction(async (tx) => {
@@ -30,7 +31,8 @@ export async function createUserWithDefaultBusiness(params: {
       data: {
         phone,
         name,
-        passwordHash,
+        email: email ? email.trim().toLowerCase() : null,
+        passwordHash: passwordHash || null,
       },
       select: { id: true, phone: true, name: true, email: true },
     })
@@ -105,17 +107,28 @@ export async function createUserWithDefaultBusiness(params: {
  * Direct registration — creates user + default business atomically and returns session.
  */
 export async function directRegister(data: RegisterInput) {
-  const { name, phone, password, businessName } = data
+  const { name, phone, email, password, businessName } = data
 
-  const existing = await prisma.user.findUnique({ where: { phone }, select: { id: true } })
-  if (existing) {
+  const existingPhone = await prisma.user.findUnique({ where: { phone }, select: { id: true } })
+  if (existingPhone) {
     return { success: false, message: 'This phone number is already registered. Please log in.' }
+  }
+
+  if (email && email.trim()) {
+    const existingEmail = await prisma.user.findFirst({
+      where: { email: email.trim().toLowerCase() },
+      select: { id: true },
+    })
+    if (existingEmail) {
+      return { success: false, message: 'This email address is already registered. Please log in.' }
+    }
   }
 
   const passwordHash = await bcrypt.hash(password, PASSWORD_BCRYPT_ROUNDS)
   const created = await createUserWithDefaultBusiness({
     phone,
     name: name.trim(),
+    email: email && email.trim() ? email.trim().toLowerCase() : undefined,
     passwordHash,
     businessName,
   })
