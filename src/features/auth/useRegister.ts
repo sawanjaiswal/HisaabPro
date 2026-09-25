@@ -26,13 +26,18 @@ export function useRegister() {
     const cleanPhone = phone.trim().replace(/\D/g, '')
     const cleanEmail = email.trim()
 
-    if (!cleanPhone && !cleanEmail) {
-      setError('Please enter your 10-digit mobile number or email address.')
+    if (!cleanEmail && !cleanPhone) {
+      setError('Please enter your email address to create your account.')
+      return
+    }
+
+    if (cleanEmail && (!cleanEmail.includes('@') || !cleanEmail.includes('.'))) {
+      setError('Please enter a valid email address.')
       return
     }
 
     if (cleanPhone && cleanPhone.length !== 10) {
-      setError('Please enter a valid 10-digit mobile number.')
+      setError('Please enter a valid 10-digit mobile number or leave it blank.')
       return
     }
 
@@ -43,7 +48,6 @@ export function useRegister() {
 
     setLoading(true)
     try {
-      const effectivePhone = cleanPhone || `9${Math.floor(100000000 + Math.random() * 900000000)}`
       const result = await api<{
         isNewUser: boolean
         user: AuthUser
@@ -53,7 +57,7 @@ export function useRegister() {
         method: 'POST',
         body: JSON.stringify({
           name: name.trim(),
-          phone: effectivePhone,
+          phone: cleanPhone || undefined,
           email: cleanEmail || undefined,
           businessName: businessName.trim() || undefined,
           password,

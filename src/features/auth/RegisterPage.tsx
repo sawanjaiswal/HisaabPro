@@ -63,32 +63,34 @@ export default function RegisterPage() {
           </div>
 
           <div className="login-page__field">
-            <label className="login-page__label" htmlFor="phone">{t.mobileNumber}</label>
+            <label className="login-page__label" htmlFor="email">Email Address</label>
+            <div className="login-page__input-wrapper">
+              <Input
+                id="email"
+                type="email"
+                className="login-page__input"
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </div>
+          </div>
+
+          <div className="login-page__field">
+            <label className="login-page__label" htmlFor="phone">
+              {t.mobileNumber} <span style={{ opacity: 0.6, fontSize: '0.85em' }}>(Optional)</span>
+            </label>
             <div className="login-page__input-wrapper">
               <Input
                 id="phone"
                 type="tel"
                 inputMode="numeric"
                 className="login-page__input"
-                placeholder={t.mobileNumberHint}
+                placeholder="10-digit mobile (optional)"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                 autoComplete="tel"
-              />
-            </div>
-          </div>
-
-          <div className="login-page__field">
-            <label className="login-page__label" htmlFor="email">Email Address <span style={{ opacity: 0.6, fontSize: '0.85em' }}>(Optional)</span></label>
-            <div className="login-page__input-wrapper">
-              <Input
-                id="email"
-                type="email"
-                className="login-page__input"
-                placeholder="name@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
               />
             </div>
           </div>

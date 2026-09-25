@@ -46,12 +46,18 @@ interface RefreshTokenRow {
 export async function login(data: LoginInput) {
   const { identifier, password } = data
 
-  // Find user by phone or email
-  const phoneRegex = /^[6-9]\d{9}$/
-  const isPhone = phoneRegex.test(identifier)
+  const cleanId = identifier.trim()
+  const lowerId = cleanId.toLowerCase()
+  const phoneOnly = cleanId.replace(/\D/g, '')
 
   const user = await prisma.user.findFirst({
-    where: isPhone ? { phone: identifier.trim() } : { email: identifier.trim().toLowerCase() },
+    where: {
+      OR: [
+        { email: lowerId },
+        { phone: cleanId },
+        ...(phoneOnly.length === 10 ? [{ phone: phoneOnly }] : []),
+      ],
+    },
     select: {
       id: true,
       phone: true,
@@ -102,7 +108,7 @@ export async function login(data: LoginInput) {
     verified: true,
     message: 'Login successful',
     isNewUser: false,
-    user: { id: user.id, phone: user.phone, name: user.name },
+    user: { id: user.id, phone: user.phone, name: user.name, email: user.email },
     businesses: meData?.businesses ?? [],
     activeBusiness: meData?.activeBusiness ?? null,
     tokens,

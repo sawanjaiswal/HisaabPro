@@ -4,12 +4,15 @@ const phoneRegex = /^[6-9]\d{9}$/
 
 export const registerSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(100, 'Name too long'),
-  phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
+  phone: z.string().trim().regex(phoneRegex, 'Valid 10-digit Indian mobile number required').optional().or(z.literal('')),
   email: z.string().trim().email('Invalid email address').optional().or(z.literal('')),
   password: z.string().min(6, 'Password must be at least 6 characters').max(100),
   businessName: z.string().trim().max(100).optional(),
   captchaToken: z.string().optional(),
-}).strict()
+}).strict().refine((data) => (Boolean(data.phone && data.phone.length > 0) || Boolean(data.email && data.email.length > 0)), {
+  message: 'Please provide either a valid mobile number or email address',
+  path: ['email'],
+})
 
 export const loginSchema = z.object({
   identifier: z.string().trim().min(1, 'Phone or email is required'),

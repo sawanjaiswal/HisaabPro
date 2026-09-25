@@ -30,13 +30,18 @@ const CSRF_EXEMPT_AUTH_PATHS = new Set([
   '/api/auth/verify-otp',
   '/api/auth/dev-login',
   '/api/auth/refresh',
-  // Password-based auth — unauthenticated, no CSRF cookie present
+  // Password-based & direct auth — unauthenticated, no CSRF cookie present
   '/api/auth/login',
   '/api/auth/register',
+  '/api/auth/direct-register',
   '/api/auth/verify-registration',
   '/api/auth/resend-otp',
   '/api/auth/forgot-password',
   '/api/auth/reset-password',
+  // SSO unauthenticated exchange
+  '/api/auth/sso/google/start-native',
+  '/api/auth/sso/google/exchange-native',
+  '/api/auth/google',
   // Biometric — native device auth, no session cookie at challenge time
   '/api/auth/biometric/register',
   '/api/auth/biometric/authenticate',

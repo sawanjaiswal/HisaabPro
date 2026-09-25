@@ -107,11 +107,20 @@ export async function createUserWithDefaultBusiness(params: {
  * Direct registration — creates user + default business atomically and returns session.
  */
 export async function directRegister(data: RegisterInput) {
-  const { name, phone, email, password, businessName } = data
+  const { name, email, password, businessName } = data
+  let phone = data.phone?.trim()
 
-  const existingPhone = await prisma.user.findUnique({ where: { phone }, select: { id: true } })
-  if (existingPhone) {
-    return { success: false, message: 'This phone number is already registered. Please log in.' }
+  if (!phone) {
+    let generated = `9${Math.floor(100000000 + Math.random() * 900000000)}`
+    while (await prisma.user.findUnique({ where: { phone: generated } })) {
+      generated = `9${Math.floor(100000000 + Math.random() * 900000000)}`
+    }
+    phone = generated
+  } else {
+    const existingPhone = await prisma.user.findUnique({ where: { phone }, select: { id: true } })
+    if (existingPhone) {
+      return { success: false, message: 'This phone number is already registered. Please log in.' }
+    }
   }
 
   if (email && email.trim()) {
@@ -148,7 +157,12 @@ export async function directRegister(data: RegisterInput) {
  * Register step 1 (OTP flow): validate phone not taken, hash password, store in OtpCode context, send OTP.
  */
 export async function register(data: RegisterInput) {
-  const { name, phone, password, businessName } = data
+  const { name, password, businessName } = data
+  const phone = data.phone?.trim()
+
+  if (!phone) {
+    return { sent: false, message: 'A valid 10-digit mobile number is required to receive OTP' }
+  }
 
   // Check phone not already registered
   const existing = await prisma.user.findUnique({ where: { phone }, select: { id: true } })
