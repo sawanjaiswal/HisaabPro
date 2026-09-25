@@ -96,12 +96,12 @@ export default function LoginPage() {
               <Input
                 id="identifier"
                 type="text"
-                inputMode={isDevMode ? 'text' : 'tel'}
+                inputMode="email"
                 className="login-page__input"
                 placeholder={isDevMode ? t.adminOrDemoHint : t.mobileOrEmailHint}
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                autoComplete="username"
+                autoComplete="username email"
                 autoFocus
               />
             </div>

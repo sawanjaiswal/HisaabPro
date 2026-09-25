@@ -10,7 +10,9 @@ const OTP_TTL_SEC = 5 * 60 // 5 minutes
 const RESEND_COOLDOWN_SEC = 30
 
 interface LocationState {
+  email?: string
   phone?: string
+  name?: string
   purpose?: 'registration' | 'login'
 }
 
@@ -19,7 +21,9 @@ export function useVerifyOtp() {
   const { state } = useLocation() as { state: LocationState | null }
   const { setUser, setBusinesses } = useAuth()
 
+  const email = state?.email ?? ''
   const phone = state?.phone ?? ''
+  const identifier = email || phone
 
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [loading, setLoading] = useState(false)
@@ -44,10 +48,10 @@ export function useVerifyOtp() {
     return () => clearInterval(t)
   }, [resendCooldown])
 
-  // Redirect if no phone in state
+  // Redirect if no identifier in state
   useEffect(() => {
-    if (!phone) navigate(ROUTES.REGISTER, { replace: true })
-  }, [phone, navigate])
+    if (!identifier) navigate(ROUTES.REGISTER, { replace: true })
+  }, [identifier, navigate])
 
   const handleDigit = useCallback((index: number, value: string) => {
     const digit = value.replace(/\D/g, '').slice(-1)
@@ -86,13 +90,21 @@ export function useVerifyOtp() {
     setError('')
     setLoading(true)
     try {
+      const isLoginOtp = state?.purpose === 'login'
+      const endpoint = isLoginOtp ? '/auth/verify-otp' : '/auth/verify-registration'
+
       const result = await api<{
         user: AuthUser
         businesses: BusinessSummary[]
         activeBusiness: BusinessSummary | null
-      }>('/auth/verify-registration', {
+      }>(endpoint, {
         method: 'POST',
-        body: JSON.stringify({ phone, otp: code }),
+        body: JSON.stringify({
+          ...(email ? { email } : {}),
+          ...(phone ? { phone } : {}),
+          identifier: identifier || undefined,
+          otp: code,
+        }),
         offlineQueue: false,
       })
       const businessId = result.activeBusiness?.id ?? result.businesses[0]?.id ?? null
@@ -123,7 +135,11 @@ export function useVerifyOtp() {
     try {
       await api('/auth/resend-otp', {
         method: 'POST',
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify({
+          ...(email ? { email } : {}),
+          ...(phone ? { phone } : {}),
+          identifier: identifier || undefined,
+        }),
         offlineQueue: false,
       })
       setSecondsLeft(OTP_TTL_SEC)
@@ -140,7 +156,7 @@ export function useVerifyOtp() {
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 
   return {
-    phone, otp, loading, error, shake,
+    email, phone, identifier, otp, loading, error, shake,
     secondsLeft, resendCooldown, resending,
     inputRefs, formatTime,
     handleDigit, handleKeyDown, handlePaste, handleVerify, handleResend,

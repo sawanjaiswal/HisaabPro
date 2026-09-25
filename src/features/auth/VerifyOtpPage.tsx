@@ -11,28 +11,30 @@ import { Button } from '@/components/ui/Button'
 export default function VerifyOtpPage() {
   const { t } = useLanguage()
   const {
-    phone, otp, loading, error, shake,
+    email, phone, identifier, otp, loading, error, shake,
     secondsLeft, resendCooldown, resending,
     inputRefs, formatTime,
     handleDigit, handleKeyDown, handlePaste, handleVerify, handleResend,
   } = useVerifyOtp()
 
   const isComplete = otp.every(d => d !== '')
+  const displayTarget = email || identifier || (phone ? `+91 ${phone.slice(0, 5)}XXXXX` : '')
 
   return (
     <div className="login-page">
-      <SEO title={t.verifyOtp} />
+      <SEO title="Verify Code" />
 
       <div className="login-page__card stagger-enter">
-        <Link to={ROUTES.REGISTER} className="auth-otp__back" aria-label={t.backToRegistration}>
+        <Link to={ROUTES.REGISTER} className="auth-otp__back" aria-label="Back to registration">
           <ArrowLeft size={20} />
-          <span>{t.changeNumber}</span>
+          <span>Change details</span>
         </Link>
 
         <div className="login-page__header">
-          <h1 className="login-page__title">{t.verifyOtp}</h1>
+          <h1 className="login-page__title">Check your email</h1>
           <p className="login-page__subtitle">
-            {t.sentTo} +91 {phone.slice(0, 5)}XXXXX
+            We sent a 6-digit verification code to<br />
+            <strong>{displayTarget}</strong>
           </p>
         </div>
 

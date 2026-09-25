@@ -10,8 +10,8 @@ import {
   type Step,
   OTP_TTL_SEC,
   RESEND_COOLDOWN_SEC,
-  phoneRegex,
   maskPhone,
+  maskEmail,
   formatTime,
 } from './forgot-password.utils'
 import './LoginPage.css'
@@ -21,8 +21,8 @@ import { Button } from '@/components/ui/Button'
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
   const { t } = useLanguage()
-  const [step, setStep] = useState<Step>('phone')
-  const [phone, setPhone] = useState('')
+  const [step, setStep] = useState<Step>('email')
+  const [identifier, setIdentifier] = useState('')
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -34,6 +34,8 @@ export default function ForgotPasswordPage() {
   const [shake, setShake] = useState(false)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const submittingRef = useRef(false)
+
+  const isEmail = identifier.includes('@')
 
   useEffect(() => {
     if (step !== 'verify' || secondsLeft <= 0) return
@@ -48,13 +50,18 @@ export default function ForgotPasswordPage() {
 
   const handleSendOtp = async () => {
     if (submittingRef.current || loading) return
+    const clean = identifier.trim()
+    if (!clean) {
+      setError('Please enter your email address or mobile number.')
+      return
+    }
     submittingRef.current = true
     setError('')
     setLoading(true)
     try {
       await api('/auth/forgot-password', {
         method: 'POST',
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify(isEmail ? { email: clean } : { phone: clean }),
         offlineQueue: false,
       })
       setStep('verify')
@@ -99,9 +106,14 @@ export default function ForgotPasswordPage() {
     setError('')
     setLoading(true)
     try {
+      const clean = identifier.trim()
       await api('/auth/reset-password', {
         method: 'POST',
-        body: JSON.stringify({ phone, otp: code, newPassword }),
+        body: JSON.stringify({
+          ...(isEmail ? { email: clean } : { phone: clean }),
+          otp: code,
+          newPassword,
+        }),
         offlineQueue: false,
       })
       setStep('success')
@@ -120,9 +132,10 @@ export default function ForgotPasswordPage() {
     setResending(true)
     setError('')
     try {
+      const clean = identifier.trim()
       await api('/auth/forgot-password', {
         method: 'POST',
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify(isEmail ? { email: clean } : { phone: clean }),
         offlineQueue: false,
       })
       setSecondsLeft(OTP_TTL_SEC)
@@ -140,7 +153,7 @@ export default function ForgotPasswordPage() {
     <div className="login-page">
       <SEO title={t.resetPassword} />
       <div className="login-page__card stagger-enter">
-        {step === 'phone' && (
+        {(step === 'email' || step === 'phone') && (
           <>
             <div className="login-page__header">
               <BrandLogo
@@ -152,23 +165,22 @@ export default function ForgotPasswordPage() {
               <h1 className="login-page__title sr-only">{APP_NAME}</h1>
               <p className="login-page__subtitle">{t.resetYourPassword}</p>
             </div>
-            <form className="login-page__form" onSubmit={(e) => { e.preventDefault(); if (phoneRegex.test(phone) && !loading) handleSendOtp() }}>
+            <form className="login-page__form" onSubmit={(e) => { e.preventDefault(); if (!loading) handleSendOtp() }}>
               <div className="login-page__field">
-                <label className="login-page__label" htmlFor="phone">{t.registeredMobile}</label>
+                <label className="login-page__label" htmlFor="identifier">Registered Email Address</label>
                 <Input
-                  id="phone"
-                  type="tel"
-                  inputMode="numeric"
+                  id="identifier"
+                  type="email"
                   className="login-page__input"
-                  placeholder={t.mobileNumberHint}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  placeholder="you@company.com"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                   autoFocus
                 />
               </div>
               {error && <p className="login-page__error">{error}</p>}
-              <Button variant="none" type="submit" className="login-page__submit" disabled={!phoneRegex.test(phone) || loading}>
-                {loading ? t.sendingOtp : t.sendOtp}
+              <Button variant="none" type="submit" className="login-page__submit" disabled={!identifier.trim() || loading}>
+                {loading ? 'Sending code...' : 'Send Recovery Code'}
               </Button>
               <p className="login-page__hint">
                 <Link to={ROUTES.LOGIN} className="login-page__link">{t.backToSignIn}</Link>
@@ -180,7 +192,9 @@ export default function ForgotPasswordPage() {
           <>
             <div className="login-page__header">
               <h1 className="login-page__title">{t.enterOtp}</h1>
-              <p className="login-page__subtitle">{t.sentTo} {maskPhone(phone)}</p>
+              <p className="login-page__subtitle">
+                {t.sentTo} {isEmail ? maskEmail(identifier) : maskPhone(identifier)}
+              </p>
             </div>
             <div className="auth-otp">
               <div
