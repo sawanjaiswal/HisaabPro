@@ -21,34 +21,64 @@ export const loginSchema = z.object({
 }).strict()
 
 export const verifyRegistrationSchema = z.object({
-  phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
+  identifier: z.string().trim().optional(),
+  phone: z.string().trim().optional(),
+  email: z.string().trim().email('Invalid email address').optional(),
   otp: z.string().length(6, 'OTP must be 6 digits').regex(/^\d{6}$/, 'OTP must be numeric'),
-}).strict()
+}).strict().refine((data) => Boolean(data.identifier || data.phone || data.email), {
+  message: 'Phone or email is required',
+  path: ['identifier'],
+})
 
 export const sendOtpSchema = z.object({
-  phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
-}).strict()
+  identifier: z.string().trim().optional(),
+  phone: z.string().trim().optional(),
+  email: z.string().trim().email('Invalid email address').optional(),
+}).strict().refine((data) => Boolean(data.identifier || data.phone || data.email), {
+  message: 'Phone or email is required',
+  path: ['identifier'],
+})
 
 export const verifyOtpSchema = z.object({
-  phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
+  identifier: z.string().trim().optional(),
+  phone: z.string().trim().optional(),
+  email: z.string().trim().email('Invalid email address').optional(),
   otp: z.string().length(6, 'OTP must be 6 digits').regex(/^\d{6}$/, 'OTP must be numeric'),
-}).strict()
+}).strict().refine((data) => Boolean(data.identifier || data.phone || data.email), {
+  message: 'Phone or email is required',
+  path: ['identifier'],
+})
 
 export const resendOtpSchema = z.object({
-  phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
+  identifier: z.string().trim().optional(),
+  phone: z.string().trim().optional(),
+  email: z.string().trim().email('Invalid email address').optional(),
   context: z.enum(['registration', 'login', 'password_reset']).optional(),
-}).strict()
+}).strict().refine((data) => Boolean(data.identifier || data.phone || data.email), {
+  message: 'Phone or email is required',
+  path: ['identifier'],
+})
 
 export const forgotPasswordSchema = z.object({
-  phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
+  identifier: z.string().trim().optional(),
+  phone: z.string().trim().optional(),
+  email: z.string().trim().email('Invalid email address').optional(),
   captchaToken: z.string().optional(),
-}).strict()
+}).strict().refine((data) => Boolean(data.identifier || data.phone || data.email), {
+  message: 'Phone or email is required',
+  path: ['identifier'],
+})
 
 export const resetPasswordSchema = z.object({
-  phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
+  identifier: z.string().trim().optional(),
+  phone: z.string().trim().optional(),
+  email: z.string().trim().email('Invalid email address').optional(),
   otp: z.string().length(6, 'OTP must be 6 digits').regex(/^\d{6}$/, 'OTP must be numeric'),
   newPassword: z.string().min(6, 'Password must be at least 6 characters').max(100),
-}).strict()
+}).strict().refine((data) => Boolean(data.identifier || data.phone || data.email), {
+  message: 'Phone or email is required',
+  path: ['identifier'],
+})
 
 export const refreshTokenSchema = z.object({
   refreshToken: z.string().optional(),

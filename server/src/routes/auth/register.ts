@@ -112,7 +112,8 @@ router.post(
   validate(resendOtpSchema),
   otpRateLimiter,
   asyncHandler(async (req, res) => {
-    const result = await authService.resendOtp(req.body.phone as string)
+    const identifier = (req.body.phone || req.body.email || req.body.identifier) as string
+    const result = await authService.resendOtp(identifier)
     if (!result.sent) {
       sendError(res, result.message, 'RESEND_FAILED', 400)
       return

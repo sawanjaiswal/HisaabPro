@@ -13,11 +13,15 @@ import { resolveUserBusinessId, sleep, recordFailedLogin, resetLoginAttempts } f
  * Creates OtpCode record. Rate-limits resend to 30s cooldown.
  */
 export async function sendOtp(data: SendOtpInput) {
-  const { phone } = data
+  const identifier = (data.phone || data.email || data.identifier || '').trim().toLowerCase()
 
-  // Check resend cooldown — find most recent unverified OTP for this phone
+  if (!identifier) {
+    return { sent: false, message: 'Phone number or email is required' }
+  }
+
+  // Check resend cooldown — find most recent unverified OTP for this identifier
   const recent = await prisma.otpCode.findFirst({
-    where: { phone, verified: false },
+    where: { phone: identifier, verified: false },
     orderBy: { createdAt: 'desc' },
   })
 
@@ -35,20 +39,29 @@ export async function sendOtp(data: SendOtpInput) {
   // Store hashed OTP — never store plaintext in DB
   await prisma.otpCode.create({
     data: {
-      phone,
+      phone: identifier,
       code: otpHash,
       expiresAt: new Date(Date.now() + OTP_TTL_MS),
     },
   })
 
+  if (identifier.includes('@')) {
+    const { sendEmailOtp } = await import('../email.service.js')
+    const emailResult = await sendEmailOtp(identifier, otp)
+    if (!emailResult.success && process.env.NODE_ENV === 'production') {
+      return { sent: false, message: 'Failed to send verification email. Please try again.' }
+    }
+    return { sent: true, message: `OTP sent to ${identifier}` }
+  }
+
   // Send via SMS
-  const sent = await sendOTP(phone, otp)
+  const sent = await sendOTP(identifier, otp)
 
   if (!sent && process.env.NODE_ENV === 'production') {
     return { sent: false, message: 'Failed to send OTP. Please try again.' }
   }
 
-  return { sent: true, message: `OTP sent to ${phone}` }
+  return { sent: true, message: `OTP sent to ${identifier}` }
 }
 
 /**
@@ -57,11 +70,16 @@ export async function sendOtp(data: SendOtpInput) {
  * Returns JWT tokens on success. Enforces lockout + progressive delay on failure.
  */
 export async function verifyOtp(data: VerifyOtpInput) {
-  const { phone, otp } = data
+  const { otp } = data
+  const identifier = (data.phone || data.email || data.identifier || '').trim().toLowerCase()
 
-  // Find latest unverified OTP for this phone
+  if (!identifier) {
+    return { verified: false, message: 'Phone or email is required' }
+  }
+
+  // Find latest unverified OTP for this identifier
   const otpRecord = await prisma.otpCode.findFirst({
-    where: { phone, verified: false },
+    where: { phone: identifier, verified: false },
     orderBy: { createdAt: 'desc' },
   })
 
@@ -104,9 +122,14 @@ export async function verifyOtp(data: VerifyOtpInput) {
     data: { verified: true },
   })
 
-  // Find or create user
-  let user = await prisma.user.findUnique({
-    where: { phone },
+  const isEmail = identifier.includes('@')
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: identifier },
+        { phone: identifier },
+      ],
+    },
     select: {
       id: true,
       phone: true,
@@ -127,7 +150,6 @@ export async function verifyOtp(data: VerifyOtpInput) {
     const remainingMs = user.accountLockedUntil.getTime() - Date.now()
     const remainingMin = Math.ceil(remainingMs / 60_000)
 
-    // Progressive delay
     const delay = Math.min(
       (user.failedLoginAttempts) * PROGRESSIVE_DELAY_PER_ATTEMPT_MS,
       MAX_PROGRESSIVE_DELAY_MS
@@ -141,37 +163,46 @@ export async function verifyOtp(data: VerifyOtpInput) {
     }
   }
 
-  const isNewUser = !user
+  let currentUser = user
+  let isNewUser = false
 
-  if (!user) {
-    user = await prisma.user.create({
-      data: { phone },
-      select: {
-        id: true,
-        phone: true,
-        name: true,
-        email: true,
-        isActive: true,
-        failedLoginAttempts: true,
-        accountLockedUntil: true,
-      },
+  if (!currentUser) {
+    isNewUser = true
+    let placeholderPhone = !isEmail ? identifier : `9${Math.floor(100000000 + Math.random() * 900000000)}`
+    while (await prisma.user.findUnique({ where: { phone: placeholderPhone } })) {
+      placeholderPhone = `9${Math.floor(100000000 + Math.random() * 900000000)}`
+    }
+    const { createUserWithDefaultBusiness } = await import('./register.js')
+    const created = await createUserWithDefaultBusiness({
+      phone: placeholderPhone,
+      email: isEmail ? identifier : undefined,
+      name: isEmail ? identifier.split('@')[0] : `User ${placeholderPhone.slice(-4)}`,
     })
+    currentUser = {
+      id: created.user.id,
+      phone: created.user.phone,
+      name: created.user.name,
+      email: created.user.email,
+      isActive: true,
+      failedLoginAttempts: 0,
+      accountLockedUntil: null,
+    }
   }
 
   // Reset lockout on successful auth
-  if (user.failedLoginAttempts > 0) {
-    await resetLoginAttempts(user.id)
+  if (currentUser.failedLoginAttempts > 0) {
+    await resetLoginAttempts(currentUser.id)
   }
 
   // Generate tokens with active businessId
-  const businessId = await resolveUserBusinessId(user.id)
-  const tokens = generateTokens(user.id, user.phone, businessId)
+  const businessId = await resolveUserBusinessId(currentUser.id)
+  const tokens = generateTokens(currentUser.id, currentUser.phone, businessId)
 
   return {
     verified: true,
     message: 'OTP verified successfully',
     isNewUser,
-    user: { id: user.id, phone: user.phone, name: user.name },
+    user: { id: currentUser.id, phone: currentUser.phone, name: currentUser.name, email: currentUser.email },
     tokens,
   }
 }

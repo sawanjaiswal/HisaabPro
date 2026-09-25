@@ -154,20 +154,37 @@ export async function directRegister(data: RegisterInput) {
 }
 
 /**
- * Register step 1 (OTP flow): validate phone not taken, hash password, store in OtpCode context, send OTP.
+ * Register step 1 (OTP flow): validate email or phone not taken, hash password, store in OtpCode context, send OTP.
  */
 export async function register(data: RegisterInput) {
   const { name, password, businessName } = data
+  const email = data.email?.trim().toLowerCase()
   const phone = data.phone?.trim()
+  const identifier = email || phone
 
-  if (!phone) {
-    return { sent: false, message: 'A valid 10-digit mobile number is required to receive OTP' }
+  if (!identifier) {
+    return { sent: false, message: 'A valid email address or 10-digit mobile number is required' }
   }
 
-  // Check phone not already registered
-  const existing = await prisma.user.findUnique({ where: { phone }, select: { id: true } })
-  if (existing) {
-    return { sent: false, message: 'This phone number is already registered. Please log in.' }
+  // Check email or phone not already registered
+  if (email) {
+    const existingEmail = await prisma.user.findFirst({
+      where: { email },
+      select: { id: true },
+    })
+    if (existingEmail) {
+      return { sent: false, message: 'This email address is already registered. Please log in.' }
+    }
+  }
+
+  if (phone) {
+    const existingPhone = await prisma.user.findUnique({
+      where: { phone },
+      select: { id: true },
+    })
+    if (existingPhone) {
+      return { sent: false, message: 'This phone number is already registered. Please log in.' }
+    }
   }
 
   // Hash password before storing
@@ -175,7 +192,7 @@ export async function register(data: RegisterInput) {
 
   // Check resend cooldown
   const recent = await prisma.otpCode.findFirst({
-    where: { phone, verified: false },
+    where: { phone: identifier, verified: false },
     orderBy: { createdAt: 'desc' },
   })
 
@@ -192,14 +209,23 @@ export async function register(data: RegisterInput) {
 
   await prisma.otpCode.create({
     data: {
-      phone,
+      phone: identifier,
       code: otpHash,
       expiresAt: new Date(Date.now() + OTP_TTL_MS),
-      context: JSON.stringify({ purpose: 'registration', name, passwordHash, businessName }),
+      context: JSON.stringify({ purpose: 'registration', name, email, phone, passwordHash, businessName }),
     },
   })
 
-  const sent = await sendOTP(phone, otp)
+  if (email) {
+    const { sendEmailOtp } = await import('../email.service.js')
+    const emailResult = await sendEmailOtp(email, otp, name)
+    if (!emailResult.success && process.env.NODE_ENV === 'production') {
+      return { sent: false, message: 'Failed to dispatch email OTP. Please try again.' }
+    }
+    return { sent: true, message: `Verification OTP sent to ${email}` }
+  }
+
+  const sent = await sendOTP(phone!, otp)
   if (!sent && process.env.NODE_ENV === 'production') {
     return { sent: false, message: 'Failed to send OTP. Please try again.' }
   }
@@ -211,10 +237,18 @@ export async function register(data: RegisterInput) {
  * Verify registration OTP and create user + business account.
  */
 export async function verifyRegistration(data: VerifyRegistrationInput) {
-  const { phone, otp } = data
+  const { otp } = data
+  const identifier = (data.phone || data.email || data.identifier || '').trim().toLowerCase()
+
+  if (!identifier) {
+    return { verified: false, message: 'Phone or email is required' }
+  }
 
   const otpRecord = await prisma.otpCode.findFirst({
-    where: { phone, verified: false },
+    where: {
+      phone: identifier,
+      verified: false,
+    },
     orderBy: { createdAt: 'desc' },
   })
 
@@ -239,10 +273,12 @@ export async function verifyRegistration(data: VerifyRegistrationInput) {
   }
 
   // Parse registration context
-  let ctx: { purpose?: string; name?: string; passwordHash?: string; businessName?: string } = {}
+  let ctx: { purpose?: string; name?: string; email?: string; phone?: string; passwordHash?: string; businessName?: string } = {}
   try {
-    ctx = otpRecord.context ? JSON.parse(otpRecord.context) as typeof ctx : {}
-  } catch { /* ignore */ }
+    ctx = otpRecord.context ? (JSON.parse(otpRecord.context) as typeof ctx) : {}
+  } catch {
+    /* ignore */
+  }
 
   if (ctx.purpose !== 'registration' || !ctx.name || !ctx.passwordHash) {
     return { verified: false, message: 'Invalid registration session. Please start again.' }
@@ -251,15 +287,37 @@ export async function verifyRegistration(data: VerifyRegistrationInput) {
   // Mark OTP consumed
   await prisma.otpCode.update({ where: { id: otpRecord.id }, data: { verified: true } })
 
-  // Check phone not taken (race condition guard)
-  const existingUser = await prisma.user.findUnique({ where: { phone }, select: { id: true } })
+  const isEmail = identifier.includes('@')
+  const email = isEmail ? identifier : ctx.email || null
+  let phone = !isEmail ? identifier : ctx.phone || null
+
+  if (!phone) {
+    let generated = `9${Math.floor(100000000 + Math.random() * 900000000)}`
+    while (await prisma.user.findUnique({ where: { phone: generated } })) {
+      generated = `9${Math.floor(100000000 + Math.random() * 900000000)}`
+    }
+    phone = generated
+  }
+
+  // Check user not already registered
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { phone },
+        ...(email ? [{ email }] : []),
+      ],
+    },
+    select: { id: true },
+  })
+
   if (existingUser) {
-    return { verified: false, message: 'This phone number is already registered. Please log in.' }
+    return { verified: false, message: 'An account with this email or phone is already registered. Please log in.' }
   }
 
   const created = await createUserWithDefaultBusiness({
     phone,
     name: ctx.name,
+    email: email || undefined,
     passwordHash: ctx.passwordHash,
     businessName: ctx.businessName,
   })
@@ -276,11 +334,12 @@ export async function verifyRegistration(data: VerifyRegistrationInput) {
 }
 
 /**
- * Resend OTP — enforces 30s cooldown, only for unverified phones.
+ * Resend OTP — enforces 30s cooldown, supports email or phone.
  */
-export async function resendOtp(phone: string) {
+export async function resendOtp(rawIdentifier: string) {
+  const identifier = rawIdentifier.trim().toLowerCase()
   const recent = await prisma.otpCode.findFirst({
-    where: { phone, verified: false },
+    where: { phone: identifier, verified: false },
     orderBy: { createdAt: 'desc' },
   })
 
@@ -302,21 +361,40 @@ export async function resendOtp(phone: string) {
 
   await prisma.otpCode.create({
     data: {
-      phone,
+      phone: identifier,
       code: otpHash,
       expiresAt: new Date(Date.now() + OTP_TTL_MS),
       context: recent.context, // carry over registration context
     },
   })
 
-  const sent = await sendOTP(phone, otp)
+  if (identifier.includes('@')) {
+    let name: string | undefined
+    try {
+      const parsedCtx = recent.context ? JSON.parse(recent.context) : {}
+      name = parsedCtx.name
+    } catch { /* ignore */ }
+
+    const { sendEmailOtp } = await import('../email.service.js')
+    const emailResult = await sendEmailOtp(identifier, otp, name)
+    if (!emailResult.success && process.env.NODE_ENV === 'production') {
+      return { sent: false, message: 'Failed to dispatch email OTP. Please try again.' }
+    }
+    return {
+      sent: true,
+      message: `OTP resent to ${identifier}`,
+      resendAvailableAt: new Date(Date.now() + RESEND_COOLDOWN_MS).toISOString(),
+    }
+  }
+
+  const sent = await sendOTP(identifier, otp)
   if (!sent && process.env.NODE_ENV === 'production') {
     return { sent: false, message: 'Failed to send OTP. Please try again.' }
   }
 
   return {
     sent: true,
-    message: `OTP resent to ${phone}`,
+    message: `OTP resent to ${identifier}`,
     resendAvailableAt: new Date(Date.now() + RESEND_COOLDOWN_MS).toISOString(),
   }
 }
