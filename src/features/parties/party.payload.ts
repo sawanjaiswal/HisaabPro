@@ -30,26 +30,32 @@ function cleanCustomFields(form: PartyFormData): PartyFormData['customFields'] {
  * The field set `createPartySchema` accepts, and nothing else.
  * Opening balance is entered in rupees and stored in paise.
  */
+const cleanStr = (val?: string | null) => (val && val.trim() !== '' ? val.trim() : undefined)
+
+/**
+ * The field set `createPartySchema` accepts, and nothing else.
+ * Opening balance is entered in rupees and stored in paise.
+ */
 export function toCreatePartyPayload(form: PartyFormData): PartyFormData {
   return {
-    name: form.name,
-    phone: form.phone,
-    email: form.email,
-    companyName: form.companyName,
+    name: form.name.trim(),
+    phone: cleanStr(form.phone),
+    email: cleanStr(form.email),
+    companyName: cleanStr(form.companyName),
     type: form.type,
-    groupId: form.groupId,
-    tags: form.tags,
-    gstin: form.gstin,
-    pan: form.pan,
-    creditLimit: form.creditLimit,
-    creditLimitMode: form.creditLimitMode,
-    notes: form.notes,
-    addresses: form.addresses,
+    groupId: cleanStr(form.groupId),
+    tags: form.tags || [],
+    gstin: cleanStr(form.gstin),
+    pan: cleanStr(form.pan),
+    creditLimit: form.creditLimit || 0,
+    creditLimitMode: form.creditLimitMode || 'WARN',
+    notes: cleanStr(form.notes),
+    addresses: form.addresses || [],
     customFields: cleanCustomFields(form),
     openingBalance: form.openingBalance
       ? { ...form.openingBalance, amount: rupeesToPaise(form.openingBalance.amount) }
       : undefined,
-    priceListId: form.priceListId,
+    priceListId: cleanStr(form.priceListId),
   }
 }
 
@@ -60,19 +66,19 @@ export function toCreatePartyPayload(form: PartyFormData): PartyFormData {
  */
 export function toUpdatePartyPayload(form: PartyFormData): Partial<PartyFormData> {
   return {
-    name: form.name,
-    phone: form.phone,
-    email: form.email,
-    companyName: form.companyName,
+    name: form.name.trim(),
+    phone: cleanStr(form.phone),
+    email: cleanStr(form.email),
+    companyName: cleanStr(form.companyName),
     type: form.type,
-    groupId: form.groupId,
+    groupId: cleanStr(form.groupId),
     tags: form.tags,
-    gstin: form.gstin,
-    pan: form.pan,
+    gstin: cleanStr(form.gstin),
+    pan: cleanStr(form.pan),
     creditLimit: form.creditLimit,
     creditLimitMode: form.creditLimitMode,
-    notes: form.notes,
+    notes: cleanStr(form.notes),
     customFields: cleanCustomFields(form),
-    priceListId: form.priceListId,
+    priceListId: cleanStr(form.priceListId),
   }
 }

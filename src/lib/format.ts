@@ -103,3 +103,16 @@ export function formatRelativeTime(date: Date | string): string {
   if (diffSec < 604800) return `${Math.floor(diffSec / 86400)}d ago`
   return formatDate(d)
 }
+
+/** Formats a 15-digit GSTIN */
+export function formatGSTIN(raw: string | null | undefined): string {
+  if (!raw) return '—'
+  return raw.trim().toUpperCase().replace(/\s+/g, '')
+}
+
+/** Formats a 10-digit PAN */
+export function formatPAN(raw: string | null | undefined): string {
+  if (!raw) return '—'
+  return raw.trim().toUpperCase().replace(/\s+/g, '')
+}
+

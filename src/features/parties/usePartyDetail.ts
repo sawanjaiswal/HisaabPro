@@ -1,8 +1,10 @@
-/** Party Detail — Hook to fetch and manage a single party */
+/** Party Detail — Hook to fetch and manage a single party (TanStack Query) */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
+import { queryKeys } from '@/lib/query-keys'
 import { getParty } from './party.service'
 import type { PartyDetail } from './party.types'
 
@@ -19,34 +21,31 @@ interface UsePartyDetailReturn {
 
 export function usePartyDetail(id: string): UsePartyDetailReturn {
   const toast = useToast()
+  const queryClient = useQueryClient()
 
-  const [party, setParty] = useState<PartyDetail | null>(null)
-  const [status, setStatus] = useState<DetailStatus>('loading')
   const [activeTab, setActiveTab] = useState<DetailTab>('ledger')
-  const [refreshKey, setRefreshKey] = useState(0)
+
+  const query = useQuery({
+    queryKey: queryKeys.parties.detail(id),
+    queryFn: ({ signal }) => getParty(id, signal),
+    enabled: Boolean(id),
+  })
+
+  const party = query.data ?? null
+  const status: DetailStatus = !id ? 'loading' : query.isPending ? 'loading' : query.isError ? 'error' : 'success'
 
   useEffect(() => {
-    const controller = new AbortController()
-    setStatus('loading')
-
-    getParty(id, controller.signal)
-      .then((data: PartyDetail) => {
-        setParty(data)
-        setStatus('success')
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setStatus('error')
-        const message = err instanceof ApiError ? err.message : 'Failed to load party'
-        toast.error(message)
-      })
-
-    return () => controller.abort()
-  }, [id, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (query.error) {
+      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load party'
+      toast.error(message)
+    }
+  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const refresh = useCallback(() => {
-    setRefreshKey((k) => k + 1)
-  }, [])
+    if (id) {
+      queryClient.invalidateQueries({ queryKey: queryKeys.parties.detail(id) }) // ssot-allow: reconcile party react-query cache after a mutation — detail query refresh
+    }
+  }, [queryClient, id])
 
   return {
     party,

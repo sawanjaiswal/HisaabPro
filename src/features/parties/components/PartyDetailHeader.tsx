@@ -23,7 +23,7 @@ interface PartyDetailHeaderProps {
 
 /** Default address (or first) → "City, State" display string. */
 function partyLocation(party: PartyDetail): string | null {
-  const addr = party.addresses.find((a) => a.isDefault) ?? party.addresses[0]
+  const addr = party.addresses?.find((a) => a.isDefault) ?? party.addresses?.[0]
   if (!addr) return null
   const parts = [addr.city, addr.state].filter(Boolean)
   return parts.length ? parts.join(', ') : null

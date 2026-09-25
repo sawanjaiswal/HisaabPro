@@ -19,21 +19,21 @@ const customFieldValueSchema = z.object({
 
 export const createProductSchema = z.object({
   name: z.string().min(1, 'Product name is required').max(200),
-  sku: z.string().max(50).optional(),
+  sku: z.string().max(50).nullable().optional(),
   autoGenerateSku: z.boolean().default(true),
-  categoryId: z.string().optional(),
+  categoryId: z.string().nullable().optional(),
   unitId: z.string().min(1, 'Unit is required'),
   salePrice: z.number().int().min(0, 'Sale price must be non-negative'), // in paise
-  purchasePrice: z.number().int().min(0).optional(), // in paise
+  purchasePrice: z.number().int().min(0).nullable().optional(), // in paise
   openingStock: z.number().min(0).default(0),
   minStockLevel: z.number().min(0).default(0),
   stockValidation: z.enum(STOCK_VALIDATION_MODES).default('GLOBAL'),
-  hsnCode: z.string().max(8).optional(),
-  sacCode: z.string().max(6).optional(),
+  hsnCode: z.string().max(8).nullable().optional(),
+  sacCode: z.string().max(6).nullable().optional(),
   taxCategoryId: z.string().nullable().optional(),
-  description: z.string().max(500).optional(),
-  barcode: z.string().max(128).optional(),
-  barcodeFormat: z.enum(BARCODE_FORMATS).optional(),
+  description: z.string().max(500).nullable().optional(),
+  barcode: z.string().max(128).nullable().optional(),
+  barcodeFormat: z.enum(BARCODE_FORMATS).nullable().optional(),
   status: z.enum(PRODUCT_STATUSES).default('ACTIVE'),
   customFields: z.array(customFieldValueSchema).default([]),
 })

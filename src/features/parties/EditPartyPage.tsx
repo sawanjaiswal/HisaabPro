@@ -32,7 +32,7 @@ function detailToFormData(detail: PartyDetail): PartyFormData {
     companyName: detail.companyName,
     type: detail.type,
     groupId: detail.group?.id ?? null,
-    tags: detail.tags,
+    tags: detail.tags ?? [],
     gstin: detail.gstin,
     pan: detail.pan,
     gstinVerified: detail.gstinVerified,
@@ -41,7 +41,7 @@ function detailToFormData(detail: PartyDetail): PartyFormData {
     creditLimit: detail.creditLimit / 100, // paise → rupees for form
     creditLimitMode: detail.creditLimitMode,
     notes: detail.notes,
-    addresses: detail.addresses.map(({ id: _id, ...rest }) => rest),
+    addresses: (detail.addresses ?? []).map(({ id: _id, ...rest }) => rest),
     customFields: (detail.customFieldValues ?? []).map(cv => ({ fieldId: cv.fieldId, value: cv.value })),
     openingBalance: detail.openingBalance
       ? {

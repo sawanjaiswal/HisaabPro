@@ -103,7 +103,7 @@ export default function RegisterPage() {
             className="login-page__submit"
             disabled={!isValid || loading}
           >
-            {loading ? t.sendingOtp : t.continueWith}
+            {loading ? 'Creating account...' : (t.createAccount || 'Create Account')}
           </Button>
 
           <div className="google-sso-divider">

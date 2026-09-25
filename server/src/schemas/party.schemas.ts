@@ -50,25 +50,54 @@ const openingBalanceSchema = z.object({
   notes: z.string().max(500).optional(),
 }).strict()
 
+const emptyToUndefined = (val: unknown) =>
+  typeof val === 'string' && val.trim() === '' ? undefined : val
+
+const optionalPhone = z.preprocess(
+  emptyToUndefined,
+  z.string().regex(PHONE_REGEX, 'Valid 10-digit Indian mobile number required').nullable().optional()
+)
+
+const optionalEmail = z.preprocess(
+  emptyToUndefined,
+  z.string().email('Invalid email address').nullable().optional()
+)
+
+const optionalGstin = z.preprocess(
+  emptyToUndefined,
+  z.string().regex(GSTIN_REGEX, 'Invalid GSTIN format').nullable().optional()
+)
+
+const optionalPan = z.preprocess(
+  emptyToUndefined,
+  z.string().regex(PAN_REGEX, 'Invalid PAN format').nullable().optional()
+)
+
+const optionalString = (max: number) =>
+  z.preprocess(
+    emptyToUndefined,
+    z.string().max(max).nullable().optional()
+  )
+
 // === Party schemas ===
 
 export const createPartySchema = z.object({
   name: z.string().min(1, 'Name is required').max(200),
-  phone: z.string().regex(PHONE_REGEX, 'Valid 10-digit Indian mobile number required').optional(),
-  email: z.string().email('Invalid email address').optional(),
-  companyName: z.string().max(200).optional(),
+  phone: optionalPhone,
+  email: optionalEmail,
+  companyName: optionalString(200),
   type: z.enum(PARTY_TYPES).default('CUSTOMER'),
-  groupId: z.string().optional(),
+  groupId: optionalString(100),
   tags: z.array(z.string().max(50)).default([]),
-  gstin: z.string().regex(GSTIN_REGEX, 'Invalid GSTIN format').optional(),
-  pan: z.string().regex(PAN_REGEX, 'Invalid PAN format').optional(),
+  gstin: optionalGstin,
+  pan: optionalPan,
   creditLimit: z.number().int().min(0).default(0), // in paise
   creditLimitMode: z.enum(CREDIT_LIMIT_MODES).default('WARN'),
-  notes: z.string().max(1000).optional(),
+  notes: optionalString(1000),
   addresses: z.array(addressSchema).default([]),
   customFields: z.array(customFieldValueSchema).default([]),
   openingBalance: openingBalanceSchema.optional(),
-  priceListId: z.string().nullable().optional(),
+  priceListId: optionalString(100),
 }).strict()
 
 // EditPartyPage repopulates the form from the API response (where empty fields
@@ -76,19 +105,19 @@ export const createPartySchema = z.object({
 // optional string field so a no-op edit doesn't 400.
 export const updatePartySchema = z.object({
   name: z.string().min(1).max(200).optional(),
-  phone: z.string().regex(PHONE_REGEX, 'Valid 10-digit Indian mobile number required').nullable().optional(),
-  email: z.string().email('Invalid email address').nullable().optional(),
-  companyName: z.string().max(200).nullable().optional(),
+  phone: optionalPhone,
+  email: optionalEmail,
+  companyName: optionalString(200),
   type: z.enum(PARTY_TYPES).optional(),
-  groupId: z.string().nullable().optional(),
+  groupId: optionalString(100),
   tags: z.array(z.string().max(50)).optional(),
-  gstin: z.string().regex(GSTIN_REGEX, 'Invalid GSTIN format').nullable().optional(),
-  pan: z.string().regex(PAN_REGEX, 'Invalid PAN format').nullable().optional(),
+  gstin: optionalGstin,
+  pan: optionalPan,
   creditLimit: z.number().int().min(0).optional(),
   creditLimitMode: z.enum(CREDIT_LIMIT_MODES).optional(),
-  notes: z.string().max(1000).nullable().optional(),
+  notes: optionalString(1000),
   customFields: z.array(customFieldValueSchema).optional(),
-  priceListId: z.string().nullable().optional(),
+  priceListId: optionalString(100),
 }).strict()
 
 export const listPartiesSchema = z.object({

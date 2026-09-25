@@ -16,15 +16,47 @@ import { persistRefreshTokenFamily } from '../../services/auth/helpers.js'
 const router = Router()
 
 /**
+ * POST /api/auth/direct-register
+ * Frictionless instant registration: creates User + default Business + tokens in 1 atomic step.
+ */
+router.post(
+  '/direct-register',
+  authRateLimiter,
+  validate(registerSchema),
+  asyncHandler(async (req, res) => {
+    const result = await authService.directRegister(req.body)
+    if (!result.success) {
+      sendError(res, result.message, 'REGISTER_FAILED', 400)
+      return
+    }
+
+    await persistRefreshTokenFamily({
+      userId: result.user!.id,
+      refreshToken: result.tokens!.refreshToken,
+      deviceInfo: req.headers['user-agent']?.slice(0, 200) || null,
+    })
+
+    authService.setTokenCookies(res, result.tokens!)
+    res.set('Cache-Control', 'no-store')
+    sendSuccess(res, {
+      isNewUser: true,
+      user: result.user,
+      businesses: result.businesses,
+      activeBusiness: result.activeBusiness,
+      tokens: result.tokens,
+    }, 201)
+  })
+)
+
+/**
  * POST /api/auth/register
- * Step 1: validate name/phone/password, send OTP. User is created after verify-registration.
+ * Step 1: validate name/phone/password, send OTP.
  */
 router.post(
   '/register',
   authRateLimiter,
   captchaGuard,
   validate(registerSchema),
-  // After validate: the limiter keys on the phone, which must be a checked one.
   otpRateLimiter,
   asyncHandler(async (req, res) => {
     const result = await authService.register(req.body)
@@ -38,7 +70,7 @@ router.post(
 
 /**
  * POST /api/auth/verify-registration
- * Step 2: verify OTP, create user account, set cookies.
+ * Step 2: verify OTP, create user + business workspace atomically, set cookies.
  */
 router.post(
   '/verify-registration',
@@ -64,8 +96,8 @@ router.post(
     sendSuccess(res, {
       isNewUser: true,
       user: result.user,
-      businesses: [],
-      activeBusiness: null,
+      businesses: result.businesses,
+      activeBusiness: result.activeBusiness,
     }, 201)
   })
 )

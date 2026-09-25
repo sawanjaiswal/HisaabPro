@@ -11,10 +11,12 @@ const ACCOUNT_TYPES = ['CURRENT', 'SAVINGS', 'OD', 'CC'] as const
 export const createBankAccountSchema = z.object({
   bankName: z.string().min(1).max(100),
   accountNumber: z.string().min(1).max(50),
+  accountHolderName: z.string().max(100).optional(),
   ifscCode: z.string().max(20).optional(),
   branchName: z.string().max(100).optional(),
   accountType: z.enum(ACCOUNT_TYPES).default('CURRENT'),
   openingBalance: z.number().int().default(0),
+  openingBalanceDate: z.string().optional(),
   isDefault: z.boolean().default(false),
 }).strict()
 

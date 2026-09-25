@@ -101,7 +101,11 @@ export function useVerifyOtp() {
       authLib.setCachedBusinesses(result.businesses)
       setUser(user)
       setBusinesses(result.businesses)
-      navigate(ROUTES.ONBOARDING, { replace: true })
+      if (result.businesses && result.businesses.length > 0) {
+        navigate(ROUTES.DASHBOARD, { replace: true })
+      } else {
+        navigate(ROUTES.ONBOARDING, { replace: true })
+      }
     } catch (err) {
       triggerShake()
       setOtp(['', '', '', '', '', ''])

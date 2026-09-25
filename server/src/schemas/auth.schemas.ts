@@ -6,6 +6,7 @@ export const registerSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(100, 'Name too long'),
   phone: z.string().regex(phoneRegex, 'Valid 10-digit Indian mobile number required'),
   password: z.string().min(6, 'Password must be at least 6 characters').max(100),
+  businessName: z.string().trim().max(100).optional(),
   captchaToken: z.string().optional(),
 }).strict()
 

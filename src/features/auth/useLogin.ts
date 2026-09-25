@@ -52,7 +52,11 @@ export function useLogin() {
       authLib.setCachedBusinesses(result.businesses)
       setUser(result.user)
       setBusinesses(result.businesses)
-      navigate(result.isNewUser ? ROUTES.ONBOARDING : ROUTES.DASHBOARD, { replace: true })
+      if (result.businesses && result.businesses.length > 0) {
+        navigate(ROUTES.DASHBOARD, { replace: true })
+      } else {
+        navigate(ROUTES.ONBOARDING, { replace: true })
+      }
     },
     onError: (err: unknown, variables) => {
       // Timeout → silently retry while keeping the loading state active.

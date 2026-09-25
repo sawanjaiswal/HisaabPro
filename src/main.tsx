@@ -11,13 +11,15 @@ import { PinGateProvider } from './providers/PinGateProvider'
 import { App } from './App'
 import { initServiceWorker } from './lib/sw-register'
 import { recoverStuckItems, startOfflineAutoSync } from './lib/offline'
+import { initStorageSentinel } from './db/storage-sentinel'
 import { initSentry } from './lib/sentry'
 import './styles/globals.css'
 
 // Initialize error tracking before anything else
 initSentry()
 
-// Register service worker + recover any stuck sync items from previous crash
+// Register storage protection + service worker + recover any stuck sync items
+initStorageSentinel()
 initServiceWorker()
 recoverStuckItems()
 // Owns queue draining for the whole app lifetime — never a component's job.

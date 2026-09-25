@@ -43,6 +43,9 @@ const discountSchema = z.object({
   reason: z.string().max(200).optional(),
 }).strict()
 
+const emptyToUndefined = (val: unknown) =>
+  typeof val === 'string' && val.trim() === '' ? undefined : val
+
 export const createPaymentSchema = z.object({
   // Public endpoint — payroll types (PAYROLL_OUT/IN) are written ONLY by the
   // payroll-service via prisma.payment.create direct. M8 single-rejection-path:
@@ -53,8 +56,8 @@ export const createPaymentSchema = z.object({
   amount: z.number().int().min(1).max(9_999_999_900),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   mode: z.enum(PAYMENT_MODES),
-  referenceNumber: z.string().max(100).optional(),
-  notes: z.string().max(500).optional(),
+  referenceNumber: z.preprocess(emptyToUndefined, z.string().max(100).nullable().optional()),
+  notes: z.preprocess(emptyToUndefined, z.string().max(500).nullable().optional()),
   allocations: z.array(allocationSchema).max(50).default([]),
   discount: discountSchema.optional(),
   offlineId: z.string().optional(),
@@ -64,8 +67,8 @@ export const updatePaymentSchema = z.object({
   amount: z.number().int().min(1).max(9_999_999_900).optional(),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   mode: z.enum(PAYMENT_MODES).optional(),
-  referenceNumber: z.string().max(100).nullable().optional(),
-  notes: z.string().max(500).nullable().optional(),
+  referenceNumber: z.preprocess(emptyToUndefined, z.string().max(100).nullable().optional()),
+  notes: z.preprocess(emptyToUndefined, z.string().max(500).nullable().optional()),
 }).strict()
 
 export const listPaymentsSchema = z.object({

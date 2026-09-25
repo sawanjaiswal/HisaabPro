@@ -45,7 +45,7 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
   const priceListName = party.priceList?.name
   const customFieldRows = (party.customFieldValues ?? [])
     .filter(cv => cv.value != null && cv.value.trim() !== '')
-    .sort((a, b) => a.field.sortOrder - b.field.sortOrder)
+    .sort((a, b) => ((a.field?.sortOrder ?? 0) - (b.field?.sortOrder ?? 0)))
 
   return (
     <div className="party-info-card">

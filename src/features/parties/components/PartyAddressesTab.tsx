@@ -20,10 +20,11 @@ interface PartyAddressesTabProps {
   addresses: Address[]
 }
 
-export function PartyAddressesTab({ addresses }: PartyAddressesTabProps) {
+export function PartyAddressesTab({ addresses = [] }: PartyAddressesTabProps) {
   const { t } = useLanguage()
+  const list = addresses || []
 
-  if (addresses.length === 0) {
+  if (list.length === 0) {
     return (
       <EmptyState
         icon={<MapPin size={40} aria-hidden="true" />}
@@ -35,7 +36,7 @@ export function PartyAddressesTab({ addresses }: PartyAddressesTabProps) {
 
   return (
     <div className="party-info-card">
-      {addresses.map((address) => (
+      {list.map((address) => (
         <div key={address.id} className="card">
           <div className="party-address-card">
             <div className="party-address-label">

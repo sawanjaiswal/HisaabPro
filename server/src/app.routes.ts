@@ -7,6 +7,7 @@ import feedbackRoutes from './routes/feedback.js'
 import backupRoutes from './routes/backup.js'
 import partyRoutes from './routes/party.js'
 import partyGroupRoutes from './routes/party-groups.js'
+import syncRoutes from './routes/sync.routes.js'
 import customFieldRoutes from './routes/custom-fields.js'
 import productRoutes from './routes/products/index.js'
 import categoryRoutes from './routes/categories.js'
@@ -228,6 +229,7 @@ const ROUTE_MOUNTS: Array<[string, Router]> = [
   // router via FEATURES.INVOICE_TEMPLATES (default ON — closes a live 404).
   ['/api/templates', invoiceTemplatesRoutes],
   ['/api/invoice-settings', invoiceSettingsRoutes],
+  ['/api/sync', syncRoutes],
 ]
 
 export function mountFeatureRoutes(app: Express): void {

@@ -36,6 +36,102 @@ router.use(userMutationLimiter)
 router.use(requireFeature('payments'))
 
 // ============================================================
+// Outstanding (MUST be before /:id to avoid param capture)
+// ============================================================
+
+/** GET /api/payments/outstanding/list — List parties with outstanding balances */
+router.get(
+  '/outstanding/list',
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const query = listOutstandingSchema.parse(req.query)
+    const result = await paymentService.listOutstanding(businessId, query)
+    sendSuccess(res, result)
+  })
+)
+
+/** GET /api/payments/outstanding/:partyId — Get party outstanding detail */
+router.get(
+  '/outstanding/:partyId',
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const cursor = req.query.cursor ? String(req.query.cursor) : undefined
+    const limit = req.query.limit ? Math.min(Number(req.query.limit), 100) : 20
+    const result = await paymentService.getPartyOutstanding(
+      businessId,
+      String(req.params.partyId),
+      cursor,
+      limit
+    )
+    sendSuccess(res, result)
+  })
+)
+
+// ============================================================
+// Reminders (MUST be before /:id to avoid param capture)
+// ============================================================
+
+/** POST /api/payments/reminders/send — Send a reminder */
+router.post(
+  '/reminders/send',
+  requirePermission('payments.view'),
+  replayProtection,
+  validate(sendReminderSchema),
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const result = await paymentService.sendReminder(businessId, req.user!.userId, req.body)
+    sendSuccess(res, result, 201)
+  })
+)
+
+/** POST /api/payments/reminders/send-bulk — Send bulk reminders */
+router.post(
+  '/reminders/send-bulk',
+  requirePermission('payments.view'),
+  replayProtection,
+  validate(sendBulkRemindersSchema),
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const result = await paymentService.sendBulkReminders(businessId, req.user!.userId, req.body)
+    sendSuccess(res, result)
+  })
+)
+
+/** GET /api/payments/reminders/list — List reminders */
+router.get(
+  '/reminders/list',
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const query = listRemindersSchema.parse(req.query)
+    const result = await paymentService.listReminders(businessId, query)
+    sendSuccess(res, result)
+  })
+)
+
+/** GET /api/payments/reminders/config — Get reminder config */
+router.get(
+  '/reminders/config',
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const config = await paymentService.getReminderConfig(businessId)
+    sendSuccess(res, config)
+  })
+)
+
+/** PUT /api/payments/reminders/config — Update reminder config */
+router.put(
+  '/reminders/config',
+  requirePermission('settings.modify'),
+  replayProtection,
+  validate(updateReminderConfigSchema),
+  asyncHandler(async (req, res) => {
+    const businessId = req.user!.businessId
+    const config = await paymentService.updateReminderConfig(businessId, req.body)
+    sendSuccess(res, config)
+  })
+)
+
+// ============================================================
 // Payments CRUD
 // ============================================================
 
@@ -133,102 +229,6 @@ router.put(
       businessId, String(req.params.id), req.body
     )
     sendSuccess(res, result)
-  })
-)
-
-// ============================================================
-// Outstanding
-// ============================================================
-
-/** GET /api/outstanding — List parties with outstanding balances */
-router.get(
-  '/outstanding/list',
-  asyncHandler(async (req, res) => {
-    const businessId = req.user!.businessId
-    const query = listOutstandingSchema.parse(req.query)
-    const result = await paymentService.listOutstanding(businessId, query)
-    sendSuccess(res, result)
-  })
-)
-
-/** GET /api/outstanding/:partyId — Get party outstanding detail */
-router.get(
-  '/outstanding/:partyId',
-  asyncHandler(async (req, res) => {
-    const businessId = req.user!.businessId
-    const cursor = req.query.cursor ? String(req.query.cursor) : undefined
-    const limit = req.query.limit ? Math.min(Number(req.query.limit), 100) : 20
-    const result = await paymentService.getPartyOutstanding(
-      businessId,
-      String(req.params.partyId),
-      cursor,
-      limit
-    )
-    sendSuccess(res, result)
-  })
-)
-
-// ============================================================
-// Reminders
-// ============================================================
-
-/** POST /api/payments/reminders/send — Send a reminder */
-router.post(
-  '/reminders/send',
-  requirePermission('payments.view'),
-  replayProtection,
-  validate(sendReminderSchema),
-  asyncHandler(async (req, res) => {
-    const businessId = req.user!.businessId
-    const result = await paymentService.sendReminder(businessId, req.user!.userId, req.body)
-    sendSuccess(res, result, 201)
-  })
-)
-
-/** POST /api/payments/reminders/send-bulk — Send bulk reminders */
-router.post(
-  '/reminders/send-bulk',
-  requirePermission('payments.view'),
-  replayProtection,
-  validate(sendBulkRemindersSchema),
-  asyncHandler(async (req, res) => {
-    const businessId = req.user!.businessId
-    const result = await paymentService.sendBulkReminders(businessId, req.user!.userId, req.body)
-    sendSuccess(res, result)
-  })
-)
-
-/** GET /api/payments/reminders — List reminders */
-router.get(
-  '/reminders/list',
-  asyncHandler(async (req, res) => {
-    const businessId = req.user!.businessId
-    const query = listRemindersSchema.parse(req.query)
-    const result = await paymentService.listReminders(businessId, query)
-    sendSuccess(res, result)
-  })
-)
-
-/** GET /api/payments/reminders/config — Get reminder config */
-router.get(
-  '/reminders/config',
-  asyncHandler(async (req, res) => {
-    const businessId = req.user!.businessId
-    const config = await paymentService.getReminderConfig(businessId)
-    sendSuccess(res, config)
-  })
-)
-
-/** PUT /api/payments/reminders/config — Update reminder config */
-router.put(
-  '/reminders/config',
-  requirePermission('settings.modify'),
-  replayProtection,
-  validate(updateReminderConfigSchema),
-  asyncHandler(async (req, res) => {
-    const businessId = req.user!.businessId
-    const config = await paymentService.updateReminderConfig(businessId, req.body)
-    sendSuccess(res, config)
   })
 )
 

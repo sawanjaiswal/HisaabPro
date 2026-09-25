@@ -3,16 +3,139 @@ import { generateOTP, hashOTP, verifyOTP, sendOTP, OTP_TTL_MS, MAX_ATTEMPTS, RES
 import { generateTokens } from '../../lib/jwt.js'
 import bcrypt from 'bcryptjs'
 import type { RegisterInput, VerifyRegistrationInput } from '../../schemas/auth.schemas.js'
-import { resolveUserBusinessId } from './helpers.js'
+import { DEFAULT_CATEGORIES } from '../../config/defaults.js'
+import { ensureSystemRoles } from '../settings.service.js'
+import { seedDefaultAccounts } from '../accounting/chart-of-accounts.js'
+import { ensurePredefinedUnits } from '../unit/constants.js'
+import { getMe } from './me.js'
 
 const PASSWORD_BCRYPT_ROUNDS = 10
 
 /**
- * Register a new user: validate phone not taken, hash password, store in OtpCode context, send OTP.
- * User record is only created AFTER OTP verification (stateless registration).
+ * Atomically create a user, their default business workspace, owner membership,
+ * default categories, system roles, and GL accounts in a single transaction.
+ */
+export async function createUserWithDefaultBusiness(params: {
+  phone: string
+  name: string
+  passwordHash: string
+  businessName?: string
+}) {
+  const { phone, name, passwordHash, businessName } = params
+  const firmName = businessName?.trim() || `${name}'s Business`
+
+  const result = await prisma.$transaction(async (tx) => {
+    // 1. Create User
+    const user = await tx.user.create({
+      data: {
+        phone,
+        name,
+        passwordHash,
+      },
+      select: { id: true, phone: true, name: true, email: true },
+    })
+
+    // 2. Create default Business
+    const business = await tx.business.create({
+      data: {
+        name: firmName,
+        phone,
+        businessType: 'general',
+        currencyCode: 'INR',
+      },
+      select: {
+        id: true,
+        name: true,
+        businessType: true,
+        currencyCode: true,
+        isActive: true,
+        createdAt: true,
+      },
+    })
+
+    // 3. Create BusinessUser owner membership
+    await tx.businessUser.create({
+      data: {
+        userId: user.id,
+        businessId: business.id,
+        role: 'owner',
+        status: 'ACTIVE',
+        isActive: true,
+      },
+    })
+
+    // 4. Seed default categories
+    await tx.category.createMany({
+      data: DEFAULT_CATEGORIES.map((cat) => ({
+        businessId: business.id,
+        name: cat.name,
+        type: 'PREDEFINED',
+        color: cat.color,
+        sortOrder: cat.sortOrder,
+      })),
+    })
+
+    // 5. Update user's lastActiveBusinessId
+    await tx.user.update({
+      where: { id: user.id },
+      data: { lastActiveBusinessId: business.id },
+    })
+
+    return { user, business }
+  })
+
+  // Seed system roles, default accounts & predefined units for the new business
+  await ensureSystemRoles(result.business.id)
+  await seedDefaultAccounts(result.business.id)
+  await ensurePredefinedUnits(result.business.id)
+
+  const tokens = generateTokens(result.user.id, result.user.phone, result.business.id)
+  const meData = await getMe(result.user.id, result.business.id)
+
+  return {
+    user: result.user,
+    business: result.business,
+    businesses: meData?.businesses ?? [],
+    activeBusiness: meData?.activeBusiness ?? null,
+    tokens,
+  }
+}
+
+/**
+ * Direct registration — creates user + default business atomically and returns session.
+ */
+export async function directRegister(data: RegisterInput) {
+  const { name, phone, password, businessName } = data
+
+  const existing = await prisma.user.findUnique({ where: { phone }, select: { id: true } })
+  if (existing) {
+    return { success: false, message: 'This phone number is already registered. Please log in.' }
+  }
+
+  const passwordHash = await bcrypt.hash(password, PASSWORD_BCRYPT_ROUNDS)
+  const created = await createUserWithDefaultBusiness({
+    phone,
+    name: name.trim(),
+    passwordHash,
+    businessName,
+  })
+
+  return {
+    success: true,
+    message: 'Registration successful',
+    isNewUser: true,
+    user: created.user,
+    businesses: created.businesses,
+    activeBusiness: created.activeBusiness,
+    tokens: created.tokens,
+  }
+}
+
+/**
+ * Register step 1 (OTP flow): validate phone not taken, hash password, store in OtpCode context, send OTP.
  */
 export async function register(data: RegisterInput) {
-  const { name, phone, password } = data
+  const { name, phone, password, businessName } = data
 
   // Check phone not already registered
   const existing = await prisma.user.findUnique({ where: { phone }, select: { id: true } })
@@ -45,7 +168,7 @@ export async function register(data: RegisterInput) {
       phone,
       code: otpHash,
       expiresAt: new Date(Date.now() + OTP_TTL_MS),
-      context: JSON.stringify({ purpose: 'registration', name, passwordHash }),
+      context: JSON.stringify({ purpose: 'registration', name, passwordHash, businessName }),
     },
   })
 
@@ -58,8 +181,7 @@ export async function register(data: RegisterInput) {
 }
 
 /**
- * Verify registration OTP and create user account.
- * Reads name + passwordHash from OtpCode context, creates User, sets cookies.
+ * Verify registration OTP and create user + business account.
  */
 export async function verifyRegistration(data: VerifyRegistrationInput) {
   const { phone, otp } = data
@@ -90,7 +212,7 @@ export async function verifyRegistration(data: VerifyRegistrationInput) {
   }
 
   // Parse registration context
-  let ctx: { purpose?: string; name?: string; passwordHash?: string } = {}
+  let ctx: { purpose?: string; name?: string; passwordHash?: string; businessName?: string } = {}
   try {
     ctx = otpRecord.context ? JSON.parse(otpRecord.context) as typeof ctx : {}
   } catch { /* ignore */ }
@@ -108,21 +230,21 @@ export async function verifyRegistration(data: VerifyRegistrationInput) {
     return { verified: false, message: 'This phone number is already registered. Please log in.' }
   }
 
-  // Create user
-  const user = await prisma.user.create({
-    data: { phone, name: ctx.name, passwordHash: ctx.passwordHash },
-    select: { id: true, phone: true, name: true, email: true },
+  const created = await createUserWithDefaultBusiness({
+    phone,
+    name: ctx.name,
+    passwordHash: ctx.passwordHash,
+    businessName: ctx.businessName,
   })
-
-  const businessId = await resolveUserBusinessId(user.id)
-  const tokens = generateTokens(user.id, user.phone, businessId)
 
   return {
     verified: true,
     message: 'Registration successful',
     isNewUser: true,
-    user: { id: user.id, phone: user.phone, name: user.name },
-    tokens,
+    user: created.user,
+    businesses: created.businesses,
+    activeBusiness: created.activeBusiness,
+    tokens: created.tokens,
   }
 }
 

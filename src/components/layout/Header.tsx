@@ -13,7 +13,7 @@ import { ChevronLeft, Menu } from 'lucide-react'
 import { APP_NAME, APP_NAME_MARK } from '@/config/app.config'
 import { ROUTES } from '@/config/routes.config'
 import { OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
-import { SyncStatusIcon } from '@/components/feedback/SyncStatusIcon'
+import { SyncStatusPill } from '@/components/ui/sync-center'
 import { NotificationBell } from '@/features/notifications/components/NotificationBell'
 import { BrandLogo } from '@/components/brand/BrandLogo'
 
@@ -117,8 +117,8 @@ export function Header({
 
       <div className="header-actions">
         {actions}
+        <SyncStatusPill />
         <NotificationBell />
-        <SyncStatusIcon />
         <button
           type="button"
           className="header-icon-btn lg:hidden"

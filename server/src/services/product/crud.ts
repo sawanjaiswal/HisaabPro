@@ -19,10 +19,18 @@ export async function createProduct(
 ) {
   logger.info('Creating product', { businessId, productName: data.name })
 
+  // Sanitize empty strings
+  const categoryId = data.categoryId && data.categoryId.trim() !== '' ? data.categoryId : null
+  const taxCategoryId = data.taxCategoryId && data.taxCategoryId.trim() !== '' ? data.taxCategoryId : null
+  const hsnCode = data.hsnCode && data.hsnCode.trim() !== '' ? data.hsnCode : null
+  const sacCode = data.sacCode && data.sacCode.trim() !== '' ? data.sacCode : null
+  const barcode = data.barcode && data.barcode.trim() !== '' ? data.barcode : null
+  const description = data.description && data.description.trim() !== '' ? data.description : null
+
   // Validate categoryId if provided
-  if (data.categoryId) {
+  if (categoryId) {
     const cat = await prisma.category.findFirst({
-      where: { id: data.categoryId, businessId },
+      where: { id: categoryId, businessId },
     })
     if (!cat) throw notFoundError('Category')
   }
@@ -35,14 +43,15 @@ export async function createProduct(
 
   // Generate or validate SKU
   let sku: string | null = null
+  const customSku = data.sku && data.sku.trim() !== '' ? data.sku.trim() : null
   if (data.autoGenerateSku) {
     sku = await generateSku(businessId)
-  } else if (data.sku) {
+  } else if (customSku) {
     const existing = await prisma.product.findFirst({
-      where: { businessId, sku: data.sku },
+      where: { businessId, sku: customSku },
     })
-    if (existing) throw conflictError(`SKU "${data.sku}" already exists`)
-    sku = data.sku
+    if (existing) throw conflictError(`SKU "${customSku}" already exists`)
+    sku = customSku
   }
 
   const result = await prisma.$transaction(async (tx) => {
@@ -51,18 +60,18 @@ export async function createProduct(
         businessId,
         name: data.name,
         sku,
-        categoryId: data.categoryId ?? null,
+        categoryId,
         unitId: data.unitId,
         salePrice: data.salePrice,
         purchasePrice: data.purchasePrice ?? null,
         currentStock: 0,
         minStockLevel: data.minStockLevel,
         stockValidation: data.stockValidation,
-        hsnCode: data.hsnCode ?? null,
-        sacCode: data.sacCode ?? null,
-        taxCategoryId: data.taxCategoryId ?? null,
-        description: data.description ?? null,
-        barcode: data.barcode ?? null,
+        hsnCode,
+        sacCode,
+        taxCategoryId,
+        description,
+        barcode,
         barcodeFormat: data.barcodeFormat ?? null,
         status: data.status,
       },
@@ -141,11 +150,16 @@ export async function updateProduct(
   data: UpdateProductInput,
   expectedVersion?: number
 ) {
-  await requireProduct(businessId, productId)
+  const categoryId = data.categoryId !== undefined ? (data.categoryId && data.categoryId.trim() !== '' ? data.categoryId : null) : undefined
+  const taxCategoryId = data.taxCategoryId !== undefined ? (data.taxCategoryId && data.taxCategoryId.trim() !== '' ? data.taxCategoryId : null) : undefined
+  const hsnCode = data.hsnCode !== undefined ? (data.hsnCode && data.hsnCode.trim() !== '' ? data.hsnCode : null) : undefined
+  const sacCode = data.sacCode !== undefined ? (data.sacCode && data.sacCode.trim() !== '' ? data.sacCode : null) : undefined
+  const barcode = data.barcode !== undefined ? (data.barcode && data.barcode.trim() !== '' ? data.barcode : null) : undefined
+  const description = data.description !== undefined ? (data.description && data.description.trim() !== '' ? data.description : null) : undefined
 
-  if (data.categoryId) {
+  if (categoryId) {
     const cat = await prisma.category.findFirst({
-      where: { id: data.categoryId, businessId },
+      where: { id: categoryId, businessId },
     })
     if (!cat) throw notFoundError('Category')
   }
@@ -157,9 +171,9 @@ export async function updateProduct(
     if (!unit) throw notFoundError('Unit')
   }
 
-  if (data.sku) {
+  if (data.sku && data.sku.trim() !== '') {
     const existing = await prisma.product.findFirst({
-      where: { businessId, sku: data.sku, id: { not: productId } },
+      where: { businessId, sku: data.sku.trim(), id: { not: productId } },
     })
     if (existing) throw conflictError(`SKU "${data.sku}" already exists`)
   }
@@ -172,18 +186,18 @@ export async function updateProduct(
       where: { id: productId },
       data: {
         ...(data.name !== undefined && { name: data.name }),
-        ...(data.sku !== undefined && { sku: data.sku }),
-        ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
+        ...(data.sku !== undefined && { sku: data.sku.trim() || null }),
+        ...(categoryId !== undefined && { categoryId }),
         ...(data.unitId !== undefined && { unitId: data.unitId }),
         ...(data.salePrice !== undefined && { salePrice: data.salePrice }),
         ...(data.purchasePrice !== undefined && { purchasePrice: data.purchasePrice }),
         ...(data.minStockLevel !== undefined && { minStockLevel: data.minStockLevel }),
         ...(data.stockValidation !== undefined && { stockValidation: data.stockValidation }),
-        ...(data.hsnCode !== undefined && { hsnCode: data.hsnCode }),
-        ...(data.sacCode !== undefined && { sacCode: data.sacCode }),
-        ...(data.taxCategoryId !== undefined && { taxCategoryId: data.taxCategoryId }),
-        ...(data.description !== undefined && { description: data.description }),
-        ...(data.barcode !== undefined && { barcode: data.barcode }),
+        ...(hsnCode !== undefined && { hsnCode }),
+        ...(sacCode !== undefined && { sacCode }),
+        ...(taxCategoryId !== undefined && { taxCategoryId }),
+        ...(description !== undefined && { description }),
+        ...(barcode !== undefined && { barcode }),
         ...(data.barcodeFormat !== undefined && { barcodeFormat: data.barcodeFormat }),
         ...(data.moq !== undefined && { moq: data.moq }),
         ...(data.labelTemplate !== undefined && { labelTemplate: data.labelTemplate }),
