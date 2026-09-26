@@ -19,10 +19,10 @@
 }
 
 .form-section-title {
-  font-size: var(--fs-sm);
+  font-size: var(--fs-md);
   font-weight: 600;
-  color: var(--text-secondary);
-  letter-spacing: 0.01em;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 /* Text action in a section header — emerald because it is a primary affordance. */
