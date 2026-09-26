@@ -7,6 +7,10 @@ import { getParty } from '@/features/parties/party.service'
 import type { PartySummary } from '@/lib/types/party.types'
 import { PartySearchField } from './PartySearchField'
 import { PartySearchDropdown } from './PartySearchDropdown'
+import { PartyAvatar } from '@/components/ui/PartyAvatar'
+import { PartyBalanceChip } from '@/features/invoices/components/PartyBalanceChip'
+import { Button } from '@/components/ui/Button'
+import { useLanguage } from '@/hooks/useLanguage'
 import '@/features/invoices/invoice-party-search.css'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -29,6 +33,7 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
   onChange,
   error,
 }) => {
+  const { t } = useLanguage()
   const [query, setQuery] = useState('')
   const [selectedName, setSelectedName] = useState('')
   const [results, setResults] = useState<PartySummary[]>([])
@@ -179,22 +184,26 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
   return (
     <div className="party-search" ref={containerRef}>
       <label className="label" htmlFor="party-search-input">
-        Customer / Supplier
+        {t.customerSupplierLabel || 'Customer / Supplier'}
       </label>
 
       {isSelected ? (
         <div className="party-selector-selected" role="status" aria-label={`Selected: ${selectedName}`}>
+          <PartyAvatar name={selectedName} size="md" className="party-selector-avatar" />
           <div className="party-selector-info">
             <div className="party-selector-name">{selectedName}</div>
+            <PartyBalanceChip partyId={value} />
           </div>
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             type="button"
-            className="party-selector-change"
+            className="party-selector-change-btn"
             onClick={handleClear}
-            aria-label="Change selected party"
+            aria-label={t.changeSelectedParty || 'Change'}
           >
-            Change
-          </button>
+            {t.changeLabel || 'Change'}
+          </Button>
         </div>
       ) : (
         <PartySearchField
