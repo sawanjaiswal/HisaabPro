@@ -2,16 +2,13 @@
  *
  * Fetches existing payment data, pre-populates the form via
  * usePaymentForm({ payment: PaymentDetail }), then composes
- * shared section components.
+ * shared section components inside FormPageShell.
  */
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { AppShell } from '@/components/layout/AppShell'
-import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
-import { ErrorState } from '@/components/feedback/ErrorState'
-import { Skeleton } from '@/components/feedback/Skeleton'
+import { FormPageShell } from '@/components/layout/FormPageShell'
+import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { usePaymentForm } from './usePaymentForm'
 import { getPayment } from './payment.service'
@@ -23,8 +20,6 @@ import type { PaymentDetail } from './payment.types'
 import './payment-form-layout.css'
 import './payment-form-details.css'
 import './payment-form-actions.css'
-import { Button } from '@/components/ui/Button'
-import { BottomActionBar } from '@/components/ui/BottomActionBar'
 
 export default function EditPaymentPage() {
   const { id } = useParams<{ id: string }>()
@@ -51,32 +46,22 @@ export default function EditPaymentPage() {
     return () => controller.abort()
   }, [paymentId])
 
-  if (loadStatus === 'loading') {
+  if (loadStatus === 'loading' || loadStatus === 'error' || !paymentDetail) {
     return (
-      <AppShell>
-        <Header title={t.editPayment} backTo={`/payments/${paymentId}`} />
-        <PageContainer variant="form" className="space-y-6">
-          <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
-          <div style={{ marginTop: 'var(--space-4)' }}>
-            <Skeleton height="3.5rem" borderRadius="var(--radius-md)" count={5} />
-          </div>
-        </PageContainer>
-      </AppShell>
-    )
-  }
-
-  if (loadStatus === 'error' || !paymentDetail) {
-    return (
-      <AppShell>
-        <Header title={t.editPayment} backTo={`/payments/${paymentId}`} />
-        <PageContainer variant="form" className="space-y-6">
-          <ErrorState
-            title={t.couldNotLoadPayment}
-            message={t.checkConnectionRetry}
-            onRetry={() => window.location.reload()}
-          />
-        </PageContainer>
-      </AppShell>
+      <FormPageShell
+        title={t.editPayment}
+        backTo={`/payments/${paymentId}`}
+        isLoading={loadStatus === 'loading'}
+        error={loadStatus === 'error' ? t.couldNotLoadPayment : null}
+        onRetry={() => window.location.reload()}
+        footer={
+          <Button type="button" variant="primary" size="lg" disabled>
+            {t.updatePaymentBtn}
+          </Button>
+        }
+      >
+        <div />
+      </FormPageShell>
     )
   }
 
@@ -100,34 +85,39 @@ function EditPaymentForm({
   const { peers } = usePresence('payment', paymentId, 'editing')
 
   return (
-    <AppShell>
-      <Header title={t.editPayment} backTo={`/payments/${paymentId}`} actions={<PresenceAvatars peers={peers} />} />
-
-      <PageContainer variant="form" className="stagger-enter space-y-6">
-        <PaymentFormSections
-          form={form}
-          errors={errors}
-          updateField={updateField}
-          updateMode={updateMode}
-          toggleAllocation={toggleAllocation}
-          updateAllocationAmount={updateAllocationAmount}
-          autoAllocate={autoAllocate}
-          toggleDiscount={toggleDiscount}
-          updateDiscount={updateDiscount}
-        />
-      </PageContainer>
-
-      <BottomActionBar>
+    <FormPageShell
+      title={t.editPayment}
+      backTo={`/payments/${paymentId}`}
+      actions={<PresenceAvatars peers={peers} />}
+      onSubmit={(e) => {
+        e.preventDefault()
+        handleSubmit()
+      }}
+      footer={
         <Button
           type="button"
-          variant="primary" size="lg" className="payment-save-btn"
+          variant="primary"
+          size="lg"
+          className="payment-save-btn"
           onClick={handleSubmit}
-          disabled={isSubmitting}
+          loading={isSubmitting}
           aria-label={isSubmitting ? t.updatingPayment : t.updatePaymentLabel}
         >
           {isSubmitting ? t.processing : t.updatePaymentBtn}
         </Button>
-      </BottomActionBar>
+      }
+    >
+      <PaymentFormSections
+        form={form}
+        errors={errors}
+        updateField={updateField}
+        updateMode={updateMode}
+        toggleAllocation={toggleAllocation}
+        updateAllocationAmount={updateAllocationAmount}
+        autoAllocate={autoAllocate}
+        toggleDiscount={toggleDiscount}
+        updateDiscount={updateDiscount}
+      />
 
       <ConflictDialog
         conflict={conflictReconcile.conflict}
@@ -136,6 +126,6 @@ function EditPaymentForm({
         onOverwrite={conflictReconcile.overwrite}
         onDismiss={conflictReconcile.dismiss}
       />
-    </AppShell>
+    </FormPageShell>
   )
 }

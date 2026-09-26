@@ -8,6 +8,10 @@ dist/
 .env
 .env.local
 .env.*.local
+*.json.secret
+client_secret*.json
+credentials*.json
+google-services.json
 
 # Logs
 *.log

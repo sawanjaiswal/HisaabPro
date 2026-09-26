@@ -5,11 +5,8 @@
  */
 
 import { useSearchParams } from 'react-router-dom'
-import { AppShell } from '@/components/layout/AppShell'
-import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { FormPageShell } from '@/components/layout/FormPageShell'
 import { Button } from '@/components/ui/Button'
-import { BottomActionBar } from '@/components/ui/BottomActionBar'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { usePaymentForm } from './usePaymentForm'
@@ -23,34 +20,25 @@ export default function RecordPaymentPage() {
   const [searchParams] = useSearchParams()
   const { t } = useLanguage()
   const typeParam = (searchParams.get('type') ?? 'PAYMENT_IN') as PaymentType
+  const partyIdParam = searchParams.get('partyId') ?? ''
 
   const {
     form, errors, isSubmitting,
     updateField, updateMode, toggleAllocation, updateAllocationAmount,
     autoAllocate, toggleDiscount, updateDiscount, handleSubmit,
-  } = usePaymentForm({ defaultType: typeParam })
+  } = usePaymentForm({ defaultType: typeParam, defaultPartyId: partyIdParam })
 
   const title = form.type === 'PAYMENT_IN' ? t.recordPaymentIn : t.recordPaymentOut
 
   return (
-    <AppShell>
-      <Header title={title} backTo={ROUTES.PAYMENTS} />
-
-      <PageContainer variant="form" className="stagger-enter space-y-6">
-        <PaymentFormSections
-          form={form}
-          errors={errors}
-          updateField={updateField}
-          updateMode={updateMode}
-          toggleAllocation={toggleAllocation}
-          updateAllocationAmount={updateAllocationAmount}
-          autoAllocate={autoAllocate}
-          toggleDiscount={toggleDiscount}
-          updateDiscount={updateDiscount}
-        />
-      </PageContainer>
-
-      <BottomActionBar>
+    <FormPageShell
+      title={title}
+      backTo={ROUTES.PAYMENTS}
+      onSubmit={(e) => {
+        e.preventDefault()
+        handleSubmit()
+      }}
+      footer={
         <Button
           type="button"
           variant="primary"
@@ -61,7 +49,19 @@ export default function RecordPaymentPage() {
         >
           {isSubmitting ? t.saving : t.savePaymentBtn}
         </Button>
-      </BottomActionBar>
-    </AppShell>
+      }
+    >
+      <PaymentFormSections
+        form={form}
+        errors={errors}
+        updateField={updateField}
+        updateMode={updateMode}
+        toggleAllocation={toggleAllocation}
+        updateAllocationAmount={updateAllocationAmount}
+        autoAllocate={autoAllocate}
+        toggleDiscount={toggleDiscount}
+        updateDiscount={updateDiscount}
+      />
+    </FormPageShell>
   )
 }

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useDebounce } from '@/hooks/useDebounce'
 import { getParties } from '@/lib/services/party.service'
+import { getParty } from '@/features/parties/party.service'
 import type { PartySummary } from '@/lib/types/party.types'
 import { PartySearchField } from './PartySearchField'
 import { PartySearchDropdown } from './PartySearchDropdown'
@@ -39,6 +40,27 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const abortRef = useRef<AbortController | null>(null)
+
+  // ─── Fetch party name when initial/prop value is set ─────────────────────
+
+  useEffect(() => {
+    if (!value) {
+      setSelectedName('')
+      return
+    }
+    if (selectedName) return
+
+    const controller = new AbortController()
+    getParty(value, controller.signal)
+      .then((p) => {
+        if (p?.name) setSelectedName(p.name)
+      })
+      .catch(() => {
+        // Fallback gracefully
+      })
+
+    return () => controller.abort()
+  }, [value, selectedName])
 
   // ─── Fetch results when debounced query changes ──────────────────────────
 

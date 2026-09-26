@@ -36,6 +36,8 @@ interface UsePaymentFormOptions {
   payment?: PaymentDetail | null
   /** Default direction when creating a new payment. Defaults to 'PAYMENT_IN'. */
   defaultType?: PaymentType
+  /** Default party ID pre-selected when creating a new payment. */
+  defaultPartyId?: string
 }
 
 // ─── Return type ──────────────────────────────────────────────────────────────
@@ -62,6 +64,7 @@ export interface UsePaymentFormReturn {
 export function usePaymentForm({
   payment = null,
   defaultType = 'PAYMENT_IN',
+  defaultPartyId = '',
 }: UsePaymentFormOptions = {}): UsePaymentFormReturn {
   const navigate = useNavigate()
   const toast = useToast()
@@ -71,7 +74,7 @@ export function usePaymentForm({
   const isEditMode = payment !== null
 
   const [form, setForm] = useState<PaymentFormData>(() =>
-    payment !== null ? buildFormFromPayment(payment) : buildInitialForm(defaultType),
+    payment !== null ? buildFormFromPayment(payment) : buildInitialForm(defaultType, defaultPartyId),
   )
   const [errors, setErrors] = useState<Record<string, string>>({})
 

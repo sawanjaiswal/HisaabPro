@@ -17,10 +17,10 @@ import { autoAllocateFIFO } from './payment.utils'
 
 // ─── Initial form state ────────────────────────────────────────────────────────
 
-export function buildInitialForm(type: PaymentType): PaymentFormData {
+export function buildInitialForm(type: PaymentType, partyId: string = ''): PaymentFormData {
   return {
     type,
-    partyId: '',
+    partyId,
     amount: 0,
     date: toLocalISODate(new Date()),
     mode: 'CASH',
