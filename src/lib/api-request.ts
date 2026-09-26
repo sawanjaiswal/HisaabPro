@@ -21,6 +21,8 @@ const NON_REFRESHABLE_AUTH_PATHS = [
   '/auth/register',
   '/auth/verify-registration',
   '/auth/verify-otp',
+  '/auth/sso',
+  '/auth/csrf-token',
 ]
 
 export function isNonRefreshableAuthPath(path: string): boolean {

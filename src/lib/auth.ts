@@ -18,10 +18,13 @@ export function warmupServer(): void {
  * Only the cached user is stored in sessionStorage for offline-first UX.
  */
 
+import { invalidateCsrfToken } from './api-csrf'
+
 /** Clear all client-side auth data (cached user only — cookies cleared by server) */
 export function clearAuth() {
   sessionStorage.removeItem('cachedUser')
   sessionStorage.removeItem('cachedBusinesses')
+  invalidateCsrfToken()
   // Drop the offline read cache too — the next user signing in on this
   // device must not see the previous user's PII (parties, balances, etc.).
   void clearApiCache()
