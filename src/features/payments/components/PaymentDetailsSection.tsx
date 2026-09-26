@@ -175,7 +175,7 @@ export function PaymentDetailsSection({
                 key={m}
                 type="button"
                 variant="none"
-                className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-2xl transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${
+                className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-[8px] transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${
                   isSelected
                     ? 'bg-[#E8F5E9] border-2 border-[#026F39]'
                     : 'bg-slate-100/90 hover:bg-slate-200/80 border-0'
@@ -214,7 +214,7 @@ export function PaymentDetailsSection({
                 key={m}
                 type="button"
                 variant="none"
-                className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-2xl transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${
+                className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-[8px] transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${
                   isSelected
                     ? 'bg-[#E8F5E9] border-2 border-[#026F39]'
                     : 'bg-slate-100/90 hover:bg-slate-200/80 border-0'
