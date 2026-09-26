@@ -251,11 +251,11 @@ export function PaymentDetailsSection({
       </div>
 
       {/* ── 4. Date & Details ─────────────────────────────────────────── */}
-      <div className="space-y-4">
+      <div className="space-y-3.5">
         {/* Date Row */}
         <div>
           <label
-            className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5 flex items-center gap-1.5"
+            className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1 flex items-center gap-1.5"
             htmlFor="payment-date"
           >
             <Calendar className="w-3.5 h-3.5 text-[#026F39]" />
@@ -265,7 +265,7 @@ export function PaymentDetailsSection({
           <DateField
             id="payment-date"
             type="date"
-            className="w-full bg-slate-100/90 border-0 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20"
+            className="w-full bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20"
             value={date}
             onChange={(e) => onDateChange(e.target.value)}
             aria-label={t.paymentDate2}
@@ -276,7 +276,7 @@ export function PaymentDetailsSection({
         {showReference && (
           <div>
             <label
-              className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5 flex items-center gap-1.5"
+              className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1 flex items-center gap-1.5"
               htmlFor="payment-ref"
             >
               <Hash className="w-3.5 h-3.5 text-[#026F39]" />
@@ -285,7 +285,7 @@ export function PaymentDetailsSection({
             <Input
               id="payment-ref"
               type="text"
-              className="w-full bg-slate-100/90 border-0 rounded-xl px-4 py-3 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20"
+              className="w-full bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20"
               placeholder={getReferencePlaceholder(mode)}
               value={referenceNumber}
               onChange={(e) => onReferenceChange(e.target.value)}
@@ -298,7 +298,7 @@ export function PaymentDetailsSection({
         {/* Notes Row */}
         <div>
           <label
-            className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5 flex items-center gap-1.5"
+            className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1 flex items-center gap-1.5"
             htmlFor="payment-notes"
           >
             <FileText className="w-3.5 h-3.5 text-[#026F39]" />
@@ -306,7 +306,7 @@ export function PaymentDetailsSection({
           </label>
           <Textarea
             id="payment-notes"
-            className="w-full text-sm bg-slate-100/90 border-0 rounded-xl p-3.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900"
+            className="w-full text-sm bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900 placeholder:text-slate-400"
             rows={2}
             placeholder="Add a note (optional)..."
             value={notes}
