@@ -51,9 +51,11 @@
 :root:has(.hp-hero-page) .notif-bell:hover,
 :root:has(.hp-hero-page) .header-actions .btn:hover:not(:disabled),
 :root:has(.hp-hero-page) .header-actions .btn-ghost:hover:not(:disabled),
-:root:has(.hp-hero-page) .header-actions button:hover:not(:disabled) {
-  background: var(--overlay-white-12, rgba(255, 255, 255, 0.12));
-  color: var(--color-white-inverse);
+:root:has(.hp-hero-page) .header-actions button:hover:not(:disabled),
+:root:has(.hp-hero-page) .header-back:hover:not(:disabled),
+:root:has(.hp-hero-page) .header button:hover:not(:disabled) {
+  background: var(--overlay-white-15, rgba(255, 255, 255, 0.15)) !important;
+  color: var(--color-white-inverse) !important;
 }
 
 :root:has(.hp-hero-page) .header-icon-btn:active,
@@ -62,17 +64,11 @@
 :root:has(.hp-hero-page) .notif-bell:active,
 :root:has(.hp-hero-page) .header-actions .btn:active:not(:disabled),
 :root:has(.hp-hero-page) .header-actions .btn-ghost:active:not(:disabled),
-:root:has(.hp-hero-page) .header-actions button:active:not(:disabled) {
-  background: var(--overlay-white-20, rgba(255, 255, 255, 0.2));
-  color: var(--color-white-inverse);
-}
-
-:root:has(.hp-hero-page) .header-back:hover {
-  background: var(--overlay-white-12, rgba(255, 255, 255, 0.12));
-}
-
-:root:has(.hp-hero-page) .header-back:active {
-  background: var(--overlay-white-20, rgba(255, 255, 255, 0.2));
+:root:has(.hp-hero-page) .header-actions button:active:not(:disabled),
+:root:has(.hp-hero-page) .header-back:active:not(:disabled),
+:root:has(.hp-hero-page) .header button:active:not(:disabled) {
+  background: var(--overlay-white-20, rgba(255, 255, 255, 0.2)) !important;
+  color: var(--color-white-inverse) !important;
 }
 
 :root:has(.hp-hero-page) .header-brand:hover {

@@ -67,7 +67,7 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({
     >
       <div className="pdh-top">
         <Button
-          variant="ghost"
+          variant="none"
           className="pdh-back"
           onClick={onBack}
           aria-label={t.goBack}

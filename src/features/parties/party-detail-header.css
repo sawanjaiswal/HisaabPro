@@ -55,10 +55,17 @@
   border-radius: var(--radius-full);
   color: var(--color-white-inverse);
   background: transparent;
+  transition: background var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
 }
 
-.header--party-detail .pdh-back:active {
-  background: var(--overlay-white-15);
+.header--party-detail .pdh-back:hover:not(:disabled) {
+  background: var(--overlay-white-15) !important;
+  color: var(--color-white-inverse) !important;
+}
+
+.header--party-detail .pdh-back:active:not(:disabled) {
+  background: var(--overlay-white-20) !important;
+  color: var(--color-white-inverse) !important;
 }
 
 /* Name + status pill share the middle, name truncates first */
@@ -198,10 +205,17 @@
   color: var(--color-white-inverse);
   background: transparent;
   border: none;
+  transition: background var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
 }
 
-.header--party-detail .pdh-icon-btn:active {
-  background: var(--overlay-white-15);
+.header--party-detail .pdh-icon-btn:hover:not(:disabled) {
+  background: var(--overlay-white-15) !important;
+  color: var(--color-white-inverse) !important;
+}
+
+.header--party-detail .pdh-icon-btn:active:not(:disabled) {
+  background: var(--overlay-white-20) !important;
+  color: var(--color-white-inverse) !important;
 }
 
 .pdh-icon-label {

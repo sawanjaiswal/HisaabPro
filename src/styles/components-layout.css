@@ -116,11 +116,27 @@
   cursor: pointer;
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
-  transition: background var(--duration-fast) var(--ease-default);
+  transition: background var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
+}
+
+.header-back:hover {
+  background: var(--color-gray-100);
+  color: var(--color-gray-900);
 }
 
 .header-back:active {
-  background: var(--color-gray-100);
+  background: var(--color-gray-200);
+  color: var(--color-gray-900);
+}
+
+[data-theme="dark"] .header-back:hover {
+  background: var(--color-gray-200);
+  color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .header-back:active {
+  background: var(--color-gray-300);
+  color: var(--color-gray-100);
 }
 
 .header-title {
@@ -146,7 +162,8 @@
  * Used on detail pages (party/customer, invoice, product) so the identity of
  * the record sits on the brand hero colour — matches the Customer Details
  * mockup. Foreground is white in BOTH themes because the surface is dark. */
-.header--emerald {
+.header--emerald,
+.header--party-detail {
   background: var(--color-hero-surface);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -154,16 +171,63 @@
   color: var(--color-white-inverse);
 }
 
-.header--emerald .header-back {
+.header--emerald .header-back,
+.header--party-detail .pdh-back,
+.header--emerald .header-icon-btn,
+.header--party-detail .pdh-icon-btn,
+.header--emerald .notif-bell,
+.header--emerald .sync-badge-btn,
+.header--emerald .sync-icon-btn,
+.header--emerald button,
+.header--party-detail button,
+.header--emerald .btn,
+.header--party-detail .btn,
+.header--emerald .btn-ghost,
+.header--party-detail .btn-ghost {
+  background: transparent;
   color: var(--color-white-inverse);
+  box-shadow: none;
+  transition: background var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
 }
 
-.header--emerald .header-back:hover {
-  background: var(--overlay-white-12);
+.header--emerald .header-back:hover:not(:disabled),
+.header--party-detail .pdh-back:hover:not(:disabled),
+.header--emerald .header-icon-btn:hover:not(:disabled),
+.header--party-detail .pdh-icon-btn:hover:not(:disabled),
+.header--emerald .notif-bell:hover:not(:disabled),
+.header--emerald .sync-badge-btn:hover:not(:disabled),
+.header--emerald .sync-icon-btn:hover:not(:disabled),
+.header--emerald .header-actions button:hover:not(:disabled),
+.header--emerald .header-actions .btn:hover:not(:disabled),
+.header--emerald .header-actions .btn-ghost:hover:not(:disabled),
+.header--emerald button:hover:not(:disabled),
+.header--party-detail button:hover:not(:disabled),
+.header--emerald .btn:hover:not(:disabled),
+.header--party-detail .btn:hover:not(:disabled),
+.header--emerald .btn-ghost:hover:not(:disabled),
+.header--party-detail .btn-ghost:hover:not(:disabled) {
+  background: var(--overlay-white-15) !important;
+  color: var(--color-white-inverse) !important;
 }
 
-.header--emerald .header-back:active {
-  background: var(--overlay-white-20);
+.header--emerald .header-back:active:not(:disabled),
+.header--party-detail .pdh-back:active:not(:disabled),
+.header--emerald .header-icon-btn:active:not(:disabled),
+.header--party-detail .pdh-icon-btn:active:not(:disabled),
+.header--emerald .notif-bell:active:not(:disabled),
+.header--emerald .sync-badge-btn:active:not(:disabled),
+.header--emerald .sync-icon-btn:active:not(:disabled),
+.header--emerald .header-actions button:active:not(:disabled),
+.header--emerald .header-actions .btn:active:not(:disabled),
+.header--emerald .header-actions .btn-ghost:active:not(:disabled),
+.header--emerald button:active:not(:disabled),
+.header--party-detail button:active:not(:disabled),
+.header--emerald .btn:active:not(:disabled),
+.header--party-detail .btn:active:not(:disabled),
+.header--emerald .btn-ghost:active:not(:disabled),
+.header--party-detail .btn-ghost:active:not(:disabled) {
+  background: var(--overlay-white-20) !important;
+  color: var(--color-white-inverse) !important;
 }
 
 .header--emerald .header-brand:hover {
@@ -188,44 +252,7 @@
   color: var(--color-white-inverse);
 }
 
-/* Action-row icons (bell, sync, menu, overflow) inherit white on the hero
- * surface. Neutralise the light glass pill so icons sit flush like the mockup;
- * pressed feedback uses a white overlay instead of a grey fill. */
 .header--emerald .header-actions {
-  color: var(--color-white-inverse);
-}
-
-.header--emerald .header-icon-btn,
-.header--emerald .notif-bell,
-.header--emerald .sync-badge-btn,
-.header--emerald .sync-icon-btn,
-.header--emerald .header-actions .btn,
-.header--emerald .header-actions .btn-ghost,
-.header--emerald .header-actions button {
-  background: transparent;
-  color: var(--color-white-inverse);
-  box-shadow: none;
-}
-
-.header--emerald .header-icon-btn:hover,
-.header--emerald .notif-bell:hover,
-.header--emerald .sync-badge-btn:hover,
-.header--emerald .sync-icon-btn:hover,
-.header--emerald .header-actions .btn:hover:not(:disabled),
-.header--emerald .header-actions .btn-ghost:hover:not(:disabled),
-.header--emerald .header-actions button:hover:not(:disabled) {
-  background: var(--overlay-white-12);
-  color: var(--color-white-inverse);
-}
-
-.header--emerald .header-icon-btn:active,
-.header--emerald .notif-bell:active,
-.header--emerald .sync-badge-btn:active,
-.header--emerald .sync-icon-btn:active,
-.header--emerald .header-actions .btn:active:not(:disabled),
-.header--emerald .header-actions .btn-ghost:active:not(:disabled),
-.header--emerald .header-actions button:active:not(:disabled) {
-  background: var(--overlay-white-20);
   color: var(--color-white-inverse);
 }
 

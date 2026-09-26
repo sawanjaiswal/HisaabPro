@@ -39,39 +39,60 @@
 
 .btn-secondary {
   background: transparent;
-  color: var(--color-primary-500);
-  border: 1.5px solid var(--color-primary-100);
+  color: var(--color-primary-600);
+  border: 1.5px solid var(--color-primary-200);
 }
-.btn-secondary:hover:not(:disabled) { background: var(--color-primary-50); }
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-300);
+}
+.btn-secondary:active:not(:disabled) { background: var(--color-primary-100); }
 
 .btn-outline {
   background: transparent;
-  color: var(--color-primary-500);
+  color: var(--color-primary-600);
   border: 1.5px solid var(--color-primary-500);
 }
-.btn-outline:hover:not(:disabled) { background: var(--color-primary-50); }
+.btn-outline:hover:not(:disabled) {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-600);
+}
+.btn-outline:active:not(:disabled) { background: var(--color-primary-100); }
 
 .btn-destructive {
   background: var(--color-error-500);
   color: var(--color-white-inverse);
 }
-.btn-destructive:hover:not(:disabled) { background: var(--color-error-700); }
+.btn-destructive:hover:not(:disabled) { background: var(--color-error-600); }
+.btn-destructive:active:not(:disabled) { background: var(--color-error-700); }
 
 /* Destructive intent without destructive weight — a red-outlined action that
  * sits in a row of neutral ones (detail-page "Delete customer") and must not
  * out-shout the primary CTA beside it the way a filled red button does. */
 .btn-outline-destructive {
   background: transparent;
-  color: var(--color-error-500);
-  border: 1.5px solid var(--color-error-500);
+  color: var(--color-error-600);
+  border: 1.5px solid var(--color-error-300);
 }
-.btn-outline-destructive:hover:not(:disabled) { background: var(--color-error-50); }
+.btn-outline-destructive:hover:not(:disabled) {
+  background: var(--color-error-50);
+  border-color: var(--color-error-500);
+  color: var(--color-error-700);
+}
+.btn-outline-destructive:active:not(:disabled) { background: var(--color-error-100); }
 
 .btn-ghost {
   background: transparent;
-  color: var(--color-gray-600);
+  color: var(--color-gray-700);
 }
-.btn-ghost:hover:not(:disabled) { background: var(--color-gray-100); }
+.btn-ghost:hover:not(:disabled) {
+  background: var(--color-gray-100);
+  color: var(--color-gray-900);
+}
+.btn-ghost:active:not(:disabled) {
+  background: var(--color-gray-200);
+  color: var(--color-gray-900);
+}
 
 /* === INPUTS — NexoWallet style === */
 .input-group { display: flex; flex-direction: column; gap: var(--space-1); }
@@ -237,8 +258,20 @@
 }
 
 /* Interactive card press feedback */
-.card[role="button"] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.card[role="button"]:active { transform: scale(0.98); }
+.card[role="button"],
+.card-accent[role="button"] {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
+}
+.card[role="button"]:hover,
+.card-accent[role="button"]:hover {
+  box-shadow: var(--shadow-md);
+}
+.card[role="button"]:active,
+.card-accent[role="button"]:active {
+  transform: scale(0.99);
+}
 
 /* Accent card — the lime-yellow highlight cards */
 .card-accent {
@@ -282,12 +315,19 @@
   align-items: center;
   justify-content: center;
   background: var(--color-primary-50);
-  color: var(--color-primary-400);
+  color: var(--color-primary-600);
   border-radius: var(--radius-md);
-  transition: background var(--duration-fast) var(--ease-default);
+  transition: background var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
 }
 
-.action-item:active .action-icon { background: var(--color-primary-100); }
+.action-item:hover .action-icon {
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
+}
+
+.action-item:active .action-icon {
+  background: var(--color-primary-200);
+}
 
 .action-label {
   font-size: var(--fs-xs);
@@ -328,7 +368,8 @@
 
 .pill-tab:hover:not(.active) {
   border-color: var(--color-primary-300);
-  color: var(--color-primary-500);
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
 }
 
 .pill-tab:active:not(.active) {
