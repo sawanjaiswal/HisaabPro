@@ -29,7 +29,7 @@ function NavTab({ to, icon: Icon, label, end }: NavItem) {
         {({ isActive }) => (
           <>
             <span className="bnav__icon">
-              <Icon size={24} strokeWidth={isActive ? 2.25 : 1.9} aria-hidden="true" />
+              <Icon size={20} strokeWidth={isActive ? 2.2 : 1.85} aria-hidden="true" />
             </span>
             <span className="bnav__label">{label}</span>
           </>
@@ -89,7 +89,7 @@ export function BottomNav() {
               title={t.createInvoice ?? 'Create new invoice'}
             >
               <span className="bnav__icon bnav__icon--create">
-                <Plus size={26} strokeWidth={2.5} aria-hidden="true" />
+                <Plus size={22} strokeWidth={2.4} aria-hidden="true" />
               </span>
               <span className="bnav__label">{t.create ?? 'Create'}</span>
             </button>
@@ -103,7 +103,7 @@ export function BottomNav() {
               aria-label={t.menu ?? 'More'}
             >
               <span className="bnav__icon">
-                <Menu size={24} strokeWidth={1.9} aria-hidden="true" />
+                <Menu size={20} strokeWidth={1.85} aria-hidden="true" />
               </span>
               <span className="bnav__label">{t.menu ?? 'More'}</span>
             </button>
