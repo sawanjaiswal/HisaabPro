@@ -17,7 +17,7 @@
  */
 
 :root {
-  --bnav-h: 64px;
+  --bnav-h: 68px;
 }
 
 .bnav {
@@ -28,11 +28,9 @@
   height: calc(var(--bnav-h) + var(--safe-area-inset-bottom, 0px));
   padding-bottom: var(--safe-area-inset-bottom, 0px);
 
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-top: 1px solid rgba(226, 232, 240, 0.7);
-  box-shadow: 0 -4px 20px -2px rgba(0, 0, 0, 0.03);
+  background: #ffffff;
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
 
   animation: bnavSlideUp 0.3s var(--ease-spring);
 }
@@ -72,14 +70,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 8px; /* 8px gap between icon and page name text */
   padding: 6px 2px;
   text-decoration: none;
   color: #64748b;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: -0.01em;
-  line-height: 1.1;
+  line-height: 1;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -106,26 +104,31 @@
   font-weight: 600;
 }
 
+/* Green rounded underline centered beneath the active tab */
+.bnav__tab--active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: #026F39;
+}
+
 .bnav__icon {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 12px;
-  border-radius: 14px;
-  transition: background-color 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s ease, color 0.15s ease;
+  width: 24px;
+  height: 24px;
+  transition: transform 0.15s ease, color 0.15s ease;
 }
 
 .bnav__tab--active .bnav__icon {
-  background: rgba(2, 111, 57, 0.09);
   color: #026F39;
-  animation: tab-pop 250ms var(--ease-spring) both;
-}
-
-@keyframes tab-pop {
-  0%   { transform: scale(1); }
-  45%  { transform: scale(1.12); }
-  100% { transform: scale(1); }
 }
 
 .bnav__label {
@@ -133,6 +136,8 @@
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 100%;
+  font-size: 11px;
+  line-height: 1;
   transition: color 0.15s ease, font-weight 0.15s ease;
 }
 
