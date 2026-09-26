@@ -44,8 +44,8 @@
   --space-12: 3rem;      /* 48px */
 
   /* Spacing — semantic layer (USE THESE, not raw --space-* in feature CSS) */
-  --gap-section:   var(--space-6);  /* 24px between page sections */
-  --gap-field:     var(--space-4);  /* 16px between form fields */
+  --gap-section:   var(--space-8);  /* 32px between page sections */
+  --gap-field:     var(--space-6);  /* 24px between form fields */
   --gap-inline:    var(--space-2);  /* 8px chip / inline / label-value */
   --pad-page-x:    var(--space-4);  /* 16px page horizontal padding */
   --pad-card:      var(--space-5);  /* 20px standard card interior */

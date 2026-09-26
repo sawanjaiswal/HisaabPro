@@ -253,7 +253,7 @@
 /* ─── TabsContent ──────────────────────────────────────────────────────── */
 
 .ui-tabs-content {
-  margin-top: var(--space-4);
+  margin-top: var(--gap-field);
   outline: none;
 }
 
