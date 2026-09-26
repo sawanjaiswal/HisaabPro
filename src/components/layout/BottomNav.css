@@ -28,9 +28,11 @@
   height: calc(var(--bnav-h) + var(--safe-area-inset-bottom, 0px));
   padding-bottom: var(--safe-area-inset-bottom, 0px);
 
-  background: var(--color-gray-0);
-  border-top: 1px solid var(--color-gray-100);
-  box-shadow: var(--shadow-subtle);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgba(226, 232, 240, 0.7);
+  box-shadow: 0 -4px 20px -2px rgba(0, 0, 0, 0.03);
 
   animation: bnavSlideUp 0.3s var(--ease-spring);
 }
@@ -50,8 +52,7 @@
   align-items: stretch;
 }
 
-/* Active-tab underline is rendered by `.bnav__tab--active::after` (centers
- * under the label naturally), so the JS-positioned indicator span is unused. */
+/* Indicators handled via active tab states */
 .bnav__indicator {
   display: none;
 }
@@ -71,14 +72,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 6px 4px;
+  gap: 3px;
+  padding: 6px 2px;
   text-decoration: none;
   color: #64748b;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: -0.01em;
-  line-height: 1;
+  line-height: 1.1;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -87,7 +88,7 @@
 }
 
 .bnav__tab:hover {
-  color: #334155;
+  color: #1e293b;
 }
 
 .bnav__tab:focus-visible {
@@ -97,7 +98,7 @@
 }
 
 .bnav__tab:active {
-  transform: scale(0.94);
+  transform: scale(0.95);
 }
 
 .bnav__tab--active {
@@ -105,34 +106,26 @@
   font-weight: 600;
 }
 
-/* Green rounded indicator centered beneath the active label. */
-.bnav__tab--active::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 20px;
-  height: 2.5px;
-  border-radius: var(--radius-full);
-  background: #026F39;
-}
-
-.bnav__tab--active .bnav__icon {
-  animation: tab-pop 200ms var(--ease-spring) both;
-}
-
-@keyframes tab-pop {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.15); }
-  100% { transform: scale(1); }
-}
-
 .bnav__icon {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 3px 12px;
+  border-radius: 14px;
+  transition: background-color 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s ease, color 0.15s ease;
+}
+
+.bnav__tab--active .bnav__icon {
+  background: rgba(2, 111, 57, 0.09);
+  color: #026F39;
+  animation: tab-pop 250ms var(--ease-spring) both;
+}
+
+@keyframes tab-pop {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
 }
 
 .bnav__label {
@@ -140,19 +133,20 @@
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 100%;
+  transition: color 0.15s ease, font-weight 0.15s ease;
 }
 
-/* Create tab — solid-green circular FAB, lifted so it rises above the bar's
- * top edge. No label under it. */
+/* Create tab — modern lifted circular FAB with white isolation ring */
 .bnav__icon--create {
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
   border-radius: var(--radius-full);
-  background: linear-gradient(145deg, #038344 0%, #026F39 100%);
+  background: linear-gradient(135deg, #038344 0%, #026F39 60%, #01582c 100%);
   color: #ffffff;
-  transform: translateY(-12px);
-  box-shadow: 0 8px 20px -4px rgba(2, 111, 57, 0.42), inset 0 1px 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-13px);
+  box-shadow: 0 10px 24px -4px rgba(2, 111, 57, 0.44), 0 0 0 4px #ffffff, inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);
   transition: transform 0.18s var(--ease-spring), box-shadow 0.18s ease;
+  padding: 0;
 }
 
 /* The lifted FAB leaves a gap where the label would sit; collapse the cell's
@@ -169,11 +163,13 @@
 }
 
 .bnav__tab--create:hover .bnav__icon--create {
-  transform: translateY(-12px) scale(1.05);
+  transform: translateY(-13px) scale(1.06);
+  box-shadow: 0 12px 28px -4px rgba(2, 111, 57, 0.52), 0 0 0 4px #ffffff, inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .bnav__tab--create:active .bnav__icon--create {
-  transform: translateY(-12px) scale(0.93);
+  transform: translateY(-13px) scale(0.92);
+  box-shadow: 0 6px 16px -2px rgba(2, 111, 57, 0.4), 0 0 0 4px #ffffff;
 }
 
 /* Reserve page space so content never hides behind the bar.
