@@ -9,7 +9,7 @@ export async function startNativeSso(provider: SsoProvider = 'google'): Promise<
 
 export async function exchangeNativeSso(
   provider: SsoProvider = 'google',
-  body: { idToken: string; sealedTx?: string; nonce?: string },
+  body: { idToken?: string; accessToken?: string; sealedTx?: string; nonce?: string },
 ): Promise<SsoAuthResponse> {
   return api<SsoAuthResponse>(`/auth/sso/${provider}/exchange-native`, {
     method: 'POST',
