@@ -29,9 +29,8 @@
   body {
     font-family: var(--font-primary);
     color: var(--color-gray-800);
-    /* 1% cool blue off-white background (#EFF3F8 / #F1F5F9) for sharp white card contrast */
+    /* Warm cream -> white gradient — HisaabPro signature background */
     background: linear-gradient(180deg, var(--color-cream-start) 0%, var(--color-cream-mid) 40%, var(--color-cream-end) 100%);
-    background-color: var(--color-cream-start);
     background-attachment: fixed;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
@@ -111,8 +110,10 @@ textarea:focus-visible {
   padding: var(--space-4) var(--side-padding) calc(var(--bottom-nav-height) + var(--space-4));
   max-width: 1200px;
   margin: 0 auto;
-  background: transparent;
+  background: var(--color-gray-0);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   min-height: calc(100dvh - 56px - var(--bottom-nav-height));
+  box-shadow: var(--shadow-drawer-inset);
   position: relative;
   animation: drawer-rise 220ms var(--ease-spring) both;
 }
