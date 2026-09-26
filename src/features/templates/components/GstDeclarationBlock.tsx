@@ -13,6 +13,7 @@
  * GST Phase 2 / PR 5
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import {
   STANDARD_GST_DECLARATION,
@@ -66,7 +67,7 @@ export const GstDeclarationBlock: React.FC<GstDeclarationBlockProps> = ({
       aria-hidden="true"
     >
       {paragraphs.map((para, idx) => (
-        <p
+        <Text
           key={idx}
           style={{
             fontSize: '0.75rem',
@@ -77,7 +78,7 @@ export const GstDeclarationBlock: React.FC<GstDeclarationBlockProps> = ({
           }}
         >
           {para}
-        </p>
+        </Text>
       ))}
     </div>
   )

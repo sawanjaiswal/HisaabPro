@@ -1,5 +1,6 @@
 /** POS — Single sale detail with void/restore + receipt preview */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
@@ -14,6 +15,7 @@ import { VoidModal } from '../components/void/VoidModal'
 import { ReceiptPreview } from '../components/receipt/ReceiptPreview'
 import { paiseToInr, formatDisplayDate, formatDisplayTime } from '../utils/pos.format'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 export default function PosSaleDetailPage() {
   const { id }    = useParams<{ id: string }>()
@@ -87,7 +89,7 @@ export default function PosSaleDetailPage() {
 
           {/* Items */}
           <section className="pos-detail-section">
-            <h2 className="pos-detail-section__title">{t.posItems ?? 'Items'}</h2>
+            <Heading level={2} className="pos-detail-section__title">{t.posItems ?? 'Items'}</Heading>
             <ul className="pos-detail-items">
               {sale.items.map((item) => (
                 <li key={item.id} className="pos-detail-item">
@@ -101,7 +103,7 @@ export default function PosSaleDetailPage() {
 
           {/* Payments */}
           <section className="pos-detail-section">
-            <h2 className="pos-detail-section__title">{t.posPayments ?? 'Payments'}</h2>
+            <Heading level={2} className="pos-detail-section__title">{t.posPayments ?? 'Payments'}</Heading>
             {sale.paymentBreakdown.map((p, i) => (
               <div key={i} className="pos-detail-row">
                 <span>{p.mode}</span>
@@ -113,9 +115,9 @@ export default function PosSaleDetailPage() {
           {/* Void reason */}
           {sale.voidReason && (
             <section className="pos-detail-section pos-detail-section--voided">
-              <p className="pos-detail-void-reason">
+              <Text className="pos-detail-void-reason">
                 <strong>{t.posVoidReason ?? 'Void reason'}:</strong> {sale.voidReason}
-              </p>
+              </Text>
             </section>
           )}
 

@@ -1,5 +1,6 @@
 /** EWayBillCard — EWB status display, generate/cancel/update-PartB triggers */
 
+import { Text } from '@/components/ui/Text'
 import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate } from '@/lib/format'
@@ -8,6 +9,7 @@ import { EWayBillGenerateForm } from './EWayBillGenerateForm'
 import { EWayBillPartBForm } from './EWayBillPartBForm'
 import { ComplianceCancelForm } from './ComplianceCancelForm'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface EWayBillCardProps {
   status: EWayBillStatus | null
@@ -43,8 +45,8 @@ export const EWayBillCard: React.FC<EWayBillCardProps> = ({
     <div className="compliance-card">
       <div className="compliance-card-header">
         <div className="compliance-card-title-group">
-          <h2 className="compliance-card-title">{t.eWayBill}</h2>
-          <p className="compliance-card-subtitle">{t.ewbSubtitle}</p>
+          <Heading level={2} className="compliance-card-title">{t.eWayBill}</Heading>
+          <Text className="compliance-card-subtitle">{t.ewbSubtitle}</Text>
         </div>
         <span
           className={`compliance-badge ${isPending ? 'compliance-badge-pending' : isGenerated ? 'compliance-badge-generated' : 'compliance-badge-cancelled'}`}
@@ -55,7 +57,7 @@ export const EWayBillCard: React.FC<EWayBillCardProps> = ({
         </span>
       </div>
 
-      {error && <p className="compliance-inline-error" role="alert">{error}</p>}
+      {error && <Text className="compliance-inline-error" role="alert">{error}</Text>}
 
       {isGenerated && status && (
         <div className="compliance-details" aria-label={t.ewbDetails}>

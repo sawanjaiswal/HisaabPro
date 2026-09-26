@@ -9,6 +9,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatPaise } from '@/lib/format'
 import type { CashFlowData } from '../finance.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface StatementRow {
   key: string
@@ -35,7 +36,7 @@ function Group({
 }) {
   return (
     <div className="cf-group py-0">
-      <h2 className="cf-group__title">{title}</h2>
+      <Heading level={2} className="cf-group__title">{title}</Heading>
 
       <dl className="cf-group__rows">
         {rows.map((row) => (

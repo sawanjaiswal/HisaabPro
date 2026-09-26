@@ -5,6 +5,7 @@
  * Done invalidates relevant TanStack queries.
  */
 
+import { Text } from '@/components/ui/Text'
 import { CheckCircle2, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
@@ -12,6 +13,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useGstBackfillInvalidate } from '../useBackfill'
 import type { BackfillStatusRes } from '../gst-returns.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface Props {
   status: BackfillStatusRes
@@ -44,9 +46,9 @@ export function BackfillStep5Complete({ status }: Props) {
         )}
       </div>
 
-      <h2 className="bfw-complete-title">
+      <Heading level={2} className="bfw-complete-title">
         {status.status === 'FAILED' ? t.backfillFailedTitle : t.backfillCompleteTitle}
-      </h2>
+      </Heading>
 
       <div className="bfw-summary-card">
         <div className="bfw-summary-row">
@@ -63,7 +65,7 @@ export function BackfillStep5Complete({ status }: Props) {
 
       {status.errors.length > 0 && (
         <div className="bfw-error-list">
-          <p className="bfw-error-list-title">{t.backfillErrors}</p>
+          <Text className="bfw-error-list-title">{t.backfillErrors}</Text>
           <ul>
             {status.errors.slice(0, 20).map((e, i) => (
               <li key={i} className="bfw-error-item">
@@ -72,9 +74,9 @@ export function BackfillStep5Complete({ status }: Props) {
             ))}
           </ul>
           {status.errors.length > 20 && (
-            <p className="bfw-error-overflow">
+            <Text className="bfw-error-overflow">
               {t.backfillMoreErrors?.replace('{n}', String(status.errors.length - 20))}
-            </p>
+            </Text>
           )}
         </div>
       )}

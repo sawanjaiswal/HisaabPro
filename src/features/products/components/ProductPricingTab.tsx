@@ -7,6 +7,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductDetail } from '../product.types'
 import { formatProductPrice } from '../product.utils'
 import { ProductPricePreviewPanel } from './ProductPricePreviewPanel'
+import { Heading } from '@/components/ui/Heading'
 
 interface ProductPricingTabProps {
   product: ProductDetail
@@ -29,7 +30,7 @@ export function ProductPricingTab({ product }: ProductPricingTabProps) {
     <div className="space-y-6">
       <section className="pd-card pd-summary" aria-label={t.pricingSection}>
         <header className="pd-card__head">
-          <h3 className="pd-card__title">{t.pricingSection}</h3>
+          <Heading level={3} className="pd-card__title">{t.pricingSection}</Heading>
         </header>
         <ul className="pd-summary__list" role="list">
           {rows.map((r) => (

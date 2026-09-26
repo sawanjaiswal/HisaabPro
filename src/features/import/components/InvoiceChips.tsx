@@ -19,7 +19,7 @@ export function Chip({ label, tone }: { label: string; tone: ChipTone }) {
   const palette = chipPalette(tone)
   return (
     <span
-      className="inline-flex items-center px-2 py-0.5 rounded-[var(--radius-full)]"
+      className="inline-flex items-center px-2 py-0.5 rounded-full"
       style={{
         fontSize: 'var(--fs-xs)',
         color: palette.fg,

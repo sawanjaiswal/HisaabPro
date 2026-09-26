@@ -12,6 +12,7 @@ import type { ProductDetail } from '../product.types'
 import { getStockStatus } from '../product.utils'
 import { PartyAvatar } from '@/components/ui/PartyAvatar'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface ProductDetailHeaderProps {
   product: ProductDetail
@@ -52,7 +53,7 @@ export const ProductDetailHeader: React.FC<ProductDetailHeaderProps> = ({
       )}
 
       <div className="pd-identity__body">
-        <h2 className="pd-identity__name">{product.name}</h2>
+        <Heading level={2} className="pd-identity__name">{product.name}</Heading>
         <div className="pd-identity__sku">
           <span>{t.skuLabel}: {product.sku}</span>
           <Button variant="none" type="button" className="pd-identity__sku-btn" onClick={onBarcode} aria-label={t.barcodeAction}>

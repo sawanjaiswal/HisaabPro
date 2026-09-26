@@ -1,5 +1,6 @@
 /** CashflowTrendCard — Inline SVG bar chart for last 6 months total expenses */
 
+import { Text } from '@/components/ui/Text'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { RefreshCw, BarChart2 } from 'lucide-react'
@@ -107,7 +108,7 @@ export function CashflowTrendCard() {
         </div>
         <div className="trend-card__error-body">
           <BarChart2 size={24} aria-hidden="true" />
-          <p>Could not load</p>
+          <Text>Could not load</Text>
           <Button variant="none" type="button" className="trend-card__retry" onClick={() => query.refetch()}>
             <RefreshCw size={12} aria-hidden="true" /> Retry
           </Button>
@@ -124,7 +125,7 @@ export function CashflowTrendCard() {
         <div className="trend-card__header">
           <span className="trend-card__title">{title}</span>
         </div>
-        <p className="trend-card__empty-msg">No expenses recorded</p>
+        <Text className="trend-card__empty-msg">No expenses recorded</Text>
       </div>
     )
   }

@@ -16,7 +16,7 @@ export const THEME_VARIANT_OPTIONS: ThemeVariantOption[] = [
     id: 'classic',
     labelKey: 'themeVariantClassic',
     descKey: 'themeVariantClassicDesc',
-    swatch: ['#0B4F5E', '#E0EA49', '#F8F7F4'],
+    swatch: ['var(--color-primary-500)', 'var(--color-secondary-300)', '#F8F7F4'],
   },
   {
     id: 'modern',

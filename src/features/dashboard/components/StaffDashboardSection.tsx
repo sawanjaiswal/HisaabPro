@@ -13,15 +13,16 @@
 
 import { useLanguage } from '@/hooks/useLanguage'
 import { CommissionWidget } from '@/features/commission/components/CommissionWidget'
+import { Heading } from '@/components/ui/Heading'
 
 export function StaffDashboardSection() {
   const { t } = useLanguage()
 
   return (
     <section className="dashboard-staff-section" aria-labelledby="dashboard-staff-heading">
-      <h2 id="dashboard-staff-heading" className="dashboard-staff-section__heading">
+      <Heading level={2} id="dashboard-staff-heading" className="dashboard-staff-section__heading">
         {t.dashboardStaffSectionHeading}
-      </h2>
+      </Heading>
       <CommissionWidget className="dashboard-staff-section__widget" />
     </section>
   )

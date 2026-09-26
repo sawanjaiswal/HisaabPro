@@ -4,6 +4,7 @@
  * Teal card (received) + coral card (due) — lime card when all paid.
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { ChevronRight, ArrowDownLeft, Clock } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -27,9 +28,9 @@ export const InvoiceSummaryBar: React.FC<InvoiceSummaryBarProps> = ({
 
   return (
     <div className="summary-hero" role="list" aria-label={t.invoiceSummaryAriaLabel}>
-      <p className="summary-hero-count">
+      <Text className="summary-hero-count">
         {t.totalColon} <strong>{formatInvoiceAmount(totalAmount)}</strong>
-      </p>
+      </Text>
 
       <div className="summary-hero-cards">
         {/* Received — teal gradient */}

@@ -12,6 +12,7 @@
  * context.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Link } from 'react-router-dom'
 import { Card } from '@/components/ui/Card'
 import { ROUTES } from '@/config/routes.config'
@@ -43,16 +44,16 @@ export function ResumeInvoiceImportBanner({
     >
       <Link
         to={href}
-        className="font-semibold underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)] rounded-[var(--radius-sm)]"
+        className="font-semibold underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 rounded-sm"
         style={{ fontSize: 'var(--fs-md)', color: 'var(--color-primary-700)' }}
       >
         {'← '}
         {t.backToInvoiceImport ?? 'Back to invoice import'}
       </Link>
-      <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
         {t.backToInvoiceImportDesc ??
           'Return to the invoice import you started — your staged rows are still waiting.'}
-      </p>
+      </Text>
     </Card>
   )
 }

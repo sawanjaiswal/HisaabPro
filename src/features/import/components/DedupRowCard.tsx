@@ -11,6 +11,7 @@
  * inside <PageContainer>.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Card } from '@/components/ui/Card'
 import { formatPaise } from '@/lib/format'
 import {
@@ -57,7 +58,7 @@ export function DedupRowCard({ item, decision, onChange, t }: DedupRowCardProps)
           {t.importPreviewColRow ?? 'Row'} {row.sourceIndex + 1}
         </span>
         <span
-          className="inline-flex items-center rounded-[var(--radius-full)] px-2 py-0.5 font-medium"
+          className="inline-flex items-center rounded-full px-2 py-0.5 font-medium"
           style={{
             fontSize: 'var(--fs-xs)',
             backgroundColor: chipBg,
@@ -96,7 +97,7 @@ export function DedupRowCard({ item, decision, onChange, t }: DedupRowCardProps)
         {DEDUP_DECISIONS.map((d) => (
           <label
             key={d}
-            className="inline-flex items-center gap-2 min-h-[44px] cursor-pointer"
+            className="inline-flex items-center gap-2 min-h-11 cursor-pointer"
             style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
           >
             <Input
@@ -137,25 +138,25 @@ interface DedupSideProps {
 function DedupSide({ title, name, phone, balance, t }: DedupSideProps) {
   return (
     <div className="space-y-1">
-      <p
+      <Text
         className="font-medium"
         style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}
       >
         {title}
-      </p>
-      <p style={{ fontSize: 'var(--fs-base)', color: 'var(--color-text-primary)' }}>
+      </Text>
+      <Text style={{ fontSize: 'var(--fs-base)', color: 'var(--color-text-primary)' }}>
         {name}
-      </p>
-      <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      </Text>
+      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
         {phone}
-      </p>
+      </Text>
       {balance !== null && (
-        <p
+        <Text
           className="tabular-nums"
           style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}
         >
           {t.importPreviewColBalance ?? 'Balance'}: {balance}
-        </p>
+        </Text>
       )}
     </div>
   )

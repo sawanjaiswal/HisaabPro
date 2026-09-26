@@ -4,6 +4,7 @@
  * insufficient stock. Never a toast — the user needs to read and act on it.
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { Button } from '@/components/ui/Button'
 import { AlertTriangle, X } from 'lucide-react'
@@ -59,9 +60,9 @@ export const StockShortageBanner: React.FC<StockShortageBannerProps> = ({ items,
           <X size={16} aria-hidden="true" />
         </Button>
       </div>
-      <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-500)', marginTop: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
+      <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-500)', marginTop: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
         {headline}
-      </p>
+      </Text>
       <ul style={{ margin: 0, paddingLeft: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }} aria-label={t.errStockShortageTitle}>
         {items.map((item) => (
           <li key={item.productId} style={{ marginBottom: 'var(--space-1)' }}>
@@ -69,9 +70,9 @@ export const StockShortageBanner: React.FC<StockShortageBannerProps> = ({ items,
           </li>
         ))}
       </ul>
-      <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', marginTop: 'var(--space-2)' }}>
+      <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', marginTop: 'var(--space-2)' }}>
         {t.errStockShortageHint}
-      </p>
+      </Text>
     </div>
   )
 }

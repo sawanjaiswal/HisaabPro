@@ -1,5 +1,6 @@
 /** Toast Container — stacked notifications with countdown progress bar + undo */
 
+import { Text } from '@/components/ui/Text'
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react'
 import { useToastStore, TOAST_DURATION, type Toast } from '../../hooks/useToast'
 import './toast.css'
@@ -58,7 +59,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
             style={{ color: iconColor }}
             aria-hidden="true"
           />
-          <p className="toast-message">{toast.message}</p>
+          <Text className="toast-message">{toast.message}</Text>
           <div className="toast-actions">
             {toast.onUndo && (
               <button onClick={handleUndo} className="toast-undo" aria-label="Undo action">

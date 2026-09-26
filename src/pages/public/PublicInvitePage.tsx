@@ -5,6 +5,7 @@
  * 320px tested. No auth required.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useOutletContext, Link } from 'react-router-dom'
 import { Clock, Link2Off, CheckCircle, AlertCircle } from 'lucide-react'
@@ -20,6 +21,7 @@ import type { InvitePreview, InvitePageStatus } from '@/features/invite-claim/in
 import type { PublicLang }  from '@/features/public/hooks/usePublicLang'
 import './public-invite.css'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 // ─── Strings ─────────────────────────────────────────────────────────────────
 
@@ -154,26 +156,26 @@ export function PublicInvitePage() {
   if (status === 'expired') return (
     <div className="pub-invite-status" role="alert">
       <div className="pub-invite-status__icon pub-invite-status__icon--warn"><Clock size={28} /></div>
-      <p className="pub-invite-status__title">{s.inviteExpired}</p>
+      <Text className="pub-invite-status__title">{s.inviteExpired}</Text>
     </div>
   )
   if (status === 'revoked') return (
     <div className="pub-invite-status" role="alert">
       <div className="pub-invite-status__icon pub-invite-status__icon--warn"><Link2Off size={28} /></div>
-      <p className="pub-invite-status__title">{s.inviteRevoked}</p>
+      <Text className="pub-invite-status__title">{s.inviteRevoked}</Text>
     </div>
   )
   if (status === 'consumed') return (
     <div className="pub-invite-status" role="alert">
       <div className="pub-invite-status__icon pub-invite-status__icon--ok"><CheckCircle size={28} /></div>
-      <p className="pub-invite-status__title">{s.inviteAlreadyClaimed}</p>
+      <Text className="pub-invite-status__title">{s.inviteAlreadyClaimed}</Text>
       <Link to="/login" className="pub-invite-status__link">{s.inviteClaimRedirectToLogin}</Link>
     </div>
   )
   if (status === 'not-found' || status === 'error') return (
     <div className="pub-invite-status" role="alert">
       <div className="pub-invite-status__icon pub-invite-status__icon--error"><AlertCircle size={28} /></div>
-      <p className="pub-invite-status__title">{status === 'not-found' ? s.inviteNotFound : s.inviteLoadFailed}</p>
+      <Text className="pub-invite-status__title">{status === 'not-found' ? s.inviteNotFound : s.inviteLoadFailed}</Text>
       {status === 'error' && (
         <Button variant="none" type="button" className="pub-invite-status__retry" onClick={() => void doFetch()}>{s.retry}</Button>
       )}
@@ -184,7 +186,7 @@ export function PublicInvitePage() {
   if (claimed) return (
     <div className="pub-invite-status" role="status">
       <div className="pub-invite-status__icon pub-invite-status__icon--ok"><CheckCircle size={28} /></div>
-      <p className="pub-invite-status__title">{s.inviteClaimSuccess}</p>
+      <Text className="pub-invite-status__title">{s.inviteClaimSuccess}</Text>
       <Link to="/login" className="pub-invite-status__link">{s.inviteClaimRedirectToLogin}</Link>
     </div>
   )
@@ -195,14 +197,14 @@ export function PublicInvitePage() {
     const flowS = { ...s, loading: s.loading_btn }
     return (
       <div className="pub-invite">
-        <h1 className="pub-invite__greeting">
+        <Heading level={1} className="pub-invite__greeting">
           {fmt(s.inviteClaimGreeting, { partyName: preview.partyName, businessName: preview.businessName })}
-        </h1>
-        <p className="pub-invite__meta">
+        </Heading>
+        <Text className="pub-invite__meta">
           {fmt(s.invitePhonePreview, { phone: preview.partyPhoneMasked })}
           {' · '}
           {fmt(s.inviteExpiresAt, { date: expiresFormatted })}
-        </p>
+        </Text>
         <hr className="pub-invite__divider" aria-hidden="true" />
         {preview.requiresOtp
           ? <InviteOtpFlow

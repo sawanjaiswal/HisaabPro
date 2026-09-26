@@ -1,5 +1,6 @@
 /** ProductionRunWizardStep2 — Quantity & Date */
 
+import { Text } from '@/components/ui/Text'
 import { todayISODate } from '../production-run.utils'
 import { Button } from '@/components/ui/Button'
 import type { WizardFormState } from '../production-run.types'
@@ -7,6 +8,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
 import { DateField } from '@/components/ui/DateField'
 import { useLanguage } from '@/context/LanguageContext'
+import { Heading } from '@/components/ui/Heading'
 
 interface Step2Props {
   wizard: WizardFormState
@@ -24,10 +26,10 @@ export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: S
 
   return (
     <div className="pr-wizard-step">
-      <h2 className="pr-wizard-step__title">{t.prStepQuantityDate}</h2>
-      <p className="pr-wizard-step__desc">
+      <Heading level={2} className="pr-wizard-step__title">{t.prStepQuantityDate}</Heading>
+      <Text className="pr-wizard-step__desc">
         {t.prHowMany} <strong>{wizard.finishedProductName}</strong> {t.prAreYouProducing}
-      </p>
+      </Text>
 
       <div className="input-group">
         <label htmlFor="pr-qty" className="input-label">{t.prQuantityProduced} <span aria-hidden="true">*</span></label>
@@ -45,7 +47,7 @@ export function ProductionRunWizardStep2({ wizard, onUpdate, onNext, onBack }: S
           aria-label={t.prQuantityProduced}
         />
         {!qtyValid && wizard.quantityProduced !== '' && (
-          <p className="input-error" role="alert">{t.prQtyMustBePositive}</p>
+          <Text className="input-error" role="alert">{t.prQtyMustBePositive}</Text>
         )}
       </div>
 

@@ -5,6 +5,7 @@
  * All amounts in PAISE, converted for display via formatAmount().
  */
 
+import { Text } from '@/components/ui/Text'
 import { FileText } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -123,9 +124,9 @@ export default function TdsTcsReportPage() {
         {/* Entry list */}
         {entries.length > 0 && (
           <>
-            <p className="tds-tcs-section-heading py-0">
+            <Text className="tds-tcs-section-heading py-0">
               {entries.length} {entries.length === 1 ? t.entry : t.entries}
-            </p>
+            </Text>
             <div className="tds-tcs-entry-list stagger-list">
               {entries.map((entry) => (
                 <TdsTcsEntryCard key={entry.id} entry={entry} />

@@ -4,6 +4,7 @@
  * keep the page ≤ 250 lines.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Crown, CreditCard, Calendar } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -50,22 +51,22 @@ export function CurrentPlanCard({
           aria-hidden
         />
         <div className="flex-1 min-w-0">
-          <p
-            className="text-[var(--fs-xs)] uppercase tracking-wider"
+          <Text
+            className="text-xs uppercase tracking-wider"
             style={{ color: 'var(--text-muted)' }}
           >
             {t.currentPlan}
-          </p>
-          <p
-            className="text-[var(--fs-xl)] font-semibold mt-0.5"
+          </Text>
+          <Text
+            className="text-xl font-semibold mt-0.5"
             style={{ color: 'var(--text-primary)' }}
           >
             {tStrings[PLAN_LABEL_KEY[plan]]}
-          </p>
+          </Text>
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-[var(--fs-sm)]">
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
         <div className="flex items-center gap-2">
           <CreditCard
             className="w-4 h-4"
@@ -101,7 +102,7 @@ export function CurrentPlanCard({
           variant="primary"
           size="md"
           onClick={onUpgrade}
-          className="min-h-[44px]"
+          className="min-h-11"
         >
           {t.upgradeToPlan}
         </Button>
@@ -110,7 +111,7 @@ export function CurrentPlanCard({
             variant="destructive"
             size="md"
             onClick={onCancel}
-            className="min-h-[44px]"
+            className="min-h-11"
           >
             {t.cancelSubscription}
           </Button>

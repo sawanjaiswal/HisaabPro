@@ -5,6 +5,7 @@
  * 4 UI states: loading · error · empty · success.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Landmark, Plus } from 'lucide-react'
@@ -166,7 +167,7 @@ export default function LoansPage() {
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={t.addFirstLoan}>
         <form className="loan-drawer__form py-0" onSubmit={handleSubmit}>
-          {formError && <p className="loan-drawer__error py-0" role="alert">{formError}</p>}
+          {formError && <Text className="loan-drawer__error py-0" role="alert">{formError}</Text>}
           <div className="loan-drawer__field py-0">
             <label className="loan-drawer__label py-0" htmlFor="loanType">{t.loanType}</label>
             <Select

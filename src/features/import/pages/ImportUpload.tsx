@@ -10,6 +10,7 @@
  * via requireFeature('DATA_IMPORT') — this flag only hides the UI.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
@@ -27,6 +28,7 @@ import { useImportUpload } from '../hooks/useImportUpload'
 import { validateUpload, type FileValidationCode } from '../utils/file-validation'
 import { stashCommitToken } from '../utils/commit-token-store'
 import type { ImportEntity, ImportFormat } from '../types/import.types'
+import { Heading } from '@/components/ui/Heading'
 
 function featureEnabled(): boolean {
   // Vite-injected env var; absent in tests / non-import builds.
@@ -91,9 +93,9 @@ export default function ImportUploadPage() {
         <Header title={tx.importPageTitle ?? 'Import data'} backTo={ROUTES.MORE} />
         <PageContainer variant="form" className="space-y-6">
           <Card variant="default" className="p-4">
-            <p style={{ color: 'var(--color-text-secondary)' }}>
+            <Text style={{ color: 'var(--color-text-secondary)' }}>
               {tx.importFeatureDisabled ?? 'Data import is not available yet for this business.'}
-            </p>
+            </Text>
           </Card>
         </PageContainer>
       </AppShell>
@@ -105,7 +107,7 @@ export default function ImportUploadPage() {
       <Header title={tx.importPageTitle ?? 'Import data'} backTo={ROUTES.PARTIES} />
       <PageContainer variant="form" className="space-y-6">
         <div className="space-y-2">
-          <h1
+          <Heading level={1}
             className="font-semibold"
             style={{ fontSize: 'var(--fs-xl)', color: 'var(--color-text-primary)' }}
           >
@@ -116,8 +118,8 @@ export default function ImportUploadPage() {
                 : entity === 'product'
                   ? (tx.importProducts ?? 'Import products')
                   : (tx.importParties ?? 'Import parties')}
-          </h1>
-          <p style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-secondary)' }}>
+          </Heading>
+          <Text style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-secondary)' }}>
             {entity === 'payments'
               ? (tx.importIntroPayments ??
                 'Bring receipts and payments in from Tally, Vyapar, Busy, or a generic CSV.')
@@ -128,39 +130,39 @@ export default function ImportUploadPage() {
                   ? (tx.importIntroProduct ??
                     'Bring products in from Tally, Vyapar, Busy, or a generic CSV.')
                   : (tx.importIntro ?? 'Bring parties in from Tally, Vyapar, Busy, or a generic CSV.')}
-          </p>
+          </Text>
         </div>
 
         <section className="space-y-3" aria-labelledby="import-entity-heading">
-          <h2
+          <Heading level={2}
             id="import-entity-heading"
             className="font-semibold"
             style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
           >
             1. {tx.importStepEntity ?? 'What are you importing?'}
-          </h2>
+          </Heading>
           <EntityPicker value={entity} onChange={setEntity} disabled={upload.isUploading} />
         </section>
 
         <section className="space-y-3" aria-labelledby="import-format-heading">
-          <h2
+          <Heading level={2}
             id="import-format-heading"
             className="font-semibold"
             style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
           >
             2. {tx.importStepFormat ?? 'Choose source'}
-          </h2>
+          </Heading>
           <FormatPicker value={format} onChange={setFormat} disabled={upload.isUploading || !entity} />
         </section>
 
         <section className="space-y-3" aria-labelledby="import-file-heading">
-          <h2
+          <Heading level={2}
             id="import-file-heading"
             className="font-semibold"
             style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
           >
             3. {tx.importStepFile ?? 'Pick file'}
-          </h2>
+          </Heading>
           <FileDropzone
             file={file}
             onFile={(next) => {
@@ -179,7 +181,7 @@ export default function ImportUploadPage() {
             onClick={handleSubmit}
             disabled={!canSubmit}
             loading={upload.isUploading}
-            className="w-full md:w-auto min-h-[44px]"
+            className="w-full md:w-auto min-h-11"
           >
             {upload.isUploading
               ? (tx.importUploading ?? 'Uploading...')

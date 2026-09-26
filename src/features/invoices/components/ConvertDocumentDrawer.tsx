@@ -1,5 +1,6 @@
 /** Convert Document — target-type picker drawer (#122) */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
@@ -60,9 +61,9 @@ export function ConvertDocumentDrawer({ open, onClose, documentId, sourceType, o
       }
     >
       <div className="space-y-4 px-1 py-2">
-        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+        <Text className="text-sm" style={{ color: 'var(--text-secondary)' }}>
           {t.convertFromLabel}: <strong style={{ color: 'var(--text-primary)' }}>{DOCUMENT_TYPE_LABELS[sourceType]}</strong>
-        </p>
+        </Text>
 
         <div>
           <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
@@ -91,9 +92,9 @@ export function ConvertDocumentDrawer({ open, onClose, documentId, sourceType, o
           </div>
         </div>
 
-        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+        <Text className="text-xs" style={{ color: 'var(--text-muted)' }}>
           {t.convertNote}
-        </p>
+        </Text>
       </div>
     </Drawer>
   )

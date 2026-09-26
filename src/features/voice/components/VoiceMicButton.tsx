@@ -1,5 +1,6 @@
 /** VoiceMicButton — mic capture control + live/editable transcript + typed fallback. */
 
+import { Text } from '@/components/ui/Text'
 import { Mic, MicOff, Square } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -38,11 +39,11 @@ export function VoiceMicButton({
         <div className="voice-mic voice-mic--disabled" aria-hidden="true"><MicOff size={28} /></div>
       )}
 
-      <p className="voice-capture__hint">
+      <Text className="voice-capture__hint">
         {!isSupported ? t.voiceUnsupported : listening ? t.voiceListening : t.voiceTapToSpeak}
-      </p>
-      {status === 'denied' && <p className="voice-capture__error" role="alert">{t.voiceMicDenied}</p>}
-      {status === 'error' && <p className="voice-capture__error" role="alert">{t.voiceMicError}</p>}
+      </Text>
+      {status === 'denied' && <Text className="voice-capture__error" role="alert">{t.voiceMicDenied}</Text>}
+      {status === 'error' && <Text className="voice-capture__error" role="alert">{t.voiceMicError}</Text>}
 
       <label className="voice-preview__label" htmlFor="voiceTranscript">{t.voiceTranscriptLabel}</label>
       <Textarea

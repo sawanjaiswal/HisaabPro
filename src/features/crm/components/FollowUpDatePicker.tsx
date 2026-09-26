@@ -12,6 +12,7 @@
  * 44px tap targets enforced via min-h on the input + buttons.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useMemo } from 'react'
 import { CalendarClock, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -92,13 +93,13 @@ export function FollowUpDatePicker({
         )}
       </div>
       {error && (
-        <p
+        <Text
           id="follow-up-at-error"
           className="follow-up-picker__error"
           role="alert"
         >
           {error}
-        </p>
+        </Text>
       )}
     </div>
   )

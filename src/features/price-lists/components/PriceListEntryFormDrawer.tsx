@@ -1,5 +1,6 @@
 /** PriceListEntryFormDrawer — add / edit a price list entry */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
@@ -114,7 +115,7 @@ export function PriceListEntryFormDrawer({
             readOnly={isEdit}
           />
           {!errors.product && (
-            <p className="pl-form__hint">{t.plEntryProductHint}</p>
+            <Text className="pl-form__hint">{t.plEntryProductHint}</Text>
           )}
         </div>
 
@@ -187,7 +188,7 @@ export function PriceListEntryFormDrawer({
               {errors.maxQty && <span className="input__error" role="alert">{errors.maxQty}</span>}
             </div>
           </div>
-          <p className="pl-form__hint">{t.plQtyRangeHint}</p>
+          <Text className="pl-form__hint">{t.plQtyRangeHint}</Text>
         </div>
       </form>
     </Drawer>

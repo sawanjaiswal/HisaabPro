@@ -1,11 +1,13 @@
 /** EInvoiceCard — IRN status, generate button, cancel (within 24h), QR display */
 
+import { Text } from '@/components/ui/Text'
 import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate } from '@/lib/format'
 import type { EInvoiceStatus } from '../ecompliance.types'
 import { ComplianceCancelForm } from './ComplianceCancelForm'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface EInvoiceCardProps {
   status: EInvoiceStatus | null
@@ -46,8 +48,8 @@ export const EInvoiceCard: React.FC<EInvoiceCardProps> = ({
     <div className="compliance-card">
       <div className="compliance-card-header">
         <div className="compliance-card-title-group">
-          <h2 className="compliance-card-title">{t.eInvoiceIrn}</h2>
-          <p className="compliance-card-subtitle">{t.eInvoiceSubtitle}</p>
+          <Heading level={2} className="compliance-card-title">{t.eInvoiceIrn}</Heading>
+          <Text className="compliance-card-subtitle">{t.eInvoiceSubtitle}</Text>
         </div>
         <span
           className={`compliance-badge ${isPending ? 'compliance-badge-pending' : isGenerated ? 'compliance-badge-generated' : 'compliance-badge-cancelled'}`}
@@ -59,7 +61,7 @@ export const EInvoiceCard: React.FC<EInvoiceCardProps> = ({
       </div>
 
       {(error || actionError) && (
-        <p className="compliance-inline-error" role="alert">{error ?? actionError}</p>
+        <Text className="compliance-inline-error" role="alert">{error ?? actionError}</Text>
       )}
 
       {isGenerated && status && (

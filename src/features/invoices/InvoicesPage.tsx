@@ -31,6 +31,7 @@ import type { BulkAction } from '@/components/ui/BulkActionBar'
 import './invoice-filter-bar.css'
 import './invoice-list-items.css'
 import './invoice-doc-badges.css'
+import { Heading } from '@/components/ui/Heading'
 
 interface InvoicesPageProps {
   /** When rendered as tab content inside SalesHubPage, the parent already
@@ -205,7 +206,7 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
 
         {status === 'success' && data && visibleDocuments.length > 0 && (
           <>
-          <h2 className="sr-only">{t.invoiceListHeading}</h2>
+          <Heading level={2} className="sr-only">{t.invoiceListHeading}</Heading>
           <InvoiceGroupedList
             groups={dayGroups}
             isBulkMode={bulk.isActive}

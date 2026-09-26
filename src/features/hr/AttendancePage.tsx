@@ -182,7 +182,7 @@ export default function AttendancePage() {
           fixed-bottom + bottom-nav + safe-area math (PLATFORM_SHELL C6). */}
       {pending.count > 0 && (
         <BottomActionBar role="region" aria-label={t.attendancePendingCount as string}>
-          <span className="text-[var(--fs-sm)] text-[var(--color-gray-700)]">
+          <span className="text-sm text-[var(--color-gray-700)]">
             {(t.attendancePendingCount as string).replace('{count}', String(pending.count))}
           </span>
           <div className="flex gap-[var(--space-2)] justify-end">

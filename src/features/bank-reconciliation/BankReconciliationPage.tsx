@@ -3,6 +3,7 @@
  * 4 UI states: loading · error · empty · success.
  * Upload a bank CSV, auto-match to payments, confirm/ignore/un-reconcile.
  */
+import { Text } from '@/components/ui/Text'
 import { Landmark } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -32,7 +33,7 @@ export default function BankReconciliationPage() {
     <AppShell>
       <Header title={t.bankReconTitle} backTo={ROUTES.DASHBOARD} />
       <PageContainer variant="list" className="space-y-6">
-        <p className="recon-subtitle">{t.bankReconSubtitle}</p>
+        <Text className="recon-subtitle">{t.bankReconSubtitle}</Text>
 
         <StatementUpload onImport={handleImport} isImporting={r.isImporting} />
 

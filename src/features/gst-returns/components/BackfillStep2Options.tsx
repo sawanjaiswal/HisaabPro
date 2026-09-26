@@ -5,6 +5,7 @@
  * date range picker (defaults to current FY).
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, type Dispatch } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Select, SelectItem } from '@/components/ui/Select'
@@ -56,7 +57,7 @@ export function BackfillStep2Options({ options, dispatch }: Props) {
 
   return (
     <div className="bfw-step">
-      <p className="bfw-step-desc">{t.backfillOptionsDesc}</p>
+      <Text className="bfw-step-desc">{t.backfillOptionsDesc}</Text>
 
       <div className="bfw-field">
         <label htmlFor="bfw-tax-cat" className="bfw-label">

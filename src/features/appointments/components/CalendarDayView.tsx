@@ -90,7 +90,7 @@ export function CalendarDayView({ date, rows, onSelect, onCreateAtHour }: Calend
           {hours.map((h) => (
             <div
               key={h}
-              className="text-[var(--fs-xs)] tabular-nums"
+              className="text-xs tabular-nums"
               style={{
                 height: `${HOUR_ROW_PX}px`,
                 color: 'var(--color-text-muted)',
@@ -146,14 +146,14 @@ export function CalendarDayView({ date, rows, onSelect, onCreateAtHour }: Calend
                 }}
               >
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-medium text-[var(--fs-sm)] truncate">
+                  <span className="font-medium text-sm truncate">
                     {row.partyNameSnapshot}
                   </span>
                   <Badge variant={STATUS_BADGE_VARIANT[row.status]}>{statusLabel}</Badge>
                 </div>
                 {row.employeeNameSnapshot && (
                   <div
-                    className="text-[var(--fs-xs)] truncate"
+                    className="text-xs truncate"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     {row.employeeNameSnapshot}

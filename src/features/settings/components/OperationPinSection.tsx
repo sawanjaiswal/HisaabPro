@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { Shield } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 
@@ -9,14 +10,14 @@ export function OperationPinSection({ operationPinSet }: OperationPinSectionProp
   const { t } = useLanguage()
   return (
     <section>
-      <p className="settings-section-title py-0">{t.operationPinTitle}</p>
+      <Text className="settings-section-title py-0">{t.operationPinTitle}</Text>
       <div className="txn-controls">
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">{t.operationPinTitle}</p>
-            <p className="txn-control-description">
+            <Text className="txn-control-label">{t.operationPinTitle}</Text>
+            <Text className="txn-control-description">
               {t.operationPinDesc}
-            </p>
+            </Text>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexShrink: 0 }}>
             <Shield

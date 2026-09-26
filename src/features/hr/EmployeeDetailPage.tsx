@@ -12,6 +12,7 @@
  *   success — identity card + detail rows + action bar
  */
 
+import { Text } from '@/components/ui/Text'
 import { useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
@@ -149,7 +150,7 @@ export default function EmployeeDetailPage() {
             </section>
 
             <section className="employee-detail-group" aria-label={t.employeeDetailsSectionTitle as string}>
-              <p className="employee-detail-group-title">{t.employeeDetailsSectionTitle as string}</p>
+              <Text className="employee-detail-group-title">{t.employeeDetailsSectionTitle as string}</Text>
               <DetailRow label={t.employeeFormLabelDailyRate as string} value={formatPaise(employee.dailyRate)} numeric />
               <DetailRow
                 label={t.employeeJoinedAtLabel as string}

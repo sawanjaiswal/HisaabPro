@@ -1,5 +1,6 @@
 /** Features bento grid — varied card sizes, dark theme */
 
+import { Text } from '@/components/ui/Text'
 import {
   FileText, WifiOff, IndianRupee, Package,
   BarChart3, MessageCircle, Users, Shield, Palette,
@@ -7,6 +8,7 @@ import {
 } from 'lucide-react'
 
 import { FEATURES, type LandingFeature } from '../landing.constants'
+import { Heading } from '@/components/ui/Heading'
 
 const ICON_MAP: Record<string, LucideIcon> = {
   FileText, WifiOff, IndianRupee, Package,
@@ -31,12 +33,12 @@ export function LandingFeatures() {
           <span className="text-sm font-semibold uppercase tracking-widest text-teal-400">
             Features
           </span>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <Heading level={2} className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Everything your business needs
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-gray-400">
+          </Heading>
+          <Text className="mx-auto mt-3 max-w-xl text-gray-400">
             90+ features built for Indian MSMEs — from kirana shops to wholesale distributors
-          </p>
+          </Text>
         </div>
 
         {/* Bento grid */}
@@ -53,16 +55,16 @@ export function LandingFeatures() {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-500/10 text-teal-400 transition-colors group-hover:bg-teal-500/20">
                   {Icon && <Icon size={isLarge ? 28 : 24} aria-hidden="true" />}
                 </div>
-                <h3
+                <Heading level={3}
                   className={`mb-1 font-semibold text-white ${isLarge ? 'text-lg' : 'text-base'}`}
                 >
                   {f.title}
-                </h3>
-                <p
+                </Heading>
+                <Text
                   className={`leading-relaxed text-gray-400 ${isLarge ? 'text-base' : 'text-sm'}`}
                 >
                   {f.description}
-                </p>
+                </Text>
               </div>
             )
           })}

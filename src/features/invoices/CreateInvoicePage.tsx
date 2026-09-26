@@ -1,8 +1,6 @@
-/** Create Invoice — Page (lazy). One continuous scroll; sticky totals bar saves. */
-
 import { useState, useCallback, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Camera } from 'lucide-react'
+import { Camera, MoreVertical } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -104,22 +102,39 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
   })
 
   const formTitle = type === 'SALE_INVOICE'
-    ? t.newInvoice
+    ? (t.newInvoice || 'New Invoice')
     : getCreateTitle(type)
 
   return (
     <AppShell>
       <Header
         title={formTitle}
+        subtitle="Create and send an invoice"
         backTo={getCreateBackTo(type)}
         actions={
-          <Button variant="none" type="button" className="header-icon-btn" onClick={() => nav(ROUTES.BILL_SCAN)} aria-label={t.scanBillAddItems}>
-            <Camera size={20} aria-hidden="true" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="none"
+              type="button"
+              className="header-icon-btn text-white/90 hover:text-white"
+              onClick={() => nav(ROUTES.BILL_SCAN)}
+              aria-label={t.scanBillAddItems}
+            >
+              <Camera size={20} aria-hidden="true" />
+            </Button>
+            <Button
+              variant="none"
+              type="button"
+              className="header-icon-btn text-white/90 hover:text-white"
+              aria-label="More options"
+            >
+              <MoreVertical size={20} aria-hidden="true" />
+            </Button>
+          </div>
         }
       />
 
-      <PageContainer variant="form" className="invoice-details-section stagger-enter py-0 space-y-6">
+      <PageContainer variant="form" className="invoice-details-section stagger-enter py-4 pb-32 space-y-4 max-w-lg mx-auto">
         {stockShortageItems.length > 0 && (
           <StockShortageBanner items={stockShortageItems} onDismiss={clearStockShortage} />
         )}

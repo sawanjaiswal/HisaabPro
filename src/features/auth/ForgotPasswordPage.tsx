@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
@@ -17,6 +18,7 @@ import {
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
@@ -162,8 +164,8 @@ export default function ForgotPasswordPage() {
                 className="login-page__brand-logo"
                 style={{ maxWidth: '210px', height: 'auto', margin: '0 auto 8px auto', display: 'block' }}
               />
-              <h1 className="login-page__title sr-only">{APP_NAME}</h1>
-              <p className="login-page__subtitle">{t.resetYourPassword}</p>
+              <Heading level={1} className="login-page__title sr-only">{APP_NAME}</Heading>
+              <Text className="login-page__subtitle">{t.resetYourPassword}</Text>
             </div>
             <form className="login-page__form" onSubmit={(e) => { e.preventDefault(); if (!loading) handleSendOtp() }}>
               <div className="login-page__field">
@@ -178,23 +180,23 @@ export default function ForgotPasswordPage() {
                   autoFocus
                 />
               </div>
-              {error && <p className="login-page__error">{error}</p>}
+              {error && <Text className="login-page__error">{error}</Text>}
               <Button variant="none" type="submit" className="login-page__submit" disabled={!identifier.trim() || loading}>
                 {loading ? 'Sending code...' : 'Send Recovery Code'}
               </Button>
-              <p className="login-page__hint">
+              <Text className="login-page__hint">
                 <Link to={ROUTES.LOGIN} className="login-page__link">{t.backToSignIn}</Link>
-              </p>
+              </Text>
             </form>
           </>
         )}
         {step === 'verify' && (
           <>
             <div className="login-page__header">
-              <h1 className="login-page__title">{t.enterOtp}</h1>
-              <p className="login-page__subtitle">
+              <Heading level={1} className="login-page__title">{t.enterOtp}</Heading>
+              <Text className="login-page__subtitle">
                 {t.sentTo} {isEmail ? maskEmail(identifier) : maskPhone(identifier)}
-              </p>
+              </Text>
             </div>
             <div className="auth-otp">
               <div
@@ -226,11 +228,11 @@ export default function ForgotPasswordPage() {
                 <label className="login-page__label" htmlFor="confirmPassword">{t.confirmPassword}</label>
                 <Input id="confirmPassword" type="password" className="login-page__input" placeholder={t.repeatPasswordHint} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
               </div>
-              {error && <p className="auth-otp__error">{error}</p>}
+              {error && <Text className="auth-otp__error">{error}</Text>}
               <div className="auth-otp__resend">
-                {secondsLeft > 0 && <p className="auth-otp__cooldown">{t.otpExpiresIn} {formatTime(secondsLeft)}</p>}
+                {secondsLeft > 0 && <Text className="auth-otp__cooldown">{t.otpExpiresIn} {formatTime(secondsLeft)}</Text>}
                 {resendCooldown > 0
-                  ? <p className="auth-otp__cooldown">{t.resendIn} {resendCooldown}s</p>
+                  ? <Text className="auth-otp__cooldown">{t.resendIn} {resendCooldown}s</Text>
                   : <Button variant="none" className="auth-otp__back" onClick={handleResend} disabled={resending} type="button">{resending ? t.sending : t.resendOtp}</Button>
                 }
               </div>
@@ -249,8 +251,8 @@ export default function ForgotPasswordPage() {
           <>
             <div className="login-page__header">
               <div style={{ fontSize: 48, textAlign: 'center', marginBottom: 'var(--space-2)' }}>✓</div>
-              <h1 className="login-page__title" style={{ fontSize: 'var(--fs-2xl)' }}>{t.passwordResetDone}</h1>
-              <p className="login-page__subtitle">{t.passwordResetDesc}</p>
+              <Heading level={1} className="login-page__title" style={{ fontSize: 'var(--fs-2xl)' }}>{t.passwordResetDone}</Heading>
+              <Text className="login-page__subtitle">{t.passwordResetDesc}</Text>
             </div>
             <Button variant="none" className="login-page__submit" onClick={() => navigate(ROUTES.LOGIN, { replace: true })} type="button">
               {t.signIn}

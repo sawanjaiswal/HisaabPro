@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { reportIcon } from '../report-hub.icons'
 import type { ReportCategory } from '../report.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface ReportFavouritesSectionProps {
   favourites: ReportCategory[]
@@ -32,7 +33,7 @@ export function ReportFavouritesSection({
   return (
     <section className="report-hub-section py-0" aria-label={t.favourites}>
       <div className="report-hub-section-head">
-        <h2 className="report-hub-section-title">{t.favourites}</h2>
+        <Heading level={2} className="report-hub-section-title">{t.favourites}</Heading>
         <Button
           variant="none"
           type="button"

@@ -1,5 +1,6 @@
 /** NotificationRow — single notification item in the inbox list */
 
+import { Text } from '@/components/ui/Text'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/hooks/useLanguage'
 import { localiseNotification } from '../notifications.service'
@@ -71,8 +72,8 @@ export function NotificationRow({ notification: n }: NotificationRowProps) {
         aria-hidden="true"
       />
       <div className="notif-row__content">
-        <p className="notif-row__title">{title}</p>
-        <p className="notif-row__body">{body}</p>
+        <Text className="notif-row__title">{title}</Text>
+        <Text className="notif-row__body">{body}</Text>
       </div>
       <time
         className="notif-row__time"

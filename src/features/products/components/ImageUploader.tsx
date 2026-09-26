@@ -1,5 +1,6 @@
 /** Product image uploader — thumbnail grid + add button. Max 5 images. */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Camera, Image as ImageIcon, Trash2, ChevronUp, ChevronDown } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -178,14 +179,14 @@ export function ImageUploader({ value, onChange, max = 5 }: ImageUploaderProps) 
       )}
 
       {loading && (
-        <p className="image-uploader__loading" role="status" aria-live="polite">
+        <Text className="image-uploader__loading" role="status" aria-live="polite">
           {t.processingImage}
-        </p>
+        </Text>
       )}
 
-      <p className="image-uploader__hint">
+      <Text className="image-uploader__hint">
         {t.imageUploaderHint.replace('{max}', String(max)).replace('{count}', String(value.length))}
-      </p>
+      </Text>
     </div>
   )
 }

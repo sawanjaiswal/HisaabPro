@@ -39,13 +39,13 @@ export function EmployeePicker({ employeeId, onChange }: EmployeePickerProps) {
 
   return (
     <div>
-      <div className="text-[var(--fs-sm)] mb-1.5" style={{ color: 'var(--color-text)' }}>
+      <div className="text-sm mb-1.5" style={{ color: 'var(--color-text)' }}>
         {t.pickEmployee ?? 'Pick employee'}
       </div>
 
       {selected ? (
         <div
-          className="flex items-center justify-between gap-2 p-3 rounded-[var(--radius-md)] min-h-[44px]"
+          className="flex items-center justify-between gap-2 p-3 rounded-md min-h-11"
           style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
         >
           <div className="flex items-center gap-2 min-w-0">
@@ -55,7 +55,7 @@ export function EmployeePicker({ employeeId, onChange }: EmployeePickerProps) {
           <Button
             variant="none"
             type="button"
-            className="text-[var(--fs-sm)] min-h-[44px] px-2"
+            className="text-sm min-h-11 px-2"
             style={{ color: 'var(--color-primary)' }}
             onClick={() => onChange(null, null)}
             aria-label={t.clear ?? 'Clear'}
@@ -75,7 +75,7 @@ export function EmployeePicker({ employeeId, onChange }: EmployeePickerProps) {
           />
 
           <div
-            className="mt-2 rounded-[var(--radius-md)] overflow-hidden"
+            className="mt-2 rounded-md overflow-hidden"
             style={{ border: '1px solid var(--color-border)', maxHeight: '240px', overflowY: 'auto' }}
           >
             {status === 'loading' && (
@@ -85,12 +85,12 @@ export function EmployeePicker({ employeeId, onChange }: EmployeePickerProps) {
               </div>
             )}
             {status === 'error' && (
-              <div className="p-3 text-[var(--fs-sm)]" style={{ color: 'var(--color-error)' }}>
+              <div className="p-3 text-sm" style={{ color: 'var(--color-error)' }}>
                 {t.employeeLoadFailed ?? 'Could not load employees'}
               </div>
             )}
             {status === 'success' && filtered.length === 0 && (
-              <div className="p-3 text-[var(--fs-sm)]" style={{ color: 'var(--color-text-muted)' }}>
+              <div className="p-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 {t.noEmployeesMatch ?? 'No matches'}
               </div>
             )}
@@ -104,7 +104,7 @@ export function EmployeePicker({ employeeId, onChange }: EmployeePickerProps) {
                       role="option"
                       aria-selected={false}
                       onClick={() => { onChange(e.id, e.name); setQuery('') }}
-                      className="w-full text-left flex items-center justify-between gap-2 px-3 min-h-[44px] text-[var(--fs-sm)]"
+                      className="w-full text-left flex items-center justify-between gap-2 px-3 min-h-11 text-sm"
                       style={{ background: 'transparent' }}
                     >
                       <span className="flex items-center gap-2 min-w-0">

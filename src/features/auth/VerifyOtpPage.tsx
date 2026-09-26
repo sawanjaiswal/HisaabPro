@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { SEO } from '../../components/layout/SEO'
@@ -7,6 +8,7 @@ import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 export default function VerifyOtpPage() {
   const { t } = useLanguage()
@@ -31,11 +33,11 @@ export default function VerifyOtpPage() {
         </Link>
 
         <div className="login-page__header">
-          <h1 className="login-page__title">Check your email</h1>
-          <p className="login-page__subtitle">
+          <Heading level={1} className="login-page__title">Check your email</Heading>
+          <Text className="login-page__subtitle">
             We sent a 6-digit verification code to<br />
             <strong>{displayTarget}</strong>
-          </p>
+          </Text>
         </div>
 
         <div className="auth-otp">
@@ -61,20 +63,20 @@ export default function VerifyOtpPage() {
             ))}
           </div>
 
-          {error && <p className="auth-otp__error">{error}</p>}
+          {error && <Text className="auth-otp__error">{error}</Text>}
 
-          {loading && <p className="auth-otp__verifying">{t.verifying}</p>}
+          {loading && <Text className="auth-otp__verifying">{t.verifying}</Text>}
 
           <div className="auth-otp__resend">
             {secondsLeft > 0 && (
-              <p className="auth-otp__cooldown">
+              <Text className="auth-otp__cooldown">
                 {t.otpExpiresIn} {formatTime(secondsLeft)}
-              </p>
+              </Text>
             )}
             {resendCooldown > 0 ? (
-              <p className="auth-otp__cooldown">
+              <Text className="auth-otp__cooldown">
                 {t.resendIn} {resendCooldown}s
-              </p>
+              </Text>
             ) : (
               <Button variant="none"
                 className="auth-otp__back"

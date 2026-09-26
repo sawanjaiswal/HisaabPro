@@ -19,8 +19,10 @@ export const hiExt57 = {
 
   businessOverview: 'व्यवसाय अवलोकन',
 
+  quickActionInvoice:  'बिल',
   quickActionCustomer: 'ग्राहक',
   quickActionProduct:  'उत्पाद',
   quickActionExpense:  'खर्च',
   quickActionPurchase: 'खरीद',
 } as const
+

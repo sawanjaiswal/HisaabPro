@@ -4,6 +4,7 @@
  * selected. Stateless — owner drives `file` and `onFile`.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useCallback, useRef, useState, type DragEvent } from 'react'
 import { UploadCloud, FileCheck2, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -67,10 +68,10 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
         aria-disabled={disabled}
         aria-label={tx.importDropzoneAriaLabel ?? 'Choose file to import'}
         className={
-          'rounded-[var(--radius-xl)] border-2 border-dashed px-4 py-6 min-h-[160px] flex flex-col items-center justify-center gap-2 text-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)]' +
+          'rounded-xl border-2 border-dashed px-4 py-6 min-h-[160px] flex flex-col items-center justify-center gap-2 text-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400' +
           (dragging
-            ? ' border-[var(--color-primary-500)] bg-[var(--color-primary-50)]'
-            : ' border-[var(--color-border)] bg-[var(--color-surface)]') +
+            ? ' border-primary-500 bg-primary-50'
+            : ' border-border bg-surface') +
           (disabled ? ' opacity-60 cursor-not-allowed' : '')
         }
       >
@@ -98,7 +99,7 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
               }}
               disabled={disabled}
               aria-label={tx.importRemoveFile ?? 'Remove file'}
-              className="mt-1 inline-flex items-center gap-1 min-h-[44px] px-3 rounded-[var(--radius-sm)]"
+              className="mt-1 inline-flex items-center gap-1 min-h-11 px-3 rounded-sm"
               style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-xs)' }}
             >
               <X className="w-4 h-4" aria-hidden="true" />
@@ -138,13 +139,13 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
         />
       </div>
       {errorMessage ? (
-        <p
+        <Text
           role="alert"
           className="mt-2"
           style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-600)' }}
         >
           {errorMessage}
-        </p>
+        </Text>
       ) : null}
     </div>
   )

@@ -9,6 +9,7 @@
  * 4 UI states: loading / error / empty (role not found) / success (form ready)
  */
 
+import { Text } from '@/components/ui/Text'
 import { useParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -84,11 +85,11 @@ function BuilderForm({ roleId, role, systemRoles, businessId }: BuilderFormProps
 
       {/* Permission matrix */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-        <p style={LABEL_STYLE}>{t.permissionsLabel}</p>
+        <Text style={LABEL_STYLE}>{t.permissionsLabel}</Text>
         {errors.permissions && (
-          <p className="input-error" role="alert">
+          <Text className="input-error" role="alert">
             {errors.permissions}
-          </p>
+          </Text>
         )}
         <PermissionMatrix
           modules={PERMISSION_MODULES}

@@ -17,6 +17,7 @@
  * scroll lock and the close X. PinPadSheet never touches --safe-area-inset-*.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useCallback, useEffect } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
@@ -131,7 +132,7 @@ export function PinPadSheet({ pending, onSuccess, onCancel }: PinPadSheetProps) 
       }
     >
       <div className="pin-pad-sheet py-0">
-        <p className="pin-pad-sheet-subtitle py-0">{t.pinPadSubtitle}</p>
+        <Text className="pin-pad-sheet-subtitle py-0">{t.pinPadSubtitle}</Text>
 
         {error?.kind === 'wrong' && (
           <div role="alert" className="pin-pad-sheet-error pin-pad-sheet-error--warn py-0">

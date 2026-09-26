@@ -12,6 +12,7 @@ import { MARKETING_ROUTES } from '../marketing.constants'
 import { formatDate, formatPaiseAsRupees } from '../marketing.utils'
 import type { CampaignStatus } from '../marketing.types'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 type FilterValue = CampaignStatus | ''
 
@@ -48,7 +49,7 @@ export default function CampaignListPage() {
         <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketingAria}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
-        <h1 style={{ flex: 1, fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingCampaignsTitle}</h1>
+        <Heading level={1} style={{ flex: 1, fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingCampaignsTitle}</Heading>
         <Button variant="none"
           type="button"
           onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)}

@@ -1,5 +1,6 @@
 /** Dropdown list for product search — shows loading, error, empty, hint, results, and instant Add Product */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { Package, Plus } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -57,9 +58,9 @@ export const ProductSearchDropdown: React.FC<ProductSearchDropdownProps> = ({
 
       {!isLoading && !fetchError && hasQuery && results.length === 0 && (
         <li className="product-search-status product-search-empty flex flex-col items-center gap-2 py-4 px-3 text-center">
-          <p className="text-xs text-gray-500 font-medium">
+          <Text className="text-xs text-[var(--color-gray-500)] font-medium">
             {t.noProductsFoundFor} &ldquo;{debouncedQuery}&rdquo;
-          </p>
+          </Text>
           {onAddNew && (
             <Button
               variant="none"
@@ -69,7 +70,7 @@ export const ProductSearchDropdown: React.FC<ProductSearchDropdownProps> = ({
                 onAddNew()
               }}
               disabled={isCreating}
-              className="w-full py-2 px-3 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
+              className="w-full py-2 px-3 rounded-xl bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
             >
               {isCreating ? (
                 <>
@@ -79,7 +80,7 @@ export const ProductSearchDropdown: React.FC<ProductSearchDropdownProps> = ({
               ) : (
                 <>
                   <Plus className="w-3.5 h-3.5" />
-                  <span>+ {t.addProduct} &ldquo;{trimmedQuery}&rdquo; {t.addAsNewProduct}</span>
+                  <span>{t.addProduct} &ldquo;{trimmedQuery}&rdquo; {t.addAsNewProduct}</span>
                 </>
               )}
             </Button>
@@ -103,8 +104,8 @@ export const ProductSearchDropdown: React.FC<ProductSearchDropdownProps> = ({
         />
       ))}
 
-      {/* Quick "Add new product" option at bottom when query typed or results present */}
-      {!isLoading && !fetchError && onAddNew && (hasQuery || results.length > 0) && (
+      {/* Quick "Add product" option at bottom when query is typed */}
+      {!isLoading && !fetchError && onAddNew && hasQuery && results.length > 0 && (
         <li
           className="product-search-add-new"
           role="option"
@@ -128,9 +129,7 @@ export const ProductSearchDropdown: React.FC<ProductSearchDropdownProps> = ({
           <span className="product-search-add-label truncate">
             {isCreating
               ? t.creatingProduct
-              : hasQuery
-              ? `+ ${t.addProduct} "${trimmedQuery}" ${t.addAsNewProduct}`
-              : t.addNewProductEntity}
+              : `${t.addProduct} "${trimmedQuery}" ${t.addAsNewProduct}`}
           </span>
         </li>
       )}

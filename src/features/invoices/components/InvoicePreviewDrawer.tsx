@@ -5,6 +5,7 @@
  * form; Save & Send runs the same submit the totals bar does.
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
@@ -156,12 +157,12 @@ export const InvoicePreviewDrawer: React.FC<InvoicePreviewDrawerProps> = ({
           </div>
         </section>
 
-        <p className="invoice-preview-words">
+        <Text className="invoice-preview-words">
           <span className="invoice-preview-words-label">{t.amountInWordsLabel}</span>
           {amountToWords(totals.grandTotal)}
-        </p>
+        </Text>
 
-        {notes && <p className="invoice-preview-notes">{notes}</p>}
+        {notes && <Text className="invoice-preview-notes">{notes}</Text>}
       </article>
     </Drawer>
   )

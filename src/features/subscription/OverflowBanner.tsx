@@ -6,6 +6,7 @@
  * fixed-top is a primitive responsibility — this is a content-level alert).
  */
 
+import { Text } from '@/components/ui/Text'
 import { AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -34,7 +35,7 @@ export function OverflowBanner({ onUpgrade }: OverflowBannerProps) {
   return (
     <div
       role="alert"
-      className="mx-4 mt-3 mb-2 rounded-[var(--radius-md)] p-3 flex items-start gap-3"
+      className="mx-4 mt-3 mb-2 rounded-md p-3 flex items-start gap-3"
       style={{
         backgroundColor: 'var(--color-warning-50)',
         border: '1px solid var(--color-warning-500)',
@@ -46,14 +47,14 @@ export function OverflowBanner({ onUpgrade }: OverflowBannerProps) {
         aria-hidden
       />
       <div className="flex-1 min-w-0">
-        <p
-          className="text-[var(--fs-sm)] font-semibold"
+        <Text
+          className="text-sm font-semibold"
           style={{ color: 'var(--text-primary)' }}
         >
           {t.overflowGraceTitle}
-        </p>
-        <p
-          className="text-[var(--fs-xs)] mt-0.5"
+        </Text>
+        <Text
+          className="text-xs mt-0.5"
           style={{ color: 'var(--text-secondary)' }}
         >
           {isExpired
@@ -61,13 +62,13 @@ export function OverflowBanner({ onUpgrade }: OverflowBannerProps) {
             : `${t.graceExpiresIn} ${days}${t.daysShort} ${hours}${t.hoursShort}`}
           {' — '}
           {t.overflowGraceDesc}
-        </p>
+        </Text>
       </div>
       <Button
         variant="primary"
         size="sm"
         onClick={onUpgrade}
-        className="flex-shrink-0 min-h-[44px]"
+        className="flex-shrink-0 min-h-11"
       >
         {t.upgradeNow}
       </Button>

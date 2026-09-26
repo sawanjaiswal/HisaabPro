@@ -1,4 +1,5 @@
 /** #147 StatementUpload — pick a bank account, parse a CSV client-side, import. */
+import { Text } from '@/components/ui/Text'
 import { useRef, useState } from 'react'
 import { Upload, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -53,7 +54,7 @@ export function StatementUpload({ onImport, isImporting }: Props) {
   if (status === 'success' && accounts.length === 0) {
     return (
       <Card className="recon-upload">
-        <p className="recon-upload__hint">{t.bankReconNoAccounts}</p>
+        <Text className="recon-upload__hint">{t.bankReconNoAccounts}</Text>
       </Card>
     )
   }
@@ -76,7 +77,7 @@ export function StatementUpload({ onImport, isImporting }: Props) {
         ))}
       </Select>
 
-      <p className="recon-upload__csv-hint">{t.bankReconCsvHint}</p>
+      <Text className="recon-upload__csv-hint">{t.bankReconCsvHint}</Text>
 
       <Input
         ref={fileRef}
@@ -94,13 +95,13 @@ export function StatementUpload({ onImport, isImporting }: Props) {
         {t.bankReconChooseFile}
       </Button>
 
-      {parsing && <p className="recon-upload__hint">{t.bankReconParsing}</p>}
-      {parseError && <p className="recon-upload__error">{t.bankReconParseError}</p>}
+      {parsing && <Text className="recon-upload__hint">{t.bankReconParsing}</Text>}
+      {parseError && <Text className="recon-upload__error">{t.bankReconParseError}</Text>}
       {rows.length > 0 && (
-        <p className="recon-upload__ready">
+        <Text className="recon-upload__ready">
           <FileText size={16} aria-hidden="true" />
           {fileName} — {rows.length} {t.bankReconRowsReady}
-        </p>
+        </Text>
       )}
 
       <Button

@@ -4,6 +4,7 @@
  * 2-up category grid, then a Favourites section with an Edit toggle.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
@@ -25,7 +26,7 @@ export default function ReportsHubPage() {
   const { favourites, hydrated, isFavourite, toggleFavourite } = useReportFavourites()
 
   const hero = (
-    <p className="report-hub-hero-sub">{t.exploreBusinessInsights}</p>
+    <Text className="report-hub-hero-sub">{t.exploreBusinessInsights}</Text>
   )
 
   return (

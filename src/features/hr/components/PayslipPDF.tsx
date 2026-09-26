@@ -57,7 +57,7 @@ interface PayslipPDFProps {
 const COLOR_TEXT = '#111111'
 const COLOR_MUTED = '#666666'
 const COLOR_BORDER = '#cccccc'
-const COLOR_HEAD_BG = '#f3f4f6'
+const COLOR_HEAD_BG = 'var(--color-gray-100)'
 
 const styles = StyleSheet.create({
   page: {

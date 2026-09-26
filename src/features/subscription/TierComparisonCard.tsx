@@ -25,13 +25,13 @@ export function TierComparisonCard() {
   const { t } = useLanguage()
   return (
     <div
-      className="rounded-[var(--radius-md)] overflow-hidden"
+      className="rounded-md overflow-hidden"
       style={{
         backgroundColor: 'var(--color-gray-0)',
         border: '1px solid var(--color-gray-100)',
       }}
     >
-      <table className="w-full text-[var(--fs-sm)]">
+      <table className="w-full text-sm">
         <thead>
           <tr style={{ backgroundColor: 'var(--color-gray-50)' }}>
             <th className="text-left px-3 py-2 font-medium"

@@ -15,6 +15,7 @@
  *  - Issues rendered as one-line summary via firstIssueMessage
  */
 
+import { Text } from '@/components/ui/Text'
 import { Card } from '@/components/ui/Card'
 import {
   firstIssueMessage,
@@ -97,13 +98,13 @@ export function ProductRowCard({ row, t }: ProductRowCardProps) {
       </dl>
 
       {issueMsg && (
-        <p
+        <Text
           style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}
           className="truncate"
           title={issueMsg}
         >
           {issueMsg}
-        </p>
+        </Text>
       )}
     </Card>
   )

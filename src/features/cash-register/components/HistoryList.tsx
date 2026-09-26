@@ -1,5 +1,6 @@
 /** Cash Register — Day-bucketed history list with infinite scroll */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useRef } from 'react'
 import { Inbox } from 'lucide-react'
 import { HistoryEntryRow } from './HistoryEntryRow'
@@ -83,7 +84,7 @@ export function HistoryList({
     return (
       <div className="cr-history-list cr-history-list--error">
         <div className="cr-history-list__error-card">
-          <p>{t.cashRegHistoryError}</p>
+          <Text>{t.cashRegHistoryError}</Text>
           <Button variant="none" type="button" className="cr-history-list__retry" onClick={onRetry}>
             {t.cashRegHistoryRetry}
           </Button>
@@ -96,7 +97,7 @@ export function HistoryList({
     return (
       <div className="cr-history-list cr-history-list--empty" role="status">
         <Inbox size={40} className="cr-history-list__empty-icon" aria-hidden="true" />
-        <p className="cr-history-list__empty-text">{filterLabel}</p>
+        <Text className="cr-history-list__empty-text">{filterLabel}</Text>
       </div>
     )
   }

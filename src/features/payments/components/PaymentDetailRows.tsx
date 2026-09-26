@@ -4,6 +4,7 @@
  * notes on one card. Rows with no data are omitted rather than shown blank.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatPaise } from '@/lib/format'
 import { formatPaymentMode } from '../payment.utils'
@@ -103,7 +104,7 @@ export function PaymentDetailRows({
       {notes && (
         <div className="payment-info-row payment-info-row--stacked">
           <span className="payment-info-label">{t.notesInfoLabel}</span>
-          <p className="payment-info-value">{notes}</p>
+          <Text className="payment-info-value">{notes}</Text>
         </div>
       )}
     </div>

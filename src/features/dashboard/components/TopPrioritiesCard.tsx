@@ -6,12 +6,14 @@
  * HomeDashboardData — no invented fields (e.g. no staff-cash-submission row).
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { IndianRupee, Package, FileText, Users, MessageSquare } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import type { PriorityItem } from '../dashboard.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface TopPrioritiesCardProps {
   items: PriorityItem[]
@@ -33,7 +35,7 @@ export const TopPrioritiesCard: React.FC<TopPrioritiesCardProps> = ({
   return (
     <div className="dashboard-priorities-card">
       <div className="dashboard-section-header">
-        <h2 className="dashboard-section-title">{t.topPriorities}</h2>
+        <Heading level={2} className="dashboard-section-title">{t.topPriorities}</Heading>
         <Button variant="none" className="dashboard-section-link" onClick={onViewAll}>
           {t.viewAllPriorities.replace('{count}', String(items.length))}
         </Button>
@@ -49,8 +51,8 @@ export const TopPrioritiesCard: React.FC<TopPrioritiesCardProps> = ({
                 <Icon size={18} />
               </div>
               <div className="dashboard-priority-info">
-                <p className="dashboard-priority-title">{title}</p>
-                <p className="dashboard-priority-subtitle">{item.subtitle}</p>
+                <Text className="dashboard-priority-title">{title}</Text>
+                <Text className="dashboard-priority-subtitle">{item.subtitle}</Text>
               </div>
               <Button
                 variant="outline"

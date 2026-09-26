@@ -10,7 +10,7 @@
  * outstanding strip simply appears when there is a balance to clear.
  */
 
-import { PlusCircle, FilePlus } from 'lucide-react'
+import { PlusCircle, FilePlus, ArrowUpRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { BottomActionBar } from '@/components/ui/BottomActionBar'
 import { Button } from '@/components/ui/Button'
@@ -20,12 +20,14 @@ import './party-pay-bar.css'
 interface PartyDetailPayBarProps {
   /** Outstanding balance in PAISE. `> 0` shows the amount strip. */
   outstandingPaise: number
+  isSupplier?: boolean
   onReceivePayment: () => void
   onNewInvoice: () => void
 }
 
 export function PartyDetailPayBar({
   outstandingPaise,
+  isSupplier = false,
   onReceivePayment,
   onNewInvoice,
 }: PartyDetailPayBarProps) {
@@ -35,7 +37,7 @@ export function PartyDetailPayBar({
     <BottomActionBar className="pd-paybar" role="group" aria-label={t.quickActions}>
       {outstandingPaise > 0 && (
         <div className="pd-paybar__strip">
-          <span className="pd-paybar__label">{t.outstanding}</span>
+          <span className="pd-paybar__label">{isSupplier ? t.totalPayable : t.outstanding}</span>
           <span className="pd-paybar__value tabular-nums">{formatAmount(outstandingPaise)}</span>
         </div>
       )}
@@ -46,10 +48,14 @@ export function PartyDetailPayBar({
           size="md"
           className="pd-paybar__cta"
           onClick={onReceivePayment}
-          aria-label={t.receivePayment}
+          aria-label={isSupplier ? t.pay : t.receivePayment}
         >
-          <PlusCircle size={18} aria-hidden="true" />
-          <span>{t.receiveAmount}</span>
+          {isSupplier ? (
+            <ArrowUpRight size={18} aria-hidden="true" />
+          ) : (
+            <PlusCircle size={18} aria-hidden="true" />
+          )}
+          <span>{isSupplier ? t.pay : t.receiveAmount}</span>
         </Button>
         <Button
           variant="secondary"
@@ -65,3 +71,4 @@ export function PartyDetailPayBar({
     </BottomActionBar>
   )
 }
+

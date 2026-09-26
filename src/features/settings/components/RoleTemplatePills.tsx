@@ -1,5 +1,6 @@
 /** Settings — Template pills for cloning permissions from system roles (create mode only) */
 
+import { Text } from '@/components/ui/Text'
 import type { Role } from '../settings.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { SYSTEM_ROLE_NAMES } from '../role.constants'
@@ -29,7 +30,7 @@ export function RoleTemplatePills({
   const { t } = useLanguage()
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-      <p style={LABEL_STYLE}>{t.startFromTemplate}</p>
+      <Text style={LABEL_STYLE}>{t.startFromTemplate}</Text>
       <div className="role-template-pills">
         {TEMPLATE_NAMES.map((name) => {
           const templateRole = systemRoles.find((r) => r.name === name)

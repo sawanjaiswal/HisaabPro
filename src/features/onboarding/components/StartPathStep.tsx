@@ -1,11 +1,13 @@
 /** StartPathStep — "Choose your path" (Import [recommended] / Start Fresh). */
 
+import { Text } from '@/components/ui/Text'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { START_PATH_OPTIONS } from '../onboarding.constants'
 import type { StartPath } from '../onboarding.types'
 import { OptionCard } from './OptionCard'
+import { Heading } from '@/components/ui/Heading'
 
 interface Props {
   value: StartPath | undefined
@@ -21,8 +23,8 @@ export function StartPathStep({ value, onChange, loading, onNext, onBack }: Prop
   return (
     <div className="onboarding-form">
       <div className="onboarding-header onboarding-header--step">
-        <h2 className="onboarding-step-title">{t.onboardingPathTitle}</h2>
-        <p className="onboarding-step-desc">{t.onboardingPathDesc}</p>
+        <Heading level={2} className="onboarding-step-title">{t.onboardingPathTitle}</Heading>
+        <Text className="onboarding-step-desc">{t.onboardingPathDesc}</Text>
       </div>
 
       <div className="onboarding-option-list" role="radiogroup" aria-label={t.onboardingPathTitle}>

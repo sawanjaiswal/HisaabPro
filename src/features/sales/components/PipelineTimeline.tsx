@@ -4,6 +4,7 @@
  * Tapping a non-current step navigates to that document's detail page.
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -56,7 +57,7 @@ export const PipelineTimeline: React.FC<PipelineTimelineProps> = ({
 
   return (
     <div className="pipeline-card" role="region" aria-label={t.pipelineTimeline ?? 'Document pipeline'}>
-      <p className="pipeline-card__title">{t.pipelineTimeline ?? 'Pipeline'}</p>
+      <Text className="pipeline-card__title">{t.pipelineTimeline ?? 'Pipeline'}</Text>
 
       <div className="pipeline" role="list">
         {steps.map((step, idx) => {

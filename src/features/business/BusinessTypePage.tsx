@@ -6,6 +6,7 @@
  * for the chosen vertical.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
@@ -99,9 +100,9 @@ export default function BusinessTypePage() {
       <Header title={t.changeBusinessType} backTo={ROUTES.SETTINGS} />
       <PageContainer variant="form" className="space-y-6">
         <div className="space-y-6">
-          <p style={{ color: 'var(--color-gray-500)', fontSize: 'var(--fs-sm)' }}>
+          <Text style={{ color: 'var(--color-gray-500)', fontSize: 'var(--fs-sm)' }}>
             {t.pickBusinessTypeDesc}
-          </p>
+          </Text>
 
           <VerticalPicker
             value={pending}
@@ -116,12 +117,12 @@ export default function BusinessTypePage() {
               borderRadius: 'var(--radius-md)',
               border: '1px solid var(--color-gray-200)',
             }}>
-              <p style={{
+              <Text style={{
                 fontSize: 'var(--fs-sm)',
                 fontWeight: 600,
                 color: 'var(--color-gray-800)',
                 marginBottom: 'var(--space-2)',
-              }}>{t.verticalDefaultsTitle}</p>
+              }}>{t.verticalDefaultsTitle}</Text>
               <ul style={{
                 fontSize: 'var(--fs-sm)',
                 color: 'var(--color-gray-700)',
@@ -148,7 +149,7 @@ export default function BusinessTypePage() {
           )}
 
           {dirty && (
-            <p style={{
+            <Text style={{
               padding: 'var(--space-3)',
               background: 'var(--color-warning-50)',
               borderRadius: 'var(--radius-md)',
@@ -157,7 +158,7 @@ export default function BusinessTypePage() {
               lineHeight: 1.5,
             }}>
               {t.switchBusinessTypeWarn}
-            </p>
+            </Text>
           )}
 
           <div style={{ display: 'flex', gap: 'var(--space-3)' }}>

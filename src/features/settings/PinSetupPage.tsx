@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { PIN_MAX_LENGTH } from './settings.constants'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PinPad } from './components/PinPad'
@@ -86,7 +87,7 @@ export default function PinSetupPage() {
 
       {/* Weak PIN warning — below the PinPad dots, non-blocking */}
       {showWeakWarning && (
-        <p
+        <Text
           role="status"
           style={{
             fontSize: 'var(--fs-sm)',
@@ -98,7 +99,7 @@ export default function PinSetupPage() {
           }}
         >
           {t.weakPinWarning}
-        </p>
+        </Text>
       )}
 
       {/* Manual Continue button (between min and max-1 digits) */}

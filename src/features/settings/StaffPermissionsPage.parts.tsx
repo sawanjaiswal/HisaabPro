@@ -5,6 +5,8 @@ import { PermissionMatrix } from './components/PermissionMatrix'
 import type { Role, StaffMember } from './settings.types'
 import { Button } from '@/components/ui/Button'
 
+import { formatInitials } from '@/lib/format'
+
 const noop = () => undefined
 
 export function totalPermissions(): number {
@@ -16,13 +18,9 @@ export function permissionLabel(count: number): string {
 }
 
 export function initials(name: string): string {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0] ?? '')
-    .join('')
-    .toUpperCase()
+  return formatInitials(name)
 }
+
 
 interface RoleRowProps {
   role: Role

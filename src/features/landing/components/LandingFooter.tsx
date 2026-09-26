@@ -1,19 +1,21 @@
 /** Multi-column footer — dark theme */
 
+import { Text } from '@/components/ui/Text'
 import { APP_NAME, APP_TAGLINE } from '@/config/app.config'
 
 import { FOOTER_LINKS } from '../landing.constants.below'
+import { Heading } from '@/components/ui/Heading'
 
 function LinkColumn({ title, links }: { title: string; links: ReadonlyArray<{ label: string; href: string }> }) {
   return (
     <div>
-      <h3 className="mb-3 text-[0.875rem] font-semibold text-white">{title}</h3>
+      <Heading level={3} className="mb-3 text-sm font-semibold text-white">{title}</Heading>
       <ul className="space-y-2.5">
         {links.map((link) => (
           <li key={link.label}>
             <a
               href={link.href}
-              className="text-[0.8125rem] text-gray-400 transition-colors hover:text-white"
+              className="text-sm text-gray-400 transition-colors hover:text-white"
             >
               {link.label}
             </a>
@@ -32,13 +34,13 @@ export function LandingFooter() {
       <div className="mx-auto grid max-w-5xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
         {/* Brand column */}
         <div className="sm:col-span-2 lg:col-span-1">
-          <span className="text-[1.125rem] font-bold text-white">{APP_NAME}</span>
-          <p className="mt-2 max-w-[220px] text-[0.8125rem] leading-relaxed text-gray-400">
+          <span className="text-lg font-bold text-white">{APP_NAME}</span>
+          <Text className="mt-2 max-w-[220px] text-sm leading-relaxed text-gray-400">
             {APP_TAGLINE}
-          </p>
-          <p className="mt-3 text-[0.8125rem] text-gray-500">
+          </Text>
+          <Text className="mt-3 text-sm text-gray-500">
             Made with ❤️ in India
-          </p>
+          </Text>
         </div>
 
         {/* Link columns */}
@@ -49,15 +51,15 @@ export function LandingFooter() {
 
       {/* Bottom bar */}
       <div className="mx-auto mt-10 flex max-w-5xl flex-col items-center justify-between gap-4 border-t border-gray-800 pt-6 sm:flex-row">
-        <p className="text-[0.75rem] text-gray-500">
+        <Text className="text-xs text-gray-500">
           &copy; {year} {APP_NAME}. All rights reserved. — Sawan Jaiswal, Proprietor
-        </p>
+        </Text>
         <div className="flex gap-4">
           {FOOTER_LINKS.social.map((s) => (
             <a
               key={s.label}
               href={s.href}
-              className="text-[0.8125rem] text-gray-500 transition-colors hover:text-white"
+              className="text-sm text-gray-500 transition-colors hover:text-white"
               aria-label={s.label}
             >
               {s.label}

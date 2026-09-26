@@ -10,6 +10,7 @@
  * (which starts the poll); it never grants entitlement client-side.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { APP_NAME } from '@/config/app.config'
@@ -94,9 +95,9 @@ export function MobileRazorpayCheckout({ session, onEvent }: CheckoutSurfaceProp
   if (loadFailed) {
     return (
       <div className="checkout-surface-fallback">
-        <p className="text-[var(--fs-sm)] text-[var(--color-text-secondary)]">
+        <Text className="text-sm text-text-secondary">
           {t.checkoutLoadFailed}
-        </p>
+        </Text>
         <Button variant="primary" onClick={() => window.location.reload()}>
           {t.tryAgain}
         </Button>

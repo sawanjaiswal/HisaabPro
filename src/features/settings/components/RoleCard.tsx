@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Shield, ChevronRight } from 'lucide-react'
@@ -34,7 +35,7 @@ export const RoleCard: React.FC<RoleCardProps> = ({ role, onClick }) => {
           )}
         </span>
         {role.description && (
-          <p className="role-card-description">{role.description}</p>
+          <Text className="role-card-description">{role.description}</Text>
         )}
         <span className="role-card-meta">
           {role.staffCount} {t.staffCountLabel} &middot; {t.priorityPrefix}: {priorityLabel}

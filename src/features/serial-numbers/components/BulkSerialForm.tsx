@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { AlertCircle, CheckCircle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { BULK_CREATE_MAX } from '../serial-number.constants'
@@ -38,21 +39,21 @@ export function BulkSerialForm({ productId, onSuccess }: BulkSerialFormProps) {
           rows={6}
           autoFocus
         />
-        <p className="serial-form__hint">
+        <Text className="serial-form__hint">
           {count} {count === 1 ? t.serialNumberDetected : t.serialNumbersDetected} {t.detectedMax} {BULK_CREATE_MAX})
-        </p>
-        {errors.text && <p className="serial-form__error">{errors.text}</p>}
+        </Text>
+        {errors.text && <Text className="serial-form__error">{errors.text}</Text>}
       </div>
 
       {result && result.errors.length > 0 && (
         <div className="serial-bulk-result">
-          <p className="serial-bulk-result__summary">
+          <Text className="serial-bulk-result__summary">
             <CheckCircle size={14} aria-hidden="true" /> {result.created} {t.bulkCreated}
-          </p>
+          </Text>
           <div className="serial-bulk-result__errors" role="alert">
-            <p className="serial-bulk-result__errors-title">
+            <Text className="serial-bulk-result__errors-title">
               <AlertCircle size={14} aria-hidden="true" /> {result.errors.length} {t.bulkFailed}
-            </p>
+            </Text>
             <ul className="serial-bulk-result__list">
               {result.errors.map((err) => (
                 <li key={err.serial}><strong>{err.serial}</strong>: {err.message}</li>

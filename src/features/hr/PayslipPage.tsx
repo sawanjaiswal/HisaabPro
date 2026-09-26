@@ -102,7 +102,7 @@ export default function PayslipPage() {
           )}
 
           {snapshotQuery.status === 'success' && snapshot && (
-            <div className="rounded-[var(--radius-lg)] bg-[var(--color-surface)] border border-[var(--color-border)] overflow-hidden">
+            <div className="rounded-lg bg-surface border border-border overflow-hidden">
               <PDFViewer
                 showToolbar={false}
                 width="100%"

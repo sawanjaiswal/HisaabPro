@@ -1,5 +1,6 @@
 /** POS — Optional walk-in name/phone form */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { User, Phone } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -30,7 +31,7 @@ export function WalkInForm({ name = '', phone = '', onChange }: WalkInFormProps)
 
   return (
     <div className="pos-walkin-form">
-      <p className="pos-walkin-form__label">{t.posWalkInOptional ?? 'Walk-in details (optional)'}</p>
+      <Text className="pos-walkin-form__label">{t.posWalkInOptional ?? 'Walk-in details (optional)'}</Text>
       <div className="pos-walkin-form__fields">
         <div className="pos-field">
           <User size={14} className="pos-field__icon" aria-hidden="true" />

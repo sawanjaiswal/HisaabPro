@@ -6,6 +6,7 @@
  * Multi-select mode for bulk reminder dispatch.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, CheckCircle2 } from 'lucide-react'
@@ -60,8 +61,8 @@ function PartyCard({ party, selected, onToggle, overdueLabel, overduesLabel, las
         <Input type="checkbox" readOnly checked={selected} tabIndex={-1} aria-hidden="true" />
       </div>
       <div className="bucket-party-card__body">
-        <p className="bucket-party-card__name">{party.name}</p>
-        {party.phone && <p className="bucket-party-card__phone">{maskPhone(party.phone)}</p>}
+        <Text className="bucket-party-card__name">{party.name}</Text>
+        {party.phone && <Text className="bucket-party-card__phone">{maskPhone(party.phone)}</Text>}
         <div className="bucket-party-card__amounts">
           <span className="bucket-party-card__bucket-amt">{formatPaise(party.bucketAmount)}</span>
           <span className="bucket-party-card__total">Total: {formatPaise(party.totalOutstanding)}</span>

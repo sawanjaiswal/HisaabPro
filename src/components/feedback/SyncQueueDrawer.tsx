@@ -4,6 +4,7 @@
  * Opens from SyncQueueIndicator tap.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect } from 'react'
 import { Trash2, RotateCcw, CloudOff, Check, AlertTriangle, Loader2 } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
@@ -69,7 +70,7 @@ export function SyncQueueDrawer({
       {items.length === 0 ? (
         <div className="sync-drawer-empty py-0">
           <Check size={24} aria-hidden="true" />
-          <p>All changes synced</p>
+          <Text>All changes synced</Text>
         </div>
       ) : (
         <ul className="sync-drawer-list py-0" role="list" aria-label="Queued offline changes">
@@ -94,7 +95,7 @@ export function SyncQueueDrawer({
                   <span className="sync-drawer-time py-0">{formatTimeAgo(item.createdAt)}</span>
                 </div>
                 {item.errorMessage && item.status === 'dead' && (
-                  <p className="sync-drawer-item-error py-0">{item.errorMessage}</p>
+                  <Text className="sync-drawer-item-error py-0">{item.errorMessage}</Text>
                 )}
               </div>
 

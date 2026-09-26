@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { useRef, useEffect } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '../../../components/ui/Button'
@@ -88,9 +89,9 @@ export function OtpStep({
         <span>{t.changeNumberLabel}</span>
       </Button>
 
-      <p className="auth-otp__info">
+      <Text className="auth-otp__info">
         {t.enterCodeSentToLabel} <strong>{maskedPhone}</strong>
-      </p>
+      </Text>
 
       <div className="auth-otp__inputs" onPaste={handlePaste}>
         {Array.from({ length: OTP_LENGTH }, (_, i) => (
@@ -111,9 +112,9 @@ export function OtpStep({
         ))}
       </div>
 
-      {error && <p className="auth-otp__error">{error}</p>}
+      {error && <Text className="auth-otp__error">{error}</Text>}
 
-      {loading && <p className="auth-otp__verifying">{t.verifying}</p>}
+      {loading && <Text className="auth-otp__verifying">{t.verifying}</Text>}
 
       <div className="auth-otp__resend">
         {resendCooldown > 0 ? (

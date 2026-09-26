@@ -4,9 +4,7 @@
  * the body lives in <PartyFormSections> so Edit renders the same thing.
  */
 
-import { AppShell } from '@/components/layout/AppShell'
-import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { FormPageShell } from '@/components/layout/FormPageShell'
 import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -32,40 +30,41 @@ export default function CreatePartyPage() {
   }
 
   return (
-    <AppShell>
-      <Header title={t.newParty} backTo={ROUTES.PARTIES} />
-
-      <PageContainer className="create-party-page stagger-enter space-y-6">
-        <PartyFormSections
-          form={form}
-          errors={errors}
-          onUpdate={updateField}
-          gstinVerify={gstinVerify}
-        />
-      </PageContainer>
-
-      <div className="create-party-actions">
-        <Button
-          variant="primary"
-          size="lg"
-          loading={isSubmitting}
-          onClick={handleSubmit}
-          aria-label={t.savePartyLabel}
-        >
-          {t.saveParty}
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="md"
-          className="create-party-save-another"
-          onClick={handleSaveAndAddAnother}
-          disabled={isSubmitting}
-          aria-label={t.saveAndAddAnotherLabel}
-        >
-          {t.saveAndAddAnother}
-        </Button>
-      </div>
-    </AppShell>
+    <FormPageShell
+      title={t.newParty}
+      backTo={ROUTES.PARTIES}
+      onSubmit={(e) => {
+        e.preventDefault()
+        handleSubmit()
+      }}
+      footer={
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleSaveAndAddAnother}
+            disabled={isSubmitting}
+            aria-label={t.saveAndAddAnotherLabel}
+          >
+            {t.saveAndAddAnother}
+          </Button>
+          <Button
+            variant="primary"
+            loading={isSubmitting}
+            onClick={handleSubmit}
+            aria-label={t.savePartyLabel}
+          >
+            {t.saveParty}
+          </Button>
+        </>
+      }
+    >
+      <PartyFormSections
+        form={form}
+        errors={errors}
+        onUpdate={updateField}
+        gstinVerify={gstinVerify}
+      />
+    </FormPageShell>
   )
 }

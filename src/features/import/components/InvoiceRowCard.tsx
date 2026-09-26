@@ -14,6 +14,7 @@
  * Token-only colours; chip styling lives in `InvoiceChips.tsx`. ≤250L.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Card } from '@/components/ui/Card'
 import { formatPaise, formatDate } from '@/lib/format'
 import {
@@ -74,9 +75,9 @@ export function InvoiceRowCard({ row, t }: InvoiceRowCardProps) {
       </header>
 
       {lines.length === 0 ? (
-        <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+        <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
           {t.importInvoiceNoLines ?? 'No line items on this invoice'}
-        </p>
+        </Text>
       ) : (
         <ul className="space-y-1">
           {visibleLines.map((line, idx) => (

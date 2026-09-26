@@ -19,8 +19,10 @@ export const enExt57 = {
 
   businessOverview: 'Business Overview',
 
+  quickActionInvoice:  'Invoice',
   quickActionCustomer: 'Customer',
   quickActionProduct:  'Product',
   quickActionExpense:  'Expense',
   quickActionPurchase: 'Purchase',
 } as const
+

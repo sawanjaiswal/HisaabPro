@@ -1,5 +1,6 @@
 /** EWayBillPartBForm — update vehicle number and type for an active EWB */
 
+import { Text } from '@/components/ui/Text'
 import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { VehicleType } from '../ecompliance.types'
@@ -42,8 +43,8 @@ export const EWayBillPartBForm: React.FC<EWayBillPartBFormProps> = ({
 
   return (
     <div className="partb-form" role="group" aria-label={t.updateVehicleDetailsAria}>
-      <p className="partb-form-title">{t.updateVehiclePartB}</p>
-      {actionError && <p className="compliance-inline-error" role="alert">{actionError}</p>}
+      <Text className="partb-form-title">{t.updateVehiclePartB}</Text>
+      {actionError && <Text className="compliance-inline-error" role="alert">{actionError}</Text>}
       <div className="ewb-form-row">
         <div className="input-group">
           <label className="input-label" htmlFor="partb-vehicle">{t.vehicleNumber}</label>

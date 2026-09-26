@@ -1,5 +1,6 @@
 /** Create Product — Stock configuration section */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductFormData, StockValidationMode } from '../product.types'
 import { STOCK_VALIDATION_LABELS } from '../product.constants'
@@ -36,7 +37,7 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
           aria-label={t.openingStockQty}
           inputMode="decimal"
         />
-        {errors.openingStock && <p className="input-error" role="alert">{errors.openingStock}</p>}
+        {errors.openingStock && <Text className="input-error" role="alert">{errors.openingStock}</Text>}
       </div>
 
       <div className="input-group">
@@ -56,7 +57,7 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
           aria-label={t.minimumStockLevel}
           inputMode="decimal"
         />
-        {errors.minStockLevel && <p className="input-error" role="alert">{errors.minStockLevel}</p>}
+        {errors.minStockLevel && <Text className="input-error" role="alert">{errors.minStockLevel}</Text>}
       </div>
 
       <div className="input-group">
@@ -76,8 +77,8 @@ export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockPro
           aria-label={t.moqLabel}
           inputMode="numeric"
         />
-        <p className="input-helper-text">{t.moqHelperText}</p>
-        {errors.moq && <p className="input-error" role="alert">{errors.moq}</p>}
+        <Text className="input-helper-text">{t.moqHelperText}</Text>
+        {errors.moq && <Text className="input-error" role="alert">{errors.moq}</Text>}
       </div>
 
       <div className="input-group">

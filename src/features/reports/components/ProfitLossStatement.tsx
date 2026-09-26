@@ -8,6 +8,7 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatPaise } from '@/lib/format'
 import type { ProfitLossData } from '../finance.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface StatementRow {
   key: string
@@ -34,7 +35,7 @@ function Group({
 }) {
   return (
     <div className="pl-group py-0">
-      <h2 className="pl-group__title">{title}</h2>
+      <Heading level={2} className="pl-group__title">{title}</Heading>
 
       <dl className="pl-group__rows">
         {rows.map((row) => (

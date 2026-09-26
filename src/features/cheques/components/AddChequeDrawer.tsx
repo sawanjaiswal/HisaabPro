@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Select, SelectItem } from '@/components/ui/Select'
@@ -47,7 +48,7 @@ export function AddChequeDrawer({ open, onClose, onSuccess }: AddChequeDrawerPro
   return (
     <Drawer open={open} onClose={onClose} title={t.addCheque}>
       <form className="cheque-drawer__form py-0" onSubmit={handleSubmit}>
-        {formError && <p className="cheque-drawer__error py-0" role="alert">{formError}</p>}
+        {formError && <Text className="cheque-drawer__error py-0" role="alert">{formError}</Text>}
         <div className="cheque-drawer__row py-0">
           <div className="cheque-drawer__field py-0">
             <label className="cheque-drawer__label py-0" htmlFor="chqNumber">{t.chequeNumberLabel}</label>

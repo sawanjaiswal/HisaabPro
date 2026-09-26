@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -18,7 +19,7 @@ export default function ShortcutsPage() {
           shortcuts={DEFAULT_SHORTCUTS}
           groups={SHORTCUT_GROUPS}
         />
-        <p
+        <Text
           style={{
             fontSize: 'var(--fs-xs)',
             color: 'var(--color-gray-400)',
@@ -28,7 +29,7 @@ export default function ShortcutsPage() {
           }}
         >
           {t.shortcutsDesktopOnly}
-        </p>
+        </Text>
       </PageContainer>
     </AppShell>
   )

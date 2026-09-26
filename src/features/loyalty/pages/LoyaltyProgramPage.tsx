@@ -10,6 +10,7 @@
  *   success  → form
  */
 
+import { Text } from '@/components/ui/Text'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -46,7 +47,7 @@ export default function LoyaltyProgramPage() {
 
         {!isLoading && !isError && (
           <>
-            <p
+            <Text
               style={{
                 color: 'var(--text-secondary)',
                 fontSize: 'var(--fs-sm)',
@@ -54,7 +55,7 @@ export default function LoyaltyProgramPage() {
               }}
             >
               {t.loyaltyProgramDescription}
-            </p>
+            </Text>
             <LoyaltyProgramForm program={program} />
           </>
         )}

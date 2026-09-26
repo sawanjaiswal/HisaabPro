@@ -1,5 +1,6 @@
 /** CampaignWizardStep2 — Template picker */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useMarketingTemplateList } from '../hooks/useMarketingTemplates'
 import { ChannelBadge } from './ChannelBadge'
@@ -39,8 +40,8 @@ export function CampaignWizardStep2Template({ channel, value, onChange }: Props)
   if (active.length === 0) {
     return (
       <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-gray-500)', fontSize: '14px' }}>
-        <p>{channel === 'WHATSAPP' ? t.marketingNoActiveWaTemplates : t.marketingNoActiveSmsTemplates}</p>
-        <p style={{ marginTop: '8px', fontSize: '13px' }}>{t.marketingCreateTemplateFirst}</p>
+        <Text>{channel === 'WHATSAPP' ? t.marketingNoActiveWaTemplates : t.marketingNoActiveSmsTemplates}</Text>
+        <Text style={{ marginTop: '8px', fontSize: '13px' }}>{t.marketingCreateTemplateFirst}</Text>
       </div>
     )
   }

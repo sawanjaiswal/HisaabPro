@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
@@ -78,7 +79,7 @@ export default function StaffPage() {
             ) : (
               <>
                 <section>
-                  <p className="settings-section-title py-0">{t.activeStaffTitle}</p>
+                  <Text className="settings-section-title py-0">{t.activeStaffTitle}</Text>
                   <div className="staff-list stagger-list">
                     {data.staff.map((member) => (
                       <StaffCard
@@ -94,7 +95,7 @@ export default function StaffPage() {
 
                 {data.pending.length > 0 && (
                   <section>
-                    <p className="settings-section-title py-0">{t.pendingInvitesTitle}</p>
+                    <Text className="settings-section-title py-0">{t.pendingInvitesTitle}</Text>
                     <div className="staff-list stagger-list">
                       {data.pending.map((invite) => (
                         <InviteCard

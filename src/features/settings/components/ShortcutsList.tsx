@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import type { ShortcutConfig } from '../settings.types'
 import { formatShortcutKey } from '../settings.utils'
@@ -20,9 +21,9 @@ export const ShortcutsList: React.FC<ShortcutsListProps> = ({ shortcuts, groups 
 
         return (
           <section key={group.id} aria-labelledby={`shortcut-group-${group.id}`}>
-            <p className="shortcuts-group-title" id={`shortcut-group-${group.id}`}>
+            <Text className="shortcuts-group-title" id={`shortcut-group-${group.id}`}>
               {group.label}
-            </p>
+            </Text>
             <div className="shortcuts-list" role="list">
               {groupShortcuts.map(([key, config]) => {
                 const parts = formatShortcutKey(config).split(' + ')

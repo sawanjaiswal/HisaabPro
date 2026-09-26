@@ -1,11 +1,13 @@
 /** RevenueForecastCard (#146) — next-month projection + trend sparkline. */
 
+import { Text } from '@/components/ui/Text'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatPaise } from '@/lib/format'
 import type { RevenueForecast } from '../analytics.types'
 import { MiniLineChart } from './MiniLineChart'
+import { Heading } from '@/components/ui/Heading'
 
 interface RevenueForecastCardProps {
   forecast: RevenueForecast
@@ -22,16 +24,16 @@ export function RevenueForecastCard({ forecast }: RevenueForecastCardProps) {
   return (
     <Card className="analytics-card">
       <div className="analytics-card__head">
-        <h2 className="analytics-card__title">{t.revenueForecast}</h2>
-        <p className="analytics-card__subtitle">{t.revenueForecastDesc}</p>
+        <Heading level={2} className="analytics-card__title">{t.revenueForecast}</Heading>
+        <Text className="analytics-card__subtitle">{t.revenueForecastDesc}</Text>
       </div>
 
       <div className="analytics-card__metric">
         <div>
-          <p className="analytics-card__metric-label">{t.nextMonthProjected}</p>
-          <p className="analytics-card__metric-value tabular-nums">
+          <Text className="analytics-card__metric-label">{t.nextMonthProjected}</Text>
+          <Text className="analytics-card__metric-value tabular-nums">
             {formatPaise(forecast.nextMonthPaise)}
-          </p>
+          </Text>
         </div>
         {momChangePct !== null && (
           <span className={`analytics-trend analytics-trend--${trend}`}>
@@ -43,7 +45,7 @@ export function RevenueForecastCard({ forecast }: RevenueForecastCardProps) {
 
       <MiniLineChart data={forecast.points} ariaLabel={t.revenueChartLabel} />
 
-      <p className="analytics-card__disclaimer">{t.forecastDisclaimer}</p>
+      <Text className="analytics-card__disclaimer">{t.forecastDisclaimer}</Text>
     </Card>
   )
 }

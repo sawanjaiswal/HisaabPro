@@ -3,6 +3,7 @@
  * Feature #96
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Tag, Trash2, Eye } from 'lucide-react'
 import type { Coupon } from '../coupon.types'
@@ -56,7 +57,7 @@ export function CouponCard({ coupon, onView, onDeactivate }: CouponCardProps) {
           {formatDiscount(coupon.discountType, coupon.discountValue)}
         </div>
         {coupon.description && (
-          <p className="coupon-card-desc">{coupon.description}</p>
+          <Text className="coupon-card-desc">{coupon.description}</Text>
         )}
       </div>
 

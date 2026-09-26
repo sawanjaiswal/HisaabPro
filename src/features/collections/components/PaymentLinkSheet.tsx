@@ -5,6 +5,7 @@
  * WhatsApp share via wa.me + encodeURIComponent.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Copy, Share2, Loader2, AlertCircle, Link } from 'lucide-react'
@@ -107,9 +108,9 @@ export function PaymentLinkSheet({
         {hasError && !isLoading && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-3)', paddingTop: 'var(--space-4)' }}>
             <AlertCircle size={28} color="var(--color-error-500)" aria-hidden="true" />
-            <p style={{ color: 'var(--color-error-500)', textAlign: 'center', fontSize: 'var(--fs-sm)' }}>
+            <Text style={{ color: 'var(--color-error-500)', textAlign: 'center', fontSize: 'var(--fs-sm)' }}>
               {mutation.error?.message || 'Could not create payment link'}
-            </p>
+            </Text>
             <Button variant="secondary" size="sm" onClick={handleCreate}>
               Retry
             </Button>
@@ -121,12 +122,12 @@ export function PaymentLinkSheet({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
             {/* Amount */}
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-1)' }}>
+              <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-1)' }}>
                 Amount due
-              </p>
-              <p style={{ fontSize: 'var(--fs-2xl)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+              </Text>
+              <Text style={{ fontSize: 'var(--fs-2xl)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
                 {formatPaise(currentLink.amountPaise)}
-              </p>
+              </Text>
             </div>
 
             {/* Short URL pill */}
@@ -147,11 +148,11 @@ export function PaymentLinkSheet({
 
             {/* Expiry + status */}
             {expiry && (
-              <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+              <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
                 {currentLink.status === 'PAID'
                   ? `Paid on ${new Date(currentLink.paidAt!).toLocaleDateString('en-IN')}`
                   : `Active — link valid until ${expiry}`}
-              </p>
+              </Text>
             )}
 
             {/* Actions */}
@@ -173,9 +174,9 @@ export function PaymentLinkSheet({
         {/* No link yet — show create button */}
         {!currentLink && !isLoading && !hasError && !submitted && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', paddingTop: 'var(--space-2)' }}>
-            <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+            <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
               Generate a Razorpay payment link for {formatPaise(balanceDue)}.
-            </p>
+            </Text>
             <Button variant="primary" size="md" onClick={handleCreate} style={{ width: '100%' }}>
               Generate Payment Link
             </Button>

@@ -1,5 +1,6 @@
 /** Create Party — Credit & opening balance section */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyFormData, BalanceType, CreditLimitMode } from '../party.types'
 import { toLocalISODate } from '../../../lib/format'
@@ -108,9 +109,9 @@ export function PartyFormCredit({ form, errors, onUpdate }: PartyFormCreditProps
           />
         </div>
         {errors.creditLimit && (
-          <p id="credit-limit-error" className="input-error" role="alert">
+          <Text id="credit-limit-error" className="input-error" role="alert">
             {errors.creditLimit}
-          </p>
+          </Text>
         )}
       </div>
 

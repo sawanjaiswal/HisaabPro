@@ -1,9 +1,9 @@
-/** Create Invoice — sticky bottom totals + save actions */
-
 import React from 'react'
+import { ArrowRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatInvoiceAmount } from '../invoice-format.utils'
 import { Button } from '@/components/ui/Button'
+import { Text } from '@/components/ui/Text'
 
 interface InvoiceTotalsBarProps {
   subtotal: number
@@ -26,11 +26,11 @@ interface InvoiceTotalsBarProps {
 }
 
 export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
-  subtotal,
-  totalDiscount,
-  totalCharges,
-  totalTax,
-  roundOff,
+  subtotal: _subtotal,
+  totalDiscount: _totalDiscount,
+  totalCharges: _totalCharges,
+  totalTax: _totalTax,
+  roundOff: _roundOff,
   grandTotal,
   totalProfit,
   profitPercent,
@@ -47,86 +47,56 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
     : 'invoice-summary-profit invoice-summary-profit-negative'
 
   return (
-    <div className="invoice-summary-bar" aria-label={t.invoiceTotalsAriaLabel}>
-      <div className="invoice-summary-rows" role="list">
-        <div className="invoice-summary-row" role="listitem">
-          <span>{t.subtotal}</span>
-          {/* `subtotal` is net of the line discounts on both sides of the wire,
-              so the row above a "- discount" line has to add it back — otherwise
-              the breakdown reads as if the discount were taken twice. */}
-          <span>{formatInvoiceAmount(subtotal + totalDiscount)}</span>
+    <div
+      className="fixed bottom-0 left-0 right-0 z-[var(--z-sticky)] bg-[var(--color-surface)]/95 backdrop-blur-md border-t border-[var(--color-border)] px-4 py-3 shadow-lg"
+      aria-label={t.invoiceTotalsAriaLabel}
+    >
+      <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
+        {/* Left: Grand Total */}
+        <div className="flex flex-col min-w-0">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+            {t.grandTotal || 'Grand Total'}
+          </span>
+          <span className="text-xl font-black text-[var(--text-primary)] tabular-nums tracking-tight">
+            {formatInvoiceAmount(grandTotal)}
+          </span>
         </div>
 
-        {totalDiscount > 0 && (
-          <div className="invoice-summary-row" role="listitem">
-            <span>{t.discount}</span>
-            <span className="text-error">
-              -{formatInvoiceAmount(totalDiscount)}
-            </span>
-          </div>
-        )}
+        {/* Right: Actions (Save Draft + Preview Invoice) */}
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="none"
+            onClick={onSaveDraft}
+            disabled={isSubmitting}
+            aria-label={t.saveDraftAriaLabel}
+            className="bg-emerald-50/80 hover:bg-emerald-100 text-emerald-800 font-bold text-xs px-3.5 py-2.5 rounded-xl border border-emerald-200/70 transition-all cursor-pointer shadow-2xs"
+          >
+            {t.saveDraft || 'Save Draft'}
+          </Button>
 
-        {totalCharges > 0 && (
-          <div className="invoice-summary-row" role="listitem">
-            <span>{t.chargesLabel}</span>
-            <span>+{formatInvoiceAmount(totalCharges)}</span>
-          </div>
-        )}
-
-        {totalTax > 0 && (
-          <div className="invoice-summary-row" role="listitem">
-            <span>{t.tax}</span>
-            <span>+{formatInvoiceAmount(totalTax)}</span>
-          </div>
-        )}
-
-        {roundOff !== 0 && (
-          <div className="invoice-summary-row" role="listitem">
-            <span>{t.roundOff}</span>
-            <span className={roundOff < 0 ? 'text-error' : ''}>
-              {roundOff > 0 ? '+' : ''}{formatInvoiceAmount(Math.abs(roundOff))}
-            </span>
-          </div>
-        )}
-
-        <div className="invoice-summary-row invoice-summary-row-total" role="listitem">
-          <div className="invoice-summary-total-label">
-            <span>{t.grandTotal}</span>
-            {totalTax > 0 && <span className="invoice-summary-tax-note">({t.tax})</span>}
-          </div>
-          <span className="tabular-nums font-bold">{formatInvoiceAmount(grandTotal)}</span>
+          <Button
+            type="button"
+            variant="none"
+            onClick={onPreview ?? onSave}
+            disabled={isSubmitting}
+            aria-label={
+              onPreview ? (t.previewInvoice || 'Preview Invoice') : isSubmitting ? t.savingInvoice : t.saveInvoice
+            }
+            className="bg-[#026F39] hover:bg-[#025a2e] text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer active:scale-95"
+          >
+            <span>{onPreview ? (t.previewInvoice || 'Preview Invoice') : isSubmitting ? t.saving : t.save}</span>
+            <ArrowRight size={14} aria-hidden="true" />
+          </Button>
         </div>
       </div>
 
       {showProfit && (
-        <p className={profitClass} aria-label={`${t.profitLabel} ${formatInvoiceAmount(totalProfit)}, ${profitPercent.toFixed(1)}%`}>
+        <Text className={profitClass} aria-label={`${t.profitLabel} ${formatInvoiceAmount(totalProfit)}, ${profitPercent.toFixed(1)}%`}>
           {t.profitLabel} {isProfitPositive ? '+' : ''}{formatInvoiceAmount(totalProfit)}
           {' '}({profitPercent.toFixed(1)}%)
-        </p>
+        </Text>
       )}
-
-      <div className="invoice-summary-actions">
-        <Button
-          type="button"
-          variant="secondary" size="md"
-          onClick={onSaveDraft}
-          disabled={isSubmitting}
-          aria-label={t.saveDraftAriaLabel}
-        >
-          {t.saveDraft}
-        </Button>
-        <Button
-          type="button"
-          variant="primary" size="md"
-          onClick={onPreview ?? onSave}
-          disabled={isSubmitting}
-          aria-label={
-            onPreview ? t.previewInvoice : isSubmitting ? t.savingInvoice : t.saveInvoice
-          }
-        >
-          {onPreview ? t.previewInvoice : isSubmitting ? t.saving : t.save}
-        </Button>
-      </div>
     </div>
   )
 }

@@ -5,6 +5,7 @@
  * CTA: "Pick another batch" → calls onReopenPicker
  */
 
+import { Text } from '@/components/ui/Text'
 import { AlertTriangle, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
@@ -58,9 +59,9 @@ export function ExpiredBatchBanner({ code, onDismiss, onReopenPicker }: ExpiredB
           <X size={16} aria-hidden="true" />
         </Button>
       </div>
-      <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-500)', marginTop: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
+      <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-500)', marginTop: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>
         {hint}
-      </p>
+      </Text>
       {code !== 'ALL_BATCHES_EXPIRED' && (
         <Button variant="none"
           type="button"

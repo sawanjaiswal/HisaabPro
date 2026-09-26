@@ -9,6 +9,7 @@ import { ICON_REGISTRY } from '@/features/more/more.icons'
 import { useVertical } from '@/hooks/useVertical'
 import { isNavVisible } from '@/config/verticals.config'
 import type React from 'react'
+import { Heading } from '@/components/ui/Heading'
 
 interface Props {
   onNavigate: (route: string) => void
@@ -26,10 +27,10 @@ export function SideNavMenuGroups({ onNavigate }: Props) {
         if (items.length === 0) return null
         return (
           <section key={group.id} className="side-nav-section">
-            <h3 className="side-nav-section-title">
+            <Heading level={3} className="side-nav-section-title">
               <span aria-hidden="true">{group.emoji}</span>
               {group.label}
-            </h3>
+            </Heading>
             <div className="side-nav-grid">
               {items.map((item) => {
                 const Icon = ICON_REGISTRY[item.icon]

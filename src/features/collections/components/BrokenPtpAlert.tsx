@@ -3,6 +3,7 @@
  * Soft amber tint, AlertTriangle icon, left accent border.
  */
 
+import { Text } from '@/components/ui/Text'
 import { AlertTriangle, ChevronRight } from 'lucide-react'
 import '../styles/aging.css'
 import { Button } from '@/components/ui/Button'
@@ -30,7 +31,7 @@ export function BrokenPtpAlert({ count, label, singleLabel, onTap }: Props) {
         aria-label={`${text} — tap to view`}
       >
         <AlertTriangle size={16} className="broken-ptp-banner__icon" aria-hidden="true" />
-        <p className="broken-ptp-banner__text">{text} — tap to review</p>
+        <Text className="broken-ptp-banner__text">{text} — tap to review</Text>
         <ChevronRight size={16} className="broken-ptp-banner__chevron" aria-hidden="true" />
       </Button>
     )
@@ -39,7 +40,7 @@ export function BrokenPtpAlert({ count, label, singleLabel, onTap }: Props) {
   return (
     <div className="broken-ptp-banner" role="alert">
       <AlertTriangle size={16} className="broken-ptp-banner__icon" aria-hidden="true" />
-      <p className="broken-ptp-banner__text">{text}</p>
+      <Text className="broken-ptp-banner__text">{text}</Text>
     </div>
   )
 }

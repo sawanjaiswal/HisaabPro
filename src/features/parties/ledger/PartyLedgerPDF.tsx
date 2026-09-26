@@ -68,22 +68,22 @@ const TYPE_LABEL: Record<LedgerVoucherType, string> = {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const s = StyleSheet.create({
-  page:         { padding: 32, fontSize: 9, fontFamily: 'Helvetica', color: '#111827' },
+  page:         { padding: 32, fontSize: 9, fontFamily: 'Helvetica', color: 'var(--color-gray-900)' },
   heading:      { fontSize: 15, fontFamily: 'Helvetica-Bold', marginBottom: 4 },
-  subheading:   { fontSize: 9, color: '#4B5563', marginBottom: 2 },
+  subheading:   { fontSize: 9, color: 'var(--color-gray-600)', marginBottom: 2 },
   meta:         { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 },
-  divider:      { borderBottomWidth: 1, borderBottomColor: '#E5E7EB', marginVertical: 8 },
+  divider:      { borderBottomWidth: 1, borderBottomColor: 'var(--color-gray-200)', marginVertical: 8 },
   tableHeader:  {
-    flexDirection: 'row', backgroundColor: '#F3F4F6',
+    flexDirection: 'row', backgroundColor: 'var(--color-gray-100)',
     paddingVertical: 4, paddingHorizontal: 2,
   },
   tableRow:     {
     flexDirection: 'row', paddingVertical: 3, paddingHorizontal: 2,
-    borderBottomWidth: 0.5, borderBottomColor: '#F3F4F6',
+    borderBottomWidth: 0.5, borderBottomColor: 'var(--color-gray-100)',
   },
   summaryRow:   {
     flexDirection: 'row', paddingVertical: 3, paddingHorizontal: 2,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'var(--color-gray-50)',
     fontFamily: 'Helvetica-Bold',
   },
   colDate:      { width: '11%' },
@@ -95,7 +95,7 @@ const s = StyleSheet.create({
   colBal:       { width: '12%', textAlign: 'right' },
   footer: {
     position: 'absolute', bottom: 20, left: 32, right: 32,
-    fontSize: 7, color: '#9CA3AF', textAlign: 'center',
+    fontSize: 7, color: 'var(--color-gray-400)', textAlign: 'center',
   },
 })
 
@@ -165,10 +165,10 @@ export function PartyLedgerPDF({ data, businessName }: PartyLedgerPDFProps) {
                 Account Ledger: {data.partyName}
               </Text>
               <View style={s.meta}>
-                <Text style={{ color: '#4B5563' }}>
+                <Text style={{ color: 'var(--color-gray-600)' }}>
                   Period: {fmtDate(data.fromDate)} to {fmtDate(data.toDate)}
                 </Text>
-                <Text style={{ color: '#4B5563' }}>
+                <Text style={{ color: 'var(--color-gray-600)' }}>
                   Opening: {balanceLbl(data.openingBalance)}
                 </Text>
               </View>

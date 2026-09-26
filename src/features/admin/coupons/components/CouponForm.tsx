@@ -12,6 +12,7 @@ import { Select, SelectItem } from '@/components/ui/Select'
 import { Input } from '@/components/ui/Input'
 import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface CouponFormProps {
   onSubmit: (data: CreateCouponInput) => Promise<unknown>
@@ -89,7 +90,7 @@ export function CouponForm({ onSubmit, onCancel }: CouponFormProps) {
 
   return (
     <form className="coupon-form" onSubmit={handleSubmit}>
-      <h2 className="coupon-form-title">{t.createCoupon}</h2>
+      <Heading level={2} className="coupon-form-title">{t.createCoupon}</Heading>
 
       {error && (
         <div className="coupon-form-error" role="alert">{error}</div>

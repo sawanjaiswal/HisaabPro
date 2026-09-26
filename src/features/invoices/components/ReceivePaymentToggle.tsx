@@ -8,6 +8,7 @@
  * SALE_INVOICE with a non-zero total.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { IndianRupee, Banknote, Smartphone, Building2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -16,6 +17,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { formatRupees } from '@/lib/format'
 import type { InvoicePaymentFormData, PaymentModeValue } from '../invoice-api.types'
 import './receive-payment-toggle.css'
+import { Heading } from '@/components/ui/Heading'
 
 interface ReceivePaymentToggleProps {
   /** Invoice grand total in paise — drives Full quick-fill + balance line. */
@@ -64,9 +66,9 @@ export function ReceivePaymentToggle({ grandTotal, payment, onChange }: ReceiveP
           <IndianRupee size={16} />
         </span>
         <div className="receive-payment-titles">
-          <h3 className="receive-payment-title">{t.receivePaymentTitle}</h3>
+          <Heading level={3} className="receive-payment-title">{t.receivePaymentTitle}</Heading>
           {received === 0 && (
-            <p className="receive-payment-subtitle">{t.receivePaymentSubtitle}</p>
+            <Text className="receive-payment-subtitle">{t.receivePaymentSubtitle}</Text>
           )}
         </div>
         <Button variant="outline" size="sm" type="button" onClick={setFull}>

@@ -1,6 +1,7 @@
 /** Advanced-filter drawer — holds the status filter (All / Due / Active /
  * Inactive) that moved out of the chip row when chips became party-type. */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
@@ -25,7 +26,7 @@ export const PartyFilterDrawer: React.FC<PartyFilterDrawerProps> = ({
   return (
     <Drawer open={open} onClose={onClose} title={t.filters} size="sm">
       <div className="party-filter-drawer-body">
-        <p className="party-filter-drawer-label">{t.filterByStatus}</p>
+        <Text className="party-filter-drawer-label">{t.filterByStatus}</Text>
         <div className="status-pills" role="group" aria-label={t.filterByStatus}>
           {PARTY_STATUS_OPTIONS.map((option) => {
             const isActive = activeStatus === option.value

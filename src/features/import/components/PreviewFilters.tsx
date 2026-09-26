@@ -64,7 +64,7 @@ export function PreviewFilters({
             role="tab"
             aria-selected={isActive}
             onClick={() => onChange(chip.key)}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-full)] px-3 min-h-[44px] shrink-0 font-medium transition-colors"
+            className="inline-flex items-center gap-2 rounded-full px-3 min-h-11 shrink-0 font-medium transition-colors"
             style={{
               fontSize: 'var(--fs-sm)',
               backgroundColor: isActive ? 'var(--color-primary)' : 'var(--color-gray-0)',
@@ -74,7 +74,7 @@ export function PreviewFilters({
           >
             <span>{t[chip.labelKey] ?? chip.fallback}</span>
             <span
-              className="tabular-nums rounded-[var(--radius-full)] px-2"
+              className="tabular-nums rounded-full px-2"
               style={{
                 fontSize: 'var(--fs-xs)',
                 backgroundColor: isActive

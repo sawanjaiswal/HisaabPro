@@ -8,6 +8,7 @@ import React from 'react'
 import { formatAmount } from '../report.utils'
 import type { HsnSummaryItem } from '../report-tax.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Heading } from '@/components/ui/Heading'
 
 interface HsnSummaryTableProps {
   items: HsnSummaryItem[]
@@ -18,7 +19,7 @@ export const HsnSummaryTable: React.FC<HsnSummaryTableProps> = ({
   const { t } = useLanguage()
     return (
     <div className="hsn-summary" role="region" aria-label={t.hsnWiseTaxSummary}>
-      <h2 className="hsn-summary__heading">{t.hsnSacSummary}</h2>
+      <Heading level={2} className="hsn-summary__heading">{t.hsnSacSummary}</Heading>
 
       {/* Mobile: card list */}
       <div className="hsn-summary__cards" aria-hidden="false">

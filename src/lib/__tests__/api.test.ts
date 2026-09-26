@@ -23,19 +23,19 @@ describe('ApiError', () => {
 })
 
 describe('401 refresh interceptor — /auth/me should refresh, not hard-log-out', () => {
-  const originalFetch = global.fetch
+  const originalFetch = globalThis.fetch
 
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn())
   })
 
   afterEach(() => {
-    global.fetch = originalFetch
+    globalThis.fetch = originalFetch
     vi.unstubAllGlobals()
   })
 
   it('attempts a token refresh and retries on a 401 from /auth/me instead of throwing immediately', async () => {
-    const fetchMock = global.fetch as unknown as ReturnType<typeof vi.fn>
+    const fetchMock = globalThis.fetch as unknown as ReturnType<typeof vi.fn>
 
     fetchMock
       // 1. GET /auth/me → 401 (expired access token)
@@ -55,7 +55,7 @@ describe('401 refresh interceptor — /auth/me should refresh, not hard-log-out'
   })
 
   it('does NOT attempt a refresh on a 401 from /auth/login (bad credentials, not expired token)', async () => {
-    const fetchMock = global.fetch as unknown as ReturnType<typeof vi.fn>
+    const fetchMock = globalThis.fetch as unknown as ReturnType<typeof vi.fn>
 
     // Mutations bootstrap a CSRF token first (the client sends the header on
     // every state-changing request and lets the server decide whether to check

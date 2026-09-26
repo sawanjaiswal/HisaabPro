@@ -8,6 +8,7 @@
  * Do NOT modify the document detail page from this file.
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useECompliance } from '../hooks/useECompliance'
@@ -55,7 +56,7 @@ export const EComplianceSection: React.FC<EComplianceSectionProps> = ({
   if (fetchState === 'loading') {
     return (
       <div className="ecompliance-section py-0" aria-busy="true">
-        <p className="ecompliance-section-title py-0">{t.gstCompliance}</p>
+        <Text className="ecompliance-section-title py-0">{t.gstCompliance}</Text>
         <div className="compliance-card" aria-label={t.loadingComplianceStatus}>
           <div style={{ height: 80, background: 'var(--color-gray-100)', borderRadius: 'var(--radius-md)', animation: 'pulse 1.5s ease-in-out infinite' }} />
         </div>
@@ -66,11 +67,11 @@ export const EComplianceSection: React.FC<EComplianceSectionProps> = ({
   if (fetchState === 'error') {
     return (
       <div className="ecompliance-section py-0">
-        <p className="ecompliance-section-title py-0">{t.gstCompliance}</p>
+        <Text className="ecompliance-section-title py-0">{t.gstCompliance}</Text>
         <div className="compliance-card">
-          <p className="compliance-inline-error" role="alert">
+          <Text className="compliance-inline-error" role="alert">
             {fetchError ?? t.failedLoadCompliance}
-          </p>
+          </Text>
           <Button
             type="button"
             variant="secondary" size="md"
@@ -86,7 +87,7 @@ export const EComplianceSection: React.FC<EComplianceSectionProps> = ({
 
   return (
     <div className="ecompliance-section py-0">
-      <p className="ecompliance-section-title py-0">{t.gstCompliance}</p>
+      <Text className="ecompliance-section-title py-0">{t.gstCompliance}</Text>
 
       <EInvoiceCard
         status={eInvoice}

@@ -1,5 +1,6 @@
 /** ProductionRunWizardStep1 — Choose Recipe */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { listBoms } from '../../bom/bom.service'
@@ -8,6 +9,7 @@ import type { BomSummaryDTO } from '../../bom/bom.types'
 import type { WizardFormState } from '../production-run.types'
 import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/context/LanguageContext'
+import { Heading } from '@/components/ui/Heading'
 
 interface Step1Props {
   wizard: WizardFormState
@@ -42,8 +44,8 @@ export function ProductionRunWizardStep1({ wizard, onUpdate, onNext }: Step1Prop
 
   return (
     <div className="pr-wizard-step">
-      <h2 className="pr-wizard-step__title">{t.prStepChooseRecipe}</h2>
-      <p className="pr-wizard-step__desc">{t.prChooseRecipeDesc}</p>
+      <Heading level={2} className="pr-wizard-step__title">{t.prStepChooseRecipe}</Heading>
+      <Text className="pr-wizard-step__desc">{t.prChooseRecipeDesc}</Text>
 
       {loading && (
         <div className="pr-wizard-bom-list">
@@ -54,11 +56,11 @@ export function ProductionRunWizardStep1({ wizard, onUpdate, onNext }: Step1Prop
       )}
 
       {!loading && error && (
-        <p className="pr-wizard-error" role="alert">{t.prLoadRecipesError}</p>
+        <Text className="pr-wizard-error" role="alert">{t.prLoadRecipesError}</Text>
       )}
 
       {!loading && !error && boms.length === 0 && (
-        <p className="pr-wizard-empty">{t.prNoActiveRecipes}</p>
+        <Text className="pr-wizard-empty">{t.prNoActiveRecipes}</Text>
       )}
 
       {!loading && !error && boms.length > 0 && (

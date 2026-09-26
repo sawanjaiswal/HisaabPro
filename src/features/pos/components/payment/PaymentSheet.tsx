@@ -1,5 +1,6 @@
 /** POS — Bottom sheet with mode buttons + split tender */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
@@ -119,8 +120,8 @@ export function PaymentSheet({
         }
       >
         <div className="pos-sheet__body">
-          <p className="pos-sheet__total-label">{t.posGrandTotal ?? 'Total'}</p>
-          <p className="pos-sheet__total-amount">{paiseToInr(grandTotal)}</p>
+          <Text className="pos-sheet__total-label">{t.posGrandTotal ?? 'Total'}</Text>
+          <Text className="pos-sheet__total-amount">{paiseToInr(grandTotal)}</Text>
 
           {/* Loyalty chip + CTA — hidden when program off / walk-in */}
           {isLoyaltyOn && (
@@ -195,9 +196,9 @@ export function PaymentSheet({
 
           {/* Change */}
           {change > 0 && (
-            <p className="pos-sheet__change">
+            <Text className="pos-sheet__change">
               {t.posChange ?? 'Change'}: <strong>{paiseToInr(change)}</strong>
-            </p>
+            </Text>
           )}
         </div>
       </Drawer>

@@ -1,5 +1,6 @@
 /** CheckRow (#144) — one fired rule: severity pill, copy, affected-doc links. */
 
+import { Text } from '@/components/ui/Text'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
@@ -21,7 +22,7 @@ export function CheckRow({ check }: CheckRowProps) {
         <span className="gstv-check__title">{t[meta.titleKey]}</span>
         <span className={`gstv-sev gstv-sev--${sev.modifier}`}>{t[sev.labelKey]}</span>
       </div>
-      <p className="gstv-check__desc">{t[meta.descKey]}</p>
+      <Text className="gstv-check__desc">{t[meta.descKey]}</Text>
 
       <div className="gstv-check__count">
         {check.count} {t.gstReadinessDocsAffected}

@@ -14,6 +14,7 @@
  * optimistic `{}` (Offline Rule 5).
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useMemo } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
@@ -194,7 +195,7 @@ export function CommissionRuleForm({ rule, onDone }: CommissionRuleFormProps) {
           onChange={(e) => setField('staffUserIds', e.target.value)}
           placeholder={t.commissionRuleStaffPlaceholder}
         />
-        <p className="commission-rule-form__hint">{t.commissionRuleStaffHint}</p>
+        <Text className="commission-rule-form__hint">{t.commissionRuleStaffHint}</Text>
       </div>
 
       <div className="commission-rule-form__toggle-row">

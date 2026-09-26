@@ -1,11 +1,5 @@
-/** Create Invoice — the collapsible Details / Charges sections (mockup #2).
- *
- * Mockup #2 is one continuous scroll: Customer and Items stay visible and the
- * optional sections collapse rather than hiding behind tabs, so nothing that
- * used to be reachable stops being reachable.
- */
-
 import React from 'react'
+import { FileText, Percent } from 'lucide-react'
 import {
   Accordion,
   AccordionItem,
@@ -45,13 +39,28 @@ export const InvoiceOptionalSections: React.FC<InvoiceOptionalSectionsProps> = (
   return (
     <Accordion
       type="multiple"
-      className="form-accordion"
+      className="space-y-4"
       value={openSections}
       onValueChange={onOpenSectionsChange}
     >
-      <AccordionItem value="details">
-        <AccordionTrigger>{t.sectionDetails}</AccordionTrigger>
-        <AccordionContent className="space-y-6">
+      <AccordionItem
+        value="details"
+        className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs transition-all"
+      >
+        <AccordionTrigger className="flex items-center justify-between py-0 hover:no-underline cursor-pointer">
+          <div className="flex items-center gap-2.5 text-left">
+            <FileText className="w-4 h-4 text-emerald-700 shrink-0" />
+            <div className="flex flex-col">
+              <span className="font-semibold text-sm text-[var(--text-primary)]">
+                {t.sectionDetails || 'Details'}
+              </span>
+              <span className="text-[11px] text-[var(--text-secondary)] font-normal">
+                Notes, reference, due date etc.
+              </span>
+            </div>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent className="pt-4 space-y-6">
           <InvoiceDetailsSection
             documentDate={form.documentDate}
             paymentTerms={form.paymentTerms}
@@ -71,9 +80,24 @@ export const InvoiceOptionalSections: React.FC<InvoiceOptionalSectionsProps> = (
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value="charges">
-        <AccordionTrigger>{t.chargesLabel}</AccordionTrigger>
-        <AccordionContent>
+      <AccordionItem
+        value="charges"
+        className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs transition-all"
+      >
+        <AccordionTrigger className="flex items-center justify-between py-0 hover:no-underline cursor-pointer">
+          <div className="flex items-center gap-2.5 text-left">
+            <Percent className="w-4 h-4 text-emerald-700 shrink-0" />
+            <div className="flex flex-col">
+              <span className="font-semibold text-sm text-[var(--text-primary)]">
+                {t.chargesLabel || 'Charges'}
+              </span>
+              <span className="text-[11px] text-[var(--text-secondary)] font-normal">
+                Discount, tax and other charges
+              </span>
+            </div>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent className="pt-4">
           <InvoiceChargesSection
             charges={form.additionalCharges}
             onUpdateCharge={onUpdateCharge}

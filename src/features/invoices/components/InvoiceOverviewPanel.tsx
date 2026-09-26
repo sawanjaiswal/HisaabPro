@@ -4,6 +4,7 @@
  * subtotal, discount, charges, round-off, grand total, and notes.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatInvoiceAmount, formatInvoiceDate } from '../invoice-format.utils'
 import { DOCUMENT_TYPE_LABELS, PAYMENT_TERMS_LABELS } from '../invoice.constants'
@@ -69,7 +70,7 @@ export function InvoiceOverviewPanel({ document }: InvoiceOverviewPanelProps) {
       {document.notes && (
         <div className="invoice-info-row invoice-info-row--stacked">
           <span className="invoice-info-label">{t.notesLabel}</span>
-          <p className="invoice-info-notes">{document.notes}</p>
+          <Text className="invoice-info-notes">{document.notes}</Text>
         </div>
       )}
     </div>

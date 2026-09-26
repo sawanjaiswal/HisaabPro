@@ -1,8 +1,10 @@
 /** Create Party — Business info section with GSTIN verification */
 
+import { Text } from '@/components/ui/Text'
 import { CheckCircle, AlertTriangle, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/hooks/useLanguage'
+import { formatGSTIN, formatPAN } from '@/lib/format'
 import type { PartyFormData } from '../party.types'
 import type { UseGstinVerifyReturn } from '../useGstinVerify'
 import { Textarea } from '@/components/ui/Textarea'
@@ -25,7 +27,16 @@ export function PartyFormBusiness({ form, errors, onUpdate, gstinVerify }: Party
           label={t.gstin}
           id="party-gstin"
           value={form.gstin ?? ''}
-          onChange={e => onUpdate('gstin', e.target.value.toUpperCase() || undefined)}
+          onChange={e => {
+            const clean = e.target.value.toUpperCase().replace(/\s+/g, '').slice(0, 15)
+            onUpdate('gstin', clean || undefined)
+          }}
+          onBlur={() => {
+            if (form.gstin) {
+              const formatted = formatGSTIN(form.gstin)
+              if (formatted && formatted !== '—') onUpdate('gstin', formatted)
+            }
+          }}
           error={errors.gstin}
           placeholder="24AAACC1206D1ZM"
           maxLength={15}
@@ -35,15 +46,15 @@ export function PartyFormBusiness({ form, errors, onUpdate, gstinVerify }: Party
         />
 
         {status === 'idle' && (
-          <p id="party-gstin-hint" className="gstin-hint">
+          <Text id="party-gstin-hint" className="gstin-hint">
             {t.panAutoFilled}
-          </p>
+          </Text>
         )}
 
         {status === 'validating' && (
-          <p className="gstin-hint gstin-hint--loading" aria-live="polite">
+          <Text className="gstin-hint gstin-hint--loading" aria-live="polite">
             {t.verifyingGstin}
-          </p>
+          </Text>
         )}
 
         {status === 'verified' && result && (
@@ -68,7 +79,16 @@ export function PartyFormBusiness({ form, errors, onUpdate, gstinVerify }: Party
         label="PAN"
         id="party-pan"
         value={form.pan ?? ''}
-        onChange={e => onUpdate('pan', e.target.value.toUpperCase() || undefined)}
+        onChange={e => {
+          const clean = e.target.value.toUpperCase().replace(/\s+/g, '').slice(0, 10)
+          onUpdate('pan', clean || undefined)
+        }}
+        onBlur={() => {
+          if (form.pan) {
+            const formatted = formatPAN(form.pan)
+            if (formatted && formatted !== '—') onUpdate('pan', formatted)
+          }
+        }}
         error={errors.pan}
         placeholder="AAACC1206D"
         maxLength={10}

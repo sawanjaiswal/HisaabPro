@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { Search, Hash } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -34,7 +35,7 @@ export default function SerialLookupPage() {
         </div>
 
         {searchTerm.length > 0 && searchTerm.length < 3 && (
-          <p className="serial-lookup-hint">{t.typeMinChars}</p>
+          <Text className="serial-lookup-hint">{t.typeMinChars}</Text>
         )}
 
         {status === 'loading' && (

@@ -35,7 +35,7 @@ export function DocumentCustomFieldRow({ field, onEdit, onDelete }: Props) {
           {field.name}
           {field.required && (
             <span
-              className="ml-2 text-[var(--fs-xs)] font-medium"
+              className="ml-2 text-xs font-medium"
               style={{ color: 'var(--color-error-500)' }}
             >*</span>
           )}
@@ -49,7 +49,7 @@ export function DocumentCustomFieldRow({ field, onEdit, onDelete }: Props) {
           type="button"
           onClick={() => onEdit(field)}
           aria-label={t.editCustomField}
-          className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--color-gray-100)] transition-colors"
+          className="p-2 rounded-sm hover:bg-gray-100 transition-colors"
         >
           <Pencil className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
         </Button>
@@ -57,7 +57,7 @@ export function DocumentCustomFieldRow({ field, onEdit, onDelete }: Props) {
           type="button"
           onClick={() => onDelete(field)}
           aria-label={t.deleteCustomField}
-          className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--color-error-50)] transition-colors"
+          className="p-2 rounded-sm hover:bg-[var(--color-error-50)] transition-colors"
         >
           <Trash2 className="w-4 h-4" style={{ color: 'var(--color-error-500)' }} />
         </Button>

@@ -1,10 +1,12 @@
 /** POS — Void sale confirmation modal with reason input */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { AlertTriangle, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Textarea } from '@/components/ui/Textarea'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface VoidModalProps {
   receiptNumber: string
@@ -41,7 +43,7 @@ export function VoidModal({
       <div className="pos-modal pos-modal--danger">
         <div className="pos-modal__header">
           <AlertTriangle size={18} className="pos-modal__danger-icon" aria-hidden="true" />
-          <h2 className="pos-modal__title">{t.posVoidTitle ?? 'Void sale'}</h2>
+          <Heading level={2} className="pos-modal__title">{t.posVoidTitle ?? 'Void sale'}</Heading>
           <Button variant="none"
             type="button"
             className="pos-modal__close"
@@ -53,10 +55,10 @@ export function VoidModal({
         </div>
 
         <form onSubmit={handleSubmit} className="pos-modal__body">
-          <p className="pos-modal__desc">
+          <Text className="pos-modal__desc">
             {(t.posVoidConfirmText ?? 'Void sale {receipt}? This will reverse all stock movements.')
               .replace('{receipt}', receiptNumber)}
-          </p>
+          </Text>
 
           <label className="pos-modal__label" htmlFor="void-reason">
             {t.posVoidReason ?? 'Reason'} *

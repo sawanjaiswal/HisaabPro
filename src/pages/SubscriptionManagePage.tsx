@@ -6,6 +6,7 @@
  * subscription-port FE state machine.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -80,12 +81,12 @@ export function SubscriptionManagePage() {
               />
 
               <section className="subscription-section py-0">
-                <p
-                  className="text-[var(--fs-xs)] font-medium uppercase tracking-wider mb-2"
+                <Text
+                  className="text-xs font-medium uppercase tracking-wider mb-2"
                   style={{ color: 'var(--text-muted)' }}
                 >
                   {t.addonActive}
-                </p>
+                </Text>
                 {addons.length === 0 ? (
                   <EmptyState
                     title={t.noAddonsYet}

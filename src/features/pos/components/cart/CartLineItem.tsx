@@ -1,5 +1,6 @@
 /** POS — Cart line item with qty stepper + remove */
 
+import { Text } from '@/components/ui/Text'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { paiseToInr } from '../../utils/pos.format'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -20,19 +21,19 @@ export function CartLineItem({ item, onUpdateQty, onRemove }: CartLineItemProps)
     <li className="pos-cart-item">
       <div className="pos-cart-item__main">
         <div className="pos-cart-item__info">
-          <p className="pos-cart-item__name">{item.name}</p>
-          <p className="pos-cart-item__unit-price">
+          <Text className="pos-cart-item__name">{item.name}</Text>
+          <Text className="pos-cart-item__unit-price">
             {paiseToInr(item.unitPrice)} / {item.unit}
-          </p>
+          </Text>
           {item.discount > 0 && (
-            <p className="pos-cart-item__discount">
+            <Text className="pos-cart-item__discount">
               {t.posDiscount ?? 'Disc'}: -{paiseToInr(item.discount)}
-            </p>
+            </Text>
           )}
         </div>
 
         <div className="pos-cart-item__right">
-          <p className="pos-cart-item__total">{paiseToInr(total)}</p>
+          <Text className="pos-cart-item__total">{paiseToInr(total)}</Text>
           <div className="pos-cart-item__stepper" role="group" aria-label={`Quantity for ${item.name}`}>
             <Button variant="none"
               type="button"

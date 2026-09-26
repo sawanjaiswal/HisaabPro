@@ -44,8 +44,8 @@ export const BRAND = {
   /** Color tokens for branding */
   colors: {
     primaryDark: '#073B2C',
-    primary: '#026F39',
-    leafGreen: '#22C55E',
+    primary: 'var(--color-primary-500)',
+    leafGreen: 'var(--color-success-500)',
     leafLight: '#4ADE80',
     creamBg: '#F8F7F4',
     goldAccent: '#C89B3C',

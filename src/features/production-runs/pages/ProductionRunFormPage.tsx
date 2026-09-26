@@ -9,6 +9,7 @@ import { ProductionRunWizardStep3 } from '../components/ProductionRunWizardStep3
 import { useProductionRunForm } from '../hooks/useProductionRunForm'
 import { useLanguage } from '@/context/LanguageContext'
 import '../production-run.css'
+import { Heading } from '@/components/ui/Heading'
 
 export default function ProductionRunFormPage() {
   const navigate = useNavigate()
@@ -39,7 +40,7 @@ export default function ProductionRunFormPage() {
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <div style={{ flex: 1 }}>
-          <h1 className="bom-page__title">{wizardSteps[step]}</h1>
+          <Heading level={1} className="bom-page__title">{wizardSteps[step]}</Heading>
           <div className="pr-wizard-progress" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={wizardSteps.length}>
             <div className="pr-wizard-dots">
               {wizardSteps.map((_, i) => (
@@ -83,7 +84,7 @@ export default function ProductionRunFormPage() {
 
       {step === 3 && (
         <div className="pr-wizard-step">
-          <h2 className="pr-wizard-step__title">{t.prStepConfirmRun}</h2>
+          <Heading level={2} className="pr-wizard-step__title">{t.prStepConfirmRun}</Heading>
           <div className="pr-confirm-summary">
             <div className="pr-confirm-row">
               <span className="pr-confirm-row__label">{t.prRecipe}</span>

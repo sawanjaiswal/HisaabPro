@@ -1,5 +1,6 @@
 /** Tally Export Page — download Tally-compatible XML for a date range */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useRef } from 'react'
 import { Download, FileCode } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -62,9 +63,9 @@ export default function TallyExportPage() {
             <span className="finance-section__title py-0">{t.exportToTallyPrime}</span>
           </div>
           <div className="finance-section__rows tally-export__body py-0">
-            <p className="tally-export__desc">
+            <Text className="tally-export__desc">
               {t.tallyExportDesc}
-            </p>
+            </Text>
             <div className="finance-date-bar">
               <span className="finance-date-bar__label">{t.from}</span>
               <DateField type="date" className="finance-date-bar__input" value={dateRange.from} onChange={(e) => setDateRange((r) => ({ ...r, from: e.target.value }))} aria-label={t.fromDate} />
@@ -87,10 +88,10 @@ export default function TallyExportPage() {
 
         <div className="finance-empty tally-export__info">
           <div className="finance-empty__icon" aria-hidden="true"><FileCode size={32} /></div>
-          <p className="finance-empty__title">{t.tallyPrimeCompatible}</p>
-          <p className="finance-empty__desc">
+          <Text className="finance-empty__title">{t.tallyPrimeCompatible}</Text>
+          <Text className="finance-empty__desc">
             {t.tallyPrimeDesc}
-          </p>
+          </Text>
         </div>
       </PageContainer>
     </AppShell>

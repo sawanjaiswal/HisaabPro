@@ -26,6 +26,7 @@ import './units.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Heading } from '@/components/ui/Heading'
 
 export default function UnitsPage() {
   const { t } = useLanguage()
@@ -167,9 +168,9 @@ export default function UnitsPage() {
                   <div className="unit-groups stagger-list">
                     {Array.from(grouped.entries()).map(([category, catUnits]) => (
                       <div key={category} className="unit-group">
-                        <h3 className="unit-group__title">
+                        <Heading level={3} className="unit-group__title">
                           {UNIT_CATEGORY_LABELS[category]}
-                        </h3>
+                        </Heading>
                         {catUnits.map((unit) => (
                           <UnitListItem
                             key={unit.id}

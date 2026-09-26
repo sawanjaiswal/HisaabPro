@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { UserCog, Ban, Trash2 } from 'lucide-react'
@@ -47,7 +48,7 @@ export const StaffCard: React.FC<StaffCardProps> = ({ staff, onSuspend, onRemove
       />
 
       <span className="staff-info">
-        <p className="staff-name">{staff.name}</p>
+        <Text className="staff-name">{staff.name}</Text>
         <span className="staff-meta">
           <span className="staff-role">{staff.role.name}</span>
           <span className="staff-phone">{staff.phone}</span>

@@ -16,6 +16,7 @@
  *   success  → input + apply CTA
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useMemo, useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Drawer } from '@/components/ui/Drawer'
@@ -195,14 +196,14 @@ export function LoyaltyRedeemSheet({
                 </Button>
               </div>
               {program.redemptionUnit > 1 && (
-                <p className="loyalty-redeem__hint">
+                <Text className="loyalty-redeem__hint">
                   {t.loyaltyRedeemUnitHint.replace('{unit}', String(program.redemptionUnit))}
-                </p>
+                </Text>
               )}
               {errorKey && (
-                <p className="loyalty-redeem__error" role="alert">
+                <Text className="loyalty-redeem__error" role="alert">
                   {t[errorKey]}
-                </p>
+                </Text>
               )}
             </div>
 

@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { FormPageShell } from '@/components/layout/FormPageShell'
 import { Button } from '@/components/ui/Button'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
@@ -129,20 +130,15 @@ function EditPartyForm({ partyId, initialData, version }: { partyId: string; ini
   const { peers } = usePresence('party', partyId, 'editing')
 
   return (
-    <AppShell>
-      <Header title={t.editParty} backTo={`/parties/${partyId}`} actions={<PresenceAvatars peers={peers} />} />
-
-      <PageContainer className="create-party-page stagger-enter space-y-6">
-        <PartyFormSections
-          form={form}
-          errors={errors}
-          onUpdate={updateField}
-          gstinVerify={gstinVerify}
-          isEditMode
-        />
-      </PageContainer>
-
-      <div className="create-party-actions">
+    <FormPageShell
+      title={t.editParty}
+      backTo={`/parties/${partyId}`}
+      actions={<PresenceAvatars peers={peers} />}
+      onSubmit={(e) => {
+        e.preventDefault()
+        handleSubmit()
+      }}
+      footer={
         <Button
           variant="primary"
           size="lg"
@@ -152,7 +148,15 @@ function EditPartyForm({ partyId, initialData, version }: { partyId: string; ini
         >
           {t.updatePartyText}
         </Button>
-      </div>
+      }
+    >
+      <PartyFormSections
+        form={form}
+        errors={errors}
+        onUpdate={updateField}
+        gstinVerify={gstinVerify}
+        isEditMode
+      />
 
       <ConflictDialog
         conflict={conflictReconcile.conflict}
@@ -161,6 +165,6 @@ function EditPartyForm({ partyId, initialData, version }: { partyId: string; ini
         onOverwrite={conflictReconcile.overwrite}
         onDismiss={conflictReconcile.dismiss}
       />
-    </AppShell>
+    </FormPageShell>
   )
 }

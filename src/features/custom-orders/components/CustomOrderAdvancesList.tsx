@@ -1,5 +1,6 @@
 /** CustomOrderAdvancesList — advance ledger inside the order detail */
 
+import { Text } from '@/components/ui/Text'
 import { Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { formatPaise } from '../custom-orders.utils'
@@ -42,9 +43,9 @@ export function CustomOrderAdvancesList({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
       {advances.length === 0 ? (
-        <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)', margin: 0 }}>
+        <Text style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)', margin: 0 }}>
           {t.coNoAdvances}
-        </p>
+        </Text>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
           {advances.map((adv) => (

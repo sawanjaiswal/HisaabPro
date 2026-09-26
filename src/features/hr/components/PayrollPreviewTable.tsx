@@ -19,6 +19,7 @@
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PayrollLine, PayrollPreviewTotals } from '../payroll.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface PayrollPreviewTableProps {
   lines: PayrollLine[]
@@ -37,36 +38,36 @@ export function PayrollPreviewTable({ lines, totals }: PayrollPreviewTableProps)
         {lines.map((line) => (
           <li key={line.employeeId}>
             <article
-              className="rounded-[var(--radius-lg)] bg-[var(--color-surface)] border border-[var(--color-border)] p-3"
+              className="rounded-lg bg-surface border border-border p-3"
               aria-label={line.employeeName}
             >
               <header className="flex items-baseline justify-between gap-2 mb-2">
-                <h3 className="text-[var(--fs-base)] font-medium text-[var(--color-text)] truncate">
+                <Heading level={3} className="text-base font-medium text-text-primary truncate">
                   {line.employeeName}
-                </h3>
-                <span className="text-[var(--fs-base)] font-semibold text-[var(--color-text)] tabular-nums whitespace-nowrap">
+                </Heading>
+                <span className="text-base font-semibold text-text-primary tabular-nums whitespace-nowrap">
                   {formatPaise(line.netPaise)}
                 </span>
               </header>
 
-              <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-[var(--fs-sm)]">
-                <dt className="text-[var(--color-text-secondary)]">{t.payrollColPresent as string}</dt>
-                <dd className="tabular-nums text-right text-[var(--color-text)]">{line.presentDays}</dd>
+              <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
+                <dt className="text-text-secondary">{t.payrollColPresent as string}</dt>
+                <dd className="tabular-nums text-right text-text-primary">{line.presentDays}</dd>
 
-                <dt className="text-[var(--color-text-secondary)]">{t.payrollColHalf as string}</dt>
-                <dd className="tabular-nums text-right text-[var(--color-text)]">{line.halfDays}</dd>
+                <dt className="text-text-secondary">{t.payrollColHalf as string}</dt>
+                <dd className="tabular-nums text-right text-text-primary">{line.halfDays}</dd>
 
-                <dt className="text-[var(--color-text-secondary)]">{t.payrollColOvertimeMin as string}</dt>
-                <dd className="tabular-nums text-right text-[var(--color-text)]">{line.overtimeMin}</dd>
+                <dt className="text-text-secondary">{t.payrollColOvertimeMin as string}</dt>
+                <dd className="tabular-nums text-right text-text-primary">{line.overtimeMin}</dd>
 
-                <dt className="text-[var(--color-text-secondary)]">{t.payrollColGross as string}</dt>
-                <dd className="tabular-nums text-right text-[var(--color-text)]">{formatPaise(line.grossPaise)}</dd>
+                <dt className="text-text-secondary">{t.payrollColGross as string}</dt>
+                <dd className="tabular-nums text-right text-text-primary">{formatPaise(line.grossPaise)}</dd>
 
-                <dt className="text-[var(--color-text-secondary)]">{t.payrollColAdvance as string}</dt>
-                <dd className="tabular-nums text-right text-[var(--color-text)]">{formatPaise(line.advanceTotalPaise)}</dd>
+                <dt className="text-text-secondary">{t.payrollColAdvance as string}</dt>
+                <dd className="tabular-nums text-right text-text-primary">{formatPaise(line.advanceTotalPaise)}</dd>
 
-                <dt className="text-[var(--color-text-secondary)]">{t.payrollColDeductions as string}</dt>
-                <dd className="tabular-nums text-right text-[var(--color-text)]">{formatPaise(line.deductionsPaise)}</dd>
+                <dt className="text-text-secondary">{t.payrollColDeductions as string}</dt>
+                <dd className="tabular-nums text-right text-text-primary">{formatPaise(line.deductionsPaise)}</dd>
               </dl>
             </article>
           </li>
@@ -74,59 +75,59 @@ export function PayrollPreviewTable({ lines, totals }: PayrollPreviewTableProps)
       </ul>
 
       {/* Desktop ≥md — table */}
-      <div className="hidden md:block overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--color-border)]">
-        <table className="w-full border-collapse text-[var(--fs-sm)]">
-          <thead className="bg-[var(--color-surface-muted)]">
+      <div className="hidden md:block overflow-x-auto rounded-lg border border-border">
+        <table className="w-full border-collapse text-sm">
+          <thead className="bg-surface-subtle">
             <tr>
-              <th scope="col" className="text-left p-2 text-[var(--color-text-secondary)] font-medium">
+              <th scope="col" className="text-left p-2 text-text-secondary font-medium">
                 {t.payrollColEmployee as string}
               </th>
-              <th scope="col" className="text-right p-2 text-[var(--color-text-secondary)] font-medium">
+              <th scope="col" className="text-right p-2 text-text-secondary font-medium">
                 {t.payrollColPresent as string}
               </th>
-              <th scope="col" className="text-right p-2 text-[var(--color-text-secondary)] font-medium">
+              <th scope="col" className="text-right p-2 text-text-secondary font-medium">
                 {t.payrollColHalf as string}
               </th>
-              <th scope="col" className="text-right p-2 text-[var(--color-text-secondary)] font-medium">
+              <th scope="col" className="text-right p-2 text-text-secondary font-medium">
                 {t.payrollColOvertimeMin as string}
               </th>
-              <th scope="col" className="text-right p-2 text-[var(--color-text-secondary)] font-medium">
+              <th scope="col" className="text-right p-2 text-text-secondary font-medium">
                 {t.payrollColGross as string}
               </th>
-              <th scope="col" className="text-right p-2 text-[var(--color-text-secondary)] font-medium">
+              <th scope="col" className="text-right p-2 text-text-secondary font-medium">
                 {t.payrollColAdvance as string}
               </th>
-              <th scope="col" className="text-right p-2 text-[var(--color-text-secondary)] font-medium">
+              <th scope="col" className="text-right p-2 text-text-secondary font-medium">
                 {t.payrollColDeductions as string}
               </th>
-              <th scope="col" className="text-right p-2 text-[var(--color-text-secondary)] font-medium">
+              <th scope="col" className="text-right p-2 text-text-secondary font-medium">
                 {t.payrollColNet as string}
               </th>
             </tr>
           </thead>
           <tbody>
             {lines.map((line) => (
-              <tr key={line.employeeId} className="border-t border-[var(--color-border)]">
-                <td className="p-2 text-[var(--color-text)]">{line.employeeName}</td>
-                <td className="p-2 text-right tabular-nums text-[var(--color-text)]">{line.presentDays}</td>
-                <td className="p-2 text-right tabular-nums text-[var(--color-text)]">{line.halfDays}</td>
-                <td className="p-2 text-right tabular-nums text-[var(--color-text)]">{line.overtimeMin}</td>
-                <td className="p-2 text-right tabular-nums text-[var(--color-text)]">{formatPaise(line.grossPaise)}</td>
-                <td className="p-2 text-right tabular-nums text-[var(--color-text)]">{formatPaise(line.advanceTotalPaise)}</td>
-                <td className="p-2 text-right tabular-nums text-[var(--color-text)]">{formatPaise(line.deductionsPaise)}</td>
-                <td className="p-2 text-right tabular-nums font-semibold text-[var(--color-text)]">{formatPaise(line.netPaise)}</td>
+              <tr key={line.employeeId} className="border-t border-border">
+                <td className="p-2 text-text-primary">{line.employeeName}</td>
+                <td className="p-2 text-right tabular-nums text-text-primary">{line.presentDays}</td>
+                <td className="p-2 text-right tabular-nums text-text-primary">{line.halfDays}</td>
+                <td className="p-2 text-right tabular-nums text-text-primary">{line.overtimeMin}</td>
+                <td className="p-2 text-right tabular-nums text-text-primary">{formatPaise(line.grossPaise)}</td>
+                <td className="p-2 text-right tabular-nums text-text-primary">{formatPaise(line.advanceTotalPaise)}</td>
+                <td className="p-2 text-right tabular-nums text-text-primary">{formatPaise(line.deductionsPaise)}</td>
+                <td className="p-2 text-right tabular-nums font-semibold text-text-primary">{formatPaise(line.netPaise)}</td>
               </tr>
             ))}
           </tbody>
-          <tfoot className="bg-[var(--color-surface-muted)]">
-            <tr className="border-t border-[var(--color-border)]">
-              <th scope="row" className="p-2 text-left text-[var(--color-text)] font-semibold">
+          <tfoot className="bg-surface-subtle">
+            <tr className="border-t border-border">
+              <th scope="row" className="p-2 text-left text-text-primary font-semibold">
                 {t.payrollTotalsLabel as string}
               </th>
               <td colSpan={3} />
-              <td className="p-2 text-right tabular-nums font-semibold text-[var(--color-text)]">{formatPaise(totals.grossPaise)}</td>
+              <td className="p-2 text-right tabular-nums font-semibold text-text-primary">{formatPaise(totals.grossPaise)}</td>
               <td colSpan={2} />
-              <td className="p-2 text-right tabular-nums font-semibold text-[var(--color-text)]">{formatPaise(totals.netPaise)}</td>
+              <td className="p-2 text-right tabular-nums font-semibold text-text-primary">{formatPaise(totals.netPaise)}</td>
             </tr>
           </tfoot>
         </table>
@@ -134,15 +135,15 @@ export function PayrollPreviewTable({ lines, totals }: PayrollPreviewTableProps)
 
       {/* Mobile totals — outside the cards (always visible) */}
       <div
-        className="md:hidden mt-3 rounded-[var(--radius-lg)] bg-[var(--color-surface-muted)] border border-[var(--color-border)] p-3"
+        className="md:hidden mt-3 rounded-lg bg-surface-subtle border border-border p-3"
         aria-label={t.payrollTotalsLabel as string}
       >
-        <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-[var(--fs-sm)]">
-          <dt className="text-[var(--color-text-secondary)]">{t.payrollColGross as string}</dt>
-          <dd className="tabular-nums text-right font-medium text-[var(--color-text)]">{formatPaise(totals.grossPaise)}</dd>
+        <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
+          <dt className="text-text-secondary">{t.payrollColGross as string}</dt>
+          <dd className="tabular-nums text-right font-medium text-text-primary">{formatPaise(totals.grossPaise)}</dd>
 
-          <dt className="text-[var(--fs-base)] text-[var(--color-text)] font-semibold">{t.payrollColNet as string}</dt>
-          <dd className="tabular-nums text-right text-[var(--fs-base)] font-semibold text-[var(--color-text)]">{formatPaise(totals.netPaise)}</dd>
+          <dt className="text-base text-text-primary font-semibold">{t.payrollColNet as string}</dt>
+          <dd className="tabular-nums text-right text-base font-semibold text-text-primary">{formatPaise(totals.netPaise)}</dd>
         </dl>
       </div>
     </div>

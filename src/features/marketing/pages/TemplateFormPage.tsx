@@ -1,5 +1,6 @@
 /** TemplateFormPage — /marketing/templates/new and /marketing/templates/:id/edit */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
@@ -12,6 +13,7 @@ import type { MarketingChannel, CreateTemplatePayload } from '../marketing.types
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 const SMS_CHAR_WARN = 140
 const SMS_CHAR_MAX = 160
@@ -88,9 +90,9 @@ export default function TemplateFormPage() {
         <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(MARKETING_ROUTES.TEMPLATES)} aria-label={t.marketingBackToTemplates}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
-        <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>
+        <Heading level={1} style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>
           {isEdit ? t.marketingEditTemplate : t.marketingNewTemplate}
-        </h1>
+        </Heading>
       </div>
 
       {/* DLT warning */}
@@ -99,7 +101,7 @@ export default function TemplateFormPage() {
       <form onSubmit={(e) => { void handleSubmit(e) }} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
         {/* Channel */}
         <div>
-          <p style={labelStyle}>{t.marketingSendVia}</p>
+          <Text style={labelStyle}>{t.marketingSendVia}</Text>
           <div style={{ display: 'flex', gap: '10px' }}>
             <ChannelToggle value={channel} onChange={(ch) => { setChannel(ch); setDltTemplateId(''); setWaTemplateName('') }} disabled={isEdit} />
           </div>

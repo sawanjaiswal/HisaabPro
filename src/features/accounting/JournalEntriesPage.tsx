@@ -1,5 +1,6 @@
 /** Journal Entries — Paginated list with type and status filters */
 
+import { Text } from '@/components/ui/Text'
 import { FileText } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { AppShell } from '@/components/layout/AppShell'
@@ -91,9 +92,9 @@ export default function JournalEntriesPage() {
 
         {/* Count */}
         {status === 'success' && (
-          <p className="je-count" aria-live="polite">
+          <Text className="je-count" aria-live="polite">
             {total} {total === 1 ? 'entry' : 'entries'}
-          </p>
+          </Text>
         )}
 
         {/* Empty */}

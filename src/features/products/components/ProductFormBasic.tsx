@@ -1,10 +1,12 @@
 /** Create Product — Basic info section */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect, useCallback } from 'react'
 import { Plus } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
+import { formatName } from '@/lib/format'
 import type { ProductFormData, Category, Unit } from '../product.types'
 import { getCategories, getUnits, createUnit } from '../product.service'
 import type { UnitInput } from '../unit.service'
@@ -66,12 +68,21 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
         id="product-name"
         value={form.name}
         onChange={(e) => onUpdate('name', e.target.value)}
+        onBlur={() => {
+          if (form.name?.trim()) {
+            const formatted = formatName(form.name)
+            if (formatted && formatted !== '—') {
+              onUpdate('name', formatted)
+            }
+          }
+        }}
         error={errors.name}
         placeholder="e.g. Maggi Noodles 70g"
         required
         autoComplete="off"
         aria-required="true"
       />
+
 
       <div className="input-group">
         <span className="input-label" id="sku-mode-label">{t.sku}</span>
@@ -105,7 +116,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
             aria-label={t.productSkuCode}
           />
         )}
-        {errors.sku && <p className="input-error" role="alert">{errors.sku}</p>}
+        {errors.sku && <Text className="input-error" role="alert">{errors.sku}</Text>}
       </div>
 
       <div className="input-group">
@@ -146,7 +157,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
             <Plus size={16} aria-hidden="true" />
           </Button>
         </div>
-        {errors.unitId && <p className="input-error" role="alert">{errors.unitId}</p>}
+        {errors.unitId && <Text className="input-error" role="alert">{errors.unitId}</Text>}
       </div>
 
       <div className="input-group">
@@ -166,7 +177,7 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
             inputMode="decimal"
           />
         </div>
-        {errors.salePrice && <p className="input-error" role="alert">{errors.salePrice}</p>}
+        {errors.salePrice && <Text className="input-error" role="alert">{errors.salePrice}</Text>}
       </div>
 
       <div className="input-group">

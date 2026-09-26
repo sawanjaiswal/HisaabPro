@@ -1,8 +1,10 @@
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Fingerprint, Delete } from 'lucide-react'
 import '../pin-setup.css'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface PinPadProps {
   length: number
@@ -47,8 +49,8 @@ export const PinPad: React.FC<PinPadProps> = ({
   return (
     <div className="pin-screen">
       <div className="pin-header">
-        <h2 className="pin-title">{title}</h2>
-        {subtitle && <p className="pin-subtitle">{subtitle}</p>}
+        <Heading level={2} className="pin-title">{title}</Heading>
+        {subtitle && <Text className="pin-subtitle">{subtitle}</Text>}
       </div>
 
       <div
@@ -67,7 +69,7 @@ export const PinPad: React.FC<PinPadProps> = ({
       </div>
 
       {error && (
-        <p className="pin-error-text" role="alert">{error}</p>
+        <Text className="pin-error-text" role="alert">{error}</Text>
       )}
 
       <div className="pin-keypad" role="group" aria-label={t.pinKeypadLabel}>

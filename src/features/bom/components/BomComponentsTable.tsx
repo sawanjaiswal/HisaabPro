@@ -1,5 +1,6 @@
 /** BomComponentsTable — read-only table on detail page */
 
+import { Text } from '@/components/ui/Text'
 import { formatQty } from '../bom.utils'
 import { useLanguage } from '@/context/LanguageContext'
 import type { BomComponentDTO } from '../bom.types'
@@ -12,7 +13,7 @@ interface BomComponentsTableProps {
 export function BomComponentsTable({ components, quantityProduced = 1 }: BomComponentsTableProps) {
   const { t } = useLanguage()
   if (components.length === 0) {
-    return <p className="bom-components-empty">{t.bomNoComponents}</p>
+    return <Text className="bom-components-empty">{t.bomNoComponents}</Text>
   }
 
   return (

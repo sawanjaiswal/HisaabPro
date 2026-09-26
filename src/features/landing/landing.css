@@ -15,17 +15,17 @@
   --lp-bg: #f0f7ff;
   --lp-bg-surface: #f8fafc;
   --lp-bg-card: #ffffff;
-  --lp-bg-elevated: #f3f4f6;
+  --lp-bg-elevated: var(--color-gray-100);
   --lp-bg-nav: rgba(255, 255, 255, 0.92);
   --lp-bg-mobile-menu: rgba(255, 255, 255, 0.95);
   --lp-bg-badge: rgba(243, 244, 246, 0.7);
   --lp-bg-fade: #f0f7ff;
 
   /* ---- Text ---- */
-  --lp-text: #111827;
-  --lp-text-secondary: #4b5563;
-  --lp-text-muted: #6b7280;
-  --lp-text-body: #374151;
+  --lp-text: var(--color-gray-900);
+  --lp-text-secondary: var(--color-gray-600);
+  --lp-text-muted: var(--color-gray-500);
+  --lp-text-body: var(--color-gray-700);
   --lp-text-inverted: #ffffff;
 
   /* ---- Headings (gradient) ---- */
@@ -41,14 +41,14 @@
   --lp-accent: #2563eb;
 
   /* ---- Borders ---- */
-  --lp-border: #e5e7eb;
+  --lp-border: var(--color-gray-200);
   --lp-border-subtle: rgba(0, 0, 0, 0.06);
-  --lp-border-badge: #d1d5db;
-  --lp-card-border: #e5e7eb;
-  --lp-card-img-border: #f3f4f6;
+  --lp-border-badge: var(--color-gray-300);
+  --lp-card-border: var(--color-gray-200);
+  --lp-card-img-border: var(--color-gray-100);
 
   /* ---- Icons ---- */
-  --lp-icon: #4b5563;
+  --lp-icon: var(--color-gray-600);
 
   /* ---- Hover effects ---- */
   --lp-hover-from: #dbeafe;
@@ -56,38 +56,38 @@
   --lp-hover-bar-active: #2563eb;
 
   /* ---- Avatar ---- */
-  --lp-avatar-ring: #f3f4f6;
+  --lp-avatar-ring: var(--color-gray-100);
 
   /* ---- Pricing toggle ---- */
   --lp-toggle-track-bg: #ffffff;
-  --lp-toggle-track-border: #e5e7eb;
-  --lp-toggle-active-bg: #111827;
+  --lp-toggle-track-border: var(--color-gray-200);
+  --lp-toggle-active-bg: var(--color-gray-900);
   --lp-toggle-active-text: #ffffff;
-  --lp-toggle-inactive-text: #6b7280;
+  --lp-toggle-inactive-text: var(--color-gray-500);
 
   /* ---- Pricing cards ---- */
   --lp-price-card-bg: #ffffff;
-  --lp-price-card-border: #e5e7eb;
+  --lp-price-card-border: var(--color-gray-200);
   --lp-price-highlight-from: rgba(30, 58, 95, 0.06);
   --lp-price-highlight-border: rgba(30, 58, 95, 0.25);
   --lp-price-badge-bg: #0ea5e9;
   --lp-price-badge-text: #ffffff;
   --lp-price-btn-bg: #ffffff;
-  --lp-price-btn-text: #111827;
-  --lp-price-btn-border: #e5e7eb;
-  --lp-price-btn-hover-bg: #f9fafb;
-  --lp-price-btn-hl-bg: #111827;
+  --lp-price-btn-text: var(--color-gray-900);
+  --lp-price-btn-border: var(--color-gray-200);
+  --lp-price-btn-hover-bg: var(--color-gray-50);
+  --lp-price-btn-hl-bg: var(--color-gray-900);
   --lp-price-btn-hl-text: #ffffff;
-  --lp-price-btn-hl-hover-bg: #1f2937;
-  --lp-price-included: #111827;
-  --lp-price-excluded: #9ca3af;
-  --lp-price-desc: #6b7280;
-  --lp-price-save: #059669;
+  --lp-price-btn-hl-hover-bg: var(--color-gray-800);
+  --lp-price-included: var(--color-gray-900);
+  --lp-price-excluded: var(--color-gray-400);
+  --lp-price-desc: var(--color-gray-500);
+  --lp-price-save: var(--color-success-600);
 
   /* ---- Testimonial ---- */
   --lp-testimonial-badge-bg: rgba(243, 244, 246, 0.5);
-  --lp-testimonial-badge-border: #d1d5db;
-  --lp-testimonial-badge-text: #6b7280;
+  --lp-testimonial-badge-border: var(--color-gray-300);
+  --lp-testimonial-badge-text: var(--color-gray-500);
 
   /* ---- Divider ---- */
   --lp-divider: rgba(0, 0, 0, 0.08);
@@ -96,7 +96,7 @@
   --lp-section-tint: rgba(0, 0, 0, 0.015);
 
   /* ---- UI Mockup elements ---- */
-  --lp-mock-success: #059669;
+  --lp-mock-success: var(--color-success-600);
   --lp-mock-warning: #ea580c;
   --lp-mock-bar-bg: rgba(0, 0, 0, 0.06);
   --lp-mock-row-hover: rgba(0, 0, 0, 0.03);
@@ -107,9 +107,9 @@
 
   /* ---- Before/After ---- */
   --lp-before-bg: rgba(239, 68, 68, 0.04);
-  --lp-before-badge-text: #dc2626;
+  --lp-before-badge-text: var(--color-error-600);
   --lp-before-badge-bg: rgba(239, 68, 68, 0.08);
-  --lp-before-icon: #dc2626;
+  --lp-before-icon: var(--color-error-600);
   --lp-after-bg: rgba(34, 197, 94, 0.04);
 }
 
@@ -119,56 +119,56 @@ html[data-theme="dark"] .landing-root {
   /* ---- Page (navy-tinted darks, not pure black) ---- */
   --lp-bg: #060a12;
   --lp-bg-surface: #0a0f1a;
-  --lp-bg-card: #111827;
-  --lp-bg-elevated: #1e293b;
+  --lp-bg-card: var(--color-gray-900);
+  --lp-bg-elevated: var(--color-gray-800);
   --lp-bg-nav: rgba(6, 10, 18, 0.85);
   --lp-bg-mobile-menu: rgba(6, 10, 18, 0.95);
   --lp-bg-badge: rgba(30, 41, 59, 0.5);
   --lp-bg-fade: #060a12;
 
   /* ---- Text (blue-tinted neutrals) ---- */
-  --lp-text: #f1f5f9;
+  --lp-text: var(--color-gray-100);
   --lp-text-secondary: rgba(203, 213, 225, 0.7);
-  --lp-text-muted: #94a3b8;
+  --lp-text-muted: var(--color-gray-400);
   --lp-text-body: #cbd5e1;
   --lp-text-inverted: #0f172a;
 
   /* ---- Headings (gradient — higher contrast endpoint) ---- */
   --lp-heading-from: #f8fafc;
-  --lp-heading-mid: #f1f5f9;
+  --lp-heading-mid: var(--color-gray-100);
   --lp-heading-to: rgba(203, 213, 225, 0.75);
 
   /* ---- Brand / CTA ---- */
-  --lp-brand: #f1f5f9;
-  --lp-cta-bg: #f1f5f9;
+  --lp-brand: var(--color-gray-100);
+  --lp-cta-bg: var(--color-gray-100);
   --lp-cta-text: #0f172a;
   --lp-cta-hover-bg: #e2e8f0;
   --lp-accent: #3b82f6;
 
   /* ---- Borders ---- */
-  --lp-border: #1e293b;
+  --lp-border: var(--color-gray-800);
   --lp-border-subtle: rgba(148, 163, 184, 0.12);
   --lp-border-badge: #334155;
-  --lp-card-border: #1e293b;
+  --lp-card-border: var(--color-gray-800);
   --lp-card-img-border: #334155;
 
   /* ---- Icons ---- */
-  --lp-icon: #94a3b8;
+  --lp-icon: var(--color-gray-400);
 
   /* ---- Hover effects ---- */
-  --lp-hover-from: #1e293b;
+  --lp-hover-from: var(--color-gray-800);
   --lp-hover-bar: #334155;
   --lp-hover-bar-active: #3b82f6;
 
   /* ---- Avatar ---- */
-  --lp-avatar-ring: #1e293b;
+  --lp-avatar-ring: var(--color-gray-800);
 
   /* ---- Pricing toggle ---- */
   --lp-toggle-track-bg: rgba(30, 41, 59, 0.5);
   --lp-toggle-track-border: #334155;
-  --lp-toggle-active-bg: #f1f5f9;
+  --lp-toggle-active-bg: var(--color-gray-100);
   --lp-toggle-active-text: #0f172a;
-  --lp-toggle-inactive-text: #94a3b8;
+  --lp-toggle-inactive-text: var(--color-gray-400);
 
   /* ---- Pricing cards ---- */
   --lp-price-card-bg: rgba(30, 41, 59, 0.5);
@@ -178,21 +178,21 @@ html[data-theme="dark"] .landing-root {
   --lp-price-badge-bg: #0ea5e9;
   --lp-price-badge-text: #ffffff;
   --lp-price-btn-bg: #0f172a;
-  --lp-price-btn-text: #f1f5f9;
-  --lp-price-btn-border: #1e293b;
-  --lp-price-btn-hover-bg: #1e293b;
-  --lp-price-btn-hl-bg: #f1f5f9;
+  --lp-price-btn-text: var(--color-gray-100);
+  --lp-price-btn-border: var(--color-gray-800);
+  --lp-price-btn-hover-bg: var(--color-gray-800);
+  --lp-price-btn-hl-bg: var(--color-gray-100);
   --lp-price-btn-hl-text: #0f172a;
   --lp-price-btn-hl-hover-bg: #e2e8f0;
-  --lp-price-included: #f1f5f9;
+  --lp-price-included: var(--color-gray-100);
   --lp-price-excluded: #475569;
-  --lp-price-desc: #94a3b8;
+  --lp-price-desc: var(--color-gray-400);
   --lp-price-save: #34d399;
 
   /* ---- Testimonial ---- */
   --lp-testimonial-badge-bg: rgba(30, 41, 59, 0.5);
   --lp-testimonial-badge-border: #334155;
-  --lp-testimonial-badge-text: #94a3b8;
+  --lp-testimonial-badge-text: var(--color-gray-400);
 
   /* ---- Divider ---- */
   --lp-divider: rgba(148, 163, 184, 0.12);

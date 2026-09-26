@@ -105,10 +105,10 @@ export default function AppointmentsPage() {
           ]}
         />
 
-        <div className="text-[var(--fs-lg)] font-medium">
+        <div className="text-lg font-medium">
           {formatDayLabel(date)}{' '}
           {status === 'success' && (
-            <span className="text-[var(--fs-sm)]" style={{ color: 'var(--color-text-muted)' }}>
+            <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
               · {data.length} {data.length === 1 ? (t.appointment ?? 'appointment') : (t.appointments ?? 'appointments')}
             </span>
           )}

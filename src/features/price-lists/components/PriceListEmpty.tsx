@@ -1,5 +1,6 @@
 /** PriceListEmpty — empty-state for the list page */
 
+import { Text } from '@/components/ui/Text'
 import { Tag, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -13,8 +14,8 @@ export function PriceListEmpty({ onAdd }: PriceListEmptyProps) {
   return (
     <div className="pl-empty" role="status" aria-live="polite">
       <Tag size={40} className="pl-empty__icon" aria-hidden="true" />
-      <p className="pl-empty__title">{t.plEmptyTitle}</p>
-      <p className="pl-empty__body">{t.plEmptyDesc}</p>
+      <Text className="pl-empty__title">{t.plEmptyTitle}</Text>
+      <Text className="pl-empty__body">{t.plEmptyDesc}</Text>
       <Button type="button" variant="primary" onClick={onAdd}>
         <Plus size={16} aria-hidden="true" />
         {t.plCreate}

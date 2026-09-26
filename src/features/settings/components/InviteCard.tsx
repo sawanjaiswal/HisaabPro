@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Clock, RotateCcw } from 'lucide-react'
@@ -22,11 +23,11 @@ export const InviteCard: React.FC<InviteCardProps> = ({ invite, onResend }) => {
       </span>
 
       <span className="staff-invite-info">
-        <p className="staff-invite-name">{invite.name}</p>
+        <Text className="staff-invite-name">{invite.name}</Text>
         <span className="staff-phone">{invite.phone} &middot; {invite.roleName}</span>
-        <p className="staff-invite-expires">
+        <Text className="staff-invite-expires">
           {isExpired ? t.expiredLabel : `${t.expiresLabel} ${formatTimeAgo(invite.expiresAt)}`}
-        </p>
+        </Text>
       </span>
 
       <span className="staff-invite-actions">

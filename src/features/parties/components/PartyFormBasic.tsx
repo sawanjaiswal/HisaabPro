@@ -1,7 +1,9 @@
 /** Create Party — Basic info section */
 
+import { Text } from '@/components/ui/Text'
 import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/hooks/useLanguage'
+import { formatName } from '@/lib/format'
 import type { PartyFormData, PartyType } from '../party.types'
 import { PartyFormPriceList } from './PartyFormPriceList'
 import '@/styles/components.crm.css'
@@ -31,7 +33,12 @@ export function PartyFormBasic({ form, errors, onUpdate, isEditMode = false }: P
         value={form.name}
         onChange={e => onUpdate('name', e.target.value)}
         onBlur={() => {
-          if (!form.name.trim()) {
+          if (form.name?.trim()) {
+            const formatted = formatName(form.name)
+            if (formatted && formatted !== '—') {
+              onUpdate('name', formatted)
+            }
+          } else {
             onUpdate('name', form.name) // trigger re-render so hook validates
           }
         }}
@@ -47,7 +54,10 @@ export function PartyFormBasic({ form, errors, onUpdate, isEditMode = false }: P
         id="party-phone"
         type="tel"
         value={form.phone ?? ''}
-        onChange={e => onUpdate('phone', e.target.value || undefined)}
+        onChange={e => {
+          const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
+          onUpdate('phone', digits || undefined)
+        }}
         error={errors.phone}
         placeholder={t.phonePlaceholder}
         maxLength={10}
@@ -90,6 +100,14 @@ export function PartyFormBasic({ form, errors, onUpdate, isEditMode = false }: P
         id="party-company"
         value={form.companyName ?? ''}
         onChange={e => onUpdate('companyName', e.target.value || undefined)}
+        onBlur={() => {
+          if (form.companyName?.trim()) {
+            const formatted = formatName(form.companyName)
+            if (formatted && formatted !== '—') {
+              onUpdate('companyName', formatted)
+            }
+          }
+        }}
         placeholder={t.companyPlaceholder}
         autoComplete="organization"
       />
@@ -110,9 +128,9 @@ export function PartyFormBasic({ form, errors, onUpdate, isEditMode = false }: P
           />
           <span>{t.crmLoyaltyOptOut}</span>
         </label>
-        <p id="party-opt-out-help" className="party-form-opt-out__help">
+        <Text id="party-opt-out-help" className="party-form-opt-out__help">
           {t.crmLoyaltyOptOutHelp}
-        </p>
+        </Text>
       </div>
     </div>
   )

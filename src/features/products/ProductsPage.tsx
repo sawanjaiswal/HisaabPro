@@ -37,6 +37,7 @@ import type { ProductStatusFilter } from '@/lib/types/product.types'
 import './barcode.css'
 import './products.css'
 import './products-redesign.css'
+import { Heading } from '@/components/ui/Heading'
 
 export default function ProductsPage() {
   const navigate = useNavigate()
@@ -155,7 +156,7 @@ export default function ProductsPage() {
               activeSortBy={filters.sortBy}
               onSortChange={(sortBy) => setFilter('sortBy', sortBy)}
             />
-            <h2 className="sr-only">{t.productList}</h2>
+            <Heading level={2} className="sr-only">{t.productList}</Heading>
             <div className="product-list stagger-list" role="list" aria-label={t.products}>
               {productsList.map((product) => (
                 <div

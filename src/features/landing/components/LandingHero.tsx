@@ -1,5 +1,6 @@
 /** Hero section — dark SaaS template (wisedev/saa-s-template from 21st.dev) */
 
+import { Text } from '@/components/ui/Text'
 import { memo } from 'react'
 import { ArrowRight } from 'lucide-react'
 
@@ -7,6 +8,7 @@ import { APP_NAME } from '@/config/app.config'
 
 import { HERO } from '../landing.constants'
 import { useCta } from '../useCta'
+import { Heading } from '@/components/ui/Heading'
 
 export const LandingHero = memo(function LandingHero() {
   const goToApp = useCta()
@@ -32,7 +34,7 @@ export const LandingHero = memo(function LandingHero() {
       </aside>
 
       {/* Headline with gradient text */}
-      <h1
+      <Heading level={1}
         className="text-4xl md:text-5xl lg:text-6xl font-medium text-center max-w-3xl px-6 leading-tight mb-6"
         style={{
           background: 'linear-gradient(to bottom, var(--lp-heading-from), var(--lp-heading-mid), var(--lp-heading-to))',
@@ -45,12 +47,12 @@ export const LandingHero = memo(function LandingHero() {
         {HERO.headline}
         <br />
         {HERO.headlineAccent}
-      </h1>
+      </Heading>
 
       {/* Subtext */}
-      <p className="text-sm md:text-base text-center max-w-2xl px-6 mb-10 text-gray-400">
+      <Text className="text-sm md:text-base text-center max-w-2xl px-6 mb-10 text-gray-400">
         {HERO.subtext}
-      </p>
+      </Text>
 
       {/* CTA button — gradient white */}
       <div className="flex items-center gap-4 relative z-10 mb-16">

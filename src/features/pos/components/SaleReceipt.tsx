@@ -1,5 +1,6 @@
 /** POS Sale Receipt — Success view with summary + actions */
 
+import { Text } from '@/components/ui/Text'
 import { CheckCircle, Plus, Share2, Printer } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { formatPaise, formatDate } from '@/lib/format'
@@ -7,6 +8,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { cartSubtotal, cartItemCount } from '../pos.utils'
 
 import type { PosCartItem, QuickSaleResult } from '../pos.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface SaleReceiptProps {
   receipt: QuickSaleResult
@@ -25,8 +27,8 @@ export function SaleReceipt({ receipt, items, onNewSale }: SaleReceiptProps) {
         <div className="pos-receipt-icon">
           <CheckCircle size={32} aria-hidden="true" />
         </div>
-        <h2 className="pos-receipt-title">{t.posSaleComplete}</h2>
-        <p className="pos-receipt-number">#{receipt.document.number}</p>
+        <Heading level={2} className="pos-receipt-title">{t.posSaleComplete}</Heading>
+        <Text className="pos-receipt-number">#{receipt.document.number}</Text>
       </div>
 
       <div className="pos-receipt-summary">

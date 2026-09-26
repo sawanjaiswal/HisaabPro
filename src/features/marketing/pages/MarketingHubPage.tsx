@@ -1,5 +1,6 @@
 /** MarketingHubPage — /marketing — landing with quick stats and CTAs */
 
+import { Text } from '@/components/ui/Text'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Send, FileText, Bell, ShieldOff } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
@@ -8,6 +9,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { listCampaigns, listTemplates, listReminderRules } from '../marketing.service'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 function StatCard({ label, value, loading }: { label: string; value: number | string; loading?: boolean }) {
   return (
@@ -112,8 +114,8 @@ export default function MarketingHubPage() {
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <div>
-          <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketing}</h1>
-          <p style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0 }}>{t.marketingSubtitle}</p>
+          <Heading level={1} style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketing}</Heading>
+          <Text style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0 }}>{t.marketingSubtitle}</Text>
         </div>
       </div>
 
@@ -180,11 +182,11 @@ export default function MarketingHubPage() {
           cta={t.marketingSetUp}
         />
         <NavTile
-          icon={<ShieldOff size={20} color="var(--color-error-600, #dc2626)" aria-hidden="true" />}
+          icon={<ShieldOff size={20} color="var(--color-error-600, var(--color-error-600))" aria-hidden="true" />}
           title={t.marketingOptOuts}
           description={t.marketingOptOutsDesc}
           route={MARKETING_ROUTES.OPT_OUTS}
-          color="var(--color-error-50, #fef2f2)"
+          color="var(--color-error-50, var(--color-error-50))"
           cta={t.marketingView}
         />
       </div>

@@ -1,35 +1,19 @@
-/** Product Search Input — inline search + tap-to-add for invoice line items */
+/** Product Search Input — SSOT backed product typeahead with instant product creation */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { Search, X } from 'lucide-react'
+import React, { useCallback } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
-import { useDebounce } from '@/hooks/useDebounce'
 import { getProducts } from '@/lib/services/product.service'
 import type { ProductSummary } from '@/lib/types/product.types'
 import type { ProductPick } from '../invoice.types'
-import { ProductSearchDropdown } from './ProductSearchDropdown'
-import { paiseToRupees } from '../invoice-format.utils'
+import { EntitySearch } from '@/components/ui/EntitySearch'
 import { useInstantAddProduct } from './useInstantAddProduct'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const SEARCH_LIMIT = 10
-
-// ─── Props ────────────────────────────────────────────────────────────────────
+import { paiseToRupees } from '../invoice-format.utils'
 
 interface ProductSearchInputProps {
-  /** Called when user taps a product — passes productId, rate (paise), name */
   onSelect: (pick: ProductPick) => void
-  /** IDs of products already in the line items — shown as "Added" */
   addedProductIds: string[]
-  /** When true, focus the field on mount so the keyboard stays open as the
-   *  seller flows straight from picking a customer into adding items. */
   autoFocus?: boolean
 }
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
   onSelect,
@@ -37,121 +21,34 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
   autoFocus = false,
 }) => {
   const { t } = useLanguage()
-  const [query, setQuery] = useState('')
-  const [results, setResults] = useState<ProductSummary[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [fetchError, setFetchError] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
-
-  const debouncedQuery = useDebounce(query, 300)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const abortRef = useRef<AbortController | null>(null)
-
-  // ─── Instant product creation ─────────────────────────────────────────────
 
   const { isCreating, addProduct } = useInstantAddProduct({
     onCreated: (createdPick) => {
       onSelect(createdPick)
-      setQuery('')
-      setResults([])
-      setIsOpen(false)
-      requestAnimationFrame(() => inputRef.current?.focus())
     },
-    onError: () => {
-      setFetchError(true)
-    },
+    onError: () => {},
   })
 
-  const handleAddNew = useCallback(() => {
-    setFetchError(false)
-    void addProduct(query)
-  }, [addProduct, query])
-
-  // ─── Fetch results when debounced query changes ──────────────────────────
-
-  useEffect(() => {
-    if (!isOpen) return
-    if (debouncedQuery.trim().length === 0) {
-      setResults([])
-      return
-    }
-
-    abortRef.current?.abort()
-    const controller = new AbortController()
-    abortRef.current = controller
-
-    setIsLoading(true)
-    setFetchError(false)
-
-    getProducts(
-      { search: debouncedQuery.trim(), limit: SEARCH_LIMIT },
-      controller.signal,
+  const handleFetchResults = useCallback(async (query: string, signal: AbortSignal) => {
+    const res = await getProducts(
+      query ? { search: query, limit: 10 } : { limit: 10 },
+      signal,
     )
-      .then((res) => {
-        setResults(res.products)
-        setFetchError(false)
-      })
-      .catch((err: unknown) => {
-        if (err instanceof Error && err.name === 'AbortError') return
-        setFetchError(true)
-        setResults([])
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
-
-    return () => {
-      controller.abort()
-    }
-  }, [debouncedQuery, isOpen])
-
-  // ─── Close dropdown on outside click ────────────────────────────────────
-
-  useEffect(() => {
-    function handleOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleOutside)
-    return () => document.removeEventListener('mousedown', handleOutside)
+    return res.products
   }, [])
 
-  // ─── Cleanup on unmount ──────────────────────────────────────────────────
+  const handleMapToItem = useCallback(
+    (product: ProductSummary) => ({
+      id: product.id,
+      title: product.name,
+      subtitle: product.sku ? `SKU: ${product.sku}` : undefined,
+      pricePaise: product.salePrice,
+      isAdded: addedProductIds.includes(product.id),
+    }),
+    [addedProductIds],
+  )
 
-  useEffect(() => {
-    return () => {
-      abortRef.current?.abort()
-    }
-  }, [])
-
-  // ─── Auto-focus on mount (selling flow: customer → item search) ───────────
-
-  useEffect(() => {
-    if (!autoFocus) return
-    const id = requestAnimationFrame(() => inputRef.current?.focus())
-    return () => cancelAnimationFrame(id)
-  }, [autoFocus])
-
-  // ─── Handlers ────────────────────────────────────────────────────────────
-
-  const handleQueryChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value)
-    setIsOpen(true)
-  }, [])
-
-  const handleFocus = useCallback(() => {
-    setIsOpen(true)
-  }, [])
-
-  const handleClearQuery = useCallback(() => {
-    setQuery('')
-    setResults([])
-    requestAnimationFrame(() => inputRef.current?.focus())
-  }, [])
-
-  const handleAdd = useCallback(
+  const handleSelect = useCallback(
     (product: ProductSummary) => {
       onSelect({
         productId: product.id,
@@ -163,78 +60,22 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
     [onSelect],
   )
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Escape') {
-        setIsOpen(false)
-        inputRef.current?.blur()
-      } else if (e.key === 'Enter' && query.trim() && results.length === 0 && !isLoading) {
-        e.preventDefault()
-        handleAddNew()
-      }
-    },
-    [handleAddNew, isLoading, query, results.length],
-  )
-
-  // ─── Derived ──────────────────────────────────────────────────────────────
-
-  const showDropdown = isOpen && (debouncedQuery.trim().length > 0 || isLoading || fetchError)
-
-  // ─── Render ───────────────────────────────────────────────────────────────
-
   return (
-    <div className="product-search" ref={containerRef}>
-      <div className="product-search-input-wrap">
-        <Search
-          className="product-search-icon"
-          size={16}
-          aria-hidden="true"
-        />
-        <Input
-          id="product-search-input"
-          ref={inputRef}
-          type="text"
-          className="product-search-field"
-          placeholder={t.searchProductNameSku}
-          value={query}
-          onChange={handleQueryChange}
-          onFocus={handleFocus}
-          onKeyDown={handleKeyDown}
-          autoComplete="off"
-          aria-label={t.searchProductToAdd}
-          aria-expanded={showDropdown}
-          aria-haspopup="listbox"
-          aria-autocomplete="list"
-        />
-        {query.length > 0 && (
-          <Button
-            variant="none"
-            type="button"
-            className="product-search-clear"
-            onClick={handleClearQuery}
-            aria-label={t.clearProductSearch}
-          >
-            <X size={14} aria-hidden="true" />
-          </Button>
-        )}
-      </div>
-
-      {/* ── Dropdown ─────────────────────────────────────────────────────── */}
-      {showDropdown && (
-        <ProductSearchDropdown
-          results={results}
-          isLoading={isLoading}
-          fetchError={fetchError}
-          debouncedQuery={debouncedQuery}
-          addedProductIds={addedProductIds}
-          isCreating={isCreating}
-          onAdd={handleAdd}
-          onAddNew={handleAddNew}
-        />
-      )}
-    </div>
+    <EntitySearch<ProductSummary>
+      id="product-search-input"
+      placeholder={t.searchProductNameSku || 'Search product name or SKU...'}
+      autoFocus={autoFocus}
+      onSelect={handleSelect}
+      onFetchResults={handleFetchResults}
+      mapToItem={handleMapToItem}
+      entityName={t.product || 'product'}
+      entityPlural="products"
+      onCreateOption={addProduct}
+      isCreating={isCreating}
+      showLabel={false}
+      keepOpenOnSelect={true}
+    />
   )
 }
 
-// Re-export for caller convenience — caller uses paiseToRupees for display
 export { paiseToRupees }

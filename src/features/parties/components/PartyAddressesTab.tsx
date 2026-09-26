@@ -1,5 +1,6 @@
 /** Party Detail — Addresses tab content */
 
+import { Text } from '@/components/ui/Text'
 import { MapPin } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -48,12 +49,12 @@ export function PartyAddressesTab({ addresses = [] }: PartyAddressesTabProps) {
                 </span>
               )}
             </div>
-            <p className="party-address-line">
+            <Text className="party-address-line">
               {address.line1}
               {address.line2 && `, ${address.line2}`}
               <br />
               {address.city}, {address.state} — {address.pincode}
-            </p>
+            </Text>
           </div>
         </div>
       ))}

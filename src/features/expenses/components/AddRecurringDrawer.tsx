@@ -1,5 +1,6 @@
 /** AddRecurringDrawer — Form to create or edit a recurring expense template */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Select, SelectItem } from '@/components/ui/Select'
@@ -98,7 +99,7 @@ export function AddRecurringDrawer({
   return (
     <Drawer open={open} onClose={onClose} title={title}>
       <form className="expense-drawer__form" onSubmit={handleSubmit}>
-        {error && <p className="expense-drawer__error" role="alert">{error}</p>}
+        {error && <Text className="expense-drawer__error" role="alert">{error}</Text>}
 
         <div className="expense-drawer__field">
           <label className="expense-drawer__label" htmlFor="recCategory">Category</label>

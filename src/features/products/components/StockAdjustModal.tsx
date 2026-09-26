@@ -1,5 +1,6 @@
 /** Stock Adjust — Modal with type, quantity, reason */
 
+import { Text } from '@/components/ui/Text'
 import React, { useState, useCallback, useRef } from 'react'
 import { Plus, Minus } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
@@ -145,7 +146,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
             inputMode="decimal"
             aria-label={`${t.quantityIn} ${unitSymbol}`}
           />
-          {errors.quantity && <p className="input-error" role="alert">{errors.quantity}</p>}
+          {errors.quantity && <Text className="input-error" role="alert">{errors.quantity}</Text>}
         </div>
 
         <div className="input-group">
@@ -176,7 +177,7 @@ export const StockAdjustModal: React.FC<StockAdjustModalProps> = ({
               maxLength={CUSTOM_REASON_MAX}
               aria-label={t.customReasonLabel}
             />
-            {errors.customReason && <p className="input-error" role="alert">{errors.customReason}</p>}
+            {errors.customReason && <Text className="input-error" role="alert">{errors.customReason}</Text>}
           </div>
         )}
 

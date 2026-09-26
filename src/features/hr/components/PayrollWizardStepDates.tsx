@@ -12,6 +12,7 @@
  * Payment mode: 4 choices (CASH/UPI/BANK_TRANSFER/CHEQUE), default CASH.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useMemo, useState } from 'react'
 import { Users } from 'lucide-react'
 import { DateField } from '@/components/ui/DateField'
@@ -25,6 +26,7 @@ import {
 } from '../hr.constants'
 import type { EmployeeLite } from '../hr.types'
 import type { PayrollWizardState } from '../payroll.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface PayrollWizardStepDatesProps {
   employees: EmployeeLite[]
@@ -117,9 +119,9 @@ export function PayrollWizardStepDates({
     <section className="space-y-4">
       {/* Period */}
       <div>
-        <h2 className="text-[var(--fs-base)] font-semibold text-[var(--color-text)] mb-2">
+        <Heading level={2} className="text-base font-semibold text-text-primary mb-2">
           {t.payrollStepDatesPeriodHeading as string}
-        </h2>
+        </Heading>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <DateField
             label={t.payrollFromDateLabel as string}
@@ -141,24 +143,24 @@ export function PayrollWizardStepDates({
           />
         </div>
         {errors.range && (
-          <p
+          <Text
             role="alert"
-            className="mt-1 text-[var(--fs-sm)] text-[var(--color-error-600)]"
+            className="mt-1 text-sm text-error-600"
           >
             {errors.range}
-          </p>
+          </Text>
         )}
       </div>
 
       {/* Employees */}
       <div>
-        <h2 className="text-[var(--fs-base)] font-semibold text-[var(--color-text)] mb-2 flex items-center gap-2">
+        <Heading level={2} className="text-base font-semibold text-text-primary mb-2 flex items-center gap-2">
           <Users size={16} aria-hidden="true" className="text-[var(--color-text-tertiary)]" />
           {t.payrollStepDatesEmployeesHeading as string}
-        </h2>
-        <p className="text-[var(--fs-sm)] text-[var(--color-text-secondary)] mb-2">
+        </Heading>
+        <Text className="text-sm text-text-secondary mb-2">
           {subsetLabel}
-        </p>
+        </Text>
         <div className="flex flex-wrap gap-2">
           <Button variant="none"
             type="button"
@@ -166,10 +168,10 @@ export function PayrollWizardStepDates({
             disabled={busy}
             aria-pressed={selectedIds.size === 0}
             className={[
-              'px-3 py-1.5 rounded-[var(--radius-full)] text-[var(--fs-sm)] border min-h-[36px]',
+              'px-3 py-1.5 rounded-full text-sm border min-h-9',
               selectedIds.size === 0
-                ? 'bg-[var(--color-primary-500)] text-[var(--color-on-primary)] border-[var(--color-primary-500)]'
-                : 'bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)]',
+                ? 'bg-primary-500 text-white border-primary-500'
+                : 'bg-surface text-text-primary border-border',
             ].join(' ')}
           >
             {t.payrollAllEmployeesLabel as string}
@@ -184,10 +186,10 @@ export function PayrollWizardStepDates({
                 disabled={busy}
                 aria-pressed={selected}
                 className={[
-                  'px-3 py-1.5 rounded-[var(--radius-full)] text-[var(--fs-sm)] border min-h-[36px]',
+                  'px-3 py-1.5 rounded-full text-sm border min-h-9',
                   selected
-                    ? 'bg-[var(--color-primary-500)] text-[var(--color-on-primary)] border-[var(--color-primary-500)]'
-                    : 'bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)]',
+                    ? 'bg-primary-500 text-white border-primary-500'
+                    : 'bg-surface text-text-primary border-border',
                 ].join(' ')}
               >
                 {emp.name}
@@ -199,9 +201,9 @@ export function PayrollWizardStepDates({
 
       {/* Payment mode */}
       <div>
-        <h2 className="text-[var(--fs-base)] font-semibold text-[var(--color-text)] mb-2">
+        <Heading level={2} className="text-base font-semibold text-text-primary mb-2">
           {t.payrollStepDatesModeHeading as string}
-        </h2>
+        </Heading>
         <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t.payrollStepDatesModeHeading as string}>
           {PAYROLL_MODE_CHOICES.map((m) => {
             const selected = mode === m
@@ -214,10 +216,10 @@ export function PayrollWizardStepDates({
                 onClick={() => setMode(m)}
                 disabled={busy}
                 className={[
-                  'px-3 py-1.5 rounded-[var(--radius-full)] text-[var(--fs-sm)] border min-h-[36px]',
+                  'px-3 py-1.5 rounded-full text-sm border min-h-9',
                   selected
-                    ? 'bg-[var(--color-primary-500)] text-[var(--color-on-primary)] border-[var(--color-primary-500)]'
-                    : 'bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)]',
+                    ? 'bg-primary-500 text-white border-primary-500'
+                    : 'bg-surface text-text-primary border-border',
                 ].join(' ')}
               >
                 {t[PAYROLL_MODE_I18N_KEYS[m] as keyof typeof t] as string}

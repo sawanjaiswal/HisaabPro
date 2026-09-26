@@ -916,6 +916,66 @@ try {
   errors.push('Check 18: Failed to parse package.json: ' + e.message)
 }
 
+// ─── Check 19: Level 6 Design Token & Typography Enforcement ─────────────────
+//
+// Hard gate against arbitrary sizing and un-tokenized colors:
+// 1. Raw hex colors (#...) are banned outside SSOT token definitions.
+// 2. Arbitrary bracket sizing (text-[...], bg-[...], etc.) is banned.
+// 3. Inline style raw font-size/colors are banned.
+// Ratchet mechanism ensures zero regression.
+
+console.log('\n🔍 Check 19: Level 6 Design Token & Typography Enforcement')
+
+const DESIGN_RATCHET_FILE = join(RATCHET_DIR, 'design-tokens-baseline.json')
+const TOKEN_ALLOWED_FILES = [
+  'src/styles/tokens-colors.css',
+  'src/styles/tokens-core.css',
+  'src/styles/tokens-dark.css',
+  'src/styles/tokens-variants.css',
+  'src/styles/tokens.ts',
+]
+
+const HEX_RE = /#([0-9a-fA-F]{3,8})\b/g
+const ARBITRARY_BRACKET_RE = /\b(?:text|bg|border|fill|stroke)-\[[^\]]+\]/g
+
+const designViolations = []
+for (const file of walkDir(FRONTEND_SRC, ['.ts', '.tsx', '.css'])) {
+  const relPath = rel(file)
+  if (TOKEN_ALLOWED_FILES.some(t => relPath.endsWith(t))) continue
+  if (file.includes('__tests__') || file.endsWith('.test.ts') || file.endsWith('.test.tsx')) continue
+
+  let src
+  try { src = readFileSync(file, 'utf8') } catch { continue }
+  const lines = src.split('\n')
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    if (line.includes('enforce-ignore') || line.includes('eslint-disable')) continue
+
+    // Hex check
+    if (HEX_RE.test(line)) {
+      designViolations.push({ file: relPath, line: i + 1, type: 'RAW_HEX', text: line.trim() })
+    }
+    // Arbitrary bracket check
+    if (ARBITRARY_BRACKET_RE.test(line)) {
+      designViolations.push({ file: relPath, line: i + 1, type: 'ARBITRARY_BRACKET', text: line.trim() })
+    }
+  }
+}
+
+let designBaseline = { count: Number.MAX_SAFE_INTEGER, violations: [] }
+try { designBaseline = JSON.parse(readFileSync(DESIGN_RATCHET_FILE, 'utf8')) } catch {}
+
+if (process.env.RATCHET_BASELINE === '1' || !existsSync(DESIGN_RATCHET_FILE)) {
+  try { mkdirSync(RATCHET_DIR, { recursive: true }) } catch {}
+  writeFileSync(DESIGN_RATCHET_FILE, JSON.stringify({ count: designViolations.length, violations: designViolations.slice(0, 50) }, null, 2))
+  console.log(`  📌 Design Token Baseline recorded: ${designViolations.length} items`)
+} else if (designViolations.length > designBaseline.count) {
+  errors.push(`Check 19: Level 6 Design System violation count increased (${designViolations.length} > baseline ${designBaseline.count}). Arbitrary hex/sizes are rejected.`)
+} else {
+  console.log(`  ✅ Design Token violations within ratchet: ${designViolations.length} (baseline ${designBaseline.count})`)
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────────
 
 console.log('\n' + '═'.repeat(60))

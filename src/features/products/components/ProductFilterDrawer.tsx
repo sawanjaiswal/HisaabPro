@@ -4,6 +4,7 @@
  * footer "Done" closes. Mirrors the party filter drawer's pill pattern.
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
@@ -64,7 +65,7 @@ export const ProductFilterDrawer: React.FC<ProductFilterDrawerProps> = ({
     >
       <div className="product-filter-drawer">
         <section className="product-filter-group py-0">
-          <p className="product-filter-label">{t.status}</p>
+          <Text className="product-filter-label">{t.status}</Text>
           <div className="product-filter-pills">
             {statusOptions.map((opt) => (
               <Button
@@ -81,7 +82,7 @@ export const ProductFilterDrawer: React.FC<ProductFilterDrawerProps> = ({
         </section>
 
         <section className="product-filter-group py-0">
-          <p className="product-filter-label">{t.sortBy}</p>
+          <Text className="product-filter-label">{t.sortBy}</Text>
           <div className="product-filter-pills">
             {PRODUCT_SORT_OPTIONS.map((opt) => (
               <Button
@@ -98,7 +99,7 @@ export const ProductFilterDrawer: React.FC<ProductFilterDrawerProps> = ({
         </section>
 
         <section className="product-filter-group py-0">
-          <p className="product-filter-label">{t.sortLabel}</p>
+          <Text className="product-filter-label">{t.sortLabel}</Text>
           <div className="product-filter-pills">
             {(['asc', 'desc'] as const).map((order) => (
               <Button

@@ -4,6 +4,7 @@
  * Two independent load states: summary and entries.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useParams } from 'react-router-dom'
 import { FileText } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -117,9 +118,9 @@ export default function ReconciliationDetailPage() {
         {/* Entry list */}
         {entries.length > 0 && (
           <>
-            <p className="recon-entry-count">
+            <Text className="recon-entry-count">
               {entriesTotal} {entriesTotal === 1 ? t.entry : t.entries}
-            </p>
+            </Text>
             <div className="recon-entry-list stagger-list">
               {entries.map((entry) => (
                 <ReconciliationEntryCard key={entry.id} entry={entry} />

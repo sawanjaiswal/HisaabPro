@@ -13,6 +13,7 @@ import { formatCompactAmount } from '../dashboard.utils'
 import { buildOverviewCards } from '../dashboard-trend.utils'
 import type { DashboardTrend } from '../dashboard.types'
 import '../dashboard-overview-carousel.css'
+import { Heading } from '@/components/ui/Heading'
 
 interface BusinessOverviewCarouselProps {
   trend?: DashboardTrend | null
@@ -36,7 +37,7 @@ export const BusinessOverviewCarousel: React.FC<BusinessOverviewCarouselProps> =
   return (
     <section className="dashboard-overview py-0">
       <div className="dashboard-overview__header">
-        <h2 className="dashboard-section-title">{t.businessOverview}</h2>
+        <Heading level={2} className="dashboard-section-title">{t.businessOverview}</Heading>
         <span className="dashboard-overview__period">{t.last30Days}</span>
       </div>
 

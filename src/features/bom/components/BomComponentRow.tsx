@@ -1,5 +1,6 @@
 /** BomComponentRow — single editable row in BOM form */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { Trash2 } from 'lucide-react'
 import { Select, SelectItem } from '@/components/ui/Select'
@@ -94,7 +95,7 @@ export function BomComponentRow({
               ))}
           </ul>
         )}
-        {errors?.productId && <p className="input-error" role="alert">{errors.productId}</p>}
+        {errors?.productId && <Text className="input-error" role="alert">{errors.productId}</Text>}
       </div>
 
       {/* Qty */}
@@ -112,7 +113,7 @@ export function BomComponentRow({
           inputMode="decimal"
           aria-label={t.bomComponentQuantityAria}
         />
-        {errors?.qty && <p className="input-error" role="alert">{errors.qty}</p>}
+        {errors?.qty && <Text className="input-error" role="alert">{errors.qty}</Text>}
       </div>
 
       {/* Unit */}

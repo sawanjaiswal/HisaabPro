@@ -1,5 +1,6 @@
 /** EWayBillGenerateForm — transport details form for generating an e-way bill */
 
+import { Text } from '@/components/ui/Text'
 import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { TransportMode, VehicleType, EWayBillGenerateInput } from '../ecompliance.types'
@@ -84,7 +85,7 @@ export const EWayBillGenerateForm: React.FC<EWayBillGenerateFormProps> = ({
 
   return (
     <form className="ewb-form" onSubmit={handleSubmit} aria-label={t.ewbFormAria} noValidate>
-      {actionError && <p className="compliance-inline-error" role="alert">{actionError}</p>}
+      {actionError && <Text className="compliance-inline-error" role="alert">{actionError}</Text>}
       <div className="ewb-form-row">
         <div className="input-group">
           <label className="input-label" htmlFor="ewb-mode">{t.transportMode}</label>

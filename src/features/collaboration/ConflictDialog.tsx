@@ -2,6 +2,7 @@
 // Money records must never silently auto-merge, so the user explicitly chooses:
 //   Reload  — discard local edits, refetch the server's current truth.
 //   Overwrite — re-save on top of the server version (permission-gated server-side).
+import { Text } from '@/components/ui/Text'
 import { AlertTriangle } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
@@ -30,7 +31,7 @@ export function ConflictDialog({ conflict, overwriting, onReload, onOverwrite, o
         <div className="conflict-dialog__icon" aria-hidden="true">
           <AlertTriangle size={24} />
         </div>
-        <p className="conflict-dialog__body">{t.conflictBody}</p>
+        <Text className="conflict-dialog__body">{t.conflictBody}</Text>
         <div className="conflict-dialog__actions">
           <Button variant="primary" onClick={onReload} disabled={overwriting}>
             {t.conflictReload}

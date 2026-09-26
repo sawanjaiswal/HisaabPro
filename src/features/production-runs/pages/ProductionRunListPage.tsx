@@ -1,5 +1,6 @@
 /** ProductionRunListPage — /production-runs — 4 UI states */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
@@ -12,6 +13,7 @@ import { formatRunDate, formatCostPaise } from '../production-run.utils'
 import { useLanguage } from '@/context/LanguageContext'
 import type { ProductionRunListFilters, ProductionRunStatus } from '../production-run.types'
 import '../production-run.css'
+import { Heading } from '@/components/ui/Heading'
 
 function PRListSkeleton() {
   const { t } = useLanguage()
@@ -51,9 +53,9 @@ export default function ProductionRunListPage() {
       {/* Header */}
       <div className="bom-page__header">
         <div>
-          <h1 className="bom-page__title">{t.prTitle}</h1>
+          <Heading level={1} className="bom-page__title">{t.prTitle}</Heading>
           {status === 'success' && (
-            <p className="bom-page__subtitle">{pagination.total} {pagination.total !== 1 ? t.prRuns : t.prRun}</p>
+            <Text className="bom-page__subtitle">{pagination.total} {pagination.total !== 1 ? t.prRuns : t.prRun}</Text>
           )}
         </div>
         <Button

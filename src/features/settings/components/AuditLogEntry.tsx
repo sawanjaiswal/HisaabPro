@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import {
@@ -100,15 +101,15 @@ export const AuditLogEntry: React.FC<AuditLogEntryProps> = ({ entry, onSelect })
       </span>
 
       <div className="audit-entry-body">
-        <p className="audit-entry-headline">
+        <Text className="audit-entry-headline">
           <strong>{actor}</strong> {actionLabel.toLowerCase()} {displayLabel}
-        </p>
-        <p className="audit-entry-meta">{formatTimeAgo(entry.createdAt)}</p>
+        </Text>
+        <Text className="audit-entry-meta">{formatTimeAgo(entry.createdAt)}</Text>
 
         {entry.reason && (
-          <p className="audit-entry-meta" style={{ marginTop: 'var(--space-2)' }}>
+          <Text className="audit-entry-meta" style={{ marginTop: 'var(--space-2)' }}>
             {t.auditReasonPrefix}: {entry.reason}
-          </p>
+          </Text>
         )}
       </div>
 

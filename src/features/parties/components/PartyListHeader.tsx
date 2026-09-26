@@ -12,6 +12,7 @@ import {
 import { useLanguage } from '@/hooks/useLanguage'
 import { SORT_OPTIONS } from '../party.constants'
 import type { PartyFilters } from '../party.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface PartyListHeaderProps {
   onSortChange: (sortBy: PartyFilters['sortBy']) => void
@@ -22,7 +23,7 @@ export const PartyListHeader: React.FC<PartyListHeaderProps> = ({ onSortChange }
 
   return (
     <div className="party-section-header">
-      <h2 className="party-section-title">{t.recentParties}</h2>
+      <Heading level={2} className="party-section-title">{t.recentParties}</Heading>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="none" className="party-sort-btn" aria-label={t.sortLabel}>

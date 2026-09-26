@@ -1,5 +1,6 @@
 /** Ledger — Error state */
 
+import { Text } from '@/components/ui/Text'
 import { AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -13,8 +14,8 @@ export function LedgerError({ onRetry }: LedgerErrorProps) {
   return (
     <div className="ledger-error" role="alert">
       <AlertCircle size={32} aria-hidden="true" className="ledger-error__icon" />
-      <p className="ledger-error__title">{t.ledgerErrorTitle}</p>
-      <p className="ledger-error__body">{t.checkConnectionRetry}</p>
+      <Text className="ledger-error__title">{t.ledgerErrorTitle}</Text>
+      <Text className="ledger-error__body">{t.checkConnectionRetry}</Text>
       <Button
         type="button"
         variant="primary" size="sm"

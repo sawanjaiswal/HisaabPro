@@ -4,6 +4,7 @@
  * Informs the user that the buyer (recipient) will self-assess GST under RCM.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Info } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 
@@ -19,7 +20,7 @@ export function RcmAdvisoryBanner({ isReverseCharge }: RcmAdvisoryBannerProps) {
   return (
     <div className="rcm-advisory-banner" role="note" aria-label={t.rcmAdvisoryLabel}>
       <Info size={16} className="rcm-advisory-icon" aria-hidden="true" />
-      <p className="rcm-advisory-text">{t.rcmAdvisoryText}</p>
+      <Text className="rcm-advisory-text">{t.rcmAdvisoryText}</Text>
     </div>
   )
 }

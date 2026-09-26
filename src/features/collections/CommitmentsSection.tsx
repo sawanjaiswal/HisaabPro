@@ -3,6 +3,7 @@
  * Shows all promises (any status), OPEN rows have edit + delete.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Pencil, Trash2, Lock } from 'lucide-react'
@@ -14,6 +15,7 @@ import { Skeleton } from '@/components/feedback/Skeleton'
 import { usePtpList, useDeletePtp } from './usePtp'
 import { PtpRecorderForm } from './PtpRecorderForm'
 import type { Ptp, PtpStatus } from './collections.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface Props {
   partyId: string
@@ -57,12 +59,12 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
           marginBottom: 'var(--space-3)',
         }}
       >
-        <h3
+        <Heading level={3}
           id="commitments-heading"
           style={{ fontSize: 'var(--fs-base)', fontWeight: 600, color: 'var(--color-text-primary)' }}
         >
           {t.ptpSectionTitle}
-        </h3>
+        </Heading>
         <Button
           variant="ghost" size="sm"
           onClick={openCreate}
@@ -79,14 +81,14 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
 
       {/* Error */}
       {isError && (
-        <p
+        <Text
           className="form-error"
           role="alert"
           style={{ marginBottom: 'var(--space-2)', cursor: 'pointer' }}
           onClick={() => refetch()}
         >
           {t.ptpLoadError} — {t.agingRetry}
-        </p>
+        </Text>
       )}
 
       {/* Empty */}
@@ -129,11 +131,11 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
                     {ptp.status}
                   </span>
                 </div>
-                <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', marginTop: 'var(--space-1)' }}>
+                <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', marginTop: 'var(--space-1)' }}>
                   {t.ptpByLabel} {formatDate(ptp.promiseDate)}
-                </p>
+                </Text>
                 {ptp.notes && (
-                  <p
+                  <Text
                     style={{
                       fontSize: 'var(--fs-sm)',
                       color: 'var(--color-text-tertiary)',
@@ -146,7 +148,7 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
                     title={ptp.notes}
                   >
                     {ptp.notes}
-                  </p>
+                  </Text>
                 )}
               </div>
 

@@ -41,6 +41,7 @@ import { PayrollWizardStepDates } from './components/PayrollWizardStepDates'
 import { PayrollPreviewTable } from './components/PayrollPreviewTable'
 import { PayrollFinalizeButton } from './components/PayrollFinalizeButton'
 import type { PayrollFinalizeResult, PayrollWizardState } from './payroll.types'
+import { Heading } from '@/components/ui/Heading'
 
 /** First-of-month → today as a sensible default. */
 function defaultPeriod(): { fromDate: string; toDate: string } {
@@ -111,9 +112,9 @@ export default function PayrollWizardPage() {
           {step === 'preview' && (
             <section className="space-y-4">
               <header className="flex items-center justify-between gap-2">
-                <h2 className="text-[var(--fs-base)] font-semibold text-[var(--color-text)]">
+                <Heading level={2} className="text-base font-semibold text-text-primary">
                   {t.payrollPreviewHeading as string}
-                </h2>
+                </Heading>
                 <Button variant="ghost" size="sm" onClick={handleBackToDates}>
                   {t.payrollPreviewEditDates as string}
                 </Button>

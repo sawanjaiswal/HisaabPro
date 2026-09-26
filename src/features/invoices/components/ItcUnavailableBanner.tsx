@@ -5,6 +5,7 @@
  * Composition dealers cannot collect or pass on ITC.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Info } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { LineItemFormData } from '../invoice.types'
@@ -22,7 +23,7 @@ export function ItcUnavailableBanner({ lineItems }: ItcUnavailableBannerProps) {
   return (
     <div className="itc-unavailable-banner" role="note" aria-label={t.itcUnavailableLabel}>
       <Info size={16} className="itc-unavailable-icon" aria-hidden="true" />
-      <p className="itc-unavailable-text">{t.itcUnavailableText}</p>
+      <Text className="itc-unavailable-text">{t.itcUnavailableText}</Text>
     </div>
   )
 }

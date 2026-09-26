@@ -5,6 +5,7 @@
  *  never reaches the wire.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { DateField } from '@/components/ui/DateField'
@@ -38,19 +39,19 @@ export function RecurrenceFields({ value, onChange, startISO }: RecurrenceFields
 
   return (
     <section
-      className="space-y-3 p-3 rounded-[var(--radius-md)]"
+      className="space-y-3 p-3 rounded-md"
       style={{ background: 'var(--color-surface-muted)' }}
       aria-label={t.recurrence ?? 'Recurrence'}
     >
       <div className="flex items-center justify-between">
-        <span className="text-[var(--fs-sm)] font-medium">{t.recurrence ?? 'Recurrence'}</span>
+        <span className="text-sm font-medium">{t.recurrence ?? 'Recurrence'}</span>
         <Button
           variant="none"
           type="button"
           role="switch"
           aria-checked={value.enabled}
           onClick={toggle}
-          className="text-[var(--fs-sm)] min-h-[44px] px-3 rounded-[var(--radius-sm)]"
+          className="text-sm min-h-11 px-3 rounded-sm"
           style={{
             background: value.enabled ? 'var(--color-primary)' : 'transparent',
             color: value.enabled ? 'var(--color-on-primary, #fff)' : 'var(--color-text)',
@@ -65,7 +66,7 @@ export function RecurrenceFields({ value, onChange, startISO }: RecurrenceFields
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="recur-freq" className="text-[var(--fs-sm)] mb-1.5 inline-block">
+              <label htmlFor="recur-freq" className="text-sm mb-1.5 inline-block">
                 {t.frequency ?? 'Frequency'}
               </label>
               <Select
@@ -93,7 +94,7 @@ export function RecurrenceFields({ value, onChange, startISO }: RecurrenceFields
           </div>
 
           <fieldset>
-            <legend className="text-[var(--fs-sm)] mb-1.5">{t.endsOn ?? 'Ends'}</legend>
+            <legend className="text-sm mb-1.5">{t.endsOn ?? 'Ends'}</legend>
             <div className="flex gap-3 items-center mb-2" role="radiogroup" aria-label={t.endsOn ?? 'Ends'}>
               <Button
                 variant="none"
@@ -101,7 +102,7 @@ export function RecurrenceFields({ value, onChange, startISO }: RecurrenceFields
                 role="radio"
                 aria-checked={value.endMode === 'count'}
                 onClick={() => onChange({ ...value, endMode: 'count' })}
-                className="text-[var(--fs-sm)] min-h-[44px] px-3 rounded-[var(--radius-sm)]"
+                className="text-sm min-h-11 px-3 rounded-sm"
                 style={{
                   background: value.endMode === 'count' ? 'var(--color-primary)' : 'transparent',
                   color: value.endMode === 'count' ? 'var(--color-on-primary, #fff)' : 'var(--color-text)',
@@ -116,7 +117,7 @@ export function RecurrenceFields({ value, onChange, startISO }: RecurrenceFields
                 role="radio"
                 aria-checked={value.endMode === 'until'}
                 onClick={() => onChange({ ...value, endMode: 'until' })}
-                className="text-[var(--fs-sm)] min-h-[44px] px-3 rounded-[var(--radius-sm)]"
+                className="text-sm min-h-11 px-3 rounded-sm"
                 style={{
                   background: value.endMode === 'until' ? 'var(--color-primary)' : 'transparent',
                   color: value.endMode === 'until' ? 'var(--color-on-primary, #fff)' : 'var(--color-text)',
@@ -149,13 +150,13 @@ export function RecurrenceFields({ value, onChange, startISO }: RecurrenceFields
           </fieldset>
 
           {!validation.ok && validation.messageKey && (
-            <p
-              className="text-[var(--fs-sm)]"
+            <Text
+              className="text-sm"
               style={{ color: 'var(--color-error)' }}
               role="alert"
             >
               {(t[validation.messageKey] as string | undefined) ?? 'Invalid recurrence'}
-            </p>
+            </Text>
           )}
         </div>
       )}

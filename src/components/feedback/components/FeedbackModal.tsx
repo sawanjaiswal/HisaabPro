@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import React from 'react';
 import { X, Send, CheckCircle, WifiOff } from 'lucide-react';
 import { Z } from '../../../config/zIndexes';
@@ -6,20 +7,21 @@ import type { FeedbackModalProps } from '../feedback-widget.types';
 import { Button } from '@/components/ui/Button';
 import { Textarea } from '@/components/ui/Textarea';
 import '../feedback-widget.css';
+import { Heading } from '@/components/ui/Heading'
 
 const SuccessView: React.FC = () => (
   <div className="feedback-result">
     <CheckCircle size={48} className="feedback-result-icon--success" strokeWidth={1.5} />
-    <p className="feedback-result-title">Thanks for your feedback!</p>
-    <p className="feedback-result-desc">Your feedback helps us improve.</p>
+    <Text className="feedback-result-title">Thanks for your feedback!</Text>
+    <Text className="feedback-result-desc">Your feedback helps us improve.</Text>
   </div>
 );
 
 const QueuedView: React.FC = () => (
   <div className="feedback-result">
     <WifiOff size={48} className="feedback-result-icon--queued" strokeWidth={1.5} />
-    <p className="feedback-result-title">Saved locally</p>
-    <p className="feedback-result-desc">Will be sent when you&apos;re back online.</p>
+    <Text className="feedback-result-title">Saved locally</Text>
+    <Text className="feedback-result-desc">Will be sent when you&apos;re back online.</Text>
   </div>
 );
 
@@ -51,7 +53,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
           <>
             {/* Header */}
             <div className="feedback-header">
-              <h2>Send Feedback</h2>
+              <Heading level={2}>Send Feedback</Heading>
               <Button variant="none" onClick={onClose} aria-label="Close feedback" className="feedback-close">
                 <X size={20} />
               </Button>

@@ -10,7 +10,7 @@
  * not fit at 320px, and export is a once-in-a-while action, not a per-view one.
  */
 
-import { Filter, Search, Calendar } from 'lucide-react'
+import { Filter, Search, Calendar, X } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -42,15 +42,28 @@ export function LedgerToolbar({
 
   return (
     <div className="ledger-toolbar">
-      <Input
-        type="search"
-        className="ledger-search"
-        icon={<Search size={16} />}
-        value={query}
-        onChange={(e) => onQueryChange(e.target.value)}
-        placeholder={t.searchTransactions}
-        aria-label={t.searchTransactions}
-      />
+      <div className="ledger-search-wrap">
+        <Input
+          type="search"
+          className="ledger-search"
+          icon={<Search size={16} />}
+          value={query}
+          onChange={(e) => onQueryChange(e.target.value)}
+          placeholder={t.searchTransactions}
+          aria-label={t.searchTransactions}
+        />
+        {query && (
+          <Button
+            variant="none"
+            type="button"
+            className="ledger-search-clear"
+            onClick={() => onQueryChange('')}
+            aria-label={t.clear}
+          >
+            <X size={14} aria-hidden="true" />
+          </Button>
+        )}
+      </div>
 
       <div className="ledger-toolbar__actions">
         {showFilter && (

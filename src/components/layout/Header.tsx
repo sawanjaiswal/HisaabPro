@@ -16,10 +16,13 @@ import { OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
 import { SyncStatusPill } from '@/components/ui/sync-center'
 import { NotificationBell } from '@/features/notifications/components/NotificationBell'
 import { BrandLogo } from '@/components/brand/BrandLogo'
+import { Heading } from '@/components/ui/Heading'
 
 interface HeaderProps {
   /** Page title — shown when `backTo` is set (sub-page mode). */
   title?: string
+  /** Subtitle description shown beneath the title */
+  subtitle?: string
   /** Show a back arrow on the left — string = navigate to path; true = history.back() */
   backTo?: string | true
   /** Page-specific action icons (Scan, Filter, etc.). Render LEFT of sync + ☰. */
@@ -38,6 +41,7 @@ interface HeaderProps {
 
 export function Header({
   title,
+  subtitle,
   backTo,
   actions,
   scrollCondense = false,
@@ -87,7 +91,16 @@ export function Header({
             >
               <ChevronLeft size={22} aria-hidden="true" />
             </button>
-            {title && <h1 className="header-title">{title}</h1>}
+            {title && (
+              <div className="flex flex-col min-w-0">
+                <Heading level={1} className="header-title truncate">{title}</Heading>
+                {subtitle && (
+                  <span className="text-[11px] font-normal leading-tight opacity-80 truncate text-current">
+                    {subtitle}
+                  </span>
+                )}
+              </div>
+            )}
           </>
         ) : (
           <button

@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { useAuth } from '@/context/AuthContext'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -82,8 +83,8 @@ export default function CreateBusinessPage() {
             <div className="create-biz-clone-section py-0">
               <div className="create-biz-clone-toggle-row">
                 <div className="create-biz-clone-toggle-info">
-                  <p className="create-biz-clone-toggle-label">{t.createBusinessCloneLabel}</p>
-                  <p className="create-biz-clone-toggle-hint">{t.createBusinessCloneHint}</p>
+                  <Text className="create-biz-clone-toggle-label">{t.createBusinessCloneLabel}</Text>
+                  <Text className="create-biz-clone-toggle-hint">{t.createBusinessCloneHint}</Text>
                 </div>
                 <Switch
                   checked={cloneEnabled}

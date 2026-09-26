@@ -1,5 +1,6 @@
 /** CampaignDetailPage — /marketing/campaigns/:id — detail + cancel */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, RefreshCw } from 'lucide-react'
@@ -11,6 +12,7 @@ import { RecipientTable } from '../components/RecipientTable'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { formatDate, formatPaiseAsRupees, formatScheduledAt } from '../marketing.utils'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 function Stat({ label, value, color }: { label: string; value: string | number; color?: string }) {
   return (
@@ -72,7 +74,7 @@ export default function CampaignDetailPage() {
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <h1 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{campaign.name}</h1>
+          <Heading level={1} style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{campaign.name}</Heading>
           <div style={{ display: 'flex', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
             <ChannelBadge channel={campaign.channel} />
             <CampaignStatusBadge status={campaign.status} />
@@ -99,7 +101,7 @@ export default function CampaignDetailPage() {
 
       {/* Recipients */}
       <div style={{ marginBottom: '20px' }}>
-        <h2 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-gray-700)', marginBottom: '10px' }}>{t.marketingRecipients}</h2>
+        <Heading level={2} style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-gray-700)', marginBottom: '10px' }}>{t.marketingRecipients}</Heading>
         <RecipientTable campaignId={campaign.id} />
       </div>
 
@@ -118,8 +120,8 @@ export default function CampaignDetailPage() {
       {confirmCancel && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', background: 'rgba(0,0,0,0.5)' }} role="dialog" aria-modal="true" aria-labelledby="cancel-dialog-title">
           <div style={{ width: '100%', maxWidth: 480, background: 'white', borderRadius: '20px 20px 0 0', padding: '24px 20px' }}>
-            <h3 id="cancel-dialog-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>{t.marketingCancelCampaignTitle}</h3>
-            <p style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>{t.marketingCancelCampaignDesc}</p>
+            <Heading level={3} id="cancel-dialog-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>{t.marketingCancelCampaignTitle}</Heading>
+            <Text style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>{t.marketingCancelCampaignDesc}</Text>
             <div style={{ display: 'flex', gap: '10px' }}>
               <Button variant="none" type="button" onClick={() => setConfirmCancel(false)} style={{ flex: 1, padding: '12px', minHeight: '44px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                 {t.marketingKeepRunning}

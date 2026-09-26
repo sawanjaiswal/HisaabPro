@@ -1,5 +1,6 @@
 /** PriceListFormDrawer — create / rename a price list + isDefault toggle */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
@@ -90,8 +91,8 @@ export function PriceListFormDrawer({
 
         <div className="pl-form__toggle-row">
           <div>
-            <p className="pl-form__toggle-label">{t.plSetDefault}</p>
-            <p className="pl-form__toggle-desc">{t.plSetDefaultDesc}</p>
+            <Text className="pl-form__toggle-label">{t.plSetDefault}</Text>
+            <Text className="pl-form__toggle-desc">{t.plSetDefaultDesc}</Text>
           </div>
           <label className="pl-toggle" aria-label={t.plSetDefault}>
             <Input

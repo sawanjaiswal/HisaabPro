@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { LOCK_PERIOD_OPTIONS } from '../settings.constants'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Select, SelectItem } from '@/components/ui/Select'
@@ -12,14 +13,14 @@ export function LockPeriodSection({ lockAfterDays, onUpdate }: LockPeriodSection
   const { t } = useLanguage()
   return (
     <section>
-      <p className="settings-section-title py-0">{t.lockSettingsTitle}</p>
+      <Text className="settings-section-title py-0">{t.lockSettingsTitle}</Text>
       <div className="txn-controls">
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">{t.lockPeriodLabel}</p>
-            <p className="txn-control-description">
+            <Text className="txn-control-label">{t.lockPeriodLabel}</Text>
+            <Text className="txn-control-description">
               {t.lockPeriodDesc}
-            </p>
+            </Text>
           </div>
           <div className="txn-control-select">
             <Select

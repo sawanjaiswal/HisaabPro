@@ -1,5 +1,6 @@
 /** GenerateNowConfirmSheet — bottom sheet confirmation for generate-now action */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
@@ -57,7 +58,7 @@ export function GenerateNowConfirmSheet({
         </>
       }
     >
-      <p className="recurring-sheet__body">
+      <Text className="recurring-sheet__body">
         {t.recurringGenerateConfirm ?? 'Generate invoice now for'}{' '}
         <strong>{scheduleName}</strong>?{' '}
         {nextRunDate && (
@@ -66,7 +67,7 @@ export function GenerateNowConfirmSheet({
             <strong>{formatDate(nextRunDate)}</strong>.
           </>
         )}
-      </p>
+      </Text>
     </Drawer>
   )
 }

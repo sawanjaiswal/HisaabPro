@@ -1,5 +1,6 @@
 /** Dropdown list for party search results — loading, error, empty, hint, result states, and instant Add Client */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { Plus, User } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -61,9 +62,9 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
 
       {!isLoading && !fetchError && trimmedQuery.length > 0 && results.length === 0 && (
         <li className="party-search-status party-search-empty flex flex-col items-center gap-2 py-4 px-3 text-center">
-          <p className="text-xs text-[var(--color-gray-500)] font-medium">
+          <Text className="text-xs text-[var(--color-gray-500)] font-medium">
             {t.noPartiesFoundFor} &ldquo;{debouncedQuery}&rdquo;
-          </p>
+          </Text>
           <Button
             variant="none"
             type="button"

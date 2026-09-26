@@ -18,6 +18,7 @@
  * auth) — see services/import.service.ts `downloadErrorCsv`.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -25,6 +26,7 @@ import { ROUTES } from '@/config/routes.config'
 import type { ImportJobView } from '../types/import.types'
 import { downloadErrorCsv } from '../services/import.service'
 import { clearCommitToken } from '../utils/commit-token-store'
+import { Heading } from '@/components/ui/Heading'
 
 interface CommitResultProps {
   job: ImportJobView['job']
@@ -100,15 +102,15 @@ export function CommitResult({ job, t }: CommitResultProps) {
   return (
     <div className="space-y-4">
       <Card variant="default" className="p-4 space-y-3">
-        <h2
+        <Heading level={2}
           className="font-semibold"
           style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
         >
           {isPartial
             ? (t.importResultPartialTitle ?? 'Import partially saved')
             : (t.importResultTitle ?? 'Import complete')}
-        </h2>
-        <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+        </Heading>
+        <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
           {isPartial
             ? (t.importResultPartialBody ??
               'Some rows could not be saved. Download the error CSV to see what went wrong.')
@@ -119,7 +121,7 @@ export function CommitResult({ job, t }: CommitResultProps) {
                 : isProduct
                   ? (t.importResultBodyProduct ?? 'Your products are now part of your business.')
                   : (t.importResultBody ?? 'Your parties are now part of your business.')}
-        </p>
+        </Text>
 
         <dl className="space-y-2 pt-2">
           <ResultCountRow
@@ -150,7 +152,7 @@ export function CommitResult({ job, t }: CommitResultProps) {
           variant="secondary"
           size="lg"
           onClick={onDownloadCsv}
-          className="w-full min-h-[44px]"
+          className="w-full min-h-11"
         >
           {t.importResultDownloadCsv ?? 'Download error CSV'}
         </Button>
@@ -161,7 +163,7 @@ export function CommitResult({ job, t }: CommitResultProps) {
           variant="ghost"
           size="lg"
           onClick={onImportAnother}
-          className="min-h-[44px] flex-1"
+          className="min-h-11 flex-1"
         >
           {t.importResultImportAnother ?? 'Import another file'}
         </Button>
@@ -169,7 +171,7 @@ export function CommitResult({ job, t }: CommitResultProps) {
           variant="primary"
           size="lg"
           onClick={onViewEntities}
-          className="min-h-[44px] flex-1"
+          className="min-h-11 flex-1"
         >
           {isPayment
             ? (t.importResultViewPayments ?? 'View payments')

@@ -1,5 +1,6 @@
 /** Audit #5 — Google Drive backup card: 4 UI states + consent + actions. */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Cloud, CloudOff, ShieldCheck, RefreshCw } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
@@ -46,11 +47,11 @@ export function DriveBackupCard() {
       <Card className="space-y-2">
         <div className="flex items-center gap-2">
           <CloudOff className="w-5 h-5" style={{ color: 'var(--color-gray-400)' }} />
-          <p className="text-[var(--fs-base)] font-medium">{t.backupTitle}</p>
+          <Text className="text-base font-medium">{t.backupTitle}</Text>
         </div>
-        <p className="text-[var(--fs-sm)]" style={{ color: 'var(--color-gray-500)' }}>
+        <Text className="text-sm" style={{ color: 'var(--color-gray-500)' }}>
           {t.backupUnavailable}
-        </p>
+        </Text>
       </Card>
     )
   }
@@ -66,32 +67,32 @@ export function DriveBackupCard() {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Cloud className="w-5 h-5" style={{ color: 'var(--color-primary-500)' }} />
-            <p className="text-[var(--fs-base)] font-medium">{t.backupTitle}</p>
+            <Text className="text-base font-medium">{t.backupTitle}</Text>
           </div>
           {connected && <Badge variant="paid">{t.backupConnectedBadge}</Badge>}
         </div>
 
-        <p className="text-[var(--fs-sm)]" style={{ color: 'var(--color-gray-500)' }}>
+        <Text className="text-sm" style={{ color: 'var(--color-gray-500)' }}>
           {t.backupConsent}
-        </p>
+        </Text>
 
         {connected ? (
           <div className="space-y-3">
-            <div className="text-[var(--fs-sm)]" style={{ color: 'var(--color-gray-600)' }}>
-              <p className="flex items-center gap-1.5">
+            <div className="text-sm" style={{ color: 'var(--color-gray-600)' }}>
+              <Text className="flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4" style={{ color: 'var(--color-primary-500)' }} />
                 {data?.email}
-              </p>
-              <p className="mt-1 tabular-nums">
+              </Text>
+              <Text className="mt-1 tabular-nums">
                 {lastBackup ? `${t.backupLastRun}: ${lastBackup}` : t.backupNeverRun}
-              </p>
+              </Text>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
               <Button
                 variant="primary"
                 onClick={runBackup}
                 loading={isBackingUp}
-                className="min-h-[44px] sm:flex-1"
+                className="min-h-11 sm:flex-1"
               >
                 <RefreshCw className="w-4 h-4" />
                 {t.backupNow}
@@ -100,7 +101,7 @@ export function DriveBackupCard() {
                 variant="ghost"
                 onClick={() => setConfirmOpen(true)}
                 disabled={isDisconnecting}
-                className="min-h-[44px]"
+                className="min-h-11"
               >
                 {t.backupDisconnect}
               </Button>
@@ -111,7 +112,7 @@ export function DriveBackupCard() {
             variant="primary"
             onClick={connect}
             loading={isConnecting}
-            className="min-h-[44px] w-full"
+            className="min-h-11 w-full"
           >
             <Cloud className="w-4 h-4" />
             {t.backupConnect}

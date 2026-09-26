@@ -32,7 +32,7 @@ export function DedupBulkActions({
         size="sm"
         onClick={() => onSetAll('SKIP')}
         disabled={disabled}
-        className="min-h-[44px]"
+        className="min-h-11"
       >
         {t.importDedupBulkSkipAll ?? 'Skip all'}
       </Button>
@@ -41,7 +41,7 @@ export function DedupBulkActions({
         size="sm"
         onClick={() => onSetAll('OVERWRITE')}
         disabled={disabled}
-        className="min-h-[44px]"
+        className="min-h-11"
       >
         {t.importDedupBulkOverwriteAll ?? 'Overwrite all'}
       </Button>
@@ -50,7 +50,7 @@ export function DedupBulkActions({
         size="sm"
         onClick={() => onSetAll('CREATE_NEW')}
         disabled={disabled}
-        className="min-h-[44px]"
+        className="min-h-11"
       >
         {t.importDedupBulkCreateAll ?? 'Create new for all'}
       </Button>

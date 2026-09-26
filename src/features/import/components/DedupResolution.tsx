@@ -14,6 +14,7 @@
  * misleading and would also lose the loaded rows. See SCOPE §FE.4.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useMemo } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -23,6 +24,7 @@ import type { ImportEntity, ImportPreviewRow } from '../types/import.types'
 import type { DedupResolutionMap } from '../types/dedup.types'
 import { DedupBulkActions } from './DedupBulkActions'
 import { DedupRowCard } from './DedupRowCard'
+import { Heading } from '@/components/ui/Heading'
 
 interface DedupResolutionProps {
   /** Full set of preview rows loaded so far (pagination-aware). */
@@ -59,7 +61,7 @@ export function DedupResolution({
     <div className="space-y-4">
       <Card variant="default" className="p-4 space-y-3">
         <header className="space-y-1">
-          <h2
+          <Heading level={2}
             className="font-semibold"
             style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
           >
@@ -70,8 +72,8 @@ export function DedupResolution({
                 : entity === 'product'
                   ? (t.importDedupTitleProduct ?? t.importDedupTitle ?? 'Review duplicate products')
                   : (t.importDedupTitle ?? 'Review duplicates')}
-          </h2>
-          <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+          </Heading>
+          <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
             {entity === 'payments'
               ? (t.importDedupIntroPayment ??
                 'These rows look like payments you already have. Pick what should happen for each one before committing.')
@@ -83,12 +85,12 @@ export function DedupResolution({
                     'These rows look like products you already have. Pick what should happen for each one before committing.')
                   : (t.importDedupIntro ??
                     'These rows look like parties you already have. Pick what should happen for each one before committing.')}
-          </p>
+          </Text>
         </header>
 
         <DedupBulkActions total={counts.total} onSetAll={setAll} t={t} />
 
-        <p
+        <Text
           aria-live="polite"
           className="tabular-nums"
           style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}
@@ -97,7 +99,7 @@ export function DedupResolution({
             .replace('{skip}', String(counts.skip))
             .replace('{overwrite}', String(counts.overwrite))
             .replace('{createNew}', String(counts.createNew))}
-        </p>
+        </Text>
       </Card>
 
       {dupRows.length === 0 ? (
@@ -128,7 +130,7 @@ export function DedupResolution({
           variant="ghost"
           size="lg"
           onClick={onBack}
-          className="min-h-[44px]"
+          className="min-h-11"
         >
           {t.importDedupBack ?? 'Back to preview'}
         </Button>
@@ -137,7 +139,7 @@ export function DedupResolution({
           size="lg"
           onClick={() => onContinue(resolutions)}
           disabled={continueDisabled}
-          className="min-h-[44px]"
+          className="min-h-11"
         >
           {t.importPreviewContinueCommit ?? 'Continue to commit'}
         </Button>

@@ -1,5 +1,6 @@
 /** PendingExpensesPage — Full list of pending-confirmation expenses */
 
+import { Text } from '@/components/ui/Text'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Clock } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -71,7 +72,7 @@ export default function PendingExpensesPage() {
           />
         ) : (
           <>
-            <p className="pending-page__count">{items.length} expense{items.length !== 1 ? 's' : ''} awaiting confirmation</p>
+            <Text className="pending-page__count">{items.length} expense{items.length !== 1 ? 's' : ''} awaiting confirmation</Text>
             <div className="space-y-2">
               {items.map((item) => (
                 <PendingExpenseCard key={item.id} item={item} onDone={onDone} />

@@ -1,5 +1,6 @@
 /** TemplatePicker — searchable list of SAVED invoices to use as recurring template */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Search, FileText, CheckCircle2 } from 'lucide-react'
@@ -9,6 +10,7 @@ import { formatPaise } from '@/lib/format'
 import type { DocumentSummary } from '@/features/invoices/invoice-document.types'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface TemplatePickerProps {
   value: string
@@ -71,9 +73,9 @@ export function TemplatePicker({ value, onChange, error }: TemplatePickerProps) 
       </Button>
 
       {error && (
-        <p className="rf-error" role="alert">
+        <Text className="rf-error" role="alert">
           {t[error as keyof typeof t] ?? error}
-        </p>
+        </Text>
       )}
 
       {/* Picker modal / sheet */}
@@ -86,9 +88,9 @@ export function TemplatePicker({ value, onChange, error }: TemplatePickerProps) 
         >
           <div className="rf-template-sheet">
             <div className="rf-template-sheet__header">
-              <h2 className="rf-template-sheet__title">
+              <Heading level={2} className="rf-template-sheet__title">
                 {t.recurringTemplatePickerTitle ?? 'Select Template Invoice'}
-              </h2>
+              </Heading>
               <Button variant="none"
                 type="button"
                 className="rf-template-sheet__close"
@@ -121,9 +123,9 @@ export function TemplatePicker({ value, onChange, error }: TemplatePickerProps) 
               )}
 
               {!query.isPending && docs.length === 0 && (
-                <p className="rf-template-empty">
+                <Text className="rf-template-empty">
                   {t.recurringTemplatePickerEmpty ?? 'No saved invoices yet.'}
-                </p>
+                </Text>
               )}
 
               {docs.map((doc) => (

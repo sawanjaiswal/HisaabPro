@@ -4,6 +4,7 @@
  * 4 UI states: loading → error → empty → success.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { DollarSign } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -101,9 +102,9 @@ export default function CurrencySettingsPage() {
           />
         ) : (
           <>
-            <p className="currency-section-label py-0">
+            <Text className="currency-section-label py-0">
               {rates.length} {rates.length === 1 ? t.rateWord : t.ratesWord} {t.configuredSuffix}
-            </p>
+            </Text>
 
             <div className="currency-rate-list stagger-list">
               {rates.map((entry) => (

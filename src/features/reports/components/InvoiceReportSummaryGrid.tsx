@@ -4,6 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { formatAmount } from '../report.utils'
 import { averageInvoiceValue } from '../invoice-report.utils'
 import type { InvoiceReportSummary } from '../report.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface InvoiceReportSummaryGridProps {
   summary: InvoiceReportSummary
@@ -25,7 +26,7 @@ export function InvoiceReportSummaryGrid({ summary }: InvoiceReportSummaryGridPr
 
   return (
     <section className="invoice-report-section py-0" aria-label={t.summaryLabel}>
-      <h2 className="invoice-report-section-title">{t.summaryLabel}</h2>
+      <Heading level={2} className="invoice-report-section-title">{t.summaryLabel}</Heading>
 
       <div className="invoice-report-metrics">
         {tiles.map((tile) => (

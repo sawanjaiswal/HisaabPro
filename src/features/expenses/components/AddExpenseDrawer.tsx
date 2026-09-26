@@ -5,6 +5,7 @@
  * prefill and the budget-overrun warning along with it.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Select, SelectItem } from '@/components/ui/Select'
@@ -126,7 +127,7 @@ export function AddExpenseDrawer({ open, onClose, onCreated, categories, expense
     <>
       <Drawer open={open} onClose={onClose} title={expense ? t.editExpense : t.recordExpense}>
         <form className="expense-drawer__form py-0" onSubmit={handleSubmit}>
-          {error && <p className="expense-drawer__error py-0" role="alert">{error}</p>}
+          {error && <Text className="expense-drawer__error py-0" role="alert">{error}</Text>}
 
           {/* OCR scan button — above amount; only when recording something new */}
           {!expense && <OcrReceiptUpload onPrefill={handleOcrPrefill} disabled={submitting} />}

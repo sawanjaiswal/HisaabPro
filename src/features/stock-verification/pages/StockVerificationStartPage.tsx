@@ -1,5 +1,6 @@
 /** Stock Verification Start Page — name your count + optional category filter → create draft */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ClipboardList } from 'lucide-react'
@@ -64,7 +65,7 @@ export default function StockVerificationStartPage() {
             <ClipboardList size={32} />
           </div>
 
-          <p className="sv-start__hint">{t.filterByCategoryHint}</p>
+          <Text className="sv-start__hint">{t.filterByCategoryHint}</Text>
 
           <div className="sv-start__form">
             <div className="sv-start__field">

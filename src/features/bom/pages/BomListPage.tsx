@@ -1,5 +1,6 @@
 /** BomListPage — /bom — list all BOMs with 4 UI states */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +12,7 @@ import { useLanguage } from '@/context/LanguageContext'
 import { formatVersionBadge } from '../bom.utils'
 import type { BomListFilters } from '../bom.types'
 import '../bom.css'
+import { Heading } from '@/components/ui/Heading'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -40,9 +42,9 @@ export default function BomListPage() {
       {/* Header */}
       <div className="bom-page__header">
         <div>
-          <h1 className="bom-page__title">{t.bomRecipes}</h1>
+          <Heading level={1} className="bom-page__title">{t.bomRecipes}</Heading>
           {status === 'success' && (
-            <p className="bom-page__subtitle">{pagination.total} {pagination.total !== 1 ? t.bomRecipesLower : t.bomRecipe}</p>
+            <Text className="bom-page__subtitle">{pagination.total} {pagination.total !== 1 ? t.bomRecipesLower : t.bomRecipe}</Text>
           )}
         </div>
         <Button

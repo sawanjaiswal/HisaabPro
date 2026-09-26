@@ -33,6 +33,7 @@ import { InvoiceListSkeleton } from '@/features/invoices/components/InvoiceListS
 import { groupByPeriod, toPeriodTotalsSeries } from '@/lib/period-groups.utils'
 import { ROUTES } from '@/config/routes.config'
 import '@/features/invoices/invoice-list-items.css'
+import { Heading } from '@/components/ui/Heading'
 
 interface ReturnsListPageProps {
   /** CREDIT_NOTE = sales return (#44), DEBIT_NOTE = purchase return (#51). */
@@ -115,7 +116,7 @@ export default function ReturnsListPage({ type = 'CREDIT_NOTE' }: ReturnsListPag
             <div role="status" aria-live="polite" className="sr-only">
               {documents.length} {documents.length === 1 ? t.returnFoundSingular : t.returnFoundPlural}
             </div>
-            <h2 className="sr-only">{t.returnListHeading}</h2>
+            <Heading level={2} className="sr-only">{t.returnListHeading}</Heading>
 
             {groups.map((group) => (
               <PeriodGroup key={group.key} group={group}>

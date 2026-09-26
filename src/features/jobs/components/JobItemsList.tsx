@@ -1,5 +1,6 @@
 /** JobItemsList — read-only items table on the detail page */
 
+import { Text } from '@/components/ui/Text'
 import { formatPaise, hourlyLineLabel } from '../jobs.utils'
 import type { JobItem } from '../jobs.types'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -12,9 +13,9 @@ export function JobItemsList({ items }: JobItemsListProps) {
   const { t } = useLanguage()
   if (items.length === 0) {
     return (
-      <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)' }}>
+      <Text style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)' }}>
         {t.jobNoItems}
-      </p>
+      </Text>
     )
   }
 

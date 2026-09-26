@@ -1,10 +1,5 @@
-/** Payment form body — shared by Record and Edit (mockup #7).
- *
- * One continuous scroll: the payment details are always visible; invoice
- * linking and discount collapse. Composed once so the two pages cannot drift.
- */
-
 import { useState } from 'react'
+import { Link2, Percent } from 'lucide-react'
 import {
   Accordion,
   AccordionItem,
@@ -65,7 +60,7 @@ export function PaymentFormSections({
   if (errors.discount && !openSections.includes('discount')) forced.push('discount')
 
   return (
-    <>
+    <div className="space-y-4 max-w-lg mx-auto">
       <PaymentDetailsSection
         partyId={form.partyId}
         amount={form.amount}
@@ -84,13 +79,21 @@ export function PaymentFormSections({
 
       <Accordion
         type="multiple"
-        className="form-accordion"
+        className="space-y-4"
         value={[...openSections, ...forced]}
         onValueChange={setOpenSections}
       >
-        <AccordionItem value="invoices">
-          <AccordionTrigger>{t.sectionLinkInvoices}</AccordionTrigger>
-          <AccordionContent>
+        <AccordionItem
+          value="invoices"
+          className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs transition-all"
+        >
+          <AccordionTrigger className="flex items-center justify-between font-semibold text-sm py-0 text-[var(--text-primary)] hover:no-underline cursor-pointer">
+            <span className="flex items-center gap-2">
+              <Link2 className="w-4 h-4 text-emerald-700" />
+              <span>{t.sectionLinkInvoices || 'Link Invoices'}</span>
+            </span>
+          </AccordionTrigger>
+          <AccordionContent className="pt-4">
             <PaymentInvoicesSection
               allocations={form.allocations}
               unallocatedAmount={unallocated}
@@ -102,9 +105,17 @@ export function PaymentFormSections({
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="discount">
-          <AccordionTrigger>{t.discount}</AccordionTrigger>
-          <AccordionContent>
+        <AccordionItem
+          value="discount"
+          className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs transition-all"
+        >
+          <AccordionTrigger className="flex items-center justify-between font-semibold text-sm py-0 text-[var(--text-primary)] hover:no-underline cursor-pointer">
+            <span className="flex items-center gap-2">
+              <Percent className="w-4 h-4 text-emerald-700" />
+              <span>{t.discount || 'Discount'}</span>
+            </span>
+          </AccordionTrigger>
+          <AccordionContent className="pt-4">
             <PaymentDiscountSection
               discount={form.discount}
               amount={form.amount}
@@ -116,6 +127,6 @@ export function PaymentFormSections({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </>
+    </div>
   )
 }

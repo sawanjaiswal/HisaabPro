@@ -3,6 +3,7 @@
  * Feature #96
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Tag } from 'lucide-react'
@@ -20,6 +21,7 @@ import type { CouponDetail } from './coupon.types'
 import './coupon.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 type Status = 'loading' | 'error' | 'success'
 
@@ -105,7 +107,7 @@ export default function CouponDetailPage() {
         <section className="coupon-detail-hero fade-up">
           <div className="coupon-detail-code-row">
             <Tag size={20} aria-hidden="true" />
-            <h2 className="coupon-detail-code">{coupon.code}</h2>
+            <Heading level={2} className="coupon-detail-code">{coupon.code}</Heading>
             <span
               className="coupon-card-status"
               style={{ '--status-color': statusColor } as React.CSSProperties}
@@ -113,15 +115,15 @@ export default function CouponDetailPage() {
               {STATUS_LABELS[coupon.status]}
             </span>
           </div>
-          <p className="coupon-detail-discount">
+          <Text className="coupon-detail-discount">
             {formatDiscount(coupon.discountType, coupon.discountValue)}
             {' '}
             <span className="coupon-detail-type">
               ({DISCOUNT_TYPE_LABELS[coupon.discountType]} &middot; {APPLIES_TO_LABELS[coupon.appliesTo]})
             </span>
-          </p>
+          </Text>
           {coupon.description && (
-            <p className="coupon-detail-desc">{coupon.description}</p>
+            <Text className="coupon-detail-desc">{coupon.description}</Text>
           )}
         </section>
 
@@ -143,7 +145,7 @@ export default function CouponDetailPage() {
 
         {/* Details */}
         <section className="coupon-detail-info">
-          <h3 className="coupon-detail-section-title py-0">{t.couponDetail}</h3>
+          <Heading level={3} className="coupon-detail-section-title py-0">{t.couponDetail}</Heading>
           <dl className="coupon-detail-dl">
             <dt>{t.validFrom}</dt>
             <dd>{formatCouponDateTime(coupon.validFrom)}</dd>
@@ -164,9 +166,9 @@ export default function CouponDetailPage() {
 
         {/* Redemptions */}
         <section className="coupon-detail-redemptions">
-          <h3 className="coupon-detail-section-title py-0">
+          <Heading level={3} className="coupon-detail-section-title py-0">
             Redemptions ({redemptions.length})
-          </h3>
+          </Heading>
           {redemptions.length === 0 ? (
             <EmptyState
               icon={<Tag size={22} aria-hidden="true" />}

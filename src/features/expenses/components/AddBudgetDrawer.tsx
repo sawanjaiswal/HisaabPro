@@ -1,5 +1,6 @@
 /** AddBudgetDrawer — Form to set/upsert a budget for a category + month */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Select, SelectItem } from '@/components/ui/Select'
@@ -72,7 +73,7 @@ export function AddBudgetDrawer({
   return (
     <Drawer open={open} onClose={onClose} title={t.expensesBudgetSetAction ?? 'Set Budget'}>
       <form className="expense-drawer__form" onSubmit={handleSubmit}>
-        {error && <p className="expense-drawer__error" role="alert">{error}</p>}
+        {error && <Text className="expense-drawer__error" role="alert">{error}</Text>}
 
         {!existing && (
           <div className="expense-drawer__field">

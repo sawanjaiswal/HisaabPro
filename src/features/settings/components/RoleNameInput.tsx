@@ -1,5 +1,6 @@
 /** Settings — Role name text input with validation error display */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
 
@@ -37,9 +38,9 @@ export function RoleNameInput({ value, error, onChange }: RoleNameInputProps) {
         autoComplete="off"
       />
       {error && (
-        <p id="role-name-error" className="input-error" role="alert">
+        <Text id="role-name-error" className="input-error" role="alert">
           {error}
-        </p>
+        </Text>
       )}
     </div>
   )

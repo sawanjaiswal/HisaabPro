@@ -1,5 +1,6 @@
 /** TemplateListPage — /marketing/templates */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, RefreshCw, Pencil, Trash2, FileText } from 'lucide-react'
@@ -11,6 +12,7 @@ import { MARKETING_ROUTES } from '../marketing.constants'
 import { formatDate } from '../marketing.utils'
 import type { MarketingChannel, MarketingTemplate } from '../marketing.types'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 export default function TemplateListPage() {
   const navigate = useNavigate()
@@ -33,7 +35,7 @@ export default function TemplateListPage() {
         <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketing}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
-        <h1 style={{ flex: 1, fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingTemplates}</h1>
+        <Heading level={1} style={{ flex: 1, fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingTemplates}</Heading>
         <Button variant="none"
           type="button"
           onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_NEW)}
@@ -142,8 +144,8 @@ export default function TemplateListPage() {
       {confirmDelete && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', background: 'rgba(0,0,0,0.5)' }} role="dialog" aria-modal="true" aria-labelledby="del-tmpl-title">
           <div style={{ width: '100%', maxWidth: 480, background: 'white', borderRadius: '20px 20px 0 0', padding: '24px 20px' }}>
-            <h3 id="del-tmpl-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>{t.marketingDeleteTemplateTitle}</h3>
-            <p style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>{t.marketingDeleteTemplateDesc}</p>
+            <Heading level={3} id="del-tmpl-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>{t.marketingDeleteTemplateTitle}</Heading>
+            <Text style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>{t.marketingDeleteTemplateDesc}</Text>
             <div style={{ display: 'flex', gap: '10px' }}>
               <Button variant="none" type="button" onClick={() => setConfirmDelete(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                 {t.marketingCancel}

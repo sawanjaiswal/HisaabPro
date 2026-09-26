@@ -16,6 +16,7 @@
  * before/after columns line up.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useMemo } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -99,12 +100,12 @@ export function AuditDiffDrawer({ open, onClose, entry }: AuditDiffDrawerProps) 
   return (
     <Drawer open={open} onClose={onClose} title={titleText} size="lg">
       {!entry || !sides || sides.empty ? (
-        <p className="audit-entry-meta" role="status">{t.auditDiffNoChanges}</p>
+        <Text className="audit-entry-meta" role="status">{t.auditDiffNoChanges}</Text>
       ) : (
         <div className="space-y-4">
           {sides.before !== null && (
             <section>
-              <p className="settings-section-title py-0">{t.auditDiffBefore}</p>
+              <Text className="settings-section-title py-0">{t.auditDiffBefore}</Text>
               <pre
                 className="audit-diff-pre"
                 style={{
@@ -128,7 +129,7 @@ export function AuditDiffDrawer({ open, onClose, entry }: AuditDiffDrawerProps) 
           )}
 
           <section>
-            <p className="settings-section-title py-0">{t.auditDiffAfter}</p>
+            <Text className="settings-section-title py-0">{t.auditDiffAfter}</Text>
             <pre
               className="audit-diff-pre"
               style={{

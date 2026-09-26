@@ -1,6 +1,8 @@
+import { Text } from '@/components/ui/Text'
 import { ArrowLeft, Scale, ShieldCheck, AlertCircle, FileCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { APP_NAME, APP_DOMAIN } from '@/config/app.config'
+import { Heading } from '@/components/ui/Heading'
 
 export function PublicTermsPage() {
   return (
@@ -19,26 +21,26 @@ export function PublicTermsPage() {
         <div className="border-b border-neutral-100 pb-4">
           <div className="flex items-center gap-2 text-emerald-800 mb-2">
             <Scale size={24} />
-            <h1 className="text-2xl font-bold tracking-tight">Terms of Service</h1>
+            <Heading level={1} className="text-2xl font-bold tracking-tight">Terms of Service</Heading>
           </div>
-          <p className="text-sm text-neutral-600">
+          <Text className="text-sm text-neutral-600">
             Please read these terms carefully before using the {APP_NAME} mobile and web applications.
-          </p>
+          </Text>
         </div>
 
         <section className="space-y-3">
-          <h2 className="text-base font-semibold text-neutral-900 flex items-center gap-2">
+          <Heading level={2} className="text-base font-semibold text-neutral-900 flex items-center gap-2">
             <FileCheck size={18} className="text-emerald-700" /> 1. Services Provided
-          </h2>
-          <p className="text-sm text-neutral-600 leading-relaxed">
+          </Heading>
+          <Text className="text-sm text-neutral-600 leading-relaxed">
             {APP_NAME} provides cloud-synchronized billing, GST invoicing, inventory tracking, payment management, and financial reporting tools tailored for Indian businesses and retailers.
-          </p>
+          </Text>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-semibold text-neutral-900 flex items-center gap-2">
+          <Heading level={2} className="text-base font-semibold text-neutral-900 flex items-center gap-2">
             <ShieldCheck size={18} className="text-emerald-700" /> 2. User Responsibilities
-          </h2>
+          </Heading>
           <ul className="list-disc pl-5 text-sm text-neutral-600 space-y-1.5">
             <li>You are responsible for ensuring the accuracy of invoices, tax calculations, and GSTIN numbers entered into the app.</li>
             <li>You must maintain the confidentiality of your PIN and login credentials.</li>
@@ -47,19 +49,19 @@ export function PublicTermsPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-semibold text-neutral-900 flex items-center gap-2">
+          <Heading level={2} className="text-base font-semibold text-neutral-900 flex items-center gap-2">
             <AlertCircle size={18} className="text-emerald-700" /> 3. Limitation of Liability
-          </h2>
-          <p className="text-sm text-neutral-600 leading-relaxed">
+          </Heading>
+          <Text className="text-sm text-neutral-600 leading-relaxed">
             {APP_NAME} provides tax calculations and billing tools as business utilities. We do not provide statutory tax or legal counsel. While we strive for 100% uptime and offline sync reliability, we are not liable for business interruptions or filing penalties incurred due to user configuration errors.
-          </p>
+          </Text>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-base font-semibold text-neutral-900">4. Contact Information</h2>
-          <p className="text-sm text-neutral-600">
+          <Heading level={2} className="text-base font-semibold text-neutral-900">4. Contact Information</Heading>
+          <Text className="text-sm text-neutral-600">
             For questions regarding these terms, reach us at <a href="mailto:support@hisaabpro.in" className="text-emerald-800 underline">support@{APP_DOMAIN}</a>.
-          </p>
+          </Text>
         </section>
       </div>
     </div>

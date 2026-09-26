@@ -5,6 +5,7 @@
  * The generated URL is shown once — user must copy immediately.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Link2, Copy } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -15,6 +16,7 @@ import { useDocumentShareLinks } from '../hooks/useDocumentShareLinks'
 import type { ShareLinkTtl } from '../share-links.service'
 import '../invoice-share-links.css'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface ShareLinksSectionProps {
   documentId: string
@@ -83,13 +85,13 @@ export function ShareLinksSection({ documentId, documentNumber }: ShareLinksSect
 
   return (
     <section className="share-links" aria-label={t.shareLinkSectionTitle}>
-      <h3 className="share-links__heading">
+      <Heading level={3} className="share-links__heading">
         <Link2 size={14} aria-hidden="true" />
         {t.shareLinkSectionTitle}
-      </h3>
+      </Heading>
 
       {/* ── Expiry picker ── */}
-      <p className="share-links__expiry-label">{t.shareLinkExpiryLabel}</p>
+      <Text className="share-links__expiry-label">{t.shareLinkExpiryLabel}</Text>
       <div className="share-links__pills" role="group" aria-label={t.shareLinkExpiryLabel}>
         {TTL_OPTIONS.map((opt) => (
           <Button variant="none"
@@ -119,8 +121,8 @@ export function ShareLinksSection({ documentId, documentNumber }: ShareLinksSect
       {/* ── One-time URL reveal ── */}
       {oneTimeUrl && (
         <div className="share-links__one-time" role="alert">
-          <p className="share-links__one-time-hint">{t.shareLinkCopiedOnce}</p>
-          <p className="share-links__one-time-url">{oneTimeUrl}</p>
+          <Text className="share-links__one-time-hint">{t.shareLinkCopiedOnce}</Text>
+          <Text className="share-links__one-time-url">{oneTimeUrl}</Text>
           <Button variant="none"
             type="button"
             className="share-links__copy-btn"
@@ -149,7 +151,7 @@ export function ShareLinksSection({ documentId, documentNumber }: ShareLinksSect
 
       {!isLoading && !isError && activeLinks.length > 0 && (
         <>
-          <p className="share-links__list-title">{t.shareLinkActiveLinks}</p>
+          <Text className="share-links__list-title">{t.shareLinkActiveLinks}</Text>
           <ul className="share-links__list" role="list">
             {activeLinks.map((link) => {
               const countLabel = (t.shareLinkAccessCount ?? 'Opened {count} times').replace(

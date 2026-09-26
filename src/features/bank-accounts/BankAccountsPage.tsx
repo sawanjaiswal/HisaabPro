@@ -5,6 +5,7 @@
  * 4 UI states: loading skeleton · error · empty · success.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Building2, Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -144,7 +145,7 @@ export default function BankAccountsPage() {
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={t.addFirstAccount}>
         <form className="bank-drawer__form py-0" onSubmit={handleSubmit}>
-          {formError && <p className="bank-drawer__error py-0" role="alert">{formError}</p>}
+          {formError && <Text className="bank-drawer__error py-0" role="alert">{formError}</Text>}
           <div className="bank-drawer__field py-0">
             <label className="bank-drawer__label py-0" htmlFor="bankName">{t.bankNameLabel2}</label>
             <Input id="bankName" className="bank-drawer__input py-0" required value={form.bankName} onChange={(e) => setForm((f) => ({ ...f, bankName: e.target.value }))} placeholder="e.g. SBI, HDFC" />

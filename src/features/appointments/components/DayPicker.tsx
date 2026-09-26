@@ -36,18 +36,18 @@ export function DayPicker({ dateISO, onChange, step = 1 }: DayPickerProps) {
         variant="none"
         onClick={() => shift(-step)}
         aria-label={t.previous ?? 'Previous'}
-        className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-[var(--radius-sm)]"
+        className="min-h-11 min-w-[44px] flex items-center justify-center rounded-sm"
         style={{ background: 'transparent', border: '1px solid var(--color-border)' }}
       >
         <ChevronLeft size={18} aria-hidden="true" />
       </Button>
 
       <label
-        className="relative min-h-[44px] flex items-center gap-1.5 px-3 rounded-[var(--radius-sm)] cursor-pointer"
+        className="relative min-h-11 flex items-center gap-1.5 px-3 rounded-sm cursor-pointer"
         style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
       >
         <CalIcon size={14} aria-hidden="true" />
-        <span className="text-[var(--fs-sm)] tabular-nums select-none">
+        <span className="text-sm tabular-nums select-none">
           {formatDayLabel(current)}
         </span>
         <DateField
@@ -63,7 +63,7 @@ export function DayPicker({ dateISO, onChange, step = 1 }: DayPickerProps) {
       <Button
         variant="secondary"
         onClick={goToday}
-        className="min-h-[44px] text-[var(--fs-sm)]"
+        className="min-h-11 text-sm"
       >
         {t.today ?? 'Today'}
       </Button>
@@ -72,7 +72,7 @@ export function DayPicker({ dateISO, onChange, step = 1 }: DayPickerProps) {
         variant="none"
         onClick={() => shift(step)}
         aria-label={t.next ?? 'Next'}
-        className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-[var(--radius-sm)]"
+        className="min-h-11 min-w-[44px] flex items-center justify-center rounded-sm"
         style={{ background: 'transparent', border: '1px solid var(--color-border)' }}
       >
         <ChevronRight size={18} aria-hidden="true" />

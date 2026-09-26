@@ -8,6 +8,7 @@
  * 4 UI states (Rule G): loading skeleton · error retry · empty · success.
  */
 
+import { Text } from '@/components/ui/Text'
 import {
   Plus,
   Minus,
@@ -133,9 +134,9 @@ function LedgerRow({ row }: { row: LoyaltyLedgerRowDTO }) {
           {formatRelativeTime(row.createdAt)} · {expiresLabel}
         </div>
         {row.note && (
-          <p className="loyalty-ledger__note">
+          <Text className="loyalty-ledger__note">
             <strong>{t.loyaltyLedgerNotePrefix}:</strong> {row.note}
-          </p>
+          </Text>
         )}
       </div>
     </div>

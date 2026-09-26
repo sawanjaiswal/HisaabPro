@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { Link } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
 import { APP_NAME } from '../../config/app.config'
@@ -10,6 +11,7 @@ import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 export default function RegisterPage() {
   const { t } = useLanguage()
@@ -35,8 +37,8 @@ export default function RegisterPage() {
             className="login-page__brand-logo"
             style={{ maxWidth: '210px', height: 'auto', margin: '0 auto 8px auto', display: 'block' }}
           />
-          <h1 className="login-page__title sr-only">{APP_NAME}</h1>
-          <p className="login-page__subtitle">{t.createFreeAccount}</p>
+          <Heading level={1} className="login-page__title sr-only">{APP_NAME}</Heading>
+          <Text className="login-page__subtitle">{t.createFreeAccount}</Text>
         </div>
 
         <form
@@ -110,7 +112,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {error && <p className="login-page__error">{error}</p>}
+          {error && <Text className="login-page__error">{error}</Text>}
 
           <Button variant="none"
             type="submit"
@@ -131,12 +133,12 @@ export default function RegisterPage() {
             text={(t as any).signUpWithGoogle ?? 'Sign up with Google'}
           />
 
-          <p className="login-page__hint">
+          <Text className="login-page__hint">
             {t.alreadyHaveAccount}{' '}
             <Link to={ROUTES.LOGIN} className="login-page__link">
               {t.signIn}
             </Link>
-          </p>
+          </Text>
         </form>
       </div>
     </div>

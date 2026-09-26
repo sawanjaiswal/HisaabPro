@@ -1,5 +1,6 @@
 /** POS — Single product tile */
 
+import { Text } from '@/components/ui/Text'
 import { Plus } from 'lucide-react'
 import { paiseToInr } from '../../utils/pos.format'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -57,10 +58,10 @@ export function PosProductCard({ product, onSelect, inCart }: PosProductCardProp
       )}
 
       <div className="pos-product-card__body">
-        <p className="pos-product-card__name" title={product.name}>
+        <Text className="pos-product-card__name" title={product.name}>
           {product.name}
-        </p>
-        <p className="pos-product-card__price">{paiseToInr(product.salePricePaise)}</p>
+        </Text>
+        <Text className="pos-product-card__price">{paiseToInr(product.salePricePaise)}</Text>
         {outOfStock ? (
           <span className="pos-product-card__stock pos-product-card__stock--oos">
             {t.posOutOfStock ?? 'Out of stock'}

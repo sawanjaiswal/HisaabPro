@@ -73,7 +73,7 @@ export function CalendarWeekView({
           {hours.map((h) => (
             <div
               key={h}
-              className="text-[var(--fs-xs)] tabular-nums"
+              className="text-xs tabular-nums"
               style={{
                 height: `${HOUR_ROW_PX}px`,
                 color: 'var(--color-text-muted)',
@@ -95,7 +95,7 @@ export function CalendarWeekView({
                 variant="none"
                 type="button"
                 onClick={() => onPickDay(d)}
-                className="appt-week-dayheader min-h-[40px] text-[var(--fs-xs)] font-medium tabular-nums"
+                className="appt-week-dayheader min-h-[40px] text-xs font-medium tabular-nums"
                 style={{
                   borderBottom: '1px solid var(--color-border)',
                   background: isToday ? 'var(--color-surface-muted)' : 'transparent',
@@ -143,7 +143,7 @@ export function CalendarWeekView({
                       }}
                     >
                       <div className="flex items-center gap-1 flex-wrap">
-                        <span className="font-medium text-[var(--fs-xs)] truncate">
+                        <span className="font-medium text-xs truncate">
                           {row.partyNameSnapshot}
                         </span>
                         <Badge variant={STATUS_BADGE_VARIANT[row.status]}>{statusLabel}</Badge>

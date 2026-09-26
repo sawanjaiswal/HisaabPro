@@ -32,7 +32,8 @@ import { PartyDetailPayBar } from './components/PartyDetailPayBar'
 import '@/features/shared-ledger/shared-ledger.css'
 import './party-detail-header.css'
 import { Button } from '@/components/ui/Button'
-import { UnderlineTabs } from '@/components/ui/UnderlineTabs'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs'
+import type { PartyDetailTab } from './usePartyDetailTabs'
 
 export default function PartyDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -155,49 +156,57 @@ export default function PartyDetailPage() {
                 onCloseStatement={() => setStmtOpen(false)}
               />
 
-              <UnderlineTabs
-                tabs={TABS}
+              <Tabs
                 value={activeTab}
-                onChange={setActiveTab}
-                ariaLabel={t.partyDetailSections}
-              />
+                onValueChange={(val) => setActiveTab(val as PartyDetailTab)}
+              >
+                <TabsList variant="segmented" fullWidth aria-label={t.partyDetailSections}>
+                  {TABS.map((tab) => (
+                    <TabsTrigger
+                      key={tab.id}
+                      value={tab.id}
+                      icon={<tab.icon size={15} />}
+                    >
+                      {tab.label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
 
-              <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${TABS.find(tab => tab.id === activeTab)?.label ?? activeTab} ${t.tabContent}`}>
-                {activeTab === 'ledger' && (
+                <TabsContent value="ledger">
                   <PartyLedgerTab
                     partyId={partyId}
                     partyName={party.name}
                     businessName={party.companyName ?? party.name}
                   />
-                )}
+                </TabsContent>
 
-                {activeTab === 'invoices' && (
+                <TabsContent value="invoices">
                   <PartyLedgerTab
                     partyId={partyId}
                     partyName={party.name}
                     businessName={party.companyName ?? party.name}
                     lockTypes={['SALE']}
                   />
-                )}
+                </TabsContent>
 
-                {activeTab === 'payments' && (
+                <TabsContent value="payments">
                   <PartyLedgerTab
                     partyId={partyId}
                     partyName={party.name}
                     businessName={party.companyName ?? party.name}
                     lockTypes={['PAYMENT']}
                   />
-                )}
+                </TabsContent>
 
-                {activeTab === 'info' && (
-                  <>
+                <TabsContent value="info">
+                  <div className="space-y-4">
                     <PartyOverviewTab party={party} />
                     <PartyAddressesTab addresses={party.addresses} />
                     <PartyCrmTab party={party} onPatched={refresh} />
                     <CommitmentsSection partyId={partyId} partyName={party.name} />
-                  </>
-                )}
-              </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
           )}
         </PageContainer>
@@ -205,6 +214,7 @@ export default function PartyDetailPage() {
         {status === 'success' && party && (
           <PartyDetailPayBar
             outstandingPaise={party.outstandingBalance}
+            isSupplier={party.type === 'SUPPLIER'}
             onReceivePayment={handleReceivePayment}
             onNewInvoice={handleNewInvoice}
           />

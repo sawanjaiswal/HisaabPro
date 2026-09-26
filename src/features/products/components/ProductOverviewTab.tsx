@@ -12,6 +12,7 @@ import { formatProductPrice } from '../product.utils'
 import { ProductMetricCard } from './ProductMetricCard'
 import { ProductStockSummaryCard } from './ProductStockSummaryCard'
 import { ProductRecentActivity } from './ProductRecentActivity'
+import { Heading } from '@/components/ui/Heading'
 
 interface ProductOverviewTabProps {
   product: ProductDetail
@@ -59,7 +60,7 @@ export function ProductOverviewTab({
   return (
     <div className="space-y-6">
       <section className="pd-overview" aria-label={t.productOverview}>
-        <h3 className="pd-overview__title">{t.productOverview}</h3>
+        <Heading level={3} className="pd-overview__title">{t.productOverview}</Heading>
         <div className="pd-metric-grid">
           <ProductMetricCard
             tone="sales"

@@ -6,6 +6,7 @@
  * Download: anchor click with blob URL.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { pdf } from '@react-pdf/renderer'
@@ -181,14 +182,14 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
         {status === 'pending' && from && (
           <div style={{ textAlign: 'center', padding: 'var(--space-8)', color: 'var(--color-text-secondary)' }}>
             <RefreshCw size={32} className="spin" aria-hidden="true" />
-            <p>{t.stmtGenerating}</p>
+            <Text>{t.stmtGenerating}</Text>
           </div>
         )}
 
         {/* Empty */}
         {status === 'success' && data && data.transactions.length === 0 && (
           <div style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
-            <p>{t.stmtNoTransactions}</p>
+            <Text>{t.stmtNoTransactions}</Text>
             <Button variant="none" className="btn btn-outline btn-sm" onClick={() => setPickerOpen(true)}>
               {t.stmtChangePeriod}
             </Button>
@@ -198,7 +199,7 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
         {/* Error */}
         {status === 'error' && (
           <div style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
-            <p style={{ color: 'var(--color-error)' }}>{t.stmtLoadError}</p>
+            <Text style={{ color: 'var(--color-error)' }}>{t.stmtLoadError}</Text>
             <Button variant="none" className="btn btn-outline btn-sm" onClick={() => refetch()}>
               {t.retry}
             </Button>
@@ -208,10 +209,10 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
         {/* Success: PDF preview placeholder (PDFViewer requires iframe, tricky in Drawer) */}
         {status === 'success' && data && data.transactions.length > 0 && (
           <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-4)', textAlign: 'center' }}>
-            <p style={{ marginBottom: 4, fontWeight: 600 }}>{t.stmtReadyToDownload}</p>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: 13 }}>
+            <Text style={{ marginBottom: 4, fontWeight: 600 }}>{t.stmtReadyToDownload}</Text>
+            <Text style={{ color: 'var(--color-text-secondary)', fontSize: 13 }}>
               {`${data.transactions.length} ${t.stmtTransactions} · ${t.stmtClosingBalance}: ${formatPaise(data.closingBalancePaise)}`}
-            </p>
+            </Text>
           </div>
         )}
       </Drawer>

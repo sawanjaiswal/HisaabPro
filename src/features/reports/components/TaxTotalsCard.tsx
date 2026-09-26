@@ -5,9 +5,11 @@
  * four read identically.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatPaise } from '@/lib/format'
 import type { TaxTotals } from '../report-tax.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface TaxTotalsCardProps {
   title: string
@@ -28,11 +30,11 @@ export function TaxTotalsCard({ title, totals, countLabel }: TaxTotalsCardProps)
   return (
     <section className="tax-card py-0">
       <header className="tax-card__head">
-        <h2 className="tax-card__title">{title}</h2>
+        <Heading level={2} className="tax-card__title">{title}</Heading>
         {countLabel && <span className="tax-card__count">{countLabel}</span>}
       </header>
 
-      <p className="tax-card__amount">{formatPaise(totals.taxableValue)}</p>
+      <Text className="tax-card__amount">{formatPaise(totals.taxableValue)}</Text>
 
       <dl className="tax-card__split">
         {components.map((component) => (
@@ -44,9 +46,9 @@ export function TaxTotalsCard({ title, totals, countLabel }: TaxTotalsCardProps)
       </dl>
 
       {totals.cess > 0 && (
-        <p className="tax-card__cess">
+        <Text className="tax-card__cess">
           {t.cess}: {formatPaise(totals.cess)}
-        </p>
+        </Text>
       )}
     </section>
   )

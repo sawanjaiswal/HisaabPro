@@ -53,16 +53,16 @@ function fmtDate(iso: string): string {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const s = StyleSheet.create({
-  page:        { padding: 32, fontSize: 9, fontFamily: 'Helvetica', color: '#111827' },
+  page:        { padding: 32, fontSize: 9, fontFamily: 'Helvetica', color: 'var(--color-gray-900)' },
   heading:     { fontSize: 16, fontFamily: 'Helvetica-Bold', marginBottom: 4 },
-  subheading:  { fontSize: 10, color: '#4B5563', marginBottom: 2 },
+  subheading:  { fontSize: 10, color: 'var(--color-gray-600)', marginBottom: 2 },
   section:     { marginBottom: 12 },
   row:         { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 },
-  label:       { color: '#6B7280' },
-  divider:     { borderBottomWidth: 1, borderBottomColor: '#E5E7EB', marginVertical: 8 },
+  label:       { color: 'var(--color-gray-500)' },
+  divider:     { borderBottomWidth: 1, borderBottomColor: 'var(--color-gray-200)', marginVertical: 8 },
   // Table
-  tableHeader: { flexDirection: 'row', backgroundColor: '#F3F4F6', paddingVertical: 4, paddingHorizontal: 2 },
-  tableRow:    { flexDirection: 'row', paddingVertical: 3, paddingHorizontal: 2, borderBottomWidth: 0.5, borderBottomColor: '#F3F4F6' },
+  tableHeader: { flexDirection: 'row', backgroundColor: 'var(--color-gray-100)', paddingVertical: 4, paddingHorizontal: 2 },
+  tableRow:    { flexDirection: 'row', paddingVertical: 3, paddingHorizontal: 2, borderBottomWidth: 0.5, borderBottomColor: 'var(--color-gray-100)' },
   colDate:     { width: '12%' },
   colRef:      { width: '14%' },
   colDesc:     { width: '28%' },
@@ -73,7 +73,7 @@ const s = StyleSheet.create({
   balanceRow:  { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 6 },
   balanceLabel:{ fontFamily: 'Helvetica-Bold', marginRight: 8 },
   balanceAmt:  { fontFamily: 'Helvetica-Bold', textDecoration: 'underline', minWidth: 80, textAlign: 'right' },
-  footer:      { position: 'absolute', bottom: 20, left: 32, right: 32, fontSize: 7, color: '#9CA3AF', textAlign: 'center' },
+  footer:      { position: 'absolute', bottom: 20, left: 32, right: 32, fontSize: 7, color: 'var(--color-gray-400)', textAlign: 'center' },
 })
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ export function StatementPDFTemplate({ data }: { data: StatementData }) {
           {/* ── Rows ── */}
           {pageRows.length === 0 && (
             <View style={{ padding: 16 }}>
-              <Text style={{ color: '#6B7280', textAlign: 'center' }}>{'No transactions in this period.'}</Text>
+              <Text style={{ color: 'var(--color-gray-500)', textAlign: 'center' }}>{'No transactions in this period.'}</Text>
             </View>
           )}
           {pageRows.map((tx, i) => (

@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { useEffect, useRef } from 'react'
 import { Building2, CheckCircle } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
@@ -7,6 +8,7 @@ import './join-business.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 export default function JoinBusinessPage() {
   const { t } = useLanguage()
@@ -28,12 +30,12 @@ export default function JoinBusinessPage() {
         <div className="join-business-content">
           <div className="join-business-success">
             <CheckCircle size={48} className="join-business-success-icon" />
-            <h2 className="join-business-success-title">
+            <Heading level={2} className="join-business-success-title">
               {t.youJoinedBusiness.replace('{name}', success.businessName)}
-            </h2>
-            <p className="join-business-success-subtitle">
+            </Heading>
+            <Text className="join-business-success-subtitle">
               {t.roleColon2} {success.roleName}
-            </p>
+            </Text>
             <Button variant="none"
               type="button"
               className="join-business-btn"
@@ -54,10 +56,10 @@ export default function JoinBusinessPage() {
         <div className="join-business-icon-container space-y-6">
           <Building2 size={40} className="join-business-icon" />
         </div>
-        <h2 className="join-business-heading">{t.enterInviteCodeHeading}</h2>
-        <p className="join-business-subtitle">
+        <Heading level={2} className="join-business-heading">{t.enterInviteCodeHeading}</Heading>
+        <Text className="join-business-subtitle">
           {t.inviteCodeSubtitle}
-        </p>
+        </Text>
 
         <Input
           ref={inputRef}
@@ -73,7 +75,7 @@ export default function JoinBusinessPage() {
           aria-label={t.inviteCodeAria}
         />
 
-        {error && <p className="join-business-error">{error}</p>}
+        {error && <Text className="join-business-error">{error}</Text>}
 
         <Button variant="none"
           type="button"

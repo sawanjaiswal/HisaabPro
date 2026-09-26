@@ -1,5 +1,6 @@
 /** GodownForm — Create/Edit godown form fields */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { GODOWN_NAME_MAX, ADDRESS_MAX } from '../godown.constants'
 import type { CreateGodownData } from '../godown.types'
@@ -43,7 +44,7 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
           aria-describedby={errors.name ? 'godown-name-error' : undefined}
         />
         {errors.name && (
-          <p id="godown-name-error" className="godown-form__error" role="alert">{errors.name}</p>
+          <Text id="godown-name-error" className="godown-form__error" role="alert">{errors.name}</Text>
         )}
       </div>
 
@@ -61,7 +62,7 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
           aria-describedby={errors.address ? 'godown-address-error' : undefined}
         />
         {errors.address && (
-          <p id="godown-address-error" className="godown-form__error" role="alert">{errors.address}</p>
+          <Text id="godown-address-error" className="godown-form__error" role="alert">{errors.address}</Text>
         )}
       </div>
 

@@ -8,6 +8,7 @@
  * promise rejections.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useState, useCallback } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { api } from '@/lib/api'
@@ -72,9 +73,9 @@ export function PublicHealthPage() {
     return (
       <div className="public-health" role="status" aria-live="polite" aria-label={s.loading}>
         <div className="public-health__skeleton" aria-hidden="true" />
-        <p className="public-health__status" style={{ color: 'var(--color-gray-400)' }}>
+        <Text className="public-health__status" style={{ color: 'var(--color-gray-400)' }}>
           {s.loading}
-        </p>
+        </Text>
       </div>
     )
   }

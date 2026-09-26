@@ -6,6 +6,7 @@
  * flat-per-unit input in FLAT_PER_UNIT mode. Pure presentational.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/hooks/useLanguage'
 import { FLAT_MAX_PAISE } from '../commission.constants'
@@ -51,9 +52,9 @@ export function RateFlatFields({
           onKeyDown={blockExponentKeys}
           aria-describedby="commission-rate-hint"
         />
-        <p id="commission-rate-hint" className="commission-rule-form__hint">
+        <Text id="commission-rate-hint" className="commission-rule-form__hint">
           {t.commissionRateHint}
-        </p>
+        </Text>
         <RateBanner rateBps={rateBps} />
       </div>
     )
@@ -73,7 +74,7 @@ export function RateFlatFields({
           onChange={(e) => onFlatPerUnitChange(e.target.value)}
           onKeyDown={blockExponentKeys}
         />
-        <p className="commission-rule-form__hint">{t.commissionFlatHint}</p>
+        <Text className="commission-rule-form__hint">{t.commissionFlatHint}</Text>
       </div>
     )
   }

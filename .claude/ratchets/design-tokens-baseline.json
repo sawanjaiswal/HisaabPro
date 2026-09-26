@@ -1,0 +1,305 @@
+{
+  "count": 612,
+  "violations": [
+    {
+      "file": "src/App.tsx",
+      "line": 116,
+      "type": "RAW_HEX",
+      "text": "{/* Phase 5 Epic B — Sales Pipeline (#122) */}"
+    },
+    {
+      "file": "src/App.tsx",
+      "line": 171,
+      "type": "RAW_HEX",
+      "text": "{/* Epic D #128 — Commission frontend */}"
+    },
+    {
+      "file": "src/App.tsx",
+      "line": 294,
+      "type": "RAW_HEX",
+      "text": "{/* Epic C PR4 — Online Storefront (#121) */}"
+    },
+    {
+      "file": "src/app.routes.advanced.ts",
+      "line": 32,
+      "type": "RAW_HEX",
+      "text": "// Epic D #128 — Commission frontend (rules + ledger + leaderboard)"
+    },
+    {
+      "file": "src/app.routes.advanced.ts",
+      "line": 93,
+      "type": "RAW_HEX",
+      "text": "// Phase 5 Epic D #127 — CRM Basics"
+    },
+    {
+      "file": "src/app.routes.advanced.ts",
+      "line": 107,
+      "type": "RAW_HEX",
+      "text": "// #132 — Price Lists (Batch 4)"
+    },
+    {
+      "file": "src/app.routes.advanced.ts",
+      "line": 111,
+      "type": "RAW_HEX",
+      "text": "// Epic C PR4 — Online Storefront (#121)"
+    },
+    {
+      "file": "src/app.routes.advanced.ts",
+      "line": 117,
+      "type": "RAW_HEX",
+      "text": "// Epic C PR5 — Party Invite-Claim (#131)"
+    },
+    {
+      "file": "src/app.routes.advanced.ts",
+      "line": 133,
+      "type": "RAW_HEX",
+      "text": "// Phase 5 Epic B — Sales Pipeline (#122)"
+    },
+    {
+      "file": "src/components/charts/AreaChart.tsx",
+      "line": 80,
+      "type": "RAW_HEX",
+      "text": "<stop offset=\"0%\" stopColor=\"#000\" />"
+    },
+    {
+      "file": "src/components/charts/AreaChart.tsx",
+      "line": 82,
+      "type": "RAW_HEX",
+      "text": "<stop offset=\"55%\" stopColor=\"#fff\" />"
+    },
+    {
+      "file": "src/components/feedback/useFeedbackWidget.ts",
+      "line": 66,
+      "type": "RAW_HEX",
+      "text": "backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-primary').trim() || '#ffffff',"
+    },
+    {
+      "file": "src/components/feedback/useFeedbackWidget.ts",
+      "line": 90,
+      "type": "RAW_HEX",
+      "text": "ctx.fillStyle = '#475569';"
+    },
+    {
+      "file": "src/components/layout/DataViewShell.tsx",
+      "line": 102,
+      "type": "ARBITRARY_BRACKET",
+      "text": "<div className=\"sticky top-[var(--header-height)] z-[var(--z-sticky)] bg-[var(--color-gray-0)] border-b border-gray-100 px-4 py-3 space-y-2.5 shadow-xs\">"
+    },
+    {
+      "file": "src/components/layout/Header.tsx",
+      "line": 98,
+      "type": "ARBITRARY_BRACKET",
+      "text": "<span className=\"text-[11px] font-normal leading-tight opacity-80 truncate text-current\">"
+    },
+    {
+      "file": "src/components/layout/SideNav.tsx",
+      "line": 86,
+      "type": "RAW_HEX",
+      "text": "{/* Phase 6 #138 PR2 — active tenant chip (suspend state visible at-a-glance). */}"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 46,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-teal-700, #0f766e);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 54,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-teal-800, #115e59);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 55,
+      "type": "RAW_HEX",
+      "text": "outline: 2px solid var(--color-teal-300, #5eead4);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 84,
+      "type": "RAW_HEX",
+      "text": "background: var(--color-teal-50, #f0fdfa);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 89,
+      "type": "RAW_HEX",
+      "text": "background: var(--color-teal-100, #ccfbf1);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 91,
+      "type": "RAW_HEX",
+      "text": "border-color: var(--color-teal-300, #5eead4);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 95,
+      "type": "RAW_HEX",
+      "text": "outline: 2px solid var(--color-teal-400, #2dd4bf);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 145,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-teal-600, #0d9488);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 164,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-teal-700, #0f766e);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 172,
+      "type": "RAW_HEX",
+      "text": "background: var(--color-teal-50, #f0fdfa);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 173,
+      "type": "RAW_HEX",
+      "text": "border: 1.5px solid var(--color-teal-200, #99f6e4);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 177,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-teal-800, #115e59);"
+    },
+    {
+      "file": "src/components/layout/public-shell.css",
+      "line": 184,
+      "type": "RAW_HEX",
+      "text": "background: var(--color-teal-500, #14b8a6);"
+    },
+    {
+      "file": "src/components/layout/side-nav.css",
+      "line": 189,
+      "type": "RAW_HEX",
+      "text": "/* Phase 6 #138 PR2 — TenantChip row (sits between header + body, full-bleed) */"
+    },
+    {
+      "file": "src/components/magicui/shimmer-button.tsx",
+      "line": 17,
+      "type": "RAW_HEX",
+      "text": "shimmerColor = '#ffffff',"
+    },
+    {
+      "file": "src/components/magicui/shimmer-button.tsx",
+      "line": 59,
+      "type": "RAW_HEX",
+      "text": "'rounded-2xl px-4 py-1.5 text-sm font-medium shadow-[inset_0_-8px_10px_#ffffff1f]',"
+    },
+    {
+      "file": "src/components/magicui/shimmer-button.tsx",
+      "line": 61,
+      "type": "RAW_HEX",
+      "text": "'group-hover:shadow-[inset_0_-6px_10px_#ffffff3f]',"
+    },
+    {
+      "file": "src/components/ui/Checkbox.tsx",
+      "line": 31,
+      "type": "ARBITRARY_BRACKET",
+      "text": "'peer h-5 w-5 shrink-0 rounded-sm border border-border bg-surface ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-500)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary-500 data-[state=checked]:border-primary-500 data-[state=checked]:text-[var(--color-gray-0)] transition-all',"
+    },
+    {
+      "file": "src/components/ui/Checkbox.tsx",
+      "line": 39,
+      "type": "ARBITRARY_BRACKET",
+      "text": "<Check className=\"h-3.5 w-3.5 stroke-[3]\" />"
+    },
+    {
+      "file": "src/components/ui/DateField.tsx",
+      "line": 51,
+      "type": "ARBITRARY_BRACKET",
+      "text": "className={cn('date-field', error && 'border-[var(--color-error-500)]', className)}"
+    },
+    {
+      "file": "src/components/ui/DateField.tsx",
+      "line": 64,
+      "type": "ARBITRARY_BRACKET",
+      "text": "className=\"flex items-center gap-1.5 text-[var(--fs-xs)] font-bold uppercase tracking-wider text-[var(--text-secondary)] select-none\""
+    },
+    {
+      "file": "src/components/ui/DateField.tsx",
+      "line": 66,
+      "type": "ARBITRARY_BRACKET",
+      "text": "<Calendar className=\"w-3.5 h-3.5 text-[var(--color-primary-500)]\" />"
+    },
+    {
+      "file": "src/components/ui/DateField.tsx",
+      "line": 69,
+      "type": "ARBITRARY_BRACKET",
+      "text": "<span className=\"text-[var(--color-error-500)] font-bold\" aria-hidden=\"true\">"
+    },
+    {
+      "file": "src/components/ui/DateField.tsx",
+      "line": 75,
+      "type": "ARBITRARY_BRACKET",
+      "text": "<span className=\"text-[10px] text-[var(--text-muted)]\">{hint}</span>"
+    },
+    {
+      "file": "src/components/ui/DateField.tsx",
+      "line": 84,
+      "type": "ARBITRARY_BRACKET",
+      "text": "className={cn('date-field w-full', error && 'border-[var(--color-error-500)]')}"
+    },
+    {
+      "file": "src/components/ui/DateField.tsx",
+      "line": 93,
+      "type": "ARBITRARY_BRACKET",
+      "text": "className=\"text-[var(--fs-xs)] font-medium text-[var(--color-error-600)]\""
+    },
+    {
+      "file": "src/components/ui/EntitySearch/entity-search.css",
+      "line": 143,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-white-inverse, #ffffff);"
+    },
+    {
+      "file": "src/components/ui/FormField.tsx",
+      "line": 41,
+      "type": "ARBITRARY_BRACKET",
+      "text": "<span className=\"text-[10px] text-[var(--text-muted)] select-none\">{hint}</span>"
+    },
+    {
+      "file": "src/components/ui/FormField.tsx",
+      "line": 51,
+      "type": "ARBITRARY_BRACKET",
+      "text": "className=\"text-[var(--fs-xs)] font-medium text-[var(--color-error-600)]\""
+    },
+    {
+      "file": "src/components/ui/Input.tsx",
+      "line": 36,
+      "type": "ARBITRARY_BRACKET",
+      "text": "hero: 'min-h-[56px] px-0 py-1 text-[var(--fs-3xl)] font-bold tabular-nums',"
+    },
+    {
+      "file": "src/components/ui/Input.tsx",
+      "line": 113,
+      "type": "ARBITRARY_BRACKET",
+      "text": "<span className=\"text-[10px] text-text-muted\">{hint}</span>"
+    },
+    {
+      "file": "src/components/ui/Label.tsx",
+      "line": 25,
+      "type": "ARBITRARY_BRACKET",
+      "text": "sm: 'text-[10px] tracking-widest',"
+    },
+    {
+      "file": "src/components/ui/PartyAvatar.tsx",
+      "line": 16,
+      "type": "RAW_HEX",
+      "text": "'#D4C5F9', // wisteria"
+    },
+    {
+      "file": "src/components/ui/PartyAvatar.tsx",
+      "line": 18,
+      "type": "RAW_HEX",
+      "text": "'#C8E6DC', // celadon"
+    }
+  ]
+}

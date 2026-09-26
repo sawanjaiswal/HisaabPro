@@ -1,9 +1,11 @@
 /** POS — UPI QR code modal (placeholder — qrcode.react not installed) */
 
+import { Text } from '@/components/ui/Text'
 import { X, Smartphone } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { paiseToInr } from '../../utils/pos.format'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface UpiQrModalProps {
   amountPaise: number
@@ -29,10 +31,10 @@ export function UpiQrModal({ amountPaise, upiId, onClose }: UpiQrModalProps) {
     >
       <div className="pos-modal pos-qr-modal">
         <div className="pos-modal__header">
-          <h2 className="pos-modal__title">
+          <Heading level={2} className="pos-modal__title">
             <Smartphone size={16} aria-hidden="true" />
             {t.posUpiQrTitle ?? 'Pay via UPI'}
-          </h2>
+          </Heading>
           <Button variant="none"
             type="button"
             className="pos-modal__close"
@@ -44,20 +46,20 @@ export function UpiQrModal({ amountPaise, upiId, onClose }: UpiQrModalProps) {
         </div>
 
         <div className="pos-qr-modal__body">
-          <p className="pos-qr-modal__amount">{paiseToInr(amountPaise)}</p>
+          <Text className="pos-qr-modal__amount">{paiseToInr(amountPaise)}</Text>
 
           {/* QR placeholder — install qrcode.react to enable */}
           <div className="pos-qr-modal__qr-placeholder" aria-label="QR code area">
             <Smartphone size={48} aria-hidden="true" strokeWidth={1} />
-            <p className="pos-qr-modal__qr-hint">
+            <Text className="pos-qr-modal__qr-hint">
               {t.posUpiQrHint ?? 'Scan with any UPI app'}
-            </p>
+            </Text>
           </div>
 
           {upiId && (
-            <p className="pos-qr-modal__upi-id">
+            <Text className="pos-qr-modal__upi-id">
               <strong>{t.posUpiId ?? 'UPI ID'}:</strong> {upiId}
-            </p>
+            </Text>
           )}
 
           {upiLink && (

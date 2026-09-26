@@ -92,7 +92,7 @@ export function ResponsiveTable<T>({
           <button
             key={rowKey(row)}
             type="button"
-            className="w-full text-left rounded-[var(--radius-xl)] p-4 border min-h-[44px]"
+            className="w-full text-left rounded-xl p-4 border min-h-11"
             style={{
               backgroundColor: 'var(--color-gray-0)',
               borderColor: 'var(--color-gray-100)',
@@ -104,13 +104,13 @@ export function ResponsiveTable<T>({
               {columns.filter((c) => !c.mobileHide).map((col) => (
                 <div key={col.key} className="flex items-baseline justify-between gap-3">
                   <dt
-                    className="text-[var(--fs-xs)] font-medium shrink-0"
+                    className="text-xs font-medium shrink-0"
                     style={{ color: 'var(--text-muted)' }}
                   >
                     {col.header}
                   </dt>
                   <dd
-                    className="text-[var(--fs-sm)] text-right min-w-0 truncate"
+                    className="text-sm text-right min-w-0 truncate"
                     style={{ color: 'var(--text-primary)' }}
                   >
                     {col.render(row)}
@@ -124,7 +124,7 @@ export function ResponsiveTable<T>({
 
       {/* Table view — ≥md by default, or every width when alwaysTable */}
       <div className={`${alwaysTable ? 'block' : 'hidden md:block'} overflow-x-auto`}>
-        <table className="w-full text-[var(--fs-sm)]">
+        <table className="w-full text-sm">
           <thead
             className="sticky top-0 z-10"
             style={{ backgroundColor: 'var(--color-gray-50)' }}
@@ -146,7 +146,7 @@ export function ResponsiveTable<T>({
             {rows.map((row, i) => (
               <tr
                 key={rowKey(row)}
-                className={onRowClick ? 'cursor-pointer hover:bg-[var(--color-gray-50)]' : ''}
+                className={onRowClick ? 'cursor-pointer hover:bg-gray-50' : ''}
                 style={zebra && i % 2 === 1 ? { backgroundColor: 'var(--color-gray-50)' } : undefined}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
@@ -174,7 +174,7 @@ function TableSkeleton<T>({ columns, rows }: { columns: TableColumn<T>[]; rows: 
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}
-          className="h-12 rounded-[var(--radius-md)] animate-pulse"
+          className="h-12 rounded-md animate-pulse"
           style={{ backgroundColor: 'var(--color-gray-100)' }}
         />
       ))}

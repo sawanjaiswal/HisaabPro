@@ -1,5 +1,6 @@
 /** CampaignWizardStep1 — Name and Channel */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ChannelToggle } from './ChannelToggle'
 import type { MarketingChannel } from '../marketing.types'
@@ -44,7 +45,7 @@ export function CampaignWizardStep1Channel({ name, channel, onNameChange, onChan
       </div>
 
       <div>
-        <p style={labelStyle}>{t.marketingSendVia}</p>
+        <Text style={labelStyle}>{t.marketingSendVia}</Text>
         <div style={{ display: 'flex', gap: '12px' }}>
           <ChannelToggle value={channel} onChange={onChannelChange} />
         </div>

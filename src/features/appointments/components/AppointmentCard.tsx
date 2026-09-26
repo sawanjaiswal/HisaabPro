@@ -35,33 +35,33 @@ export function AppointmentCard({ row, onClick }: AppointmentCardProps) {
       variant="none"
       onClick={() => onClick(row.id)}
       aria-label={`${row.partyNameSnapshot} — ${statusLabel}`}
-      className="appt-card w-full text-left min-h-[64px] flex items-start gap-3 p-3 rounded-[var(--radius-md)]"
+      className="appt-card w-full text-left min-h-[64px] flex items-start gap-3 p-3 rounded-md"
       style={{
         background: 'var(--color-surface)',
         border: '1px solid var(--color-border)',
       }}
     >
       <div
-        className="appt-card__time flex flex-col items-center justify-center min-w-[64px] py-1 rounded-[var(--radius-sm)]"
+        className="appt-card__time flex flex-col items-center justify-center min-w-[64px] py-1 rounded-sm"
         style={{ background: 'var(--color-surface-muted)' }}
         aria-hidden="true"
       >
         <Clock size={14} aria-hidden="true" />
-        <span className="text-[var(--fs-sm)] tabular-nums">{formatLocalTime(start)}</span>
-        <span className="text-[var(--fs-xs)] tabular-nums" style={{ color: 'var(--color-text-muted)' }}>
+        <span className="text-sm tabular-nums">{formatLocalTime(start)}</span>
+        <span className="text-xs tabular-nums" style={{ color: 'var(--color-text-muted)' }}>
           → {formatLocalTime(end)}
         </span>
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-medium text-[var(--fs-base)] truncate">{row.partyNameSnapshot}</span>
+          <span className="font-medium text-base truncate">{row.partyNameSnapshot}</span>
           {partyFormer && <Badge variant="overdue">{formerLabel}</Badge>}
           <Badge variant={badgeVariant}>{statusLabel}</Badge>
         </div>
         {row.employeeNameSnapshot && (
           <div
-            className="text-[var(--fs-sm)] flex items-center gap-1 mt-1"
+            className="text-sm flex items-center gap-1 mt-1"
             style={{ color: 'var(--color-text-muted)' }}
           >
             <User size={14} aria-hidden="true" />

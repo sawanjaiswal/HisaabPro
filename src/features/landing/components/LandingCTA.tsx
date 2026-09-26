@@ -1,10 +1,12 @@
 /** Final CTA — dark section with teal radial glow */
 
+import { Text } from '@/components/ui/Text'
 import { ArrowRight } from 'lucide-react'
 
 import { APP_NAME } from '@/config/app.config'
 
 import { useCta } from '../useCta'
+import { Heading } from '@/components/ui/Heading'
 
 export function LandingCTA() {
   const goToApp = useCta()
@@ -21,7 +23,7 @@ export function LandingCTA() {
       />
 
       <div className="relative mx-auto flex max-w-2xl flex-col items-center text-center">
-        <h2
+        <Heading level={2}
           className="text-3xl font-medium sm:text-4xl lg:text-5xl"
           style={{
             background: 'linear-gradient(to bottom, #fff, rgba(255,255,255,0.6))',
@@ -31,15 +33,15 @@ export function LandingCTA() {
           }}
         >
           Ready to upgrade your business?
-        </h2>
-        <p className="mt-4 max-w-lg text-[1rem] leading-relaxed text-gray-400">
+        </Heading>
+        <Text className="mt-4 max-w-lg text-base leading-relaxed text-gray-400">
           Join thousands of Indian businesses using {APP_NAME}. 14-day trial, no credit card required.
-        </p>
+        </Text>
 
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row">
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-b from-white via-white/95 to-white/60 px-8 py-3 text-[1rem] font-medium text-black transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-b from-white via-white/95 to-white/60 px-8 py-3 text-base font-medium text-black transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
             onClick={() => goToApp()}
             aria-label={`Start using ${APP_NAME}`}
           >
@@ -47,7 +49,7 @@ export function LandingCTA() {
           </button>
           <a
             href="#features"
-            className="inline-flex items-center gap-1 text-[0.875rem] text-gray-400 transition-colors hover:text-white"
+            className="inline-flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-white"
           >
             See all features
             <ArrowRight size={14} />

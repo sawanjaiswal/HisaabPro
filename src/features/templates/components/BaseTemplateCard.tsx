@@ -1,5 +1,6 @@
 /** Base template card — shown in the "BASE TEMPLATES" section with a "Use This" CTA */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { BaseTemplate } from '../template.types'
@@ -48,7 +49,7 @@ export const BaseTemplateCard: React.FC<BaseTemplateCardProps> = ({ baseTemplate
         <div className="template-card-name" title={label}>
           {label}
         </div>
-        <p
+        <Text
           style={{
             fontSize: 'var(--fs-xs)',
             color: 'var(--color-gray-500)',
@@ -57,7 +58,7 @@ export const BaseTemplateCard: React.FC<BaseTemplateCardProps> = ({ baseTemplate
           }}
         >
           {description}
-        </p>
+        </Text>
       </div>
 
       <button

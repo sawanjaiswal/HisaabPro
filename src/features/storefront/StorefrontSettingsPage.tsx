@@ -5,6 +5,7 @@
  * Products section split into StorefrontProductsSection.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Copy, Store, Info } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -22,6 +23,7 @@ import './storefront-settings.css'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 const STORE_BASE_URL = 'hisaabpro.in/p/store/'
 
@@ -142,7 +144,7 @@ export default function StorefrontSettingsPage() {
       <PageContainer>
         <div className="sf-settings">
           <section className="sf-card" aria-labelledby="sf-basic-title">
-            <h2 id="sf-basic-title" className="sf-card__title">Store Details</h2>
+            <Heading level={2} id="sf-basic-title" className="sf-card__title">Store Details</Heading>
 
             <div>
               <label htmlFor="sf-slug" className="sf-label">Store URL slug *</label>
@@ -156,7 +158,7 @@ export default function StorefrontSettingsPage() {
                 />
               </div>
               {activeErr ? (
-                <p id="sf-slug-err" className="sf-slug-error" role="alert">{slugErrorMsg(activeErr)}</p>
+                <Text id="sf-slug-err" className="sf-slug-error" role="alert">{slugErrorMsg(activeErr)}</Text>
               ) : null}
               <div className="sf-slug-preview">
                 <span id="sf-slug-help">
@@ -175,16 +177,16 @@ export default function StorefrontSettingsPage() {
 
             <div className="sf-toggle-row">
               <div>
-                <p className="sf-toggle-row__label">
+                <Text className="sf-toggle-row__label">
                   Public store
                   <span className={`sf-public-badge ${isPublic ? 'sf-public-badge--on' : 'sf-public-badge--off'}`}
                     style={{ marginLeft: 8 }}>
                     {isPublic ? 'Live' : 'Hidden'}
                   </span>
-                </p>
-                <p className="sf-toggle-row__desc">
+                </Text>
+                <Text className="sf-toggle-row__desc">
                   {isPublic ? 'Anyone with the link can view your store' : 'Only you can see your store'}
-                </p>
+                </Text>
               </div>
               <label className="sf-toggle" aria-label="Toggle public store">
                 <Input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} />
@@ -207,7 +209,7 @@ export default function StorefrontSettingsPage() {
                 placeholder="Quality products at the best prices"
                 aria-describedby="sf-tagline-count"
               />
-              <p id="sf-tagline-count" className="sf-char-count">{tagline.length}/120</p>
+              <Text id="sf-tagline-count" className="sf-char-count">{tagline.length}/120</Text>
             </div>
 
             <div>
@@ -218,9 +220,9 @@ export default function StorefrontSettingsPage() {
                 placeholder="+919876543210" inputMode="tel"
                 aria-describedby="sf-whatsapp-help"
               />
-              <p id="sf-whatsapp-help" className="sf-help">
+              <Text id="sf-whatsapp-help" className="sf-help">
                 E.164 format — customers use this for order enquiries
-              </p>
+              </Text>
             </div>
 
             <Button variant="none"

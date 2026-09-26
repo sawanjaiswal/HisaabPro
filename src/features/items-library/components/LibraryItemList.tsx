@@ -1,5 +1,6 @@
 /** Library Item List — Selectable items from the library */
 
+import { Text } from '@/components/ui/Text'
 import { Plus, Package } from 'lucide-react'
 import type { LibraryItem } from '../items-library.types'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -27,7 +28,7 @@ export function LibraryItemList({ items, total, hasMore, onSelect, onLoadMore }:
 
   return (
     <>
-      <p className="library-count">{total} items</p>
+      <Text className="library-count">{total} items</Text>
       <div className="library-item-list" role="list" aria-label={t.libraryItems}>
         {items.map((item) => (
           <div key={item.id} className="library-item" role="listitem">

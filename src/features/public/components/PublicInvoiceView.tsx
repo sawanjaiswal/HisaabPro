@@ -4,6 +4,7 @@
  * Includes: party blocks, line items table, totals, notes, terms, UPI CTA.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Smartphone } from 'lucide-react'
 import type { PublicInvoiceDto } from '@/features/invoices/share-links.service'
 import type { PublicLang } from '../hooks/usePublicLang'
@@ -96,7 +97,7 @@ export function PublicInvoiceView({ invoice, lang }: PublicInvoiceViewProps) {
     <article className="pub-invoice" aria-label={`Invoice ${invoice.documentNumber}`}>
       {/* ── Header ── */}
       <header className="pub-invoice__header">
-        <p className="pub-invoice__number">{invoice.documentNumber}</p>
+        <Text className="pub-invoice__number">{invoice.documentNumber}</Text>
         <div className="pub-invoice__dates">
           <span className="pub-invoice__date-item">
             <span className="pub-invoice__date-label">{s.date}:</span>
@@ -114,22 +115,22 @@ export function PublicInvoiceView({ invoice, lang }: PublicInvoiceViewProps) {
       {/* ── Party blocks ── */}
       <div className="pub-invoice__parties">
         <div className="pub-invoice__party-block">
-          <p className="pub-invoice__party-label">{s.from}</p>
-          <p className="pub-invoice__party-name">{invoice.business.name}</p>
+          <Text className="pub-invoice__party-label">{s.from}</Text>
+          <Text className="pub-invoice__party-name">{invoice.business.name}</Text>
           {invoice.business.address && (
-            <p className="pub-invoice__party-detail">{invoice.business.address}</p>
+            <Text className="pub-invoice__party-detail">{invoice.business.address}</Text>
           )}
         </div>
         <div className="pub-invoice__party-block">
-          <p className="pub-invoice__party-label">{s.to}</p>
-          <p className="pub-invoice__party-name">{invoice.party.name}</p>
+          <Text className="pub-invoice__party-label">{s.to}</Text>
+          <Text className="pub-invoice__party-name">{invoice.party.name}</Text>
           {invoice.party.phone && (
-            <p className="pub-invoice__party-detail">{invoice.party.phone}</p>
+            <Text className="pub-invoice__party-detail">{invoice.party.phone}</Text>
           )}
           {invoice.party.billingAddress && (
-            <p className="pub-invoice__party-detail">
+            <Text className="pub-invoice__party-detail">
               {buildAddress(invoice.party.billingAddress)}
-            </p>
+            </Text>
           )}
         </div>
       </div>
@@ -137,7 +138,7 @@ export function PublicInvoiceView({ invoice, lang }: PublicInvoiceViewProps) {
       <hr className="pub-invoice__divider" />
 
       {/* ── Line items ── */}
-      <p className="pub-invoice__items-title">{s.item}s</p>
+      <Text className="pub-invoice__items-title">{s.item}s</Text>
       <table className="pub-invoice__table" aria-label="Line items">
         <thead>
           <tr>
@@ -205,16 +206,16 @@ export function PublicInvoiceView({ invoice, lang }: PublicInvoiceViewProps) {
       {/* ── Notes ── */}
       {invoice.notes && (
         <div className="pub-invoice__notes-block">
-          <p className="pub-invoice__notes-label">{s.notes}</p>
-          <p className="pub-invoice__notes-text">{invoice.notes}</p>
+          <Text className="pub-invoice__notes-label">{s.notes}</Text>
+          <Text className="pub-invoice__notes-text">{invoice.notes}</Text>
         </div>
       )}
 
       {/* ── Terms ── */}
       {invoice.termsAndConditions && (
         <div className="pub-invoice__notes-block" style={{ marginTop: 'var(--space-3)' }}>
-          <p className="pub-invoice__notes-label">{s.terms}</p>
-          <p className="pub-invoice__notes-text">{invoice.termsAndConditions}</p>
+          <Text className="pub-invoice__notes-label">{s.terms}</Text>
+          <Text className="pub-invoice__notes-text">{invoice.termsAndConditions}</Text>
         </div>
       )}
 

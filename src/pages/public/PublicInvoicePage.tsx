@@ -6,6 +6,7 @@
  * Mobile-first, 320px minimum.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useOutletContext } from 'react-router-dom'
 import { Clock, Link2Off, SearchX, AlertCircle } from 'lucide-react'
@@ -106,8 +107,8 @@ export function PublicInvoicePage() {
         <div className="pub-invoice-status__icon pub-invoice-status__icon--warn" aria-hidden="true">
           <Clock size={28} />
         </div>
-        <p className="pub-invoice-status__title">{s.expired}</p>
-        <p className="pub-invoice-status__message">{s.expiredMsg}</p>
+        <Text className="pub-invoice-status__title">{s.expired}</Text>
+        <Text className="pub-invoice-status__message">{s.expiredMsg}</Text>
       </div>
     )
   }
@@ -119,8 +120,8 @@ export function PublicInvoicePage() {
         <div className="pub-invoice-status__icon pub-invoice-status__icon--warn" aria-hidden="true">
           <Link2Off size={28} />
         </div>
-        <p className="pub-invoice-status__title">{s.revoked}</p>
-        <p className="pub-invoice-status__message">{s.revokedMsg}</p>
+        <Text className="pub-invoice-status__title">{s.revoked}</Text>
+        <Text className="pub-invoice-status__message">{s.revokedMsg}</Text>
       </div>
     )
   }
@@ -132,8 +133,8 @@ export function PublicInvoicePage() {
         <div className="pub-invoice-status__icon pub-invoice-status__icon--error" aria-hidden="true">
           <SearchX size={28} />
         </div>
-        <p className="pub-invoice-status__title">{s.notFound}</p>
-        <p className="pub-invoice-status__message">{s.notFoundMsg}</p>
+        <Text className="pub-invoice-status__title">{s.notFound}</Text>
+        <Text className="pub-invoice-status__message">{s.notFoundMsg}</Text>
       </div>
     )
   }
@@ -145,8 +146,8 @@ export function PublicInvoicePage() {
         <div className="pub-invoice-status__icon pub-invoice-status__icon--error" aria-hidden="true">
           <AlertCircle size={28} />
         </div>
-        <p className="pub-invoice-status__title">{s.loadFailed}</p>
-        <p className="pub-invoice-status__message">{s.loadFailedMsg}</p>
+        <Text className="pub-invoice-status__title">{s.loadFailed}</Text>
+        <Text className="pub-invoice-status__message">{s.loadFailedMsg}</Text>
         <Button variant="none"
           type="button"
           className="pub-invoice-status__retry"

@@ -4,6 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { AGING_BUCKET_LABELS } from '../payment.constants'
 import { getAgingPercentages, calculateAgingTotal } from '../payment.utils'
 import type { OutstandingAging } from '../payment.types'
+import { Heading } from '@/components/ui/Heading'
 
 const AGING_BUCKET_CSS: Record<string, string> = {
   current:    'current',
@@ -23,7 +24,7 @@ export function AgingChart({ aging }: { aging: OutstandingAging }) {
 
   return (
     <div className="outstanding-aging-chart" aria-label={t.agingBreakdown}>
-      <h2 className="outstanding-aging-title">{t.agingBreakdown}</h2>
+      <Heading level={2} className="outstanding-aging-title">{t.agingBreakdown}</Heading>
       <div className="outstanding-aging-bar" role="img" aria-label={t.agingBarChart}>
         {buckets.map((bucket) => {
           const pct = percentages[bucket]

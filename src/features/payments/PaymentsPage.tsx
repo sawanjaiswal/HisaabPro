@@ -28,6 +28,7 @@ import type { BulkAction } from '@/components/ui/BulkActionBar'
 import './payment-filter.css'
 import './payment-list.css'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 export default function PaymentsPage() {
   const navigate = useNavigate()
@@ -173,7 +174,7 @@ export default function PaymentsPage() {
 
         {status === 'success' && data && data.payments.length > 0 && (
           <>
-          <h2 className="sr-only">{t.paymentList}</h2>
+          <Heading level={2} className="sr-only">{t.paymentList}</Heading>
           <div className="payment-list-groups stagger-list" role="list" aria-label={t.payments}>
             <PaymentGroupedList
               groups={monthGroups}

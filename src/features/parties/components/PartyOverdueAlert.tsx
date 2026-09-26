@@ -10,6 +10,7 @@
  * data, with a forward action rather than a retry.
  */
 
+import { Text } from '@/components/ui/Text'
 import { AlertTriangle, ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
@@ -40,16 +41,16 @@ export function PartyOverdueAlert({
       </span>
 
       <div className="pd-overdue__body">
-        <p className="pd-overdue__title">
+        <Text className="pd-overdue__title">
           {invoiceNumber
             ? `${t.oldestInvoiceOverdue} — ${invoiceNumber}`
             : t.oldestInvoiceOverdue}
-        </p>
-        <p className="pd-overdue__meta">
+        </Text>
+        <Text className="pd-overdue__meta">
           <span className="tabular-nums">{formatAmount(amountPaise)}</span>
           {' · '}
           {t.overdueByDays.replace('{days}', String(daysOverdue))}
-        </p>
+        </Text>
       </div>
 
       <Button

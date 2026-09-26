@@ -5,6 +5,7 @@
  * 4 UI states: loading skeleton · error · (no empty — count can be 0) · success
  */
 
+import { Text } from '@/components/ui/Text'
 import type { Dispatch } from 'react'
 import { Button } from '@/components/ui/Button'
 import { AlertTriangle, ChevronRight } from 'lucide-react'
@@ -49,7 +50,7 @@ export function BackfillStep1Preview({ loading, error, preview, onRetry, dispatc
     return (
       <div className="bfw-error">
         <AlertTriangle size={24} aria-hidden="true" />
-        <p className="bfw-error-msg">{error}</p>
+        <Text className="bfw-error-msg">{error}</Text>
         <Button variant="secondary" size="md" onClick={onRetry}>
           {t.retry}
         </Button>
@@ -61,7 +62,7 @@ export function BackfillStep1Preview({ loading, error, preview, onRetry, dispatc
 
   return (
     <div className="bfw-step">
-      <p className="bfw-step-desc">{t.backfillPreviewDesc}</p>
+      <Text className="bfw-step-desc">{t.backfillPreviewDesc}</Text>
 
       <div className="bfw-stat-grid">
         <div className="bfw-stat-card">

@@ -1,5 +1,6 @@
 /** OptOutListPage — /marketing/opt-outs — opted-out parties management */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, ShieldOff, ShieldCheck } from 'lucide-react'
@@ -12,6 +13,7 @@ import { MARKETING_ROUTES } from '../marketing.constants'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface OptOutParty {
   id: string
@@ -70,8 +72,8 @@ export default function OptOutListPage() {
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingOptOutsTitle}</h1>
-          <p style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0 }}>{t.marketingOptOutsSubtitle}</p>
+          <Heading level={1} style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingOptOutsTitle}</Heading>
+          <Text style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0 }}>{t.marketingOptOutsSubtitle}</Text>
         </div>
       </div>
 
@@ -122,12 +124,12 @@ export default function OptOutListPage() {
       {confirmOptIn && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', background: 'rgba(0,0,0,0.5)' }} role="dialog" aria-modal="true" aria-labelledby="opt-in-title">
           <div style={{ width: '100%', maxWidth: 480, background: 'white', borderRadius: '20px 20px 0 0', padding: '24px 20px' }}>
-            <h3 id="opt-in-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>
+            <Heading level={3} id="opt-in-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>
               {t.marketingConfirmOptInTitle.replace('{{name}}', confirmOptIn.name)}
-            </h3>
-            <p style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>
+            </Heading>
+            <Text style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>
               {t.marketingConfirmOptInDesc}
-            </p>
+            </Text>
             <div style={{ display: 'flex', gap: '10px' }}>
               <Button variant="none" type="button" onClick={() => setConfirmOptIn(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                 {t.marketingCancel}

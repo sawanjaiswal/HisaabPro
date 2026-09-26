@@ -1,5 +1,6 @@
 /** Invoice — Additional Details (custom fields) section (#134) */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -13,6 +14,7 @@ import type { ApplicableDocumentType, DocumentCustomFieldDef } from '@/features/
 import type { DocumentType } from '../invoice-form.types'
 import { Input } from '@/components/ui/Input'
 import { DateField } from '@/components/ui/DateField'
+import { Heading } from '@/components/ui/Heading'
 
 /** Map full DocumentType → the subset that supports custom fields. */
 function toApplicableDocType(t: DocumentType): ApplicableDocumentType | null {
@@ -70,9 +72,9 @@ export function InvoiceCustomFieldsSection({ documentType, values, errors, onCha
 
   return (
     <div className="line-items-section py-0">
-      <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+      <Heading level={3} className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
         {t.additionalDetails}
-      </h3>
+      </Heading>
 
       {defs.map((def) => {
         const raw = values[def.id]
@@ -138,9 +140,9 @@ export function InvoiceCustomFieldsSection({ documentType, values, errors, onCha
             )}
 
             {err && (
-              <p className="mt-1 text-xs" style={{ color: 'var(--color-error-500)' }}>
+              <Text className="mt-1 text-xs" style={{ color: 'var(--color-error-500)' }}>
                 {err}
-              </p>
+              </Text>
             )}
           </div>
         )

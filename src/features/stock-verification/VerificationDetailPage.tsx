@@ -17,6 +17,7 @@ import { DiscrepancyRow } from './components/DiscrepancyRow'
 import './stock-verification.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 export default function VerificationDetailPage() {
   const { t } = useLanguage()
@@ -76,7 +77,7 @@ export default function VerificationDetailPage() {
 
         {isCounting && (
           <section className="sv-detail__section fade-up py-0">
-            <h2 className="sv-detail__section-title py-0">{t.countItems}</h2>
+            <Heading level={2} className="sv-detail__section-title py-0">{t.countItems}</Heading>
             <div className="sv-detail__items stagger-list">
               {items.map((item) => (
                 <CountItemRow key={item.id} item={item} onSave={recordCount} disabled={isProcessing} />
@@ -98,10 +99,10 @@ export default function VerificationDetailPage() {
 
         {(isCompleted || (isCounting && allCounted)) && (
           <section className="sv-detail__section py-0">
-            <h2 className="sv-detail__section-title py-0">
+            <Heading level={2} className="sv-detail__section-title py-0">
               {t.discrepancySummary}
               {hasDiscrepancies && <span className="sv-detail__disc-count">{verification.discrepancies}</span>}
-            </h2>
+            </Heading>
             <div className="sv-detail__items">
               {items.map((item) => (
                 <DiscrepancyRow key={item.id} item={item} />

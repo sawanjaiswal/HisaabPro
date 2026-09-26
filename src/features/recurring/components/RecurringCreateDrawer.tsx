@@ -1,4 +1,5 @@
 /** Bottom drawer form to configure a new recurring schedule for a template doc. */
+import { Text } from '@/components/ui/Text'
 import React, { useState, useCallback, useRef } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Select, SelectItem } from '@/components/ui/Select'
@@ -127,9 +128,9 @@ export const RecurringCreateDrawer: React.FC<RecurringCreateDrawerProps> = ({
         noValidate
       >
         {error && (
-          <p className="recurring-drawer__error py-0" role="alert">
+          <Text className="recurring-drawer__error py-0" role="alert">
             {error}
-          </p>
+          </Text>
         )}
 
         <div className="recurring-drawer__field py-0">

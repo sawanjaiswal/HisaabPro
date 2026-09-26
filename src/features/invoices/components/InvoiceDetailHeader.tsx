@@ -1,5 +1,6 @@
 /** Invoice Detail — hero header card with document identity + totals */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { DocumentDetail, DocumentType, PaymentStatus } from '../invoice.types'
@@ -13,6 +14,7 @@ import {
   DOCUMENT_TYPE_CODES,
 } from '../invoice.constants'
 import '../invoice-detail-header.css'
+import { Heading } from '@/components/ui/Heading'
 
 interface InvoiceDetailHeaderProps {
   document: DocumentDetail
@@ -54,8 +56,8 @@ export const InvoiceDetailHeader: React.FC<InvoiceDetailHeaderProps> = ({ docume
       </div>
 
       <div className="invoice-detail-info">
-        <h2 className="invoice-detail-number">{document.documentNumber}</h2>
-        <p className="invoice-detail-party">{document.party.name}</p>
+        <Heading level={2} className="invoice-detail-number">{document.documentNumber}</Heading>
+        <Text className="invoice-detail-party">{document.party.name}</Text>
         <div className="invoice-detail-meta">
           <span style={{ fontSize: 'var(--fs-xs)', opacity: 0.75, color: 'var(--color-gray-0)' }}>
             {formatInvoiceDate(document.documentDate)}

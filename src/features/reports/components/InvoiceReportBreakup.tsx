@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { formatAmount } from '../report.utils'
 import { sharePercent } from '../invoice-report.utils'
 import type { InvoiceReportSummary } from '../report.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface InvoiceReportBreakupProps {
   summary: InvoiceReportSummary
@@ -45,7 +46,7 @@ export function InvoiceReportBreakup({ summary }: InvoiceReportBreakupProps) {
 
   return (
     <section className="invoice-report-section py-0" aria-label={t.breakup}>
-      <h2 className="invoice-report-section-title">{t.breakup}</h2>
+      <Heading level={2} className="invoice-report-section-title">{t.breakup}</Heading>
 
       <div className="invoice-report-breakup">
         <DonutChart

@@ -1,5 +1,6 @@
 /** RecurringTemplateCard — Single recurring template row with edit/delete actions */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Repeat, Edit2, Trash2 } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
@@ -53,18 +54,18 @@ export function RecurringTemplateCard({ template, onEdit, onDeleted }: Recurring
         <Repeat size={18} />
       </div>
       <div className="recurring-card__info">
-        <p className="recurring-card__name">{label}</p>
-        <p className="recurring-card__meta">
+        <Text className="recurring-card__name">{label}</Text>
+        <Text className="recurring-card__meta">
           {FREQ_LABELS[template.frequency] ?? template.frequency}
           {' · '}
           Next: {new Date(template.nextRunDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-        </p>
+        </Text>
         {template.categoryName && (
-          <p className="recurring-card__category">{template.categoryName}</p>
+          <Text className="recurring-card__category">{template.categoryName}</Text>
         )}
       </div>
       <div className="recurring-card__right">
-        <p className="recurring-card__amount">{formatPaise(template.amountPaise)}</p>
+        <Text className="recurring-card__amount">{formatPaise(template.amountPaise)}</Text>
         <div className="recurring-card__actions">
           <Button variant="none"
             type="button"

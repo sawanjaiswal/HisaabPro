@@ -2,6 +2,7 @@
  *  Reskinned to the Product Detail `pd-card` / `pd-summary` language so it
  *  matches the Overview and Pricing tabs (was legacy `card`/`product-info-*`). */
 
+import { Text } from '@/components/ui/Text'
 import type { ReactElement } from 'react'
 import { Info, Receipt, Hash, CircleDot } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
@@ -10,6 +11,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { BARCODE_FORMAT_LABELS } from '../product.constants'
 import { BarcodeDisplay } from './BarcodeDisplay'
 import type { BarcodeFormat } from '@/lib/types/product.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface ProductInfoTabProps {
   description: string | null
@@ -43,11 +45,11 @@ export function ProductInfoTab({
   return (
     <section className="pd-card" aria-label={t.noAdditionalInfo}>
       <header className="pd-card__head">
-        <h3 className="pd-card__title">{t.infoTab}</h3>
+        <Heading level={3} className="pd-card__title">{t.infoTab}</Heading>
       </header>
 
       {description && (
-        <p className="pd-info__desc">{description}</p>
+        <Text className="pd-info__desc">{description}</Text>
       )}
 
       <ul className="pd-summary__list" role="list">

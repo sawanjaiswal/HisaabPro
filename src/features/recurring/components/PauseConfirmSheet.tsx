@@ -1,5 +1,6 @@
 /** PauseConfirmSheet — bottom sheet confirmation for pausing a schedule */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
@@ -54,10 +55,10 @@ export function PauseConfirmSheet({
         </>
       }
     >
-      <p className="recurring-sheet__body">
+      <Text className="recurring-sheet__body">
         {t.recurringPauseConfirm ?? 'Pause'} <strong>{scheduleName}</strong>?{' '}
         {t.recurringPauseDesc ?? 'Runs during the pause period will be skipped.'}
-      </p>
+      </Text>
     </Drawer>
   )
 }

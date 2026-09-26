@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { formatStockQuantity } from '../godown.utils'
 import type { GodownStockResponse } from '../godown.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface GodownStockListProps {
   stockData: GodownStockResponse | null
@@ -18,7 +19,7 @@ export function GodownStockList({ stockData, status, onRetry }: GodownStockListP
   const { t } = useLanguage()
   return (
     <>
-      <h2 className="godown-section-title py-0">{t.stockInGodown}</h2>
+      <Heading level={2} className="godown-section-title py-0">{t.stockInGodown}</Heading>
 
       {status === 'loading' && <Skeleton height="3.5rem" count={4} />}
 

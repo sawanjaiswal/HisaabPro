@@ -3,6 +3,7 @@
  *  Server endpoint stubbed; hook handles 404/501 → toast.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
@@ -82,9 +83,9 @@ export function WaitlistSheet({
       }
     >
       <div className="space-y-3 p-3">
-        <p className="text-[var(--fs-sm)]" style={{ color: 'var(--color-text-muted)' }}>
+        <Text className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
           {t.slotUnavailable ?? 'Slot unavailable'}
-        </p>
+        </Text>
         <PartyPickerField
           partyId={partyId}
           partyName={partyName}
@@ -97,17 +98,17 @@ export function WaitlistSheet({
           maxLength={2000}
         />
 
-        <div className="text-[var(--fs-sm)] font-medium mt-3">
+        <div className="text-sm font-medium mt-3">
           {t.waitlistCurrent ?? 'Currently on waitlist'}
         </div>
         {isPending ? (
           <Skeleton height="32px" />
         ) : rows.length === 0 ? (
-          <p className="text-[var(--fs-sm)]" style={{ color: 'var(--color-text-muted)' }}>
+          <Text className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
             {t.waitlistEmpty ?? 'Nobody on the waitlist for this slot.'}
-          </p>
+          </Text>
         ) : (
-          <ul className="space-y-1 text-[var(--fs-sm)]">
+          <ul className="space-y-1 text-sm">
             {rows.map((r) => (
               <li key={r.id} className="tabular-nums">{r.partyNameSnapshot}</li>
             ))}

@@ -1,5 +1,6 @@
 /** BatchDetailInfo — Renders batch detail sections */
 
+import { Text } from '@/components/ui/Text'
 import { Calendar, Package, IndianRupee, FileText } from 'lucide-react'
 import { formatPaise } from '@/lib/format'
 import { getExpiryStatus, formatExpiryDate, daysUntilExpiry } from '../batch.utils'
@@ -76,7 +77,7 @@ export function BatchDetailInfo({ batch }: BatchDetailInfoProps) {
           <div className="batch-detail-row batch-detail-row--notes">
             <FileText size={16} aria-hidden="true" />
             <span className="batch-detail-label">{t.notesDetailLabel}</span>
-            <p className="batch-detail-notes">{batch.notes}</p>
+            <Text className="batch-detail-notes">{batch.notes}</Text>
           </div>
         </div>
       )}

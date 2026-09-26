@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import type { TransactionLockConfig } from '../settings.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
@@ -17,15 +18,15 @@ export function ThresholdSection({
 
   return (
     <section>
-      <p className="settings-section-title py-0">{t.thresholdsTitle}</p>
+      <Text className="settings-section-title py-0">{t.thresholdsTitle}</Text>
       <div className="txn-controls">
 
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">{t.priceChangeThreshold}</p>
-            <p className="txn-control-description">
+            <Text className="txn-control-label">{t.priceChangeThreshold}</Text>
+            <Text className="txn-control-description">
               {t.priceChangeThresholdDesc}
-            </p>
+            </Text>
           </div>
           <div className="txn-threshold-input">
             <Input
@@ -47,10 +48,10 @@ export function ThresholdSection({
 
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">{t.discountThresholdLabel}</p>
-            <p className="txn-control-description">
+            <Text className="txn-control-label">{t.discountThresholdLabel}</Text>
+            <Text className="txn-control-description">
               {t.discountThresholdDesc}
-            </p>
+            </Text>
           </div>
           <div className="txn-threshold-input">
             <Input

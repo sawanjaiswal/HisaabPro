@@ -3,6 +3,7 @@
  * Reused for both create (no existingPtp) and edit (existingPtp present).
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
@@ -102,9 +103,9 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
     >
       <form id="ptp-form" onSubmit={handleSubmit} noValidate>
         {validationErr && (
-          <p className="form-error" role="alert" style={{ marginBottom: 'var(--space-3)' }}>
+          <Text className="form-error" role="alert" style={{ marginBottom: 'var(--space-3)' }}>
             {validationErr}
-          </p>
+          </Text>
         )}
 
         {/* Amount */}
@@ -179,9 +180,9 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
             disabled={isPending}
             style={{ resize: 'vertical', minHeight: 80 }}
           />
-          <p className="form-hint" style={{ textAlign: 'right' }}>
+          <Text className="form-hint" style={{ textAlign: 'right' }}>
             {notes.length}/500
-          </p>
+          </Text>
         </div>
       </form>
     </Drawer>

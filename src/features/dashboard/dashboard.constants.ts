@@ -18,7 +18,7 @@ export interface QuickActionConfig extends QuickAction {
 export const QUICK_ACTIONS: QuickActionConfig[] = [
   {
     id:    'create-invoice',
-    labelKey: 'invoice',
+    labelKey: 'quickActionInvoice',
     icon:  'FileText',
     route: `${ROUTES.INVOICE_CREATE}?type=SALE`,
     color: 'var(--color-primary-600)',

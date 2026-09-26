@@ -1,5 +1,6 @@
 /** TransferForm — Stock transfer between godowns */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { TRANSFER_NOTES_MAX } from '../godown.constants'
 import type { TransferStockData, Godown } from '../godown.types'
@@ -41,9 +42,9 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
           aria-describedby={errors.productId ? 'transfer-product-error' : undefined}
         />
         {errors.productId && (
-          <p id="transfer-product-error" className="godown-form__error" role="alert">{errors.productId}</p>
+          <Text id="transfer-product-error" className="godown-form__error" role="alert">{errors.productId}</Text>
         )}
-        <p className="godown-form__hint">{t.productIdHint}</p>
+        <Text className="godown-form__hint">{t.productIdHint}</Text>
       </div>
 
       <div className="godown-form__field">
@@ -61,7 +62,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
           ))}
         </Select>
         {errors.fromGodownId && (
-          <p id="transfer-from-error" className="godown-form__error" role="alert">{errors.fromGodownId}</p>
+          <Text id="transfer-from-error" className="godown-form__error" role="alert">{errors.fromGodownId}</Text>
         )}
       </div>
 
@@ -80,7 +81,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
           ))}
         </Select>
         {errors.toGodownId && (
-          <p id="transfer-to-error" className="godown-form__error" role="alert">{errors.toGodownId}</p>
+          <Text id="transfer-to-error" className="godown-form__error" role="alert">{errors.toGodownId}</Text>
         )}
       </div>
 
@@ -103,7 +104,7 @@ export function TransferForm({ form, errors, isSubmitting, godowns, onUpdate, on
           aria-describedby={errors.quantity ? 'transfer-qty-error' : undefined}
         />
         {errors.quantity && (
-          <p id="transfer-qty-error" className="godown-form__error" role="alert">{errors.quantity}</p>
+          <Text id="transfer-qty-error" className="godown-form__error" role="alert">{errors.quantity}</Text>
         )}
       </div>
 

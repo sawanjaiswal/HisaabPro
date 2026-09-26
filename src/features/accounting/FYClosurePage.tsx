@@ -1,5 +1,6 @@
 /** Financial Year Closure Page — close/reopen financial years */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Lock, Unlock, Calendar } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -145,7 +146,7 @@ export default function FYClosurePage() {
               {actionPending ? t.loading : t.closeFyBtn}
             </Button>
           </div>
-          {alreadyClosed && <p className="fy-close-card__note">{t.fyAlreadyClosedMsg.replace('{fy}', fyLabel(currentFY))}</p>}
+          {alreadyClosed && <Text className="fy-close-card__note">{t.fyAlreadyClosedMsg.replace('{fy}', fyLabel(currentFY))}</Text>}
         </div>
 
         {closures.length === 0 && (

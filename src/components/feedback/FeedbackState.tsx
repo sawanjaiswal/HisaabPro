@@ -14,9 +14,11 @@
  * />
  */
 
+import { Text } from '@/components/ui/Text'
 import type { ReactNode } from 'react'
 import './feedback-state.css'
 import './feedback-illustration.css'
+import { Heading } from '@/components/ui/Heading'
 
 export type FeedbackVariant = 'teal' | 'error' | 'warning' | 'success'
 
@@ -72,8 +74,8 @@ export function FeedbackState({
       </div>
 
       {subtitle}
-      <h3 className={`feedback-title${size === 'lg' ? ' feedback-title--lg' : ''}`}>{title}</h3>
-      {description && <p className="feedback-description">{description}</p>}
+      <Heading level={3} className={`feedback-title${size === 'lg' ? ' feedback-title--lg' : ''}`}>{title}</Heading>
+      {description && <Text className="feedback-description">{description}</Text>}
       {action && <div className="feedback-action">{action}</div>}
     </div>
   )

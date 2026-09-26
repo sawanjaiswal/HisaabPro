@@ -1,5 +1,6 @@
 /** Template Editor — Customize message before sending */
 
+import { Text } from '@/components/ui/Text'
 import { Send } from 'lucide-react'
 import type { GreetingTemplate } from '../smart-greetings.types'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -35,9 +36,9 @@ export function TemplateEditor({ template, message, onMessageChange, onSendToAll
           placeholder={t.message}
           aria-label="Greeting message"
         />
-        <p className="greeting-editor-hint">
+        <Text className="greeting-editor-hint">
           {t.useNamePersonalize}
-        </p>
+        </Text>
       </div>
 
       {/* Actions */}

@@ -1,5 +1,6 @@
 /** Feature deep-dive accordion — left title + right expandable items */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import {
   WifiOff, FileText, IndianRupee, Package, ChevronDown,
@@ -7,6 +8,7 @@ import {
 } from 'lucide-react'
 
 import { FEATURE_DEEP_DIVES } from '../landing.constants'
+import { Heading } from '@/components/ui/Heading'
 
 const ICON_MAP: Record<string, LucideIcon> = { WifiOff, FileText, IndianRupee, Package }
 
@@ -22,16 +24,16 @@ export function LandingAccordion() {
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:gap-16">
         {/* Left — section intro */}
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <p className="text-sm font-semibold uppercase tracking-widest text-teal-400">
+          <Text className="text-sm font-semibold uppercase tracking-widest text-teal-400">
             Deep Dive
-          </p>
-          <h2 className="mt-3 text-3xl font-bold text-white sm:text-4xl">
+          </Text>
+          <Heading level={2} className="mt-3 text-3xl font-bold text-white sm:text-4xl">
             Built for how Indian businesses actually work
-          </h2>
-          <p className="mt-4 text-gray-400 leading-relaxed">
+          </Heading>
+          <Text className="mt-4 text-gray-400 leading-relaxed">
             Every feature is designed for real-world conditions — unreliable internet,
             small phone screens, thousands of daily transactions. No compromises.
-          </p>
+          </Text>
         </div>
 
         {/* Right — accordion */}
@@ -72,9 +74,9 @@ export function LandingAccordion() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="px-5 pb-5 text-[0.9375rem] leading-relaxed text-gray-400">
+                    <Text className="px-5 pb-5 text-base leading-relaxed text-gray-400">
                       {item.description}
-                    </p>
+                    </Text>
                   </div>
                 </div>
               </div>

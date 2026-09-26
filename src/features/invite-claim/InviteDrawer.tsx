@@ -1,5 +1,6 @@
 /** InviteDrawer — auth-side drawer shown after issuing an invite link (Epic C PR5) */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Copy, MessageSquare, AlertCircle } from 'lucide-react'
@@ -77,7 +78,7 @@ export function InviteDrawer({ partyId, partyName, partyPhone, onClose }: Invite
         {state === 'error' && (
           <div className="inv-drawer__error" role="alert">
             <AlertCircle size={20} aria-hidden="true" />
-            <p>{t.inviteLoadFailed}</p>
+            <Text>{t.inviteLoadFailed}</Text>
             <Button variant="none" type="button" className="btn btn-outline btn-sm" onClick={() => void doIssue()}>
               {t.retry}
             </Button>
@@ -86,13 +87,13 @@ export function InviteDrawer({ partyId, partyName, partyPhone, onClose }: Invite
 
         {state === 'ready' && invite && (
           <>
-            <p className="inv-drawer__party">{partyName}</p>
+            <Text className="inv-drawer__party">{partyName}</Text>
 
             <div className="inv-drawer__url-block" aria-label={t.inviteToPortalUrlLabel}>
               <span className="inv-drawer__url">{fullUrl}</span>
             </div>
 
-            <p className="inv-drawer__one-time">{t.inviteToPortalOneTime}</p>
+            <Text className="inv-drawer__one-time">{t.inviteToPortalOneTime}</Text>
 
             <div className="inv-drawer__actions">
               <Button

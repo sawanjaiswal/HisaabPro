@@ -7,6 +7,7 @@ import '../notifications.css'
 import { Input } from '@/components/ui/Input'
 import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 /** Validate HH:MM format */
 function isValidTime(val: string): boolean {
@@ -63,9 +64,9 @@ export function NotificationQuietHoursCard() {
   return (
     <div className="notif-quiet-hours">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
-        <h3 className="notif-quiet-hours__title" style={{ margin: 0 }}>
+        <Heading level={3} className="notif-quiet-hours__title" style={{ margin: 0 }}>
           {t.notifQuietHoursTitle ?? 'Quiet Hours'}
-        </h3>
+        </Heading>
         <label className="notif-toggle" aria-label={t.notifQuietHoursToggle ?? 'Enable quiet hours'}>
           <Input
             type="checkbox"

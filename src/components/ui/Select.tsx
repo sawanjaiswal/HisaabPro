@@ -312,8 +312,8 @@ export function Select({
                         {searchQuery.trim()
                           ? typeof createOptionLabel === 'function'
                             ? createOptionLabel(searchQuery.trim())
-                            : createOptionLabel || `+ Add "${searchQuery.trim()}"`
-                          : '+ Add New'}
+                            : createOptionLabel || `Add "${searchQuery.trim()}"`
+                          : 'Add New'}
                       </span>
                     </button>
                   )}
@@ -367,8 +367,8 @@ export function Select({
                           {searchQuery.trim()
                             ? typeof createOptionLabel === 'function'
                               ? createOptionLabel(searchQuery.trim())
-                              : createOptionLabel || `+ Add "${searchQuery.trim()}"`
-                            : '+ Add New'}
+                              : createOptionLabel || `Add "${searchQuery.trim()}"`
+                            : 'Add New'}
                         </span>
                       </button>
                     </div>

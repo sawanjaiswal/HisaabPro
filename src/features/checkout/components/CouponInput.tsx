@@ -5,6 +5,7 @@
  * States: collapsed → expanded → validating → applied/error
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useRef, useCallback } from 'react'
 import { Tag, X, Loader2, ChevronDown } from 'lucide-react'
 import { ApiError } from '@/lib/api'
@@ -168,9 +169,9 @@ export function CouponInput({ planId, planAmountPaise, razorpaySubscriptionId, o
         </Button>
       </div>
       {state === 'error' && errorMsg && (
-        <p id="coupon-error" className="coupon-input-error" role="alert">
+        <Text id="coupon-error" className="coupon-input-error" role="alert">
           {errorMsg}
-        </p>
+        </Text>
       )}
     </div>
   )

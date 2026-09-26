@@ -5,6 +5,7 @@
  * Auto-advances to step 5 when COMPLETED.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, type Dispatch } from 'react'
 import { Loader2 } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -37,8 +38,8 @@ export function BackfillStep4Processing({ jobId, dispatch }: Props) {
         <Loader2 size={32} className="bfw-spin" aria-hidden="true" />
       </div>
 
-      <p className="bfw-processing-title">{t.backfillProcessingTitle}</p>
-      <p className="bfw-processing-sub">{t.backfillDoNotClose}</p>
+      <Text className="bfw-processing-title">{t.backfillProcessingTitle}</Text>
+      <Text className="bfw-processing-sub">{t.backfillDoNotClose}</Text>
 
       <div className="bfw-progress-wrap" aria-label={t.backfillProgress}>
         <div
@@ -51,13 +52,13 @@ export function BackfillStep4Processing({ jobId, dispatch }: Props) {
         />
       </div>
 
-      <p className="bfw-progress-label">
+      <Text className="bfw-progress-label">
         {processed} / {total > 0 ? total : '…'} {t.backfillComplete ?? 'complete'}
-      </p>
+      </Text>
 
       {errors.length > 0 && (
         <div className="bfw-error-list">
-          <p className="bfw-error-list-title">{t.backfillErrors}</p>
+          <Text className="bfw-error-list-title">{t.backfillErrors}</Text>
           <ul>
             {errors.slice(0, 10).map((e, i) => (
               <li key={i} className="bfw-error-item">

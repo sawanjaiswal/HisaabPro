@@ -5,6 +5,7 @@
  * only appears when the business actually charges it.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatPaise } from '@/lib/format'
 import type { NetTaxLiability } from '../report-tax.types'
@@ -28,7 +29,7 @@ export function TaxNetLiabilityCard({ liability }: TaxNetLiabilityCardProps) {
   return (
     <section className="tax-liability py-0">
       <span className="tax-liability__label">{t.netTaxLiability}</span>
-      <p className="tax-liability__amount">{formatPaise(total)}</p>
+      <Text className="tax-liability__amount">{formatPaise(total)}</Text>
 
       <dl className="tax-card__split tax-liability__split">
         {components.map((component) => (

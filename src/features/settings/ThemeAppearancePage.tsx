@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { Sun, Moon } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -18,7 +19,7 @@ export default function ThemeAppearancePage() {
       <Header title={t.themePageTitle} backTo={ROUTES.SETTINGS} />
       <HeroPage className="theme-page stagger-enter space-y-6">
         <section>
-          <p className="theme-section-title">{t.themeAppearance}</p>
+          <Text className="theme-section-title">{t.themeAppearance}</Text>
           <div className="theme-appearance-toggle" role="radiogroup" aria-label={t.themeAppearance}>
             <Button variant="none"
               type="button"
@@ -44,11 +45,11 @@ export default function ThemeAppearancePage() {
         </section>
 
         <section>
-          <p className="theme-section-title">{t.themeColourTheme}</p>
+          <Text className="theme-section-title">{t.themeColourTheme}</Text>
           <ThemeVariantPicker />
         </section>
 
-        <p
+        <Text
           style={{
             fontSize: 'var(--fs-xs)',
             color: 'var(--color-gray-400)',
@@ -58,7 +59,7 @@ export default function ThemeAppearancePage() {
           }}
         >
           {t.themeHint}
-        </p>
+        </Text>
       </HeroPage>
     </AppShell>
   )

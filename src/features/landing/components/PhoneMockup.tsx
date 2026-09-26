@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 /** Phone mockup with mini invoice preview — used in hero section */
 
 const INVOICE_ITEMS = [
@@ -15,8 +16,8 @@ export function PhoneMockup() {
       {/* Mini invoice */}
       <div className="flex h-full flex-col p-4 pt-10">
         <div className="mb-3 flex items-center justify-between">
-          <span className="text-sm font-bold text-[var(--color-primary-500)]">Invoice #1042</span>
-          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[0.625rem] font-semibold text-emerald-700">
+          <span className="text-sm font-bold text-primary-500">Invoice #1042</span>
+          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
             Paid
           </span>
         </div>
@@ -25,8 +26,8 @@ export function PhoneMockup() {
         {INVOICE_ITEMS.map((row) => (
           <div key={row.item} className="mb-2.5 flex items-center justify-between text-xs">
             <div>
-              <p className="font-medium text-neutral-800 dark:text-neutral-200">{row.item}</p>
-              <p className="text-neutral-400">Qty: {row.qty}</p>
+              <Text className="font-medium text-neutral-800 dark:text-neutral-200">{row.item}</Text>
+              <Text className="text-neutral-400">Qty: {row.qty}</Text>
             </div>
             <span className="font-semibold text-neutral-700 dark:text-neutral-300">Rs {row.amt}</span>
           </div>
@@ -35,7 +36,7 @@ export function PhoneMockup() {
         <div className="mt-auto rounded-xl bg-neutral-50 p-3 dark:bg-neutral-800">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-neutral-500">Total</span>
-            <span className="text-base font-bold text-[var(--color-primary-500)]">Rs 4,570</span>
+            <span className="text-base font-bold text-primary-500">Rs 4,570</span>
           </div>
         </div>
       </div>

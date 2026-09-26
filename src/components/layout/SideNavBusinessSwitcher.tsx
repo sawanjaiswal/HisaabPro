@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { getBusinessInitials, getBusinessColor } from '@/features/business/business.utils'
+import { Heading } from '@/components/ui/Heading'
 
 interface Props {
   onNavigate: (route: string) => void
@@ -30,7 +31,7 @@ export function SideNavBusinessSwitcher({ onNavigate }: Props) {
 
   return (
     <section className="side-nav-section">
-      <h3 className="side-nav-section-title">Your Businesses</h3>
+      <Heading level={3} className="side-nav-section-title">Your Businesses</Heading>
       <Accordion type="single" collapsible className="side-nav-business-accordion">
         <AccordionItem value="businesses" className="side-nav-business-accordion-item">
           <AccordionTrigger className="side-nav-business-accordion-trigger">

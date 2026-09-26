@@ -1,5 +1,6 @@
 /** POS — Product grid loading / error / empty states */
 
+import { Text } from '@/components/ui/Text'
 import { ShoppingBag, AlertTriangle, RefreshCw } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
@@ -31,7 +32,7 @@ export function ProductGridError({ onRetry }: ErrorProps) {
   return (
     <div className="pos-grid-state pos-grid-state--center">
       <AlertTriangle size={40} className="pos-grid-state__icon pos-grid-state__icon--error" aria-hidden="true" />
-      <p className="pos-grid-state__title">{t.posProductsError ?? 'Could not load products'}</p>
+      <Text className="pos-grid-state__title">{t.posProductsError ?? 'Could not load products'}</Text>
       <Button variant="none" type="button" className="pos-grid-state__btn" onClick={onRetry}>
         <RefreshCw size={14} aria-hidden="true" />
         {t.tryAgain ?? 'Try again'}
@@ -49,11 +50,11 @@ export function ProductGridEmpty({ search }: EmptyProps) {
   return (
     <div className="pos-grid-state pos-grid-state--center">
       <ShoppingBag size={40} className="pos-grid-state__icon" aria-hidden="true" />
-      <p className="pos-grid-state__title">
+      <Text className="pos-grid-state__title">
         {search
           ? (t.posNoProductsSearch ?? 'No products match "{q}"').replace('{q}', search)
           : (t.posNoProducts ?? 'No products available')}
-      </p>
+      </Text>
     </div>
   )
 }

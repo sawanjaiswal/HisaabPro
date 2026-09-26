@@ -6,6 +6,7 @@
  * >=768px: every filter value shown inline (screen width is not scarce there).
  */
 
+import { Text } from '@/components/ui/Text'
 import React, { useState } from 'react'
 import { Search, SlidersHorizontal } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -166,7 +167,7 @@ export const InvoiceFilterBar: React.FC<InvoiceFilterBarProps> = ({
       >
         <div className="space-y-6">
           <div>
-            <p className="filter-drawer-section-label">{t.filterByDocType}</p>
+            <Text className="filter-drawer-section-label">{t.filterByDocType}</Text>
             <Tabs value={draftType} onValueChange={(v) => setDraftType(v as DocumentType | 'ALL')}>
               <TabsList aria-label={t.filterByDocType} className="pill-tabs-wrap rx-tabs-list--outlined">
                 {OVERFLOW_TYPES.map((type) => (
@@ -179,7 +180,7 @@ export const InvoiceFilterBar: React.FC<InvoiceFilterBarProps> = ({
           </div>
 
           <div>
-            <p className="filter-drawer-section-label">{t.filterByStatus}</p>
+            <Text className="filter-drawer-section-label">{t.filterByStatus}</Text>
             <Tabs value={draftStatus} onValueChange={(v) => setDraftStatus(v as DocumentStatus | 'ALL')}>
               <TabsList aria-label={t.filterByStatus} className="pill-tabs-wrap rx-tabs-list--outlined">
                 {STATUS_VALUES.map(({ value, labelKey }) => (

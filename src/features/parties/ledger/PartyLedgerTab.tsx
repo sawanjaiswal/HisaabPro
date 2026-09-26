@@ -97,6 +97,12 @@ export function PartyLedgerTab({ partyId, partyName, businessName, lockTypes }: 
     }
   }, [rows, isExporting, partyId, partyName, from, to, openingBalance, closingBalance, totalCount, businessName, toast, t])
 
+  const isFiltered = query.trim().length > 0 || selectedTypes.length > 0
+  const handleResetFilters = useCallback(() => {
+    setQuery('')
+    setSelectedTypes([])
+  }, [setSelectedTypes])
+
   return (
     <div className="party-ledger-tab">
       <LedgerToolbar
@@ -133,7 +139,7 @@ export function PartyLedgerTab({ partyId, partyName, businessName, lockTypes }: 
       {status === 'success' && (
         <>
           {visibleRows.length === 0 ? (
-            <LedgerEmpty />
+            <LedgerEmpty isFiltered={isFiltered} onResetFilter={handleResetFilters} />
           ) : (
             <>
               <LedgerRowList

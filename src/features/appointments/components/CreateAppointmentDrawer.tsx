@@ -118,7 +118,7 @@ export function CreateAppointmentDrawer({
         <div className="space-y-4 p-3">
           {restoreBannerMessage && (
             <div
-              className="p-3 rounded-[var(--radius-md)] text-[var(--fs-sm)]"
+              className="p-3 rounded-md text-sm"
               style={{ background: 'var(--color-warning-bg, var(--color-surface-muted))', color: 'var(--color-text)' }}
               role="status"
             >
@@ -156,7 +156,7 @@ export function CreateAppointmentDrawer({
           </div>
 
           <div>
-            <label htmlFor="appt-duration" className="text-[var(--fs-sm)] mb-1.5 inline-block">
+            <label htmlFor="appt-duration" className="text-sm mb-1.5 inline-block">
               {t.duration ?? 'Duration'}
             </label>
             <Select

@@ -1,5 +1,6 @@
 /** ComplianceCancelForm — reusable inline cancel form for e-invoice and e-way bill */
 
+import { Text } from '@/components/ui/Text'
 import React, { useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
@@ -41,8 +42,8 @@ export const ComplianceCancelForm: React.FC<ComplianceCancelFormProps> = ({
 
   return (
     <div className="compliance-cancel-form" role="group" aria-label={title}>
-      <p className="compliance-cancel-title">{title}</p>
-      {actionError && <p className="compliance-inline-error" role="alert">{actionError}</p>}
+      <Text className="compliance-cancel-title">{title}</Text>
+      {actionError && <Text className="compliance-inline-error" role="alert">{actionError}</Text>}
       <div className="input-group">
         <label className="input-label" htmlFor="cancel-reason-input">{t.cancellationReason}</label>
         <Input

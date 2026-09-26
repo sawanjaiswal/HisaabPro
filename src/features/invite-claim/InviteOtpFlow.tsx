@@ -1,8 +1,10 @@
 /** InviteOtpFlow — existing-user OTP branch of the public invite page (Epic C PR5) */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useRef, useCallback, KeyboardEvent, ClipboardEvent } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Heading } from '@/components/ui/Heading'
 
 interface InviteOtpFlowStrings {
   inviteOtpTitle:     string
@@ -106,9 +108,9 @@ export function InviteOtpFlow({ s, maskedPhone, onSendOtp, onVerifyOtp, onClaim 
 
   if (phase === 'send') return (
     <div className="inv-flow">
-      <h2 className="inv-flow__title">{s.inviteOtpTitle}</h2>
-      <p className="inv-flow__sub">{s.inviteOtpSent.replace('{phone}', maskedPhone)}</p>
-      {err && <p className="inv-flow__err" role="alert">{err}</p>}
+      <Heading level={2} className="inv-flow__title">{s.inviteOtpTitle}</Heading>
+      <Text className="inv-flow__sub">{s.inviteOtpSent.replace('{phone}', maskedPhone)}</Text>
+      {err && <Text className="inv-flow__err" role="alert">{err}</Text>}
       <Button type="button" variant="primary" size="lg" className="inv-flow__cta" onClick={() => void handleSend()} disabled={busy}>
         {busy ? s.loading : s.inviteOtpSendCta}
       </Button>
@@ -117,8 +119,8 @@ export function InviteOtpFlow({ s, maskedPhone, onSendOtp, onVerifyOtp, onClaim 
 
   if (phase === 'enter') return (
     <div className="inv-flow">
-      <h2 className="inv-flow__title">{s.inviteOtpTitle}</h2>
-      <p className="inv-flow__sub">{s.inviteOtpSent.replace('{phone}', maskedPhone)}</p>
+      <Heading level={2} className="inv-flow__title">{s.inviteOtpTitle}</Heading>
+      <Text className="inv-flow__sub">{s.inviteOtpSent.replace('{phone}', maskedPhone)}</Text>
       <fieldset className="inv-otp-group" aria-label={s.inviteOtpCodeLabel}>
         <legend className="sr-only">{s.inviteOtpCodeLabel}</legend>
         {digits.map((d, i) => (
@@ -137,7 +139,7 @@ export function InviteOtpFlow({ s, maskedPhone, onSendOtp, onVerifyOtp, onClaim 
           />
         ))}
       </fieldset>
-      {err && <p className="inv-flow__err" role="alert">{err}</p>}
+      {err && <Text className="inv-flow__err" role="alert">{err}</Text>}
       <Button type="button" variant="primary" size="lg" className="inv-flow__cta"
         onClick={() => void handleVerify()} disabled={busy || digits.join('').length < OTP_LEN}>
         {busy ? s.loading : s.inviteOtpVerifyCta}
@@ -150,8 +152,8 @@ export function InviteOtpFlow({ s, maskedPhone, onSendOtp, onVerifyOtp, onClaim 
 
   return (
     <div className="inv-flow">
-      <p className="inv-flow__sub">{s.inviteOtpSent.replace('{phone}', maskedPhone)}</p>
-      {err && <p className="inv-flow__err" role="alert">{err}</p>}
+      <Text className="inv-flow__sub">{s.inviteOtpSent.replace('{phone}', maskedPhone)}</Text>
+      {err && <Text className="inv-flow__err" role="alert">{err}</Text>}
       <Button type="button" variant="primary" size="lg" className="inv-flow__cta" onClick={() => void handleClaim()} disabled={busy}>
         {busy ? s.loading : s.inviteClaimCta}
       </Button>

@@ -1,11 +1,13 @@
 /** RecurringDetailHeader — name, party, status, next run, frequency stats */
 
+import { Text } from '@/components/ui/Text'
 import { Calendar, RefreshCw, FileText } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatDate } from '@/lib/format'
 import { FREQUENCY_LABELS } from '../recurring.constants'
 import { StatusPill } from './StatusPill'
 import type { RecurringInvoice } from '../recurring.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface RecurringDetailHeaderProps {
   schedule: RecurringInvoice
@@ -19,12 +21,12 @@ export function RecurringDetailHeader({ schedule }: RecurringDetailHeaderProps) 
   return (
     <div className="recurring-detail-header">
       <div className="recurring-detail-header__top">
-        <h1 className="recurring-detail-header__name">{displayName}</h1>
+        <Heading level={1} className="recurring-detail-header__name">{displayName}</Heading>
         <StatusPill status={schedule.status} />
       </div>
 
       {schedule.partyName && schedule.name && (
-        <p className="recurring-detail-header__party">{schedule.partyName}</p>
+        <Text className="recurring-detail-header__party">{schedule.partyName}</Text>
       )}
 
       <div className="recurring-detail-header__meta">

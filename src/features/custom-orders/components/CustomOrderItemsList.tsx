@@ -1,5 +1,6 @@
 /** CustomOrderItemsList — read-only items table with spec rendering on the detail page */
 
+import { Text } from '@/components/ui/Text'
 import { formatPaise, formatSpecOneLiner } from '../custom-orders.utils'
 import type { CustomOrderItem } from '../custom-orders.types'
 import { useLanguage } from '@/context/LanguageContext'
@@ -12,9 +13,9 @@ export function CustomOrderItemsList({ items }: CustomOrderItemsListProps) {
   const { t } = useLanguage()
   if (items.length === 0) {
     return (
-      <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)' }}>
+      <Text style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)' }}>
         {t.coNoItems}
-      </p>
+      </Text>
     )
   }
 

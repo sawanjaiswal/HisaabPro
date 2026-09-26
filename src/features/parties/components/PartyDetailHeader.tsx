@@ -1,12 +1,14 @@
 /** Party Detail — emerald hero header: back · name + status · edit/call/menu · contact row */
 
 import React from 'react'
-import { ArrowLeft, Phone, MapPin } from 'lucide-react'
+import { ArrowLeft, Phone, MapPin, MessageCircle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { PartyAvatar } from '@/components/ui/PartyAvatar'
 import type { PartyDetail } from '../party.types'
 import { PartyDetailMenu } from './PartyDetailMenu'
 import '../party-detail-header.css'
+import { Heading } from '@/components/ui/Heading'
 
 interface PartyDetailHeaderProps {
   party: PartyDetail
@@ -42,6 +44,7 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({
 }) => {
   const { t } = useLanguage()
   const location = partyLocation(party)
+  const typeLabel = party.type === 'CUSTOMER' ? t.customer : party.type === 'SUPPLIER' ? t.supplier : t.both
 
   const handleCall = () => {
     if (party.phone) window.location.href = `tel:${party.phone}`
@@ -73,11 +76,32 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({
         </Button>
 
         <div className="pdh-identity">
-          <h1 className="pdh-name">{party.name}</h1>
+          <PartyAvatar name={party.name} phone={party.phone} size="sm" className="pdh-avatar" />
+          <div className="pdh-title-group">
+            <div className="pdh-name-row">
+              <Heading level={1} className="pdh-name">{party.name}</Heading>
+              <span className="pdh-type-badge">{typeLabel}</span>
+            </div>
+            {(party.phone || location) && (
+              <div className="pdh-meta">
+                {party.phone && (
+                  <span className="pdh-meta-item">
+                    <Phone size={11} aria-hidden="true" />
+                    {party.phone}
+                  </span>
+                )}
+                {party.phone && location && <span className="pdh-meta-sep">•</span>}
+                {location && (
+                  <span className="pdh-meta-item">
+                    <MapPin size={11} aria-hidden="true" />
+                    {location}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Call stays as the one-tap primary contact; Edit + WhatsApp fold into
-            the ⋮ menu so the hero row reads Call · ⋮ only. */}
         <div className="pdh-actions">
           {party.phone && (
             <Button
@@ -86,7 +110,17 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({
               onClick={handleCall}
               aria-label={t.callParty}
             >
-              <Phone size={20} aria-hidden="true" />
+              <Phone size={18} aria-hidden="true" />
+            </Button>
+          )}
+          {party.phone && (
+            <Button
+              variant="none"
+              className="pdh-icon-btn"
+              onClick={handleWhatsapp}
+              aria-label={t.whatsapp}
+            >
+              <MessageCircle size={18} aria-hidden="true" />
             </Button>
           )}
           <PartyDetailMenu
@@ -101,15 +135,7 @@ export const PartyDetailHeader: React.FC<PartyDetailHeaderProps> = ({
           />
         </div>
       </div>
-
-      {location && (
-        <div className="pdh-contact">
-          <span className="pdh-contact-item">
-            <MapPin size={15} aria-hidden="true" />
-            {location}
-          </span>
-        </div>
-      )}
     </header>
   )
 }
+

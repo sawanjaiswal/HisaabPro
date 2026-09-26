@@ -12,6 +12,7 @@
  * NOT contain any hardcoded copy. The page wrapper supplies AppShell+Header.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
@@ -34,6 +35,7 @@ import {
 } from '../loyalty.utils'
 import type { LoyaltyProgramDTO } from '../loyalty.types'
 import '@/styles/components.loyalty.css'
+import { Heading } from '@/components/ui/Heading'
 
 interface LoyaltyProgramFormProps {
   program: LoyaltyProgramDTO | null
@@ -124,7 +126,7 @@ export function LoyaltyProgramForm({ program }: LoyaltyProgramFormProps) {
 
       {/* Accrual */}
       <section className="loyalty-program-form__section">
-        <h2 className="loyalty-program-form__section-title">{t.loyaltyAccrualSection}</h2>
+        <Heading level={2} className="loyalty-program-form__section-title">{t.loyaltyAccrualSection}</Heading>
 
         <div>
           <Input
@@ -138,7 +140,7 @@ export function LoyaltyProgramForm({ program }: LoyaltyProgramFormProps) {
             onChange={(e) => setField('ratePercent', e.target.value)}
             onKeyDown={(e) => { if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault() }}
           />
-          <p className="loyalty-program-form__hint">{t.loyaltyAccrualRateHint}</p>
+          <Text className="loyalty-program-form__hint">{t.loyaltyAccrualRateHint}</Text>
         </div>
 
         <div>
@@ -152,13 +154,13 @@ export function LoyaltyProgramForm({ program }: LoyaltyProgramFormProps) {
             onChange={(e) => setField('minSpendRupees', e.target.value)}
             onKeyDown={(e) => { if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault() }}
           />
-          <p className="loyalty-program-form__hint">{t.loyaltyMinSpendHint}</p>
+          <Text className="loyalty-program-form__hint">{t.loyaltyMinSpendHint}</Text>
         </div>
       </section>
 
       {/* Redemption */}
       <section className="loyalty-program-form__section">
-        <h2 className="loyalty-program-form__section-title">{t.loyaltyRedemptionSection}</h2>
+        <Heading level={2} className="loyalty-program-form__section-title">{t.loyaltyRedemptionSection}</Heading>
 
         <div>
           <Input
@@ -171,7 +173,7 @@ export function LoyaltyProgramForm({ program }: LoyaltyProgramFormProps) {
             onChange={(e) => setField('redemptionUnit', e.target.value)}
             onKeyDown={(e) => { if (['e', 'E', '+', '-', '.'].includes(e.key)) e.preventDefault() }}
           />
-          <p className="loyalty-program-form__hint">{t.loyaltyRedemptionUnitHint}</p>
+          <Text className="loyalty-program-form__hint">{t.loyaltyRedemptionUnitHint}</Text>
         </div>
 
         <div>
@@ -185,13 +187,13 @@ export function LoyaltyProgramForm({ program }: LoyaltyProgramFormProps) {
             onChange={(e) => setField('redemptionRupees', e.target.value)}
             onKeyDown={(e) => { if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault() }}
           />
-          <p className="loyalty-program-form__hint">{t.loyaltyRedemptionRateHint}</p>
+          <Text className="loyalty-program-form__hint">{t.loyaltyRedemptionRateHint}</Text>
         </div>
       </section>
 
       {/* Expiry */}
       <section className="loyalty-program-form__section">
-        <h2 className="loyalty-program-form__section-title">{t.loyaltyExpirySection}</h2>
+        <Heading level={2} className="loyalty-program-form__section-title">{t.loyaltyExpirySection}</Heading>
 
         <div className="loyalty-toggle-row">
           <div className="loyalty-toggle-row__copy">

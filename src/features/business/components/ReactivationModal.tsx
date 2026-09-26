@@ -7,6 +7,7 @@
  * and on success calls `refreshActiveBusiness()` so the banner disappears.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useRef, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
@@ -16,6 +17,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { reactivateBusiness } from '../suspend.service'
 import './reactivation-modal.css'
 import { Textarea } from '@/components/ui/Textarea'
+import { Heading } from '@/components/ui/Heading'
 
 interface ReactivationModalProps {
   open: boolean
@@ -97,9 +99,9 @@ export function ReactivationModal({
       aria-labelledby="reactivation-modal-title"
     >
       <div className="reactivation-modal__header">
-        <h2 id="reactivation-modal-title" className="reactivation-modal__title">
+        <Heading level={2} id="reactivation-modal-title" className="reactivation-modal__title">
           {t.reactivateModalTitle}
-        </h2>
+        </Heading>
         <Button variant="none"
           ref={closeBtnRef}
           type="button"
@@ -113,7 +115,7 @@ export function ReactivationModal({
       </div>
 
       <div className="reactivation-modal__body">
-        <p className="reactivation-modal__desc">{t.reactivateModalBody}</p>
+        <Text className="reactivation-modal__desc">{t.reactivateModalBody}</Text>
 
         <label className="reactivation-modal__label" htmlFor="reactivation-reason">
           {t.reactivateModalReasonLabel}

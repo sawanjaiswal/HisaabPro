@@ -28,7 +28,7 @@ export function PartyPickerField({ partyId, onChange, error }: PartyPickerFieldP
   return (
     <div>
       <div
-        className="text-[var(--fs-sm)] mb-1.5"
+        className="text-sm mb-1.5"
         style={{ color: 'var(--color-text)' }}
       >
         {t.pickParty ?? 'Pick a party'}

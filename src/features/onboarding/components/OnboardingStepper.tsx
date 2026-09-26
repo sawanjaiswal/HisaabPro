@@ -1,5 +1,6 @@
 /** OnboardingStepper — dot progress bar with the current step's label. */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ONBOARDING_STEPS } from '../onboarding.constants'
 import type { OnboardingStep } from '../onboarding.types'
@@ -29,7 +30,7 @@ export function OnboardingStepper({ current }: Props) {
           />
         ))}
       </div>
-      <p className="onboarding-stepper__label">{currentLabel}</p>
+      <Text className="onboarding-stepper__label">{currentLabel}</Text>
     </div>
   )
 }

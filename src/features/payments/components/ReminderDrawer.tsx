@@ -4,6 +4,7 @@
  * No backend API needed — opens WhatsApp directly on the device.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { MessageCircle, Copy, Check, IndianRupee } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
@@ -61,12 +62,12 @@ export function ReminderDrawer({ open, onClose, partyName, partyPhone, outstandi
   return (
     <Drawer open={open} onClose={onClose} title={t.sendReminderTitle} size="sm">
       <div className="reminder-drawer py-0">
-        <p className="reminder-drawer-to py-0">
+        <Text className="reminder-drawer-to py-0">
           {t.toColon} <strong>{partyName}</strong> ({partyPhone})
-        </p>
+        </Text>
 
         <div className="reminder-drawer-preview py-0">
-          <p className="reminder-drawer-preview-text py-0">{message}</p>
+          <Text className="reminder-drawer-preview-text py-0">{message}</Text>
         </div>
 
         <div className="reminder-drawer-actions py-0">

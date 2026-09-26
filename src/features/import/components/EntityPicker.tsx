@@ -57,7 +57,7 @@ export function EntityPicker({ value, onChange, disabled = false }: EntityPicker
             disabled={disabled}
             onClick={() => onChange(opt.value)}
             className={
-              'text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-400)] rounded-[var(--radius-xl)]' +
+              'text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 rounded-xl' +
               (disabled ? ' opacity-60 cursor-not-allowed' : '')
             }
           >
@@ -67,7 +67,7 @@ export function EntityPicker({ value, onChange, disabled = false }: EntityPicker
               className={
                 'h-full p-4 min-h-[88px] flex items-center gap-3 border-2 ' +
                 (selected
-                  ? 'border-[var(--color-primary-500)] bg-[var(--color-primary-50)]'
+                  ? 'border-primary-500 bg-primary-50'
                   : 'border-transparent')
               }
             >

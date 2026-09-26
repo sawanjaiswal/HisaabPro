@@ -1,5 +1,6 @@
 /** Settings — Document Custom Fields page (#134) */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -49,16 +50,16 @@ export default function DocumentCustomFieldsPage() {
             type="button"
             onClick={openCreate}
             aria-label={t.addCustomField}
-            className="p-2 rounded-[var(--radius-sm)] hover:bg-[var(--color-gray-100)] transition-colors"
+            className="p-2 rounded-sm hover:bg-gray-100 transition-colors"
           >
             <Plus className="w-5 h-5" style={{ color: 'var(--text-primary)' }} />
           </Button>
         }
       />
       <PageContainer className="stagger-enter space-y-6">
-        <p className="text-[var(--fs-sm)]" style={{ color: 'var(--text-secondary)' }}>
+        <Text className="text-sm" style={{ color: 'var(--text-secondary)' }}>
           {t.documentCustomFieldsSubtitle}
-        </p>
+        </Text>
 
         {status === 'loading' && (
           <div aria-busy="true" aria-label={t.loading}>

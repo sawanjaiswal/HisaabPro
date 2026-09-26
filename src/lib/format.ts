@@ -116,3 +116,15 @@ export function formatPAN(raw: string | null | undefined): string {
   return raw.trim().toUpperCase().replace(/\s+/g, '')
 }
 
+export {
+  formatName,
+  formatInitials,
+  formatAddress,
+  formatPinCode,
+  formatAadhaarMasked,
+  formatInvoiceNumber,
+  formatINR,
+  formatPaiseToINR,
+} from '@/domain/formatters'
+
+

@@ -1,5 +1,6 @@
 // ─── StorefrontProductPicker — drawer to add products to the store ────────────
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Search, Check } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
@@ -97,9 +98,9 @@ export function StorefrontProductPicker({
         )}
 
         {!isPending && available.length === 0 && (
-          <p className="sf-picker__empty">
+          <Text className="sf-picker__empty">
             {search ? 'No products match your search' : 'All products are already added'}
-          </p>
+          </Text>
         )}
 
         {!isPending && (

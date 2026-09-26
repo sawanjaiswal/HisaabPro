@@ -3,6 +3,7 @@
  * Feature #96 | 4 UI states: loading, error, empty, success
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Tag, Plus, Search } from 'lucide-react'
@@ -150,7 +151,7 @@ export default function CouponsPage() {
         {/* Success — list */}
         {status === 'success' && !isCouponListEmpty(coupons) && (
           <>
-            <p className="coupon-count">{total} coupon{total !== 1 ? 's' : ''}</p>
+            <Text className="coupon-count">{total} coupon{total !== 1 ? 's' : ''}</Text>
             <div className="coupon-list">
               {coupons.map((coupon) => (
                 <CouponCard

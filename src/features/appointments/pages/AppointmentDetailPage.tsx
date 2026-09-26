@@ -8,6 +8,7 @@
  *      target (job vs invoice) are correct.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -44,6 +45,7 @@ import type {
   AppointmentVertical,
 } from '../appointment.types'
 import type { TranslationKey } from '@/lib/translations'
+import { Heading } from '@/components/ui/Heading'
 
 function verticalFromBusinessType(type: string): AppointmentVertical {
   if (type === 'clinic') return 'clinic'
@@ -127,37 +129,37 @@ export default function AppointmentDetailPage() {
             {vertical === 'clinic' && <ClinicNotesBanner />}
 
             <section
-              className="space-y-2 p-4 rounded-[var(--radius-md)]"
+              className="space-y-2 p-4 rounded-md"
               style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
             >
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-[var(--fs-lg)] font-medium">{row.partyNameSnapshot}</h2>
+                <Heading level={2} className="text-lg font-medium">{row.partyNameSnapshot}</Heading>
                 {isFormerParty(row) && <Badge variant="overdue">{t.former ?? 'former'}</Badge>}
                 <Badge variant={STATUS_BADGE_VARIANT[row.status]}>
                   {(t[STATUS_LABEL_KEY[row.status] as TranslationKey] as string | undefined) ?? row.status}
                 </Badge>
               </div>
-              <p
-                className="text-[var(--fs-sm)] tabular-nums"
+              <Text
+                className="text-sm tabular-nums"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 {formatDayLabel(new Date(row.startAt))} · {formatLocalTime(new Date(row.startAt))} → {formatLocalTime(new Date(row.endAt))}
-              </p>
+              </Text>
               {row.employeeNameSnapshot && (
-                <p className="text-[var(--fs-sm)]">{row.employeeNameSnapshot}</p>
+                <Text className="text-sm">{row.employeeNameSnapshot}</Text>
               )}
               {row.notes && (
-                <p className="text-[var(--fs-sm)]" style={{ color: 'var(--color-text)' }}>
+                <Text className="text-sm" style={{ color: 'var(--color-text)' }}>
                   {row.notes}
-                </p>
+                </Text>
               )}
             </section>
 
             <section
-              className="space-y-3 p-4 rounded-[var(--radius-md)]"
+              className="space-y-3 p-4 rounded-md"
               style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
             >
-              <h3 className="text-[var(--fs-base)] font-medium">{t.actions ?? 'Actions'}</h3>
+              <Heading level={3} className="text-base font-medium">{t.actions ?? 'Actions'}</Heading>
               <StatusActionBar
                 row={row}
                 isPatching={isPatching}
@@ -174,14 +176,14 @@ export default function AppointmentDetailPage() {
 
             {grouped.length > 0 && (
               <section
-                className="space-y-3 p-4 rounded-[var(--radius-md)]"
+                className="space-y-3 p-4 rounded-md"
                 style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
               >
-                <h3 className="text-[var(--fs-base)] font-medium">{t.activity ?? 'Activity'}</h3>
+                <Heading level={3} className="text-base font-medium">{t.activity ?? 'Activity'}</Heading>
                 {grouped.map((group, gi) => (
                   <div key={gi} className="space-y-1">
                     <div
-                      className="text-[var(--fs-xs)] uppercase sticky top-0 py-1"
+                      className="text-xs uppercase sticky top-0 py-1"
                       style={{
                         color: 'var(--color-text-muted)',
                         background: 'var(--color-surface)',
@@ -189,7 +191,7 @@ export default function AppointmentDetailPage() {
                     >
                       {formatDayLabel(group.day)}
                     </div>
-                    <ul className="space-y-1 text-[var(--fs-sm)]">
+                    <ul className="space-y-1 text-sm">
                       {group.events.map((ev) => (
                         <li key={ev.id} className="flex justify-between gap-2">
                           <span>

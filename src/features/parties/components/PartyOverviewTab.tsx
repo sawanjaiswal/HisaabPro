@@ -1,5 +1,6 @@
 /** Party Detail — Overview tab: contact, business, credit, notes */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import '../party-detail-header.css'
 import {
@@ -16,6 +17,7 @@ import {
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartyDetail } from '../party.types'
 import { formatAmount } from '../party.utils'
+import { Heading } from '@/components/ui/Heading'
 
 interface PartyOverviewTabProps {
   party: PartyDetail
@@ -51,7 +53,7 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
     <div className="party-info-card">
       {hasContactInfo && (
         <div className="card" aria-label={t.contactInfo}>
-          <h3 className="section-title py-0 section-title--mb-3">{t.contact}</h3>
+          <Heading level={3} className="section-title py-0 section-title--mb-3">{t.contact}</Heading>
           {party.phone && (
             <InfoRow icon={<Phone size={18} />} label={t.phone} value={party.phone} />
           )}
@@ -66,7 +68,7 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
 
       {hasBusinessInfo && (
         <div className="card" aria-label={t.businessInfoLabel}>
-          <h3 className="section-title py-0 section-title--mb-3">{t.business2}</h3>
+          <Heading level={3} className="section-title py-0 section-title--mb-3">{t.business2}</Heading>
           {party.gstin && (
             <div>
               <InfoRow icon={<FileText size={18} />} label={t.gstin} value={party.gstin} />
@@ -85,7 +87,7 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
       )}
 
       <div className="card" aria-label={t.creditInfo}>
-        <h3 className="section-title py-0 section-title--mb-3">{t.credit}</h3>
+        <Heading level={3} className="section-title py-0 section-title--mb-3">{t.credit}</Heading>
         <InfoRow
           icon={<CreditCard size={18} />}
           label={t.creditLimit}
@@ -107,7 +109,7 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
 
       {priceListName && (
         <div className="card" aria-label={t.partyPriceListChip}>
-          <h3 className="section-title py-0 section-title--mb-3">{t.priceListLabel}</h3>
+          <Heading level={3} className="section-title py-0 section-title--mb-3">{t.priceListLabel}</Heading>
           <InfoRow
             icon={<Tag size={18} />}
             label={t.partyPriceListChip}
@@ -118,12 +120,12 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
 
       {customFieldRows.length > 0 && (
         <div className="card" aria-label={t.customFields}>
-          <h3 className="section-title py-0 section-title--mb-3">
+          <Heading level={3} className="section-title py-0 section-title--mb-3">
             <span className="section-title-icon">
               <ListChecks size={18} aria-hidden="true" />
               {t.customFields}
             </span>
-          </h3>
+          </Heading>
           {customFieldRows.map(cv => (
             <InfoRow
               key={cv.id}
@@ -137,13 +139,13 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
 
       {party.notes && (
         <div className="card" aria-label={t.notesSection}>
-          <h3 className="section-title py-0 section-title--mb-3">
+          <Heading level={3} className="section-title py-0 section-title--mb-3">
             <span className="section-title-icon">
               <StickyNote size={18} aria-hidden="true" />
               {t.notesSection}
             </span>
-          </h3>
-          <p className="party-info-notes">{party.notes}</p>
+          </Heading>
+          <Text className="party-info-notes">{party.notes}</Text>
         </div>
       )}
     </div>

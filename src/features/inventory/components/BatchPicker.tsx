@@ -5,12 +5,14 @@
  * Expired rows: disabled when HARD_BLOCK, visible with strikethrough for WARN_ONLY.
  */
 
+import { Text } from '@/components/ui/Text'
 import { X, AlertTriangle, Clock, CheckCircle2 } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { useBatchPicker } from '../hooks/useBatchPicker'
 import type { BatchPickerItem } from '../types/batch.types'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface BatchPickerProps {
   productId: string
@@ -170,9 +172,9 @@ export function BatchPicker({
       >
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2 style={{ fontSize: 'var(--fs-base)', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+          <Heading level={2} style={{ fontSize: 'var(--fs-base)', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
             {t.pickBatch}
-          </h2>
+          </Heading>
           <Button variant="none"
             type="button"
             onClick={onClose}
@@ -216,9 +218,9 @@ export function BatchPicker({
             style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}
           >
             {expiredBatchPolicy === 'HARD_BLOCK' && batches.some((b) => !b.isExpired) && (
-              <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
+              <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
                 {t.expiredBatchBlocked}
-              </p>
+              </Text>
             )}
             {batches.map((batch) => (
               <BatchRow

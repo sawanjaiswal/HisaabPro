@@ -8,6 +8,7 @@ import { useRecordAdvance } from '../hooks/useRecordAdvance'
 import { ADVANCE_METHODS } from '../custom-orders.constants'
 import { Input } from '@/components/ui/Input'
 import { useLanguage } from '@/context/LanguageContext'
+import { Heading } from '@/components/ui/Heading'
 
 interface RecordAdvanceModalProps {
   orderId: string
@@ -80,9 +81,9 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h2 style={{ margin: 0, fontSize: 'var(--fs-md)', fontWeight: 700, color: 'var(--color-text)' }}>
+          <Heading level={2} style={{ margin: 0, fontSize: 'var(--fs-md)', fontWeight: 700, color: 'var(--color-text)' }}>
             {t.coRecordAdvance}
-          </h2>
+          </Heading>
           <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label={t.close} style={{ minHeight: 44, minWidth: 44 }}>
             <X size={18} aria-hidden="true" />
           </Button>

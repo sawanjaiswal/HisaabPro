@@ -1,11 +1,13 @@
 /** StockForecastList (#146) — products ranked by soonest projected stock-out. */
 
+import { Text } from '@/components/ui/Text'
 import { AlertTriangle, Package } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatNumber } from '@/lib/format'
 import type { StockForecastItem } from '../analytics.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface StockForecastListProps {
   items: StockForecastItem[]
@@ -17,8 +19,8 @@ export function StockForecastList({ items }: StockForecastListProps) {
   return (
     <Card className="analytics-card">
       <div className="analytics-card__head">
-        <h2 className="analytics-card__title">{t.stockForecast}</h2>
-        <p className="analytics-card__subtitle">{t.stockForecastDesc}</p>
+        <Heading level={2} className="analytics-card__title">{t.stockForecast}</Heading>
+        <Text className="analytics-card__subtitle">{t.stockForecastDesc}</Text>
       </div>
 
       <ul className="stock-forecast-list stagger-list">

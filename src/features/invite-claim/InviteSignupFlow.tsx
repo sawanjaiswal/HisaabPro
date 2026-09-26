@@ -1,8 +1,10 @@
 /** InviteSignupFlow — new-user signup branch of the public invite page (Epic C PR5) */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback, FormEvent } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Heading } from '@/components/ui/Heading'
 
 interface InviteSignupFlowStrings {
   inviteSignupTitle:         string
@@ -53,8 +55,8 @@ export function InviteSignupFlow({ s, defaultName, onClaim }: InviteSignupFlowPr
 
   return (
     <div className="inv-flow">
-      <h2 className="inv-flow__title">{s.inviteSignupTitle}</h2>
-      {err && <p className="inv-flow__err" role="alert">{err}</p>}
+      <Heading level={2} className="inv-flow__title">{s.inviteSignupTitle}</Heading>
+      {err && <Text className="inv-flow__err" role="alert">{err}</Text>}
       <form className="inv-signup-form" onSubmit={(e) => void handleSubmit(e)} noValidate>
         <div className="inv-signup-field">
           <label htmlFor="inv-name" className="inv-signup-label">{s.inviteSignupNameLabel}</label>
@@ -67,7 +69,7 @@ export function InviteSignupFlow({ s, defaultName, onClaim }: InviteSignupFlowPr
             autoComplete="name"
             required
           />
-          {fieldErr['name'] && <p className="inv-flow__field-err" role="alert">{fieldErr['name']}</p>}
+          {fieldErr['name'] && <Text className="inv-flow__field-err" role="alert">{fieldErr['name']}</Text>}
         </div>
 
         <div className="inv-signup-field">
@@ -82,7 +84,7 @@ export function InviteSignupFlow({ s, defaultName, onClaim }: InviteSignupFlowPr
             required
             minLength={8}
           />
-          {fieldErr['pw'] && <p className="inv-flow__field-err" role="alert">{fieldErr['pw']}</p>}
+          {fieldErr['pw'] && <Text className="inv-flow__field-err" role="alert">{fieldErr['pw']}</Text>}
         </div>
 
         <div className="inv-signup-field">
@@ -96,7 +98,7 @@ export function InviteSignupFlow({ s, defaultName, onClaim }: InviteSignupFlowPr
             autoComplete="new-password"
             required
           />
-          {fieldErr['confirm'] && <p className="inv-flow__field-err" role="alert">{fieldErr['confirm']}</p>}
+          {fieldErr['confirm'] && <Text className="inv-flow__field-err" role="alert">{fieldErr['confirm']}</Text>}
         </div>
 
         <Button

@@ -1,5 +1,6 @@
 /** ParsedEntryPreview — editable confirmation card for a parsed voice entry. */
 
+import { Text } from '@/components/ui/Text'
 import { Button } from '@/components/ui/Button'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -28,7 +29,7 @@ export function ParsedEntryPreview({ draft, onChange, onConfirm, onCancel, savin
   return (
     <div className="voice-preview">
       {lowConfidence && (
-        <p className="voice-preview__warn" role="status">{t.voiceLowConfidence}</p>
+        <Text className="voice-preview__warn" role="status">{t.voiceLowConfidence}</Text>
       )}
 
       <div className="voice-preview__intent" role="group" aria-label={t.voiceIntentLabel}>

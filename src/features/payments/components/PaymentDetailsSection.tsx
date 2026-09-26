@@ -14,13 +14,15 @@ import {
   Wallet,
   QrCode,
   Building2,
-  CheckSquare,
+  FileCheck,
   ArrowLeftRight,
   CreditCard,
   MoreHorizontal,
   Calendar,
   Hash,
   FileText,
+  Calculator,
+  IdCard,
 } from 'lucide-react'
 import { PartySearchInput } from '@/components/ui/PartySearch'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -30,16 +32,16 @@ import type { PaymentMode } from '../payment.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
 import { DateField } from '@/components/ui/DateField'
-import { CurrencyInput } from '@/components/ui/CurrencyInput'
 import { Button } from '@/components/ui/Button'
+import { formatRupees } from '@/lib/format'
 
 const PAYMENT_MODES: PaymentMode[] = [
   'CASH',
   'UPI',
   'BANK_TRANSFER',
   'CHEQUE',
-  'NEFT_RTGS_IMPS',
   'CREDIT_CARD',
+  'NEFT_RTGS_IMPS',
   'OTHER',
 ]
 
@@ -47,9 +49,9 @@ const MODE_ICONS: Record<PaymentMode, React.ComponentType<{ className?: string }
   CASH: Wallet,
   UPI: QrCode,
   BANK_TRANSFER: Building2,
-  CHEQUE: CheckSquare,
-  NEFT_RTGS_IMPS: ArrowLeftRight,
+  CHEQUE: FileCheck,
   CREDIT_CARD: CreditCard,
+  NEFT_RTGS_IMPS: ArrowLeftRight,
   OTHER: MoreHorizontal,
 }
 
@@ -86,103 +88,181 @@ export function PaymentDetailsSection({
 }: PaymentDetailsSectionProps) {
   const { t } = useLanguage()
   const showReference = MODES_WITH_REFERENCE.includes(mode)
-
   const quickAmounts = [500, 1000, 2000, 5000]
 
   return (
-    <div className="space-y-6 max-w-md mx-auto pt-1">
-      {/* ── 1. Party Identity Row (Borderless) ─────────────────────────── */}
-      <div className="px-1">
-        <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} />
+    <div className="space-y-4 max-w-lg mx-auto">
+      {/* ── 1. Party Identity Card ─────────────────────────────────────── */}
+      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-3 shadow-xs">
+        <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} showLabel={false} />
       </div>
 
-      {/* ── 2. Pure Typographic Hero Amount (Canonical CurrencyInput) ──── */}
-      <CurrencyInput
-        id="payment-amount"
-        variant="hero"
-        value={amount}
-        onChange={onAmountChange}
-        label={t.amountRequired}
-        error={errors.amount}
-        quickAmounts={quickAmounts}
-      />
-
-      {/* ── 3. Borderless Mode Selector Dock ───────────────────────────── */}
-      <div className="space-y-2 px-1">
-        <p
-          className="text-xs font-bold uppercase tracking-wider select-none px-1"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          {t.paymentModeRequired}
-        </p>
-
-        <div className="grid grid-cols-4 gap-1.5 p-1 rounded-xl" style={{ backgroundColor: 'var(--color-gray-100)' }}>
-          {PAYMENT_MODES.map((m) => {
-            const isSelected = mode === m
-            const Icon = MODE_ICONS[m]
-            return (
-              <Button
-                key={m}
-                type="button"
-                variant="none"
-                className="flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-lg transition-all text-center min-h-[52px] cursor-pointer active:scale-95"
-                style={{
-                  backgroundColor: isSelected ? 'var(--color-surface)' : 'transparent',
-                  color: isSelected ? 'var(--color-primary-700)' : 'var(--text-secondary)',
-                  boxShadow: isSelected ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-                }}
-                onClick={() => onModeChange(m)}
-                role="radio"
-                aria-checked={isSelected}
-                aria-label={PAYMENT_MODE_LABELS[m]}
-              >
-                <div
-                  className="flex items-center justify-center w-6 h-6 rounded-full transition-all"
-                  style={{
-                    backgroundColor: isSelected ? 'var(--color-primary-500)' : 'transparent',
-                    color: isSelected ? 'var(--color-gray-0)' : 'var(--color-gray-500)',
-                  }}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-[10px] font-bold truncate max-w-full leading-tight">
-                  {PAYMENT_MODE_LABELS[m]}
-                </span>
-              </Button>
-            )
-          })}
+      {/* ── 2. Amount Card ─────────────────────────────────────────────── */}
+      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-xs space-y-4">
+        <div className="flex items-center justify-between">
+          <label
+            htmlFor="payment-amount"
+            className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text-primary)]"
+          >
+            <span className="text-emerald-700 font-bold">₹</span>
+            <span>{t.amount || 'Amount'}</span>
+            <span className="text-red-500">*</span>
+          </label>
+          <Button
+            type="button"
+            variant="none"
+            className="p-1 rounded-lg hover:bg-[var(--color-gray-100)] text-[var(--text-secondary)] transition-colors cursor-pointer"
+            aria-label="Calculator"
+          >
+            <Calculator className="w-4 h-4" />
+          </Button>
         </div>
 
-        {errors.mode && (
-          <span className="block text-xs font-medium" style={{ color: 'var(--color-error-600)' }} role="alert">
-            {errors.mode}
+        {/* Center Hero Display */}
+        <div className="flex items-center justify-center gap-2 py-2">
+          <span className="text-4xl font-bold text-[var(--text-primary)] select-none">
+            ₹
+          </span>
+          <div className="relative inline-flex items-center">
+            <Input
+              id="payment-amount"
+              type="number"
+              step="0.01"
+              min="0"
+              inputMode="decimal"
+              placeholder="0"
+              variant="seamless"
+              className="w-48 sm:w-64 bg-transparent border-0 text-left text-5xl font-black focus-visible:ring-0 focus:outline-none tabular-nums p-0 shadow-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-[var(--text-primary)]"
+              style={{
+                fontFamily: 'var(--font-primary)',
+                letterSpacing: '-0.03em',
+              }}
+              value={amount > 0 ? (amount / 100).toFixed(2) : ''}
+              onChange={(e) => {
+                const parsed = parseFloat(e.target.value || '0')
+                const paise = Math.round(parsed * 100)
+                onAmountChange(isNaN(paise) ? 0 : paise)
+              }}
+              aria-label={t.paymentAmountRupees}
+            />
+            {amount === 0 && (
+              <span className="inline-block w-0.5 h-10 bg-emerald-500 animate-pulse -ml-44 sm:-ml-60 pointer-events-none" />
+            )}
+          </div>
+        </div>
+
+        {/* Quick Amount Suggestion Chips */}
+        <div className="flex items-center justify-center gap-2 pt-1 flex-wrap">
+          {quickAmounts.map((q) => (
+            <Button
+              key={q}
+              type="button"
+              variant="none"
+              onClick={() => onAmountChange(q * 100)}
+              className="px-3 py-1.5 rounded-full text-xs font-semibold bg-[var(--color-gray-100)] hover:bg-[var(--color-gray-200)] text-[var(--text-primary)] border border-[var(--color-gray-200)] transition-all active:scale-95 cursor-pointer shadow-2xs"
+            >
+              +{formatRupees(q * 100)}
+            </Button>
+          ))}
+        </div>
+
+        {errors.amount && (
+          <span className="block text-xs font-medium text-center text-[var(--color-error-600)]" role="alert">
+            {errors.amount}
           </span>
         )}
       </div>
 
-      {/* ── 4. Clean Grouped Meta Rows (iOS-style Clean Divider) ─────────── */}
-      <div
-        className="rounded-[var(--radius-2xl)] overflow-hidden divide-y"
-        style={{
-          backgroundColor: 'var(--color-surface)',
-          borderColor: 'var(--color-border)',
-        }}
-      >
+      {/* ── 3. Payment Mode & Details Card ─────────────────────────────── */}
+      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-5 shadow-xs space-y-5">
+        {/* Payment Mode */}
+        <div className="space-y-3">
+          <label className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text-primary)]">
+            <IdCard className="w-4 h-4 text-emerald-700" />
+            <span>{t.paymentModeLabel || 'Payment Mode'}</span>
+            <span className="text-red-500">*</span>
+          </label>
+
+          {/* Row 1: 4 columns */}
+          <div className="grid grid-cols-4 gap-2">
+            {PAYMENT_MODES.slice(0, 4).map((m) => {
+              const isSelected = mode === m
+              const Icon = MODE_ICONS[m]
+              return (
+                <Button
+                  key={m}
+                  type="button"
+                  variant="none"
+                  className={`flex flex-col items-center justify-center gap-1.5 py-3 px-1.5 rounded-xl transition-all text-center min-h-[58px] cursor-pointer active:scale-95 ${
+                    isSelected
+                      ? 'border-2 border-emerald-600 bg-emerald-50/60 text-emerald-800 font-bold shadow-2xs'
+                      : 'border border-[var(--color-border)] bg-[var(--color-gray-50)]/50 hover:bg-[var(--color-gray-100)] text-[var(--text-secondary)] font-medium'
+                  }`}
+                  onClick={() => onModeChange(m)}
+                  role="radio"
+                  aria-checked={isSelected}
+                  aria-label={PAYMENT_MODE_LABELS[m]}
+                >
+                  <Icon className={`w-4 h-4 ${isSelected ? 'text-emerald-700' : 'text-gray-500'}`} />
+                  <span className="text-[11px] truncate max-w-full leading-tight">
+                    {PAYMENT_MODE_LABELS[m]}
+                  </span>
+                </Button>
+              )
+            })}
+          </div>
+
+          {/* Row 2: 3 columns */}
+          <div className="grid grid-cols-3 gap-2">
+            {PAYMENT_MODES.slice(4).map((m) => {
+              const isSelected = mode === m
+              const Icon = MODE_ICONS[m]
+              return (
+                <Button
+                  key={m}
+                  type="button"
+                  variant="none"
+                  className={`flex flex-col items-center justify-center gap-1.5 py-3 px-1.5 rounded-xl transition-all text-center min-h-[58px] cursor-pointer active:scale-95 ${
+                    isSelected
+                      ? 'border-2 border-emerald-600 bg-emerald-50/60 text-emerald-800 font-bold shadow-2xs'
+                      : 'border border-[var(--color-border)] bg-[var(--color-gray-50)]/50 hover:bg-[var(--color-gray-100)] text-[var(--text-secondary)] font-medium'
+                  }`}
+                  onClick={() => onModeChange(m)}
+                  role="radio"
+                  aria-checked={isSelected}
+                  aria-label={PAYMENT_MODE_LABELS[m]}
+                >
+                  <Icon className={`w-4 h-4 ${isSelected ? 'text-emerald-700' : 'text-gray-500'}`} />
+                  <span className="text-[11px] truncate max-w-full leading-tight">
+                    {PAYMENT_MODE_LABELS[m]}
+                  </span>
+                </Button>
+              )
+            })}
+          </div>
+
+          {errors.mode && (
+            <span className="block text-xs font-medium text-[var(--color-error-600)]" role="alert">
+              {errors.mode}
+            </span>
+          )}
+        </div>
+
         {/* Date Row */}
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border)]/60">
           <label
-            className="flex items-center gap-2 text-sm font-semibold"
-            style={{ color: 'var(--text-secondary)' }}
+            className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]"
             htmlFor="payment-date"
           >
-            <Calendar className="w-4 h-4 text-primary-500" />
-            {t.dateRequired}
+            <Calendar className="w-4 h-4 text-emerald-700" />
+            <span>{t.dateRequired || 'Date'}</span>
+            <span className="text-red-500">*</span>
           </label>
-          <div className="w-44">
+          <div className="w-48">
             <DateField
               id="payment-date"
               type="date"
-              className="input w-full text-right text-sm font-medium bg-transparent border-0 focus:ring-0 p-0 shadow-none"
+              className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl px-3 py-2 text-sm font-medium text-[var(--text-primary)] shadow-2xs focus:ring-2 focus:ring-emerald-500/20"
               value={date}
               onChange={(e) => onDateChange(e.target.value)}
               aria-label={t.paymentDate2}
@@ -190,22 +270,21 @@ export function PaymentDetailsSection({
           </div>
         </div>
 
-        {/* Reference Row */}
+        {/* Reference Row (when mode requires reference) */}
         {showReference && (
-          <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center justify-between pt-2 border-t border-[var(--color-border)]/60">
             <label
-              className="flex items-center gap-2 text-sm font-semibold"
-              style={{ color: 'var(--text-secondary)' }}
+              className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]"
               htmlFor="payment-ref"
             >
-              <Hash className="w-4 h-4 text-primary-500" />
-              {t.referenceNumberLabel}
+              <Hash className="w-4 h-4 text-emerald-700" />
+              <span>{t.referenceNumberLabel || 'Reference'}</span>
             </label>
-            <div className="w-44">
+            <div className="w-48">
               <Input
                 id="payment-ref"
                 type="text"
-                className="input w-full text-right text-sm bg-transparent border-0 focus:ring-0 p-0 shadow-none"
+                className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl px-3 py-2 text-sm text-right"
                 placeholder={getReferencePlaceholder(mode)}
                 value={referenceNumber}
                 onChange={(e) => onReferenceChange(e.target.value)}
@@ -217,20 +296,19 @@ export function PaymentDetailsSection({
         )}
 
         {/* Notes Row */}
-        <div className="px-4 py-3 space-y-1">
+        <div className="space-y-2 pt-2 border-t border-[var(--color-border)]/60">
           <label
-            className="flex items-center gap-2 text-sm font-semibold"
-            style={{ color: 'var(--text-secondary)' }}
+            className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]"
             htmlFor="payment-notes"
           >
-            <FileText className="w-4 h-4 text-primary-500" />
-            {t.notesLabel}
+            <FileText className="w-4 h-4 text-emerald-700" />
+            <span>{t.notesLabel || 'Notes'}</span>
           </label>
           <Textarea
             id="payment-notes"
-            className="input w-full text-sm bg-transparent border-0 focus:ring-0 p-0 shadow-none resize-none"
+            className="w-full text-sm bg-[var(--color-gray-50)]/60 border border-[var(--color-border)] rounded-xl p-3 focus:bg-[var(--color-surface)] focus:border-emerald-600 resize-none transition-all"
             rows={2}
-            placeholder={t.addPaymentNote}
+            placeholder="Add a note (optional)..."
             value={notes}
             onChange={(e) => onNotesChange(e.target.value)}
             aria-label={t.paymentNotesAria}

@@ -6,8 +6,10 @@
  * shell and a 2-col grid (mobile) → 4-col (≥sm) for the stat tiles.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Card } from '@/components/ui/Card'
 import type { ImportJobCounts } from '../types/import.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface PreviewSummaryProps {
   counts: ImportJobCounts | null
@@ -56,20 +58,20 @@ export function PreviewSummary({ counts, t }: PreviewSummaryProps) {
 
   return (
     <Card variant="default" className="p-4 space-y-3">
-      <h2
+      <Heading level={2}
         className="font-semibold"
         style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
       >
         {t.importPreviewSummaryTitle ?? 'Preview summary'}
-      </h2>
-      <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      </Heading>
+      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
         {t.importPreviewSummaryBody ?? 'Nothing is saved yet. Review each row before committing.'}
-      </p>
+      </Text>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {tiles.map((tile) => (
           <div
             key={tile.labelKey}
-            className="rounded-[var(--radius-md)] p-3 min-h-[64px]"
+            className="rounded-md p-3 min-h-[64px]"
             style={{
               backgroundColor: 'var(--color-gray-50)',
               border: '1px solid var(--color-gray-100)',

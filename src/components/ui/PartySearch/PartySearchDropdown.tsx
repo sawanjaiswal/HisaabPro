@@ -3,6 +3,7 @@
 import React from 'react'
 import { Plus, User } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 import type { PartySummary, PartyType } from '@/lib/types/party.types'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -60,18 +61,19 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
 
       {!isLoading && !fetchError && trimmedQuery.length > 0 && results.length === 0 && (
         <li className="party-search-status party-search-empty flex flex-col items-center gap-2 py-4 px-3 text-center">
-          <p className="text-xs text-gray-500 font-medium">
+          <p className="text-xs text-[var(--color-gray-500)] font-medium">
             {t.noPartiesFoundFor} &ldquo;{debouncedQuery}&rdquo;
           </p>
           {onAddNew && (
-            <button
+            <Button
+              variant="none"
               type="button"
               onClick={(e) => {
                 e.stopPropagation()
                 onAddNew()
               }}
               disabled={isCreating}
-              className="w-full py-2 px-3 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
+              className="w-full py-2 px-3 rounded-xl bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
             >
               {isCreating ? (
                 <>
@@ -81,10 +83,10 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
               ) : (
                 <>
                   <Plus className="w-3.5 h-3.5" />
-                  <span>+ {t.addParty} &ldquo;{trimmedQuery}&rdquo; {t.addAsNewClient}</span>
+                  <span>{t.addParty} &ldquo;{trimmedQuery}&rdquo; {t.addAsNewClient}</span>
                 </>
               )}
-            </button>
+            </Button>
           )}
         </li>
       )}
@@ -127,8 +129,8 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
         </li>
       ))}
 
-      {/* Instant "Add new party" option at bottom */}
-      {!isLoading && !fetchError && onAddNew && (
+      {/* Instant "Add party" option shown when the user has typed a query */}
+      {!isLoading && !fetchError && onAddNew && trimmedQuery.length > 0 && results.length > 0 && (
         <li
           className="party-search-add-new"
           role="option"
@@ -152,9 +154,7 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
           <span className="party-search-add-label truncate">
             {isCreating
               ? t.creatingParty
-              : trimmedQuery.length > 0
-              ? `+ ${t.addParty} "${trimmedQuery}" ${t.addAsNewClient}`
-              : t.addNewClientEntity}
+              : `${t.addParty} "${trimmedQuery}" ${t.addAsNewClient}`}
           </span>
         </li>
       )}

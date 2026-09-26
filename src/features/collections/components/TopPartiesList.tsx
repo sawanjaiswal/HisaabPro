@@ -3,8 +3,9 @@
  * Card layout: avatar circle (initials), name, overdue amount + days pill.
  */
 
+import { Text } from '@/components/ui/Text'
 import { ChevronRight } from 'lucide-react'
-import { formatPaise } from '@/lib/format'
+import { formatPaise, formatInitials } from '@/lib/format'
 import type { TopOutstandingParty } from '../collections.types'
 import '../styles/aging.css'
 
@@ -13,13 +14,6 @@ interface Props {
   sectionTitle: string
 }
 
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/)
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase()
-  }
-  return name.slice(0, 2).toUpperCase()
-}
 
 function maskPhone(phone: string): string {
   const digits = phone.replace(/\D/g, '')
@@ -35,17 +29,17 @@ export function TopPartiesList({ parties, sectionTitle }: Props) {
 
   return (
     <section className="aging-section" aria-labelledby="top-parties-heading">
-      <p id="top-parties-heading" className="aging-section__title">{sectionTitle}</p>
+      <Text id="top-parties-heading" className="aging-section__title">{sectionTitle}</Text>
       <ul className="top-parties" aria-label={sectionTitle}>
         {parties.map((party) => (
           <li key={party.partyId} className="top-party-row">
             <div className="top-party-row__avatar" aria-hidden="true">
-              {getInitials(party.name)}
+              {formatInitials(party.name)}
             </div>
             <div className="top-party-row__info">
-              <p className="top-party-row__name">{party.name}</p>
+              <Text className="top-party-row__name">{party.name}</Text>
               {party.phone && (
-                <p className="top-party-row__sub">{maskPhone(party.phone)}</p>
+                <Text className="top-party-row__sub">{maskPhone(party.phone)}</Text>
               )}
             </div>
             <div className="top-party-row__right">

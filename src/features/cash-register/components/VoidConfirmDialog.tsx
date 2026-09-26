@@ -1,5 +1,6 @@
 /** Cash Register — Void confirm dialog with optional reason field */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Loader2 } from 'lucide-react'
@@ -8,6 +9,7 @@ import { ApiError } from '@/lib/api'
 import { useVoidCashEntry } from '../useCashRegisterMutations'
 import { Textarea } from '@/components/ui/Textarea'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Heading } from '@/components/ui/Heading'
 
 interface Props {
   entryId: string
@@ -47,10 +49,10 @@ export function VoidConfirmDialog({ entryId, businessId, onClose }: Props) {
       aria-describedby="void-dialog-desc"
     >
       <div className="cr-dialog__body">
-        <h2 id="void-dialog-title" className="cr-dialog__title">{t.cashRegVoidDialogTitle}</h2>
-        <p id="void-dialog-desc" className="cr-dialog__desc">
+        <Heading level={2} id="void-dialog-title" className="cr-dialog__title">{t.cashRegVoidDialogTitle}</Heading>
+        <Text id="void-dialog-desc" className="cr-dialog__desc">
           {t.cashRegVoidDialogDescription}
-        </p>
+        </Text>
 
         <label htmlFor="void-reason" className="cr-dialog__field-label">
           {t.cashRegLabelVoidReason}

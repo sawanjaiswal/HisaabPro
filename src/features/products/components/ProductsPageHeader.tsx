@@ -5,10 +5,12 @@
  * here is the primary add action. Pure presentation; parent owns handlers.
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { Plus, ScanBarcode } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Heading } from '@/components/ui/Heading'
 
 interface ProductsPageHeaderProps {
   onScan: () => void
@@ -21,8 +23,8 @@ export const ProductsPageHeader: React.FC<ProductsPageHeaderProps> = ({ onScan, 
   return (
     <div className="products-page-header">
       <div className="products-page-header__text">
-        <h1 className="products-page-title">{t.products}</h1>
-        <p className="products-page-subtitle">{t.manageInventorySubtitle}</p>
+        <Heading level={1} className="products-page-title">{t.products}</Heading>
+        <Text className="products-page-subtitle">{t.manageInventorySubtitle}</Text>
       </div>
       <div className="products-page-header__actions">
         <Button

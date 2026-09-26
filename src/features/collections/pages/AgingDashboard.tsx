@@ -5,6 +5,7 @@
  * 4 UI states: loading skeleton · error banner · empty (no receivables) · success.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useQueryClient } from '@tanstack/react-query'
 import { CheckCircle2, RefreshCw } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -82,8 +83,8 @@ export default function AgingDashboard() {
             )}
 
             <div className="aging-strip">
-              <p className="aging-strip__label">{t.totalReceivable ?? 'Total Receivable'}</p>
-              <p className="aging-strip__amount">{formatPaise(summary.totalReceivable)}</p>
+              <Text className="aging-strip__label">{t.totalReceivable ?? 'Total Receivable'}</Text>
+              <Text className="aging-strip__amount">{formatPaise(summary.totalReceivable)}</Text>
             </div>
 
             <div className="aging-grid" role="list" aria-label={t.agingBucketsLabel ?? 'Aging buckets'}>

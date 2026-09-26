@@ -1,5 +1,6 @@
 /** BomFormPage — /bom/new + /bom/:id/edit */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -12,6 +13,7 @@ import { useBomForm, hydrateFormFromDetail } from '../hooks/useBomForm'
 import { useLanguage } from '@/context/LanguageContext'
 import { BOM_MAX_COMPONENTS } from '../bom.constants'
 import '../bom.css'
+import { Heading } from '@/components/ui/Heading'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -39,7 +41,7 @@ function BomCreateForm() {
         <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/bom')} aria-label={t.back}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
-        <h1 className="bom-page__title">{t.bomNewRecipe}</h1>
+        <Heading level={1} className="bom-page__title">{t.bomNewRecipe}</Heading>
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); void save() }} noValidate>
@@ -47,12 +49,12 @@ function BomCreateForm() {
 
         <section className="bom-section">
           <div className="bom-section__header">
-            <h2 className="bom-section__title">{t.bomComponentsHeading}</h2>
+            <Heading level={2} className="bom-section__title">{t.bomComponentsHeading}</Heading>
             <span className="bom-section__count">{form.components.length}/{BOM_MAX_COMPONENTS}</span>
           </div>
 
           {errors.components && (
-            <p className="input-error" role="alert">{errors.components}</p>
+            <Text className="input-error" role="alert">{errors.components}</Text>
           )}
 
           <div className="bom-rows">
@@ -134,7 +136,7 @@ function BomEditForm({ id }: { id: string }) {
         <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(`/bom/${id}`)} aria-label={t.back}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
-        <h1 className="bom-page__title">{t.bomEditRecipeTitle}</h1>
+        <Heading level={1} className="bom-page__title">{t.bomEditRecipeTitle}</Heading>
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); void save() }} noValidate>
@@ -142,11 +144,11 @@ function BomEditForm({ id }: { id: string }) {
 
         <section className="bom-section">
           <div className="bom-section__header">
-            <h2 className="bom-section__title">{t.bomComponentsHeading}</h2>
+            <Heading level={2} className="bom-section__title">{t.bomComponentsHeading}</Heading>
             <span className="bom-section__count">{form.components.length}/{BOM_MAX_COMPONENTS}</span>
           </div>
 
-          {errors.components && <p className="input-error" role="alert">{errors.components}</p>}
+          {errors.components && <Text className="input-error" role="alert">{errors.components}</Text>}
 
           <div className="bom-rows">
             {form.components.map((row, i) => (

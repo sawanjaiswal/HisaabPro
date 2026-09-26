@@ -1,8 +1,10 @@
 /** Problem statement — 3 pain point cards on dark bg */
 
+import { Text } from '@/components/ui/Text'
 import { NotebookPen, AlertTriangle, WifiOff, type LucideIcon } from 'lucide-react'
 
 import { PROBLEMS } from '../landing.constants'
+import { Heading } from '@/components/ui/Heading'
 
 const ICON_MAP: Record<string, LucideIcon> = { NotebookPen, CircleAlert: AlertTriangle, WifiOff }
 
@@ -10,12 +12,12 @@ export function LandingProblem() {
   return (
     <section className="px-4 py-20 sm:py-28">
       <div className="mx-auto max-w-5xl text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-teal-400">
+        <Text className="text-sm font-semibold uppercase tracking-widest text-teal-400">
           The Problem
-        </p>
-        <h2 className="mt-3 text-3xl font-bold text-white sm:text-4xl">
+        </Text>
+        <Heading level={2} className="mt-3 text-3xl font-bold text-white sm:text-4xl">
           Sound familiar?
-        </h2>
+        </Heading>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {PROBLEMS.map((problem) => {
@@ -28,12 +30,12 @@ export function LandingProblem() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-500/10 text-teal-400 transition-colors group-hover:bg-teal-500/20">
                   {Icon && <Icon size={24} aria-hidden="true" />}
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-white">
+                <Heading level={3} className="mt-4 text-lg font-bold text-white">
                   {problem.title}
-                </h3>
-                <p className="mt-2 text-[0.9375rem] leading-relaxed text-gray-400">
+                </Heading>
+                <Text className="mt-2 text-base leading-relaxed text-gray-400">
                   {problem.description}
-                </p>
+                </Text>
               </div>
             )
           })}

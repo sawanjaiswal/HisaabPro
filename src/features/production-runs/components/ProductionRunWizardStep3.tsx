@@ -1,5 +1,6 @@
 /** ProductionRunWizardStep3 — Review Components (stock preview) */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { AlertTriangle, XCircle, CheckCircle } from 'lucide-react'
@@ -7,6 +8,7 @@ import { getBom } from '../../bom/bom.service'
 import { buildAvailabilities, hasInsufficientStock, hasLowStock } from '../production-run.utils'
 import type { WizardFormState, ComponentAvailability } from '../production-run.types'
 import { useLanguage } from '@/context/LanguageContext'
+import { Heading } from '@/components/ui/Heading'
 
 interface Step3Props {
   wizard: WizardFormState
@@ -45,10 +47,10 @@ export function ProductionRunWizardStep3({ wizard, onNext, onBack }: Step3Props)
 
   return (
     <div className="pr-wizard-step">
-      <h2 className="pr-wizard-step__title">{t.prStepReviewComponents}</h2>
-      <p className="pr-wizard-step__desc">
+      <Heading level={2} className="pr-wizard-step__title">{t.prStepReviewComponents}</Heading>
+      <Text className="pr-wizard-step__desc">
         {t.prProducing} <strong>{qty}</strong> × {wizard.finishedProductName}
-      </p>
+      </Text>
 
       {/* Banners */}
       {blocked && (
@@ -75,7 +77,7 @@ export function ProductionRunWizardStep3({ wizard, onNext, onBack }: Step3Props)
 
       {/* Error */}
       {!loading && error && (
-        <p className="pr-wizard-error" role="alert">{t.prLoadComponentError}</p>
+        <Text className="pr-wizard-error" role="alert">{t.prLoadComponentError}</Text>
       )}
 
       {/* Component list */}

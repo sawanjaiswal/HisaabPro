@@ -1,5 +1,6 @@
 /** SetRateForm — Form to set an exchange rate for a foreign currency */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Select, SelectItem } from '@/components/ui/Select'
@@ -103,9 +104,9 @@ export function SetRateForm({ currencies, onSubmit, onCancel }: SetRateFormProps
       </div>
 
       {error && (
-        <p className="set-rate-form__error" role="alert">
+        <Text className="set-rate-form__error" role="alert">
           {error}
-        </p>
+        </Text>
       )}
 
       <div className="set-rate-form__actions">

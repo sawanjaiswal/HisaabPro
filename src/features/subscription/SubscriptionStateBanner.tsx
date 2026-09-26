@@ -56,7 +56,7 @@ export function SubscriptionStateBanner({
   const Icon = isLocked ? AlertCircle : isInGrace ? AlertCircle : ShieldCheck
   return (
     <div
-      className="rounded-[var(--radius-md)] p-3 flex items-center gap-3"
+      className="rounded-md p-3 flex items-center gap-3"
       style={{
         backgroundColor: 'var(--color-gray-0)',
         border: '1px solid var(--color-gray-100)',
@@ -77,7 +77,7 @@ export function SubscriptionStateBanner({
         <Badge variant={variant}>{tStrings[labelKey] ?? labelKey}</Badge>
         {isInGrace && (
           <span
-            className="ml-2 text-[var(--fs-xs)]"
+            className="ml-2 text-xs"
             style={{ color: 'var(--text-muted)' }}
           >
             {t.mandateRequired}

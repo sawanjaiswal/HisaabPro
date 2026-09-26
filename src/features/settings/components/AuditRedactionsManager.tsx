@@ -6,6 +6,7 @@
  * "Disable" affordance per row (confirm dialog → soft-disable on server).
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Trash2, Plus } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
@@ -139,17 +140,17 @@ export function AuditRedactionsManager({ open, onClose }: AuditRedactionsManager
                   }}
                 >
                   <div style={{ minWidth: 0 }}>
-                    <p style={{ margin: 0, fontWeight: 500, color: 'var(--color-gray-900)' }}>
+                    <Text style={{ margin: 0, fontWeight: 500, color: 'var(--color-gray-900)' }}>
                       {AUDIT_ENTITY_LABELS[r.entityType] ?? r.entityType}
-                    </p>
-                    <p style={{
+                    </Text>
+                    <Text style={{
                       margin: 0,
                       fontSize: 'var(--fs-xs)',
                       color: 'var(--color-gray-500)',
                       wordBreak: 'break-all',
                     }}>
                       {r.fieldPath}
-                    </p>
+                    </Text>
                   </div>
                   <Button variant="none"
                     type="button"

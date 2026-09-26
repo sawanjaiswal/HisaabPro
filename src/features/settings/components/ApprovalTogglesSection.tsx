@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import type { TransactionLockConfig } from '../settings.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
@@ -17,15 +18,15 @@ export function ApprovalTogglesSection({
 
   return (
     <section>
-      <p className="settings-section-title py-0">{t.approvalsTitle}</p>
+      <Text className="settings-section-title py-0">{t.approvalsTitle}</Text>
       <div className="txn-controls">
 
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">{t.requireApprovalEdits}</p>
-            <p className="txn-control-description">
+            <Text className="txn-control-label">{t.requireApprovalEdits}</Text>
+            <Text className="txn-control-description">
               {t.approvalEditsDesc}
-            </p>
+            </Text>
           </div>
           <label className="settings-toggle" aria-label={t.requireApprovalEditsAria}>
             <Input
@@ -39,10 +40,10 @@ export function ApprovalTogglesSection({
 
         <div className="txn-control-row">
           <div className="txn-control-content">
-            <p className="txn-control-label">{t.requireApprovalDeletes}</p>
-            <p className="txn-control-description">
+            <Text className="txn-control-label">{t.requireApprovalDeletes}</Text>
+            <Text className="txn-control-description">
               {t.approvalDeletesDesc}
-            </p>
+            </Text>
           </div>
           <label className="settings-toggle" aria-label={t.requireApprovalDeletesAria}>
             <Input

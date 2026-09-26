@@ -5,6 +5,7 @@
  * user came for when they are checking whether a bill number was recorded.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Receipt } from 'lucide-react'
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -69,7 +70,7 @@ export function ExpenseDetailRows({ expense }: ExpenseDetailRowsProps) {
         {expense.notes && (
           <div className="expense-detail-row expense-detail-row--stacked">
             <span className="expense-detail-label">{t.notesInfoLabel}</span>
-            <p className="expense-detail-value">{expense.notes}</p>
+            <Text className="expense-detail-value">{expense.notes}</Text>
           </div>
         )}
       </div>

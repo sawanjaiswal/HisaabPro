@@ -4,6 +4,7 @@ import { CheckCircle, AlertTriangle } from 'lucide-react'
 import type { BulkImportResult } from '../bulk-import.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface ImportProgressProps {
   progress: number
@@ -40,9 +41,9 @@ export function ImportProgress({ progress, total, result, onDone, onGoToParties 
             )}
           </div>
 
-          <h3 className="import-result-title">
+          <Heading level={3} className="import-result-title">
             {result.failed === 0 ? t.allPartiesImported : t.importCompletedErrors}
-          </h3>
+          </Heading>
 
           <div className="import-result-stats">
             <span className="import-result-stat import-result-stat-success">

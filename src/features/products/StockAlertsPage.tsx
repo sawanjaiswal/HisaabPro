@@ -23,6 +23,7 @@ import { StockAlertRow } from './components/StockAlertRow'
 import { ExpiryAlertCard } from './ExpiryAlertCard'
 import type { StockAlertFilter } from './stock-alerts.types'
 import './stock-alerts.css'
+import { Heading } from '@/components/ui/Heading'
 
 export default function StockAlertsPage() {
   const { t } = useLanguage()
@@ -88,7 +89,7 @@ export default function StockAlertsPage() {
         {/* Expiry alerts (BAT-05) — separate concern, kept above the stock list */}
         {expiryStatus === 'success' && expiryAlerts.length > 0 && (
           <section className="space-y-3 py-0">
-            <h2 className="stock-alert-heading">{t.expiryAlertsTitle}</h2>
+            <Heading level={2} className="stock-alert-heading">{t.expiryAlertsTitle}</Heading>
             <div role="list" aria-label={t.expiryAlertsTitle} className="space-y-3">
               {expiryAlerts.map((alert) => (
                 <ExpiryAlertCard key={alert.id} alert={alert} />

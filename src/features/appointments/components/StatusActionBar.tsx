@@ -4,6 +4,7 @@
  * lives inside the Drawer `footer` slot per PLATFORM_SHELL C6 + C9.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
@@ -25,9 +26,9 @@ export function StatusActionBar({ row, isPatching, onPatch }: StatusActionBarPro
 
   if (transitions.length === 0) {
     return (
-      <p className="text-[var(--fs-sm)]" style={{ color: 'var(--color-text-muted)' }}>
+      <Text className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
         {t.appointmentNoMoreTransitions ?? 'No further actions available.'}
-      </p>
+      </Text>
     )
   }
 

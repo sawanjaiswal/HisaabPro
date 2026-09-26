@@ -13,6 +13,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { formatRupees } from '@/lib/format'
 import type { InvoiceGstSummary as GstSummaryData } from '../useInvoiceGstSummary'
 import './invoice-gst-summary.css'
+import { Heading } from '@/components/ui/Heading'
 
 interface InvoiceGstSummaryProps {
   data: GstSummaryData
@@ -28,7 +29,7 @@ export function InvoiceGstSummary({ data }: InvoiceGstSummaryProps) {
         <span className="gst-summary-icon" aria-hidden="true">
           <Receipt size={16} />
         </span>
-        <h3 className="gst-summary-title">{t.gstSummaryTitle}</h3>
+        <Heading level={3} className="gst-summary-title">{t.gstSummaryTitle}</Heading>
         <Badge variant={interState ? 'info' : 'draft'}>
           {interState ? t.interStateSupply : t.intraStateSupply}
         </Badge>

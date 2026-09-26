@@ -5,6 +5,7 @@
  * Only shown when vertical has stockTracking enabled (gated by Settings hub).
  */
 
+import { Text } from '@/components/ui/Text'
 import { AlertTriangle, ShieldAlert } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { AppShell } from '@/components/layout/AppShell'
@@ -127,9 +128,9 @@ export default function InventorySettingsPage() {
               >
                 {t.expiryAlertDaysLabel}
               </label>
-              <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
+              <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
                 {t.expiryAlertDaysDesc}
-              </p>
+              </Text>
               <Input
                 id="expiry-alert-days"
                 type="number"
@@ -155,12 +156,12 @@ export default function InventorySettingsPage() {
             {/* Expired batch policy */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
               <div>
-                <p style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)', margin: '0 0 4px' }}>
+                <Text style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)', margin: '0 0 4px' }}>
                   {t.expiredBatchPolicyLabel}
-                </p>
-                <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
+                </Text>
+                <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
                   {t.expiredBatchPolicyDesc}
-                </p>
+                </Text>
               </div>
 
               <div role="radiogroup" aria-label={t.expiredBatchPolicyLabel} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>

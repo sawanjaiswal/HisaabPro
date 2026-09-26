@@ -6,6 +6,7 @@
  * a muted "uses default" row.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import { Tag } from 'lucide-react'
@@ -21,6 +22,7 @@ import {
   type PricePreviewEntry,
 } from '@/features/price-lists/use-product-price-preview'
 import './product-price-preview-panel.css'
+import { Heading } from '@/components/ui/Heading'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -59,11 +61,11 @@ function EntryRows({ entries, salePrice, t }: {
 }) {
   if (entries.length === 0) {
     return (
-      <p className="ppp-no-entries">
+      <Text className="ppp-no-entries">
         {t.priceListNoEntries}
         {' — '}
         {t.useDefaultPrice.replace('{price}', formatProductPrice(salePrice))}
-      </p>
+      </Text>
     )
   }
 
@@ -140,7 +142,7 @@ export function ProductPricePreviewPanel({
     <section className="card ppp-panel" aria-label={t.priceAcrossLists}>
       <div className="ppp-header">
         <Tag size={16} aria-hidden="true" className="ppp-header-icon" />
-        <h2 className="ppp-title">{t.priceAcrossLists}</h2>
+        <Heading level={2} className="ppp-title">{t.priceAcrossLists}</Heading>
       </div>
 
       <div className="ppp-baseline-row">

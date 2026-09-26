@@ -9,6 +9,7 @@
  * (see .claude/fix-trace-pl-contract.md).
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect, useCallback } from 'react'
 import { TrendingUp } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -106,7 +107,7 @@ export default function CashFlowPage() {
           {status === 'success' && data && hasMovement && (
             <>
               <CashFlowStatement data={data} />
-              {data.partial && <p className="cf-partial-note">{t.partialPeriodTotals}</p>}
+              {data.partial && <Text className="cf-partial-note">{t.partialPeriodTotals}</Text>}
             </>
           )}
         </PageContainer>

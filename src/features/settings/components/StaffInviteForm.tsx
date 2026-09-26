@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectItem } from '@/components/ui/Select'
@@ -42,7 +43,7 @@ export function StaffInviteForm({
 
   return (
     <form className="staff-invite-form" onSubmit={onSubmit} noValidate>
-      <p className="staff-invite-form-title">{t.newStaffMember}</p>
+      <Text className="staff-invite-form-title">{t.newStaffMember}</Text>
 
       <Input
         id="invite-name"
@@ -83,16 +84,16 @@ export function StaffInviteForm({
           ))}
         </Select>
         {errors.roleId && (
-          <p id="invite-role-error" className="input-error" role="alert">
+          <Text id="invite-role-error" className="input-error" role="alert">
             {errors.roleId}
-          </p>
+          </Text>
         )}
       </div>
 
       {submitError && (
-        <p className="staff-invite-error-banner" role="alert">
+        <Text className="staff-invite-error-banner" role="alert">
           {submitError}
-        </p>
+        </Text>
       )}
 
       <Button variant="none"

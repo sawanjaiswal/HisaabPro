@@ -8,6 +8,7 @@
  * 4 UI states delegated to <CommissionRuleList>.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -59,9 +60,9 @@ export default function CommissionSettingsPage() {
       />
 
       <PageContainer variant="list">
-        <p className="commission-settings__description">
+        <Text className="commission-settings__description">
           {t.commissionSettingsDescription}
-        </p>
+        </Text>
         <CommissionRuleList onCreate={openCreate} onEdit={openEdit} />
       </PageContainer>
 

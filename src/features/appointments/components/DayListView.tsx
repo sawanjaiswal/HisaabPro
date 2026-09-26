@@ -30,7 +30,7 @@ export function DayListView({ date, rows, onSelect, onCreateAtHour }: DayListVie
       {buckets.map((bucket) => (
         <li key={bucket.hour} className="space-y-2">
           <div
-            className="text-[var(--fs-xs)] uppercase tabular-nums"
+            className="text-xs uppercase tabular-nums"
             style={{ color: 'var(--color-text-muted)' }}
           >
             {formatLocalTime(bucket.startsAt)}
@@ -41,7 +41,7 @@ export function DayListView({ date, rows, onSelect, onCreateAtHour }: DayListVie
               variant="none"
               onClick={() => onCreateAtHour(bucket.hour)}
               aria-label={`${t.addAtHour ?? 'Add appointment at'} ${formatLocalTime(bucket.startsAt)}`}
-              className="w-full min-h-[44px] flex items-center justify-center gap-2 rounded-[var(--radius-md)] text-[var(--fs-sm)]"
+              className="w-full min-h-11 flex items-center justify-center gap-2 rounded-md text-sm"
               style={{
                 border: '1px dashed var(--color-border)',
                 color: 'var(--color-text-muted)',

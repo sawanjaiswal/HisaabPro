@@ -10,23 +10,33 @@ vi.mock('@/lib/api', () => ({
   ApiError: class extends Error { code: string; constructor(m: string, c: string) { super(m); this.code = c } },
 }))
 
+import { createElement, type ReactNode } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { usePartyDetail } from '../usePartyDetail'
 
 const MOCK_PARTY = { id: 'p-1', name: 'Test Party', phone: '9876543210' }
+
+function createWrapper() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  return ({ children }: { children: ReactNode }) =>
+    createElement(QueryClientProvider, { client: queryClient }, children)
+}
 
 describe('usePartyDetail', () => {
   beforeEach(() => { vi.clearAllMocks() })
 
   it('starts in loading state', () => {
     mockGetParty.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => usePartyDetail('p-1'))
+    const { result } = renderHook(() => usePartyDetail('p-1'), { wrapper: createWrapper() })
     expect(result.current.status).toBe('loading')
     expect(result.current.party).toBeNull()
   })
 
   it('fetches party on mount and sets success', async () => {
     mockGetParty.mockResolvedValue(MOCK_PARTY)
-    const { result } = renderHook(() => usePartyDetail('p-1'))
+    const { result } = renderHook(() => usePartyDetail('p-1'), { wrapper: createWrapper() })
     await waitFor(() => expect(result.current.status).toBe('success'))
     expect(result.current.party).toEqual(MOCK_PARTY)
     expect(mockGetParty).toHaveBeenCalledWith('p-1', expect.any(AbortSignal))
@@ -34,7 +44,7 @@ describe('usePartyDetail', () => {
 
   it('shows error toast on failure', async () => {
     mockGetParty.mockRejectedValue(new Error('Network error'))
-    const { result } = renderHook(() => usePartyDetail('p-1'))
+    const { result } = renderHook(() => usePartyDetail('p-1'), { wrapper: createWrapper() })
     await waitFor(() => expect(result.current.status).toBe('error'))
     expect(mockToast.error).toHaveBeenCalledWith('Failed to load party')
   })
@@ -42,13 +52,13 @@ describe('usePartyDetail', () => {
   // The mockup opens on the ledger — it is the reason anyone opens a party.
   it('defaults activeTab to ledger', () => {
     mockGetParty.mockReturnValue(new Promise(() => {}))
-    const { result } = renderHook(() => usePartyDetail('p-1'))
+    const { result } = renderHook(() => usePartyDetail('p-1'), { wrapper: createWrapper() })
     expect(result.current.activeTab).toBe('ledger')
   })
 
   it('refresh triggers re-fetch', async () => {
     mockGetParty.mockResolvedValue(MOCK_PARTY)
-    const { result } = renderHook(() => usePartyDetail('p-1'))
+    const { result } = renderHook(() => usePartyDetail('p-1'), { wrapper: createWrapper() })
     await waitFor(() => expect(result.current.status).toBe('success'))
     result.current.refresh()
     await waitFor(() => expect(mockGetParty).toHaveBeenCalledTimes(2))

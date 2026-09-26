@@ -19,6 +19,7 @@
  * ≤250L · token-only colours · no tailwind palette · no dark:.
  */
 
+import { Text } from '@/components/ui/Text'
 import { AlertTriangle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
@@ -26,6 +27,7 @@ import { Card } from '@/components/ui/Card'
 import { ROUTES } from '@/config/routes.config'
 import type { CommitBlockedProductDetail } from '../types/import.types'
 import type { CommitBlockedInvoiceDetail } from '../types/payment.types'
+import { Heading } from '@/components/ui/Heading'
 
 type CommitBlockedDetail = CommitBlockedProductDetail | CommitBlockedInvoiceDetail
 
@@ -104,15 +106,15 @@ export function CommitBlockedBanner({
           aria-hidden="true"
         />
         <div className="flex-1 min-w-0 space-y-1">
-          <h2
+          <Heading level={2}
             className="font-semibold"
             style={{ fontSize: 'var(--fs-md)', color: 'var(--color-danger-900)' }}
           >
             {title}
-          </h2>
-          <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-danger-800)' }}>
+          </Heading>
+          <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-danger-800)' }}>
             {desc}
-          </p>
+          </Text>
         </div>
       </div>
 
@@ -128,7 +130,7 @@ export function CommitBlockedBanner({
             {sample.map((item) => (
               <li key={item}>
                 <span
-                  className="inline-flex items-center px-2 py-0.5 rounded-[var(--radius-full)] tabular-nums"
+                  className="inline-flex items-center px-2 py-0.5 rounded-full tabular-nums"
                   style={{
                     fontSize: 'var(--fs-xs)',
                     color: 'var(--color-danger-800)',
@@ -148,7 +150,7 @@ export function CommitBlockedBanner({
           variant="primary"
           size="lg"
           onClick={onResolve}
-          className="min-h-[44px] flex-1"
+          className="min-h-11 flex-1"
         >
           {cta}
         </Button>
@@ -157,7 +159,7 @@ export function CommitBlockedBanner({
             variant="ghost"
             size="lg"
             onClick={onCancel}
-            className="min-h-[44px] flex-1"
+            className="min-h-11 flex-1"
           >
             {cancelLabel}
           </Button>

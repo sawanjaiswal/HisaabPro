@@ -11,6 +11,7 @@
  * NOT included in React-PDF (never imported from PDF template).
  */
 
+import { Text } from '@/components/ui/Text'
 import { lazy, Suspense } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Smartphone, CheckCircle } from 'lucide-react'
@@ -66,9 +67,9 @@ export function UpiPayCard({ vpa, payeeName, amountPaise, txnRef, txnNote }: Upi
       <div className="upi-pay-card upi-pay-card--no-vpa" role="region" aria-label={t.upiPayCardTitle}>
         <div className="upi-pay-card__header">
           <Smartphone size={18} className="upi-pay-card__icon" aria-hidden="true" />
-          <p className="upi-pay-card__title">{t.upiPayCardTitle}</p>
+          <Text className="upi-pay-card__title">{t.upiPayCardTitle}</Text>
         </div>
-        <p className="upi-pay-card__no-vpa-text">{t.upiPayCardNoUpi}</p>
+        <Text className="upi-pay-card__no-vpa-text">{t.upiPayCardNoUpi}</Text>
         <Button variant="none"
           type="button"
           className="upi-pay-card__no-vpa-link"
@@ -87,7 +88,7 @@ export function UpiPayCard({ vpa, payeeName, amountPaise, txnRef, txnNote }: Upi
       <div className="upi-pay-card" role="region" aria-label={t.upiPayCardTitle}>
         <div className="upi-pay-card__header">
           <Smartphone size={18} className="upi-pay-card__icon" aria-hidden="true" />
-          <p className="upi-pay-card__title">{t.upiPayCardTitle}</p>
+          <Text className="upi-pay-card__title">{t.upiPayCardTitle}</Text>
         </div>
         <span className="upi-pay-card__paid-badge" role="status">
           <CheckCircle size={14} aria-hidden="true" />
@@ -107,8 +108,8 @@ export function UpiPayCard({ vpa, payeeName, amountPaise, txnRef, txnNote }: Upi
       <div className="upi-pay-card__header">
         <Smartphone size={18} className="upi-pay-card__icon" aria-hidden="true" />
         <div>
-          <p className="upi-pay-card__title">{t.upiPayCardTitle}</p>
-          <p className="upi-pay-card__subtitle">{t.upiPayCardSubtitle}</p>
+          <Text className="upi-pay-card__title">{t.upiPayCardTitle}</Text>
+          <Text className="upi-pay-card__subtitle">{t.upiPayCardSubtitle}</Text>
         </div>
       </div>
 
@@ -123,7 +124,7 @@ export function UpiPayCard({ vpa, payeeName, amountPaise, txnRef, txnNote }: Upi
             />
           </div>
         </Suspense>
-        <p className="upi-pay-card__amount-line">{amountLine}</p>
+        <Text className="upi-pay-card__amount-line">{amountLine}</Text>
       </div>
 
       <a

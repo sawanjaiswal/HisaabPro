@@ -1,5 +1,6 @@
 /** PendingExpenseCard — Confirm or skip a recurring-generated pending expense */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Check, X, Clock } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
@@ -60,12 +61,12 @@ export function PendingExpenseCard({ item, onDone }: PendingExpenseCardProps) {
         <Clock size={18} />
       </div>
       <div className="pending-card__info">
-        <p className="pending-card__name">{item.categoryName ?? 'Uncategorised'}</p>
-        {item.notes && <p className="pending-card__notes">{item.notes}</p>}
-        <p className="pending-card__date">{new Date(item.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</p>
+        <Text className="pending-card__name">{item.categoryName ?? 'Uncategorised'}</Text>
+        {item.notes && <Text className="pending-card__notes">{item.notes}</Text>}
+        <Text className="pending-card__date">{new Date(item.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</Text>
       </div>
       <div className="pending-card__right">
-        <p className="pending-card__amount">{formatPaise(item.amount)}</p>
+        <Text className="pending-card__amount">{formatPaise(item.amount)}</Text>
         <div className="pending-card__actions">
           <Button variant="none"
             type="button"

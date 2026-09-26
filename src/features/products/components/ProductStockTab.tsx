@@ -16,6 +16,7 @@ import { formatMovementType } from '../product.utils'
 import { filterMovements, groupByMonth, isInbound, type StockHistoryFilter } from '../stock-history.utils'
 import type { StockMovement } from '../product.types'
 import '../stock-history.css'
+import { Heading } from '@/components/ui/Heading'
 
 interface ProductStockTabProps {
   movements: StockMovement[]
@@ -71,7 +72,7 @@ export const ProductStockTab: React.FC<ProductStockTabProps> = ({ movements, uni
       ) : (
         groups.map((group) => (
           <div key={group.label} className="stock-history-group">
-            <h3 className="stock-history-month">{group.label}</h3>
+            <Heading level={3} className="stock-history-month">{group.label}</Heading>
 
             <ul className="stock-history-list" role="list">
               {group.movements.map((m) => {

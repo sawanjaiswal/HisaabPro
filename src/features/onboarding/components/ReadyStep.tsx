@@ -1,8 +1,10 @@
 /** ReadyStep — success state (mirrors mockup's checkmark screen). */
 
+import { Text } from '@/components/ui/Text'
 import { CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Heading } from '@/components/ui/Heading'
 
 interface Props {
   onGoHome: () => void
@@ -19,8 +21,8 @@ export function ReadyStep({ onGoHome, onExploreDemo }: Props) {
       </div>
 
       <div className="onboarding-header">
-        <h1 className="onboarding-title">{t.onboardingReadyTitle}</h1>
-        <p className="onboarding-subtitle">{t.onboardingReadyDesc}</p>
+        <Heading level={1} className="onboarding-title">{t.onboardingReadyTitle}</Heading>
+        <Text className="onboarding-subtitle">{t.onboardingReadyDesc}</Text>
       </div>
 
       <Button type="button" variant="primary" size="lg" className="onboarding-submit" onClick={onGoHome}>
@@ -31,7 +33,7 @@ export function ReadyStep({ onGoHome, onExploreDemo }: Props) {
         {t.onboardingExploreDemo}
       </Button>
 
-      <p className="onboarding-ready-note">{t.onboardingDataSafeNote}</p>
+      <Text className="onboarding-ready-note">{t.onboardingDataSafeNote}</Text>
     </div>
   )
 }

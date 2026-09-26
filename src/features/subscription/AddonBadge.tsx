@@ -16,7 +16,7 @@ export function AddonBadge({ addon }: AddonBadgeProps) {
       <Badge variant="paid">{addon.label}</Badge>
       {expires && (
         <span
-          className="text-[var(--fs-xs)]"
+          className="text-xs"
           style={{ color: 'var(--text-muted)' }}
         >
           {t.addonExpiresOn} {expires.toLocaleDateString('en-IN')}

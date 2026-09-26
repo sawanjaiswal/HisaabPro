@@ -1,12 +1,12 @@
 /** Testimonials — marquee scroll of social proof cards */
 
+import { Text } from '@/components/ui/Text'
 import { TESTIMONIALS } from '../landing.constants.below'
+import { formatInitials } from '@/lib/format'
+import { Heading } from '@/components/ui/Heading'
 
-const AVATAR_COLORS = ['#0d9488', '#0891b2', '#7c3aed', '#dc2626', '#d97706', '#2563eb'] as const
+const AVATAR_COLORS = ['#0d9488', '#0891b2', '#7c3aed', 'var(--color-error-600)', '#d97706', '#2563eb'] as const
 
-function getInitials(name: string) {
-  return name.split(' ').map((w) => w[0]).join('').slice(0, 2)
-}
 
 const row1 = TESTIMONIALS.slice(0, 3)
 const row2 = TESTIMONIALS.slice(3)
@@ -14,19 +14,19 @@ const row2 = TESTIMONIALS.slice(3)
 function TestimonialCard({ t, i }: { t: (typeof TESTIMONIALS)[number]; i: number }) {
   return (
     <div className="w-[320px] shrink-0 rounded-xl border border-gray-800 bg-gray-900 p-5">
-      <p className="text-[0.875rem] leading-relaxed text-gray-300">
+      <Text className="text-sm leading-relaxed text-gray-300">
         &ldquo;{t.quote}&rdquo;
-      </p>
+      </Text>
       <div className="mt-4 flex items-center gap-3">
         <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[0.75rem] font-bold text-white"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
           style={{ backgroundColor: AVATAR_COLORS[i % AVATAR_COLORS.length] }}
         >
-          {getInitials(t.name)}
+          {formatInitials(t.name)}
         </div>
         <div>
-          <p className="text-[0.8125rem] font-semibold text-white">{t.name}</p>
-          <p className="text-[0.75rem] text-gray-500">{t.role} &middot; {t.location}</p>
+          <Text className="text-sm font-semibold text-white">{t.name}</Text>
+          <Text className="text-xs text-gray-500">{t.role} &middot; {t.location}</Text>
         </div>
       </div>
     </div>
@@ -56,7 +56,7 @@ export function LandingTestimonials() {
   return (
     <section className="px-4 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl">
-        <h2
+        <Heading level={2}
           className="mb-12 text-center text-3xl font-medium sm:text-4xl"
           style={{
             background: 'linear-gradient(to bottom, #fff, rgba(255,255,255,0.6))',
@@ -66,7 +66,7 @@ export function LandingTestimonials() {
           }}
         >
           Trusted by businesses across India
-        </h2>
+        </Heading>
         <div className="flex flex-col gap-4">
           <MarqueeRow items={row1} direction="left" />
           <MarqueeRow items={row2} direction="right" />

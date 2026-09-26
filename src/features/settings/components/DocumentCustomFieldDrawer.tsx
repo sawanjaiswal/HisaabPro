@@ -105,7 +105,7 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
         />
 
         <div>
-          <label className="block text-[var(--fs-sm)] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+          <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
             {t.fieldTypeLabel}
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -118,7 +118,7 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
                   type="button"
                   disabled={isEditingLock}
                   onClick={() => setFieldType(ty)}
-                  className="px-3 py-2.5 border rounded-[var(--radius-sm)] transition-all min-h-[44px] text-[var(--fs-sm)] font-medium"
+                  className="px-3 py-2.5 border rounded-sm transition-all min-h-11 text-sm font-medium"
                   style={{
                     borderColor: selected ? 'var(--color-primary-500)' : 'var(--color-gray-200)',
                     backgroundColor: selected ? 'var(--color-primary-100)' : 'var(--color-gray-0)',
@@ -135,14 +135,14 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
 
         {fieldType === 'DROPDOWN' && (
           <div>
-            <label className="block text-[var(--fs-sm)] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+            <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
               {t.dropdownOptionsLabel}
             </label>
             <Textarea
               value={optionsText}
               onChange={(e) => setOptionsText(e.target.value)}
               rows={4}
-              className="w-full px-3 py-3 border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 transition-all text-[var(--fs-df)]"
+              className="w-full px-3 py-3 border rounded-md focus:outline-none focus:ring-2 transition-all text-base"
               style={{
                 backgroundColor: 'var(--color-gray-0)',
                 borderColor: 'var(--color-gray-200)',
@@ -155,7 +155,7 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
         )}
 
         <div>
-          <label className="block text-[var(--fs-sm)] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+          <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
             {t.appliesToDocuments}
           </label>
           <div className="flex flex-wrap gap-2">
@@ -166,7 +166,7 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
                   key={d}
                   type="button"
                   onClick={() => toggleDocType(d)}
-                  className="px-3 py-1.5 border rounded-full text-[var(--fs-sm)] font-medium transition-all"
+                  className="px-3 py-1.5 border rounded-full text-sm font-medium transition-all"
                   style={{
                     borderColor: selected ? 'var(--color-primary-500)' : 'var(--color-gray-200)',
                     backgroundColor: selected ? 'var(--color-primary-100)' : 'var(--color-gray-0)',

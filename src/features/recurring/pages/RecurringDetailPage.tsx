@@ -3,6 +3,7 @@
  * 4 UI states: loading skeleton · error · empty (0 runs) · success.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import { RefreshCw, Pencil } from 'lucide-react'
@@ -20,6 +21,7 @@ import { RecurringActionMenu } from '../components/RecurringActionMenu'
 import { RunHistoryRow } from '../components/RunHistoryRow'
 import '../recurring.css'
 import '../styles/recurring-detail.css'
+import { Heading } from '@/components/ui/Heading'
 
 export default function RecurringDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -110,9 +112,9 @@ export default function RecurringDetailPage() {
 
         {/* Run history section */}
         <section className="recurring-runs-section">
-          <h2 className="recurring-runs-section__title">
+          <Heading level={2} className="recurring-runs-section__title">
             {t.recurringRunHistory ?? 'Run History'}
-          </h2>
+          </Heading>
 
           {runsLoading && (
             <div className="recurring-skeleton" aria-busy="true">
@@ -123,9 +125,9 @@ export default function RecurringDetailPage() {
           )}
 
           {runsError && (
-            <p className="recurring-runs-section__error">
+            <Text className="recurring-runs-section__error">
               {t.checkConnectionTryAgain ?? 'Could not load run history.'}
-            </p>
+            </Text>
           )}
 
           {!runsLoading && !runsError && runs.length === 0 && (

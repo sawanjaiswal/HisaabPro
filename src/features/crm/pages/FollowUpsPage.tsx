@@ -15,6 +15,7 @@
  * All four visible at 320px (manually verified — see hp-design checklist).
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
@@ -51,7 +52,7 @@ export default function FollowUpsPage() {
       <HeroPage className="space-y-6">
         <div className="follow-ups-page__intro">
           <ClipboardCheck size={20} aria-hidden="true" className="follow-ups-page__intro-icon" />
-          <p className="follow-ups-page__subtitle">{t.crmFollowUpsSubtitle}</p>
+          <Text className="follow-ups-page__subtitle">{t.crmFollowUpsSubtitle}</Text>
         </div>
 
         <div

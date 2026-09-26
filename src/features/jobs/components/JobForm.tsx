@@ -188,7 +188,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
         </div>
       </div>
       {variance !== null && variance !== 0 && (
-        <span style={{ alignSelf: 'flex-start', fontSize: 'var(--fs-xs)', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-full, 999px)', background: variance > 0 ? 'var(--color-error-50, #fef2f2)' : 'var(--color-success-50, #f0fdf4)', color: variance > 0 ? 'var(--color-error-600)' : 'var(--color-success-600, #16a34a)' }}>
+        <span style={{ alignSelf: 'flex-start', fontSize: 'var(--fs-xs)', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-full, 999px)', background: variance > 0 ? 'var(--color-error-50, var(--color-error-50))' : 'var(--color-success-50, #f0fdf4)', color: variance > 0 ? 'var(--color-error-600)' : 'var(--color-success-600, #16a34a)' }}>
           {t.jobHoursVariance}: {Math.abs(variance)}h {variance > 0 ? t.jobHoursOver : t.jobHoursUnder}
         </span>
       )}

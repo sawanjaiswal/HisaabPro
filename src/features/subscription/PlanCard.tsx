@@ -8,6 +8,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { formatPaise } from '@/lib/format'
 import type { PlanTier } from './plan-limits'
 import { PLAN_PRICE_PAISE } from './subscription.constants'
+import { Heading } from '@/components/ui/Heading'
 
 const PLAN_LABEL_KEY: Record<PlanTier, 'planFree' | 'planPro' | 'planBusiness' | 'planProMax'> = {
   FREE: 'planFree',
@@ -50,7 +51,7 @@ export function PlanCard({
     >
       {recommended && (
         <span
-          className="absolute -top-2 right-3 px-2 py-0.5 rounded-full text-[var(--fs-xs)] font-semibold"
+          className="absolute -top-2 right-3 px-2 py-0.5 rounded-full text-xs font-semibold"
           style={{
             backgroundColor: 'var(--color-secondary-300)',
             color: 'var(--color-primary-700)',
@@ -60,21 +61,21 @@ export function PlanCard({
         </span>
       )}
       <div className="flex items-baseline justify-between">
-        <h3
-          className="text-[var(--fs-lg)] font-semibold"
+        <Heading level={3}
+          className="text-lg font-semibold"
           style={{ color: 'var(--text-primary)' }}
         >
           {t[labelKey]}
-        </h3>
+        </Heading>
         <div className="text-right">
           <span
-            className="text-[var(--fs-2xl)] font-bold tabular-nums"
+            className="text-2xl font-bold tabular-nums"
             style={{ color: 'var(--text-primary)' }}
           >
             {pricePaise === 0 ? '₹0' : formatPaise(pricePaise)}
           </span>
           <span
-            className="text-[var(--fs-sm)] ml-1"
+            className="text-sm ml-1"
             style={{ color: 'var(--text-muted)' }}
           >
             {t.perMonth}
@@ -85,7 +86,7 @@ export function PlanCard({
         {features.map((f) => (
           <li
             key={f}
-            className="flex items-start gap-2 text-[var(--fs-sm)]"
+            className="flex items-start gap-2 text-sm"
             style={{ color: 'var(--text-secondary)' }}
           >
             <Check
@@ -98,7 +99,7 @@ export function PlanCard({
       </ul>
       <Button
         variant={current ? 'ghost' : 'primary'}
-        className="w-full mt-4 min-h-[44px]"
+        className="w-full mt-4 min-h-11"
         disabled={current || busy}
         onClick={() => onSelect(tier)}
       >

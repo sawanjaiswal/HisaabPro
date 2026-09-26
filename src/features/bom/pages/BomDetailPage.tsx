@@ -1,5 +1,6 @@
 /** BomDetailPage — /bom/:id — read-only detail with Edit / Run / Delete */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -15,6 +16,7 @@ import { formatVersionBadge } from '../bom.utils'
 import { deleteBom } from '../bom.service'
 import { useQueryClient } from '@tanstack/react-query'
 import '../bom.css'
+import { Heading } from '@/components/ui/Heading'
 
 function BomDetailSkeleton() {
   const { t } = useLanguage()
@@ -61,7 +63,7 @@ export default function BomDetailPage() {
         <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/bom')} aria-label={t.bomBackToRecipes}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
-        <h1 className="bom-page__title">{t.bomRecipeDetail}</h1>
+        <Heading level={1} className="bom-page__title">{t.bomRecipeDetail}</Heading>
       </div>
 
       {/* Loading */}
@@ -88,7 +90,7 @@ export default function BomDetailPage() {
                 {!bom.isActive && <span className="badge badge--warning">{t.inactive}</span>}
               </div>
             </div>
-            {bom.notes && <p className="bom-detail-card__notes">{bom.notes}</p>}
+            {bom.notes && <Text className="bom-detail-card__notes">{bom.notes}</Text>}
             <div className="bom-detail-card__meta">
               <span>{bom.components.length} {bom.components.length !== 1 ? t.bomComponentsLower : t.bomComponent}</span>
               <span>{bom.productionRunCount} {bom.productionRunCount !== 1 ? t.bomRuns : t.bomRun}</span>
@@ -97,7 +99,7 @@ export default function BomDetailPage() {
 
           {/* Components */}
           <section className="bom-section">
-            <h2 className="bom-section__title">{t.bomComponentsHeading}</h2>
+            <Heading level={2} className="bom-section__title">{t.bomComponentsHeading}</Heading>
             <BomComponentsTable components={bom.components} />
           </section>
 

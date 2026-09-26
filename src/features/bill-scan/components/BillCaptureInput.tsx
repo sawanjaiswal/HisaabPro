@@ -1,11 +1,13 @@
 /** Bill Capture — Camera/gallery picker */
 
+import { Text } from '@/components/ui/Text'
 import { useRef } from 'react'
 import { Camera, ImageIcon } from 'lucide-react'
 import { ACCEPTED_IMAGE_EXTENSIONS, ACCEPTED_IMAGE_TYPES } from '../bill-scan.constants'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Heading } from '@/components/ui/Heading'
 
 interface BillCaptureInputProps {
   onCapture: (file: File) => void
@@ -30,10 +32,10 @@ export function BillCaptureInput({ onCapture }: BillCaptureInputProps) {
         <Camera size={48} strokeWidth={1.5} />
       </div>
 
-      <h2 className="bill-capture-title">{t.scanABill}</h2>
-      <p className="bill-capture-description">
+      <Heading level={2} className="bill-capture-title">{t.scanABill}</Heading>
+      <Text className="bill-capture-description">
         {t.takePhotoOfBill}
-      </p>
+      </Text>
 
       <div className="bill-capture-buttons">
         <Button
@@ -57,9 +59,9 @@ export function BillCaptureInput({ onCapture }: BillCaptureInputProps) {
         </Button>
       </div>
 
-      <p className="bill-capture-hint">
+      <Text className="bill-capture-hint">
         {t.worksBestClear}
-      </p>
+      </Text>
 
       {/* Hidden file inputs */}
       <Input

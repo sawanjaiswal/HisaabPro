@@ -8,6 +8,7 @@
  * desktop screen advances to success the moment the phone payment lands.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useRef } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -30,27 +31,27 @@ export function DesktopQrCheckout({ session, onEvent, phase }: CheckoutSurfacePr
 
   return (
     <div className="checkout-qr">
-      <p className="checkout-qr__hint text-[var(--fs-sm)] text-[var(--color-text-secondary)]">
+      <Text className="checkout-qr__hint text-sm text-text-secondary">
         {t.checkoutScanToPay}
-      </p>
+      </Text>
       <div className="checkout-qr__frame">
         <QRCodeSVG value={session.checkoutUrl} size={208} level="M" />
       </div>
-      <p className="checkout-qr__amount tabular-nums text-[var(--fs-lg)] font-semibold">
+      <Text className="checkout-qr__amount tabular-nums text-lg font-semibold">
         {formatPaise(session.amountPaise)}
-      </p>
+      </Text>
       <a
         href={session.checkoutUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="checkout-qr__link text-[var(--fs-sm)] text-[var(--color-primary-600)]"
+        className="checkout-qr__link text-sm text-primary-600"
       >
         {t.checkoutOpenLinkInstead}
       </a>
       {phase.kind === 'polling' && (
         <div className="checkout-qr__waiting" role="status" aria-live="polite">
           <Spinner size="sm" />
-          <span className="text-[var(--fs-sm)] text-[var(--color-text-secondary)]">
+          <span className="text-sm text-text-secondary">
             {t.checkoutWaitingForPayment}
           </span>
         </div>

@@ -1,5 +1,6 @@
 /** OptionCard — single-column radio-style card, optional "recommended" badge. */
 
+import { Text } from '@/components/ui/Text'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 
@@ -22,8 +23,8 @@ export function OptionCard({ title, description, active, recommendedLabel, onSel
       onClick={onSelect}
     >
       <div className="onboarding-option-card__body">
-        <p className="onboarding-option-card__title">{title}</p>
-        <p className="onboarding-option-card__desc">{description}</p>
+        <Text className="onboarding-option-card__title">{title}</Text>
+        <Text className="onboarding-option-card__desc">{description}</Text>
       </div>
       {recommendedLabel && (
         <Badge variant="paid" className="onboarding-option-card__badge">

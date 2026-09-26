@@ -5,6 +5,7 @@
  * Input amounts are rupees floats (as filed in GSTR portal).
  */
 
+import { Text } from '@/components/ui/Text'
 import React, { useRef, useState, useCallback } from 'react'
 import { Upload } from 'lucide-react'
 import { useToast } from '@/hooks/useToast'
@@ -168,9 +169,9 @@ export const ReconciliationUploadForm: React.FC<Props> = ({ onSuccess }) => {
           aria-describedby={parseError ? 'recon-json-error' : undefined}
         />
         {parseError && (
-          <p id="recon-json-error" className="recon-upload-form__error" role="alert">
+          <Text id="recon-json-error" className="recon-upload-form__error" role="alert">
             {parseError}
-          </p>
+          </Text>
         )}
       </div>
 

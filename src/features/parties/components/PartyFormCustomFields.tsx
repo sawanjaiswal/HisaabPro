@@ -19,6 +19,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { getPartyCustomFields, type CustomFieldDefinition } from '../party-custom-field.service'
 import type { PartyFormData } from '../party.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface Props {
   form: PartyFormData
@@ -92,7 +93,7 @@ export function PartyFormCustomFields({ form, onUpdate }: Props) {
 
   return (
     <div className="card space-y-4">
-      <h3 className="section-title py-0 section-title--mb-3">{t.customFields}</h3>
+      <Heading level={3} className="section-title py-0 section-title--mb-3">{t.customFields}</Heading>
 
       {defs.map(def => {
         const raw = valueByFieldId.get(def.id) ?? ''

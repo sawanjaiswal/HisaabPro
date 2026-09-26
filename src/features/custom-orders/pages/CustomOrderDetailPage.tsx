@@ -1,5 +1,6 @@
 /** CustomOrderDetailPage — /orders/:id — header, status pill, actions, items, advances, convert CTA */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -18,6 +19,7 @@ import { RecordAdvanceModal } from '../components/RecordAdvanceModal'
 import { formatOrderNumber, formatPaise, canConvertToInvoice } from '../custom-orders.utils'
 import { ORDER_ROUTES } from '../custom-orders.constants'
 import { useLanguage } from '@/context/LanguageContext'
+import { Heading } from '@/components/ui/Heading'
 
 function DetailSkeleton() {
   const { t } = useLanguage()
@@ -33,7 +35,7 @@ function DetailSkeleton() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-      <h2 style={{ fontSize: 'var(--fs-sm)', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>{title}</h2>
+      <Heading level={2} style={{ fontSize: 'var(--fs-sm)', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>{title}</Heading>
       {children}
     </section>
   )
@@ -93,7 +95,7 @@ export default function CustomOrderDetailPage() {
           {/* Header card */}
           <div style={{ padding: 'var(--space-4)', background: 'var(--color-surface)', borderRadius: 12, boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-2)' }}>
-              <h1 style={{ fontSize: 'var(--fs-lg)', fontWeight: 700, color: 'var(--color-text)', margin: 0, lineHeight: 1.3 }}>{order.title}</h1>
+              <Heading level={1} style={{ fontSize: 'var(--fs-lg)', fontWeight: 700, color: 'var(--color-text)', margin: 0, lineHeight: 1.3 }}>{order.title}</Heading>
               <CustomOrderStatusPill status={order.status} size="md" />
             </div>
 
@@ -123,9 +125,9 @@ export default function CustomOrderDetailPage() {
             </div>
 
             {order.notes && (
-              <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
+              <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
                 {order.notes}
-              </p>
+              </Text>
             )}
           </div>
 
@@ -139,9 +141,9 @@ export default function CustomOrderDetailPage() {
           {/* Convert to invoice CTA */}
           {showConvert && (
             <Section title={t.coSecInvoice}>
-              <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
+              <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
                 {t.coReadyToInvoice}
-              </p>
+              </Text>
               <CustomOrderConvertButton orderId={id} orderTitle={order.title} isOnline={isOnline} />
             </Section>
           )}
@@ -206,9 +208,9 @@ export default function CustomOrderDetailPage() {
           {/* Cancel info */}
           {order.status === 'CANCELLED' && order.cancelReason && (
             <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-50)', borderRadius: 8 }}>
-              <p style={{ margin: 0, fontSize: 'var(--fs-sm)', color: 'var(--color-error-700)' }}>
+              <Text style={{ margin: 0, fontSize: 'var(--fs-sm)', color: 'var(--color-error-700)' }}>
                 <strong>{t.coCancelledPrefix}:</strong> {order.cancelReason}
-              </p>
+              </Text>
             </div>
           )}
         </div>

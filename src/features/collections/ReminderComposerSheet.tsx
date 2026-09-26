@@ -9,6 +9,7 @@
  * MB-4: wa.me links from server — phone already validated server-side.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
@@ -110,7 +111,7 @@ export function ReminderComposerSheet({ open, onClose, selectedParties, business
         <div className="reminder-composer">
           {/* Template chip selector */}
           <section className="reminder-composer__section">
-            <p className="reminder-composer__label">Template</p>
+            <Text className="reminder-composer__label">Template</Text>
             <div className="reminder-composer__chips" role="group" aria-label="Select template">
               {TEMPLATE_KEYS.map((key) => (
                 <Button variant="none"
@@ -154,9 +155,9 @@ export function ReminderComposerSheet({ open, onClose, selectedParties, business
 
           {/* Exclusion warning */}
           {noPhoneCount > 0 && (
-            <p className="reminder-composer__warning" role="alert">
+            <Text className="reminder-composer__warning" role="alert">
               {noPhoneCount} {noPhoneCount === 1 ? 'party' : 'parties'} skipped — no phone number
-            </p>
+            </Text>
           )}
 
           <div className="reminder-composer__footer">
@@ -175,9 +176,9 @@ export function ReminderComposerSheet({ open, onClose, selectedParties, business
       {stage === 'sending' && (
         <div className="reminder-composer reminder-composer--sending">
           <Loader2 size={32} className="reminder-composer__spinner" aria-hidden="true" />
-          <p className="reminder-composer__sending-text">
+          <Text className="reminder-composer__sending-text">
             Opening WhatsApp for {openingCount} {openingCount === 1 ? 'party' : 'parties'}…
-          </p>
+          </Text>
         </div>
       )}
 

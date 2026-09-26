@@ -19,6 +19,7 @@
  *   success — run summary + Reverse CTA
  */
 
+import { Text } from '@/components/ui/Text'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { CheckCircle2, Info } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -35,6 +36,7 @@ import {
   type PayrollRunStatus,
 } from './hr.constants'
 import { PayrollReverseButton } from './components/PayrollReverseButton'
+import { Heading } from '@/components/ui/Heading'
 
 interface RunDetailLocationState {
   fromDate?: string
@@ -77,23 +79,23 @@ export default function PayrollRunDetailPage() {
       <PageContainer variant="detail" className="space-y-4">
         <div style={{ paddingBottom: 'calc(var(--bottom-nav-height) + 5rem)' }}>
           <article
-            className="rounded-[var(--radius-xl)] bg-[var(--color-surface)] border border-[var(--color-border)] p-4 space-y-3"
+            className="rounded-xl bg-surface border border-border p-4 space-y-3"
             aria-label={t.payrollRunSummaryLabel as string}
           >
             <header className="flex items-start gap-3">
               <span
                 aria-hidden="true"
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--color-success-50)] text-[var(--color-success-600)]"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--color-success-50)] text-success-600"
               >
                 <CheckCircle2 size={20} />
               </span>
               <div className="flex-1 min-w-0">
-                <h2 className="text-[var(--fs-base)] font-semibold text-[var(--color-text)]">
+                <Heading level={2} className="text-base font-semibold text-text-primary">
                   {t.payrollRunSummaryLabel as string}
-                </h2>
-                <p className="text-[var(--fs-sm)] text-[var(--color-text-secondary)] break-all mt-1">
+                </Heading>
+                <Text className="text-sm text-text-secondary break-all mt-1">
                   {id}
-                </p>
+                </Text>
               </div>
               <Badge variant={PAYROLL_STATUS_BADGE_VARIANT[status]}>
                 {t[PAYROLL_STATUS_I18N_KEYS[status] as keyof typeof t] as string}
@@ -101,33 +103,33 @@ export default function PayrollRunDetailPage() {
             </header>
 
             {hasSummary ? (
-              <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-[var(--fs-sm)] pt-2">
-                <dt className="text-[var(--color-text-secondary)]">{t.payrollFromDateLabel as string}</dt>
-                <dd className="text-right text-[var(--color-text)]">{formatDate(state.fromDate as string)}</dd>
+              <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm pt-2">
+                <dt className="text-text-secondary">{t.payrollFromDateLabel as string}</dt>
+                <dd className="text-right text-text-primary">{formatDate(state.fromDate as string)}</dd>
 
-                <dt className="text-[var(--color-text-secondary)]">{t.payrollToDateLabel as string}</dt>
-                <dd className="text-right text-[var(--color-text)]">{formatDate(state.toDate as string)}</dd>
+                <dt className="text-text-secondary">{t.payrollToDateLabel as string}</dt>
+                <dd className="text-right text-text-primary">{formatDate(state.toDate as string)}</dd>
 
                 {typeof state.count === 'number' && (
                   <>
-                    <dt className="text-[var(--color-text-secondary)]">{t.payrollEmployeesCountLabel as string}</dt>
-                    <dd className="text-right tabular-nums text-[var(--color-text)]">{state.count}</dd>
+                    <dt className="text-text-secondary">{t.payrollEmployeesCountLabel as string}</dt>
+                    <dd className="text-right tabular-nums text-text-primary">{state.count}</dd>
                   </>
                 )}
 
                 {typeof state.totalNetPaise === 'number' && (
                   <>
-                    <dt className="text-[var(--fs-base)] text-[var(--color-text)] font-semibold">{t.payrollColNet as string}</dt>
-                    <dd className="text-right tabular-nums text-[var(--fs-base)] font-semibold text-[var(--color-text)]">
+                    <dt className="text-base text-text-primary font-semibold">{t.payrollColNet as string}</dt>
+                    <dd className="text-right tabular-nums text-base font-semibold text-text-primary">
                       {formatPaise(state.totalNetPaise)}
                     </dd>
                   </>
                 )}
               </dl>
             ) : (
-              <div className="flex items-start gap-2 rounded-[var(--radius-md)] bg-[var(--color-surface-muted)] p-3 text-[var(--fs-sm)] text-[var(--color-text-secondary)]">
+              <div className="flex items-start gap-2 rounded-md bg-surface-subtle p-3 text-sm text-text-secondary">
                 <Info size={16} aria-hidden="true" className="mt-0.5 flex-shrink-0" />
-                <p>{t.payrollRunSummaryUnavailable as string}</p>
+                <Text>{t.payrollRunSummaryUnavailable as string}</Text>
               </div>
             )}
           </article>

@@ -9,8 +9,10 @@
  * Token-only styling, no business logic.
  */
 
+import { Text } from '@/components/ui/Text'
 import { Card } from '@/components/ui/Card'
 import { Spinner } from '@/components/feedback/Spinner'
+import { Heading } from '@/components/ui/Heading'
 
 interface PanelProps {
   title: string
@@ -20,15 +22,15 @@ interface PanelProps {
 export function StubPanel({ title, body }: PanelProps) {
   return (
     <Card variant="default" className="p-4 space-y-2">
-      <h2
+      <Heading level={2}
         className="font-semibold"
         style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
       >
         {title}
-      </h2>
-      <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      </Heading>
+      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
         {body}
-      </p>
+      </Text>
     </Card>
   )
 }
@@ -37,15 +39,15 @@ export function CommittingPanel({ title, body }: PanelProps) {
   return (
     <Card variant="default" className="p-6 flex flex-col items-center text-center gap-3">
       <Spinner size="lg" />
-      <h2
+      <Heading level={2}
         className="font-semibold"
         style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
       >
         {title}
-      </h2>
-      <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      </Heading>
+      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
         {body}
-      </p>
+      </Text>
     </Card>
   )
 }

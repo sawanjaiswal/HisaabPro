@@ -4,6 +4,7 @@
  * All amounts in paise via formatAmount().
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { formatAmount } from '../report.utils'
 import type {
@@ -78,7 +79,7 @@ function Gstr9Section({ data }: { data: Gstr9Data }) {
   const { t } = useLanguage()
   return (
     <>
-      <p className="gst-return__fy-label">{t.financialYear}: {data.financialYear}</p>
+      <Text className="gst-return__fy-label">{t.financialYear}: {data.financialYear}</Text>
       <TaxRow label={t.sales} totals={data.sales} />
       <TaxRow label={t.purchases} totals={data.purchases} />
       <TaxRow label={t.creditNotes} totals={data.creditNotes} />

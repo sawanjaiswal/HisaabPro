@@ -1,5 +1,6 @@
 /** BomFormHeader — header section of the BOM form */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { getProducts } from '@/lib/services/product.service'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -58,7 +59,7 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
           required
           aria-required="true"
         />
-        {errors.name && <p className="input-error" role="alert">{errors.name}</p>}
+        {errors.name && <Text className="input-error" role="alert">{errors.name}</Text>}
       </div>
 
       {/* Finished product picker */}
@@ -97,7 +98,7 @@ export function BomFormHeader({ form, errors, editMode, onUpdate }: BomFormHeade
             </ul>
           )}
         </div>
-        {errors.productId && <p className="input-error" role="alert">{errors.productId}</p>}
+        {errors.productId && <Text className="input-error" role="alert">{errors.productId}</Text>}
       </div>
 
       {/* isDefault */}

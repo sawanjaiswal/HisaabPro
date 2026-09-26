@@ -14,6 +14,7 @@
  * without a full page reload.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AlertTriangle, PauseCircle } from 'lucide-react'
@@ -63,18 +64,18 @@ export function SuspendBanner() {
         </div>
 
         <div className="suspend-banner__body">
-          <p className="suspend-banner__title">
+          <Text className="suspend-banner__title">
             {state === 'firm-suspended'
               ? t.suspendBannerFirmTitle
               : t.suspendBannerMemberTitle}
-          </p>
-          <p className="suspend-banner__desc">
+          </Text>
+          <Text className="suspend-banner__desc">
             {state === 'firm-suspended'
               ? t.suspendBannerFirmBody
               : t.suspendBannerMemberBody}
-          </p>
+          </Text>
           {state === 'firm-suspended' && !isOwner && (
-            <p className="suspend-banner__hint">{t.suspendBannerOwnerOnlyHint}</p>
+            <Text className="suspend-banner__hint">{t.suspendBannerOwnerOnlyHint}</Text>
           )}
         </div>
 

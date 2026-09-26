@@ -5,6 +5,7 @@
  * Saves directly via the expense / other-income services — no drawer detour.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useCallback, useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -103,7 +104,7 @@ export default function VoiceEntryPage() {
           )}
         </Card>
 
-        <p className="voice-examples">{t.voiceExamples}</p>
+        <Text className="voice-examples">{t.voiceExamples}</Text>
       </PageContainer>
     </AppShell>
   )

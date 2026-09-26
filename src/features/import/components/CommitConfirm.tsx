@@ -19,11 +19,13 @@
  * code path is still exercised by the api wrapper on timeout retries.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useMemo } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import type { ImportEntity, ImportPreviewRow } from '../types/import.types'
 import type { DedupResolutionMap } from '../types/dedup.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface CommitConfirmProps {
   rows: ImportPreviewRow[]
@@ -86,15 +88,15 @@ export function CommitConfirm({
   return (
     <div className="space-y-4">
       <Card variant="default" className="p-4 space-y-3">
-        <h2
+        <Heading level={2}
           className="font-semibold"
           style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
         >
           {t.importCommitTitle ?? 'Ready to commit'}
-        </h2>
-        <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+        </Heading>
+        <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
           {t.importCommitBody ?? 'Review the summary before we save these rows to your business.'}
-        </p>
+        </Text>
         <dl className="space-y-2 pt-2">
           <CommitCountRow
             label={
@@ -133,7 +135,7 @@ export function CommitConfirm({
           size="lg"
           onClick={onBack}
           disabled={isCommitting}
-          className="min-h-[44px]"
+          className="min-h-11"
         >
           {t.importCommitBack ?? 'Back'}
         </Button>
@@ -143,7 +145,7 @@ export function CommitConfirm({
           onClick={onCommit}
           disabled={isCommitting || counts.create + counts.overwrite === 0}
           loading={isCommitting}
-          className="min-h-[44px] w-full sm:w-auto"
+          className="min-h-11 w-full sm:w-auto"
         >
           {isCommitting
             ? (t.importCommitting ?? 'Committing your data…')

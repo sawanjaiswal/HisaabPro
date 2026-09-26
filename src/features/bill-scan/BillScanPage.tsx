@@ -1,5 +1,6 @@
 /** Bill Scanning / OCR — Page (lazy loaded) */
 
+import { Text } from '@/components/ui/Text'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -13,6 +14,7 @@ import { OcrResultReview } from './components/OcrResultReview'
 import './bill-scan.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 export default function BillScanPage() {
   const { t } = useLanguage()
@@ -69,8 +71,8 @@ export default function BillScanPage() {
                 <path d="M15 9l-6 6M9 9l6 6" />
               </svg>
             </div>
-            <h3 className="bill-scan-error-title">{t.couldNotReadBill}</h3>
-            <p className="bill-scan-error-message">{error ?? t.tryClearerPhoto}</p>
+            <Heading level={3} className="bill-scan-error-title">{t.couldNotReadBill}</Heading>
+            <Text className="bill-scan-error-message">{error ?? t.tryClearerPhoto}</Text>
             <Button type="button" variant="primary" size="md" onClick={reset}>
               Try Again
             </Button>

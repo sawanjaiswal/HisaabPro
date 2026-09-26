@@ -4,6 +4,7 @@
  * Teal card (value) + amber card (alert) / lime card (safe).
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { ChevronRight, TrendingUp, AlertTriangle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -27,7 +28,7 @@ export const ProductSummaryBar: React.FC<ProductSummaryBarProps> = ({
 
   return (
     <div className="summary-hero" role="list" aria-label={t.inventorySummary}>
-      <p className="summary-hero-count">{totalProducts} {totalProducts === 1 ? t.product : t.products}</p>
+      <Text className="summary-hero-count">{totalProducts} {totalProducts === 1 ? t.product : t.products}</Text>
 
       <div className="summary-hero-cards">
         {/* Stock Value — teal gradient */}

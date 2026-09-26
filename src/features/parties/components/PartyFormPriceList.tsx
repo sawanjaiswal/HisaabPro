@@ -1,5 +1,6 @@
 /** Create/Edit Party — Price List picker field */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { usePriceLists } from '@/features/price-lists/price-list-queries'
@@ -52,7 +53,7 @@ export function PartyFormPriceList({ value, isEditMode = false, onUpdate }: Part
           </SelectItem>
         ))}
       </Select>
-      <p className="gstin-hint">{t.priceListHint}</p>
+      <Text className="gstin-hint">{t.priceListHint}</Text>
     </div>
   )
 }

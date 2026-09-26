@@ -5,6 +5,7 @@
  * All action callbacks are passed from the page — card is dumb.
  */
 
+import { Text } from '@/components/ui/Text'
 import React from 'react'
 import { RefreshCw, Pause, Play, Trash2, Calendar } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
@@ -54,7 +55,7 @@ export const RecurringCard: React.FC<RecurringCardProps> = ({
           <Badge variant={badgeVariant}>{STATUS_LABELS[item.status]}</Badge>
         </div>
         {item.partyName && (
-          <p className="recurring-card__party">{item.partyName}</p>
+          <Text className="recurring-card__party">{item.partyName}</Text>
         )}
       </div>
 

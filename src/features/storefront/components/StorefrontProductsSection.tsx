@@ -1,11 +1,13 @@
 // ─── StorefrontProductsSection — product list with actions ────────────────────
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { ChevronUp, ChevronDown, Eye, EyeOff, Trash2 } from 'lucide-react'
 import { formatPaise } from '@/lib/format'
 import { StorefrontProductPicker } from './StorefrontProductPicker'
 import { useStorefrontProducts } from '../hooks/useStorefrontProducts'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 export function StorefrontProductsSection() {
   const {
@@ -39,9 +41,9 @@ export function StorefrontProductsSection() {
 
   return (
     <section className="sf-card" aria-labelledby="sf-products-title">
-      <h2 id="sf-products-title" className="sf-card__title">
+      <Heading level={2} id="sf-products-title" className="sf-card__title">
         Store Products ({products.length})
-      </h2>
+      </Heading>
 
       {prodStatus === 'loading' && (
         <div role="status" aria-label="Loading products">
@@ -52,13 +54,13 @@ export function StorefrontProductsSection() {
       )}
 
       {prodStatus === 'error' && (
-        <p className="sf-error__msg" role="alert">Failed to load products.</p>
+        <Text className="sf-error__msg" role="alert">Failed to load products.</Text>
       )}
 
       {prodStatus === 'empty' && (
-        <p className="sf-help" style={{ textAlign: 'center', padding: '16px 0' }}>
+        <Text className="sf-help" style={{ textAlign: 'center', padding: '16px 0' }}>
           No products added yet — tap below to add from your catalogue.
-        </p>
+        </Text>
       )}
 
       {prodStatus === 'success' && (
@@ -70,8 +72,8 @@ export function StorefrontProductsSection() {
                 : <div className="sf-product-row__img-placeholder" aria-hidden="true" />
               }
               <div className="sf-product-row__info">
-                <p className="sf-product-row__name">{p.name}</p>
-                <p className="sf-product-row__price">{formatPaise(p.sellingPrice)}</p>
+                <Text className="sf-product-row__name">{p.name}</Text>
+                <Text className="sf-product-row__price">{formatPaise(p.sellingPrice)}</Text>
               </div>
               <div className="sf-product-row__actions">
                 <Button variant="none"

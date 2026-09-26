@@ -1,5 +1,6 @@
 /** BulkAssignDrawer — select parties and bulk-assign to a price list */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useMemo, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useQuery } from '@tanstack/react-query'
@@ -123,7 +124,7 @@ export function BulkAssignDrawer({ open, onClose, priceListId, listName }: BulkA
         {isError && (
           <div className="bad__state" role="alert">
             <Users size={32} aria-hidden="true" />
-            <p>{errorMsg}</p>
+            <Text>{errorMsg}</Text>
             <Button variant="none" type="button" className="btn btn-outline btn-sm" onClick={() => query.refetch()}>{t.retry}</Button>
           </div>
         )}
@@ -131,8 +132,8 @@ export function BulkAssignDrawer({ open, onClose, priceListId, listName }: BulkA
         {isEmpty && (
           <div className="bad__state">
             <Users size={32} aria-hidden="true" />
-            <p className="bad__state-title">{t.plBulkAssignNoParties}</p>
-            <p className="bad__state-body">{t.plBulkAssignNoPartiesDesc}</p>
+            <Text className="bad__state-title">{t.plBulkAssignNoParties}</Text>
+            <Text className="bad__state-body">{t.plBulkAssignNoPartiesDesc}</Text>
           </div>
         )}
 

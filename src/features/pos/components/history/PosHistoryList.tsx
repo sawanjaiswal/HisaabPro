@@ -1,5 +1,6 @@
 /** POS — History list with infinite scroll */
 
+import { Text } from '@/components/ui/Text'
 import { useRef, useEffect, useCallback } from 'react'
 import { RefreshCw, Receipt } from 'lucide-react'
 import { PosSaleRow } from './PosSaleRow'
@@ -68,7 +69,7 @@ export function PosHistoryList({
   if (isError) {
     return (
       <div className="pos-grid-state pos-grid-state--center">
-        <p className="pos-grid-state__title">{t.posHistoryError ?? 'Could not load sales'}</p>
+        <Text className="pos-grid-state__title">{t.posHistoryError ?? 'Could not load sales'}</Text>
         <Button variant="none" type="button" className="pos-grid-state__btn" onClick={onRetry}>
           <RefreshCw size={13} aria-hidden="true" />
           {t.tryAgain ?? 'Try again'}
@@ -81,16 +82,16 @@ export function PosHistoryList({
     return (
       <div className="pos-grid-state pos-grid-state--center">
         <Receipt size={40} className="pos-grid-state__icon" aria-hidden="true" strokeWidth={1.25} />
-        <p className="pos-grid-state__title">{t.posNoSales ?? 'No sales yet'}</p>
+        <Text className="pos-grid-state__title">{t.posNoSales ?? 'No sales yet'}</Text>
       </div>
     )
   }
 
   return (
     <>
-      <p className="pos-history-count">
+      <Text className="pos-history-count">
         {(t.posSalesCount ?? '{n} sales').replace('{n}', String(totalCount))}
-      </p>
+      </Text>
       <ul className="pos-history-list" aria-label={t.posSalesHistory ?? 'Sales history'}>
         {sales.map((sale) => (
           <PosSaleRow key={sale.id} sale={sale} onClick={onSaleClick} />
@@ -101,9 +102,9 @@ export function PosHistoryList({
         <div ref={sentinelRef} className="pos-grid-sentinel" aria-hidden="true" />
       )}
       {isFetchingMore && (
-        <p className="pos-history-loading" aria-live="polite">
+        <Text className="pos-history-loading" aria-live="polite">
           {t.loading ?? 'Loading…'}
-        </p>
+        </Text>
       )}
     </>
   )

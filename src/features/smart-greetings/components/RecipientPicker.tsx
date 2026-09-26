@@ -1,5 +1,6 @@
 /** Recipient Picker — Select parties to send greeting to */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect, useRef } from 'react'
 import { Send, Search } from 'lucide-react'
 import { getParties } from '@/features/parties/party-crud.service'
@@ -57,7 +58,7 @@ export function RecipientPicker({ onSend, onBack }: RecipientPickerProps) {
       </div>
 
       {isLoading ? (
-        <p className="greeting-recipients-loading">{t.loading}</p>
+        <Text className="greeting-recipients-loading">{t.loading}</Text>
       ) : (
         <div className="greeting-recipients-list" role="list" aria-label={t.selectRecipients}>
           {filtered.map((party) => (
@@ -81,7 +82,7 @@ export function RecipientPicker({ onSend, onBack }: RecipientPickerProps) {
             </div>
           ))}
           {filtered.length === 0 && (
-            <p className="greeting-recipients-empty">{t.noPartiesFound}</p>
+            <Text className="greeting-recipients-empty">{t.noPartiesFound}</Text>
           )}
         </div>
       )}

@@ -1,5 +1,6 @@
 /** RecurringFormFields — all controlled form fields for create/edit schedule */
 
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { TemplatePicker } from './TemplatePicker'
@@ -113,7 +114,7 @@ export function RecurringFormFields({
             onChange={(e) => setField('dayOfMonth', e.target.value)}
             disabled={disabled}
           />
-          <p className="rf-hint">{t.recurringFieldAnchorDayMax ?? 'Max: 28th'}</p>
+          <Text className="rf-hint">{t.recurringFieldAnchorDayMax ?? 'Max: 28th'}</Text>
         </div>
       )}
 
@@ -134,9 +135,9 @@ export function RecurringFormFields({
             required
           />
           {errors.startDate && (
-            <p className="rf-error" role="alert">
+            <Text className="rf-error" role="alert">
               {t.recurringFormValidationRequired ?? 'This field is required.'}
-            </p>
+            </Text>
           )}
         </div>
 
@@ -154,9 +155,9 @@ export function RecurringFormFields({
             disabled={disabled}
           />
           {errors.endDate && (
-            <p className="rf-error" role="alert">
+            <Text className="rf-error" role="alert">
               {t.recurringFormValidationEndDate ?? 'End date must be after start date.'}
-            </p>
+            </Text>
           )}
         </div>
       </div>

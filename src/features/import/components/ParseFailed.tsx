@@ -9,6 +9,7 @@
  * cancel + return to the upload page so the user can retry from scratch.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AlertTriangle } from 'lucide-react'
@@ -17,6 +18,7 @@ import { Card } from '@/components/ui/Card'
 import { ROUTES } from '@/config/routes.config'
 import { useToast } from '@/hooks/useToast'
 import { cancelImportJob } from '../services/import.service'
+import { Heading } from '@/components/ui/Heading'
 
 interface ParseFailedProps {
   jobId: string
@@ -60,26 +62,26 @@ export function ParseFailed({ jobId, errorCount, t }: ParseFailedProps) {
           <AlertTriangle size={20} />
         </div>
         <div className="flex-1 min-w-0">
-          <h2
+          <Heading level={2}
             className="font-semibold"
             style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
           >
             {t.importParseFailedTitle ?? 'We could not read this file'}
-          </h2>
-          <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+          </Heading>
+          <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
             {t.importParseFailedBody ??
               'The file format may be different from what was selected, or the file may be corrupt. Cancel this import and try again with a fresh export.'}
-          </p>
+          </Text>
         </div>
       </div>
 
       {errorCount > 0 && (
-        <p
+        <Text
           style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}
         >
           {(t.importParseFailedErrorCount ?? 'Rows with errors:')}{' '}
           <span className="font-semibold tabular-nums">{errorCount}</span>
-        </p>
+        </Text>
       )}
 
       <div className="pt-2">
@@ -89,7 +91,7 @@ export function ParseFailed({ jobId, errorCount, t }: ParseFailedProps) {
           onClick={handleCancelAndRetry}
           loading={working}
           disabled={working}
-          className="w-full md:w-auto min-h-[44px]"
+          className="w-full md:w-auto min-h-11"
         >
           {t.importParseFailedCancelAction ?? 'Cancel and retry'}
         </Button>

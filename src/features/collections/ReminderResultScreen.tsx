@@ -2,9 +2,11 @@
  * ReminderResultScreen — sent/excluded breakdown after bulk dispatch.
  */
 
+import { Text } from '@/components/ui/Text'
 import { CheckCircle, AlertTriangle } from 'lucide-react'
 import type { BulkReminderResult } from './useReminderComposer'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface ReminderResultScreenProps {
   result: BulkReminderResult
@@ -21,12 +23,12 @@ export function ReminderResultScreen({ result, onDone }: ReminderResultScreenPro
     <div className="reminder-result">
       <div className="reminder-result__hero">
         <CheckCircle size={40} className="reminder-result__icon" aria-hidden="true" />
-        <h2 className="reminder-result__title">
+        <Heading level={2} className="reminder-result__title">
           {result.sent} reminder{result.sent !== 1 ? 's' : ''} prepared
-        </h2>
-        <p className="reminder-result__subtitle">
+        </Heading>
+        <Text className="reminder-result__subtitle">
           WhatsApp will open for each message. Delivery is not tracked.
-        </p>
+        </Text>
       </div>
 
       {result.excludedDetails.length > 0 && (

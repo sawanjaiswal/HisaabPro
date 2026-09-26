@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { MessageCircle, CheckCircle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
@@ -21,12 +22,12 @@ export function InviteSuccessCard({ code, staffName, onShareWhatsApp, onBackToSt
         aria-hidden="true"
         style={{ color: 'var(--color-success-600)', marginBottom: 'var(--space-4)' }}
       />
-      <p style={{ fontWeight: 700, fontSize: 'var(--fs-base)', color: 'var(--color-gray-900)', marginBottom: 'var(--space-2)' }}>
+      <Text style={{ fontWeight: 700, fontSize: 'var(--fs-base)', color: 'var(--color-gray-900)', marginBottom: 'var(--space-2)' }}>
         {t.inviteSent}
-      </p>
-      <p style={{ color: 'var(--color-gray-500)', marginBottom: 'var(--space-6)', lineHeight: 1.5 }}>
+      </Text>
+      <Text style={{ color: 'var(--color-gray-500)', marginBottom: 'var(--space-6)', lineHeight: 1.5 }}>
         {t.shareCodeWith} {staffName}
-      </p>
+      </Text>
       <div
         style={{
           display: 'inline-block',

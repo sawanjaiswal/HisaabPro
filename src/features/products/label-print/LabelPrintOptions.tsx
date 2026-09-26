@@ -1,5 +1,6 @@
 /** Label Print Options — format/template chips + qty steppers (sub-component) */
 
+import { Text } from '@/components/ui/Text'
 import { Minus, Plus } from 'lucide-react'
 import type { LabelItem, LabelTemplate, SheetFormat } from './label-print.types'
 import { Button } from '@/components/ui/Button'
@@ -44,7 +45,7 @@ export function LabelPrintOptions({
     <>
       {/* Sheet format */}
       <section className="label-option-group" aria-label="Sheet format">
-        <p className="label-option-label">Sheet format</p>
+        <Text className="label-option-label">Sheet format</Text>
         <div className="label-chip-row" role="radiogroup" aria-label="Sheet format">
           {SHEET_OPTIONS.map((opt) => (
             <Button variant="none"
@@ -63,7 +64,7 @@ export function LabelPrintOptions({
 
       {/* Template */}
       <section className="label-option-group" aria-label="Label style">
-        <p className="label-option-label">Label style</p>
+        <Text className="label-option-label">Label style</Text>
         <div className="label-chip-row" role="radiogroup" aria-label="Label style">
           {TEMPLATE_OPTIONS.map((opt) => (
             <Button variant="none"
@@ -82,7 +83,7 @@ export function LabelPrintOptions({
 
       {/* Qty steppers */}
       <section className="label-option-group" aria-label="Copies per product">
-        <p className="label-option-label">Copies</p>
+        <Text className="label-option-label">Copies</Text>
         <ul className="label-qty-list">
           {items.map((item) => (
             <li key={item.id} className="label-qty-row">
@@ -113,9 +114,9 @@ export function LabelPrintOptions({
             </li>
           ))}
         </ul>
-        <p className="label-count-text" aria-live="polite">
+        <Text className="label-count-text" aria-live="polite">
           {cellCount} label{cellCount !== 1 ? 's' : ''} on {pageCount} page{pageCount !== 1 ? 's' : ''}
-        </p>
+        </Text>
       </section>
     </>
   )

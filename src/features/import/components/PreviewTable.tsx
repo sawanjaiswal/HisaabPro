@@ -6,6 +6,7 @@
  * ImportJobPage so the dedup view can mount without a refetch.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ResponsiveTable, type TableColumn } from '@/components/layout/ResponsiveTable'
@@ -170,12 +171,12 @@ export function PreviewTable({ job, initialRows, initialNextCursor, t, onContinu
         )}
 
         {pagination.error && (
-          <p
+          <Text
             role="alert"
             style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-danger, var(--color-text-primary))' }}
           >
             {pagination.error}
-          </p>
+          </Text>
         )}
 
         {pagination.hasMore && (
@@ -186,7 +187,7 @@ export function PreviewTable({ job, initialRows, initialNextCursor, t, onContinu
               onClick={() => { void pagination.loadMore() }}
               loading={pagination.loading}
               disabled={pagination.loading}
-              className="min-h-[44px]"
+              className="min-h-11"
             >
               {t.importPreviewLoadMore ?? 'Load more rows'}
             </Button>
@@ -201,7 +202,7 @@ export function PreviewTable({ job, initialRows, initialNextCursor, t, onContinu
           onClick={handleCancel}
           loading={cancelling}
           disabled={cancelling}
-          className="min-h-[44px]"
+          className="min-h-11"
         >
           {t.importPreviewCancel ?? 'Cancel import'}
         </Button>
@@ -210,7 +211,7 @@ export function PreviewTable({ job, initialRows, initialNextCursor, t, onContinu
           size="lg"
           onClick={handleContinue}
           disabled={continueDisabled || cancelling}
-          className="min-h-[44px]"
+          className="min-h-11"
         >
           {continueLabel}
         </Button>

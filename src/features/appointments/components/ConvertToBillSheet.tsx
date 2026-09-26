@@ -5,6 +5,7 @@
  *  Idempotency-Key is held by the hook and reused across retries.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
@@ -73,11 +74,11 @@ export function ConvertToBillSheet({ open, onClose, row, vertical }: ConvertToBi
       }
     >
       <div className="space-y-3 p-3">
-        <p className="text-[var(--fs-sm)]" style={{ color: 'var(--color-text-muted)' }}>
+        <Text className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
           {t.convertHint ?? 'Generate a billable record from this appointment.'}
-        </p>
+        </Text>
         <div
-          className="p-3 rounded-[var(--radius-md)] text-[var(--fs-sm)]"
+          className="p-3 rounded-md text-sm"
           style={{ background: 'var(--color-surface-muted)' }}
         >
           <div className="font-medium">{row.partyNameSnapshot}</div>
@@ -92,12 +93,12 @@ export function ConvertToBillSheet({ open, onClose, row, vertical }: ConvertToBi
           placeholder={t.notesPlaceholder ?? ''}
           maxLength={2000}
         />
-        <p
-          className="text-[var(--fs-xs)] tabular-nums"
+        <Text
+          className="text-xs tabular-nums"
           style={{ color: 'var(--color-text-muted)' }}
         >
           {t.idempotencyKey ?? 'Key'}: {idempotencyKey().slice(0, 8)}…
-        </p>
+        </Text>
       </div>
     </Drawer>
   )

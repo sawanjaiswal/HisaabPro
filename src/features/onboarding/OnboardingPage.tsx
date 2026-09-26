@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { ArrowLeft, Zap, FileText, Users, IndianRupee, BarChart3 } from 'lucide-react'
 import { SEO } from '../../components/layout/SEO'
 import { Button } from '../../components/ui/Button'
@@ -13,6 +14,7 @@ import { ReadyStep } from './components/ReadyStep'
 import { useOnboarding } from './useOnboarding'
 import './onboarding.css'
 import './onboarding-steps.css'
+import { Heading } from '@/components/ui/Heading'
 
 const WELCOME_ICON = <Zap className="onboarding-welcome-icon__svg" aria-hidden="true" />
 const ICON_INVOICE = <FileText size={20} aria-hidden="true" />
@@ -50,8 +52,8 @@ export default function OnboardingPage() {
           <div className="onboarding-icon onboarding-welcome-icon" aria-hidden="true">{WELCOME_ICON}</div>
 
           <div className="onboarding-header">
-            <h1 className="onboarding-title">{welcomeTitle}</h1>
-            <p className="onboarding-subtitle">{t.onboardingWelcomeSubtitle}</p>
+            <Heading level={1} className="onboarding-title">{welcomeTitle}</Heading>
+            <Text className="onboarding-subtitle">{t.onboardingWelcomeSubtitle}</Text>
           </div>
 
           <div className="onboarding-feature-list">
@@ -59,8 +61,8 @@ export default function OnboardingPage() {
               <div key={f.title} className="onboarding-feature-row">
                 <div className="onboarding-feature-icon">{f.icon}</div>
                 <div>
-                  <p className="onboarding-feature-title">{f.title}</p>
-                  <p className="onboarding-feature-desc">{f.desc}</p>
+                  <Text className="onboarding-feature-title">{f.title}</Text>
+                  <Text className="onboarding-feature-desc">{f.desc}</Text>
                 </div>
               </div>
             ))}
@@ -112,8 +114,8 @@ export default function OnboardingPage() {
         {step === 'businessType' && (
           <div className="onboarding-form">
             <div className="onboarding-header onboarding-header--step">
-              <h2 className="onboarding-step-title">{t.pickBusinessType}</h2>
-              <p className="onboarding-step-desc">{t.pickBusinessTypeDesc}</p>
+              <Heading level={2} className="onboarding-step-title">{t.pickBusinessType}</Heading>
+              <Text className="onboarding-step-desc">{t.pickBusinessTypeDesc}</Text>
             </div>
 
             <VerticalPicker
@@ -161,9 +163,9 @@ export default function OnboardingPage() {
         )}
 
         {error && (
-          <p className="onboarding-error" role="alert">
+          <Text className="onboarding-error" role="alert">
             {error}
-          </p>
+          </Text>
         )}
       </div>
     </div>

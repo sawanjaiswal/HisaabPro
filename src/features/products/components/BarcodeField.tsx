@@ -1,5 +1,6 @@
 /** Barcode Field — Form input with format selector and live preview */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useMemo } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Select, SelectItem } from '@/components/ui/Select'
@@ -60,8 +61,8 @@ export function BarcodeField({ form, errors, onUpdate }: BarcodeFieldProps) {
           aria-label={t.barcodeValueAria}
           aria-describedby={displayError ? 'barcode-error' : 'barcode-hint'}
         />
-        {displayError && <p id="barcode-error" className="input-error" role="alert">{displayError}</p>}
-        {!displayError && <p id="barcode-hint" className="input-hint">{hint}</p>}
+        {displayError && <Text id="barcode-error" className="input-error" role="alert">{displayError}</Text>}
+        {!displayError && <Text id="barcode-hint" className="input-hint">{hint}</Text>}
       </div>
 
       {form.barcode && !displayError && (

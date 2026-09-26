@@ -1,5 +1,18 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { formatPaise, formatNumber, formatDate, formatPhone, formatRelativeTime, toLocalISODate } from '../format'
+import {
+  formatPaise,
+  formatNumber,
+  formatDate,
+  formatPhone,
+  formatRelativeTime,
+  toLocalISODate,
+  formatName,
+  formatInitials,
+  formatAddress,
+  formatPinCode,
+} from '../format'
+
+
 
 describe('formatPaise', () => {
   it('formats paise to INR with 2 decimals', () => {
@@ -127,3 +140,78 @@ describe('formatRelativeTime', () => {
     expect(result).toMatch(/01\/03\/2026/)
   })
 })
+
+describe('formatName', () => {
+  it('converts all lowercase to clean Title Case', () => {
+    expect(formatName('rajesh kumar sharma')).toBe('Rajesh Kumar Sharma')
+  })
+
+  it('collapses multiple whitespace characters and trims', () => {
+    expect(formatName('   sharma   trading   co   ')).toBe('Sharma Trading Co')
+  })
+
+  it('preserves business entity suffixes', () => {
+    expect(formatName('apex solutions pvt ltd')).toBe('Apex Solutions PVT LTD')
+    expect(formatName('gupta enterprises llp')).toBe('Gupta Enterprises LLP')
+  })
+
+  it('returns placeholder for null or empty input', () => {
+    expect(formatName('')).toBe('—')
+    expect(formatName(null)).toBe('—')
+    expect(formatName(undefined)).toBe('—')
+  })
+})
+
+describe('formatInitials', () => {
+  it('extracts first letters of first two words', () => {
+    expect(formatInitials('Sharma Trading')).toBe('ST')
+    expect(formatInitials('Raju General Store')).toBe('RG')
+  })
+
+  it('extracts first two characters for single word', () => {
+    expect(formatInitials('Amazon')).toBe('AM')
+    expect(formatInitials('Hisaab')).toBe('HI')
+  })
+
+  it('handles single character', () => {
+    expect(formatInitials('A')).toBe('A')
+  })
+
+  it('returns fallback for empty input', () => {
+    expect(formatInitials('')).toBe('?')
+    expect(formatInitials(null)).toBe('?')
+  })
+})
+
+describe('formatAddress', () => {
+  it('joins non-empty address parts with comma', () => {
+    expect(formatAddress(['Shop 12', 'MG Road', 'Indore', 'MP'])).toBe('Shop 12, MG Road, Indore, MP')
+  })
+
+  it('filters out null, undefined, and empty strings', () => {
+    expect(formatAddress(['Plot 5', null, '', 'Sector 18', undefined])).toBe('Plot 5, Sector 18')
+  })
+
+  it('returns placeholder when all parts are empty', () => {
+    expect(formatAddress([null, undefined, ''])).toBe('—')
+  })
+})
+
+describe('formatPinCode', () => {
+  it('formats standard 6-digit pin code', () => {
+    expect(formatPinCode('452001')).toBe('452001')
+  })
+
+  it('supports spaced format when requested', () => {
+    expect(formatPinCode('452001', { spaced: true })).toBe('452 001')
+  })
+
+  it('cleans non-digit characters', () => {
+    expect(formatPinCode('452-001')).toBe('452001')
+  })
+
+  it('returns placeholder for empty input', () => {
+    expect(formatPinCode('')).toBe('—')
+  })
+})
+

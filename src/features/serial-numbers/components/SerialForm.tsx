@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { SERIAL_NUMBER_MAX, NOTES_MAX } from '../serial-number.constants'
 import { useSerialForm } from '../useSerialForm'
@@ -33,7 +34,7 @@ export function SerialForm({ productId, onSuccess }: SerialFormProps) {
           placeholder={t.serialPlaceholder}
           autoFocus
         />
-        {errors.serialNumber && <p className="serial-form__error">{errors.serialNumber}</p>}
+        {errors.serialNumber && <Text className="serial-form__error">{errors.serialNumber}</Text>}
       </div>
 
       <div className="serial-form__field">
@@ -47,7 +48,7 @@ export function SerialForm({ productId, onSuccess }: SerialFormProps) {
           placeholder={t.optionalNotes}
           rows={3}
         />
-        {errors.notes && <p className="serial-form__error">{errors.notes}</p>}
+        {errors.notes && <Text className="serial-form__error">{errors.notes}</Text>}
       </div>
 
       <Button

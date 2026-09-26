@@ -5,6 +5,7 @@
  * 4 UI states: loading · error · empty · success.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { Plus } from 'lucide-react'
@@ -133,15 +134,15 @@ export default function LoanDetailPage() {
       <Header title={loan.partyName ?? t.loanDetailsTitle} backTo={ROUTES.LOANS} />
       <PageContainer variant="detail" className="space-y-6">
         <div className="loan-detail__hero fade-up">
-          <p className="loan-detail__label">{t.outstandingBalance}</p>
-          <p className="loan-detail__outstanding">{formatPaise(loan.outstandingAmount)}</p>
+          <Text className="loan-detail__label">{t.outstandingBalance}</Text>
+          <Text className="loan-detail__outstanding">{formatPaise(loan.outstandingAmount)}</Text>
           <div className="loan-detail__grid">
-            <div><p className="loan-detail__label">{t.principal}</p><p className="loan-detail__value">{formatPaise(loan.principalAmount)}</p></div>
-            <div><p className="loan-detail__label">{t.interestRatePercent}</p><p className="loan-detail__value">{loan.interestRate}% p.a.</p></div>
-            <div><p className="loan-detail__label">{t.totalPaid}</p><p className="loan-detail__value">{formatPaise(totalPaid)}</p></div>
-            <div><p className="loan-detail__label">{t.totalInterest}</p><p className="loan-detail__value">{formatPaise(totalInterest)}</p></div>
-            <div><p className="loan-detail__label">{t.dateLabel}</p><p className="loan-detail__value">{formatDate(loan.startDate)}</p></div>
-            {loan.emiAmount && <div><p className="loan-detail__label">{t.emiColon}</p><p className="loan-detail__value">{formatPaise(loan.emiAmount)}/mo</p></div>}
+            <div><Text className="loan-detail__label">{t.principal}</Text><Text className="loan-detail__value">{formatPaise(loan.principalAmount)}</Text></div>
+            <div><Text className="loan-detail__label">{t.interestRatePercent}</Text><Text className="loan-detail__value">{loan.interestRate}% p.a.</Text></div>
+            <div><Text className="loan-detail__label">{t.totalPaid}</Text><Text className="loan-detail__value">{formatPaise(totalPaid)}</Text></div>
+            <div><Text className="loan-detail__label">{t.totalInterest}</Text><Text className="loan-detail__value">{formatPaise(totalInterest)}</Text></div>
+            <div><Text className="loan-detail__label">{t.dateLabel}</Text><Text className="loan-detail__value">{formatDate(loan.startDate)}</Text></div>
+            {loan.emiAmount && <div><Text className="loan-detail__label">{t.emiColon}</Text><Text className="loan-detail__value">{formatPaise(loan.emiAmount)}/mo</Text></div>}
           </div>
           {loan.status === 'ACTIVE' && (
             <Button variant="none" type="button" className="loan-add-btn loan-detail__action-btn" onClick={() => setDrawerOpen(true)} aria-label={t.recordTransaction}>
@@ -150,7 +151,7 @@ export default function LoanDetailPage() {
           )}
         </div>
 
-        <p className="loan-detail__section-title py-0">{t.transactionHistoryLoan}</p>
+        <Text className="loan-detail__section-title py-0">{t.transactionHistoryLoan}</Text>
 
         {transactions.length === 0 && (
           <EmptyState
@@ -179,7 +180,7 @@ export default function LoanDetailPage() {
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={t.recordTransaction}>
         <form className="loan-drawer__form py-0" onSubmit={handleSubmit}>
-          {formError && <p className="loan-drawer__error py-0" role="alert">{formError}</p>}
+          {formError && <Text className="loan-drawer__error py-0" role="alert">{formError}</Text>}
           <div className="loan-drawer__field py-0">
             <label className="loan-drawer__label py-0" htmlFor="txnType">{t.loanType}</label>
             <Select

@@ -5,6 +5,7 @@
  * User can tap "Update" to reload with the new SW.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { RefreshCw } from 'lucide-react'
 import { subscribeToSWUpdates, acceptUpdate } from '@/lib/sw-register'
@@ -29,7 +30,7 @@ export function SWUpdatePrompt() {
 
   return (
     <div className="sw-update-prompt" role="alert">
-      <p className="sw-update-text">A new version is available</p>
+      <Text className="sw-update-text">A new version is available</Text>
       <button
         className="sw-update-btn"
         onClick={handleUpdate}

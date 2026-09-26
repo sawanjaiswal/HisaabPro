@@ -1,3 +1,4 @@
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
@@ -12,6 +13,7 @@ import { ROUTES } from '@/config/routes.config'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 const isDevMode = AUTH_MODE === 'dev-login'
 
@@ -47,7 +49,7 @@ function LoginTips({ visible }: { visible: boolean }) {
     <div className="login-tips" aria-live="polite">
       <div className={`login-tips__card${fading ? ' login-tips__card--fade' : ''}`}>
         <span className="login-tips__icon">{tip.icon}</span>
-        <p className="login-tips__text">{tip.text}</p>
+        <Text className="login-tips__text">{tip.text}</Text>
       </div>
     </div>
   )
@@ -77,8 +79,8 @@ export default function LoginPage() {
             className="login-page__brand-logo"
             style={{ maxWidth: '210px', height: 'auto', margin: '0 auto 8px auto', display: 'block' }}
           />
-          <h1 className="login-page__title sr-only">{APP_NAME}</h1>
-          <p className="login-page__subtitle">{t.signInToAccount}</p>
+          <Heading level={1} className="login-page__title sr-only">{APP_NAME}</Heading>
+          <Text className="login-page__subtitle">{t.signInToAccount}</Text>
         </div>
 
         <form
@@ -122,7 +124,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {error && <p className="login-page__error">{error}</p>}
+          {error && <Text className="login-page__error">{error}</Text>}
 
           {captchaRequired && (
             <div className="login-page__captcha">
@@ -156,9 +158,9 @@ export default function LoginPage() {
             <div className="login-dev-box__header">
               <span className="login-dev-box__badge">🧪 {t.testingAccess ?? 'Dev & Testing Access'}</span>
             </div>
-            <p className="login-dev-box__desc">
+            <Text className="login-dev-box__desc">
               {t.demoCredentials ?? 'Test credentials (No OTP or SSO needed):'}
-            </p>
+            </Text>
             <div className="login-dev-box__creds">
               <Button
                 variant="none"
@@ -202,17 +204,17 @@ export default function LoginPage() {
             </Button>
           )}
 
-          <p className="login-page__hint">
+          <Text className="login-page__hint">
             <Link to={ROUTES.FORGOT_PASSWORD} className="login-page__link">
               {t.forgotPassword}
             </Link>
-          </p>
-          <p className="login-page__hint">
+          </Text>
+          <Text className="login-page__hint">
             {t.newHere}{' '}
             <Link to={ROUTES.REGISTER} className="login-page__link">
               {t.createAccount}
             </Link>
-          </p>
+          </Text>
         </form>
       </div>
     </div>

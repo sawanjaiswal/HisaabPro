@@ -20,6 +20,7 @@
  * "success" content always; loading/error/empty are N/A.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Wallet } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -28,6 +29,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Heading } from '@/components/ui/Heading'
 
 export default function PayrollPage() {
   const { t } = useLanguage()
@@ -39,23 +41,23 @@ export default function PayrollPage() {
       <PageContainer variant="dashboard" className="space-y-4">
         <div style={{ paddingBottom: 'calc(var(--bottom-nav-height) + 5rem)' }}>
           <article
-            className="rounded-[var(--radius-xl)] bg-[var(--color-surface)] border border-[var(--color-border)] p-4"
+            className="rounded-xl bg-surface border border-border p-4"
             aria-label={t.payrollHubIntroTitle as string}
           >
             <header className="flex items-start gap-3 mb-3">
               <span
                 aria-hidden="true"
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--color-primary-50)] text-[var(--color-primary-600)]"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-50 text-primary-600"
               >
                 <Wallet size={20} />
               </span>
               <div className="flex-1 min-w-0">
-                <h2 className="text-[var(--fs-base)] font-semibold text-[var(--color-text)]">
+                <Heading level={2} className="text-base font-semibold text-text-primary">
                   {t.payrollHubIntroTitle as string}
-                </h2>
-                <p className="text-[var(--fs-sm)] text-[var(--color-text-secondary)] mt-1">
+                </Heading>
+                <Text className="text-sm text-text-secondary mt-1">
                   {t.payrollHubIntroDescription as string}
-                </p>
+                </Text>
               </div>
             </header>
             <Button
@@ -70,13 +72,13 @@ export default function PayrollPage() {
           </article>
 
           <article
-            className="rounded-[var(--radius-xl)] bg-[var(--color-surface)] border border-[var(--color-border)] p-4 mt-4"
+            className="rounded-xl bg-surface border border-border p-4 mt-4"
             aria-label={t.payrollHubHowTitle as string}
           >
-            <h3 className="text-[var(--fs-base)] font-semibold text-[var(--color-text)] mb-2">
+            <Heading level={3} className="text-base font-semibold text-text-primary mb-2">
               {t.payrollHubHowTitle as string}
-            </h3>
-            <ol className="list-decimal pl-5 space-y-1 text-[var(--fs-sm)] text-[var(--color-text-secondary)]">
+            </Heading>
+            <ol className="list-decimal pl-5 space-y-1 text-sm text-text-secondary">
               <li>{t.payrollHubStep1 as string}</li>
               <li>{t.payrollHubStep2 as string}</li>
               <li>{t.payrollHubStep3 as string}</li>

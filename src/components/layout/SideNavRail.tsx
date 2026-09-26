@@ -28,6 +28,7 @@ import { useVertical } from '@/hooks/useVertical'
 import { isNavVisible } from '@/config/verticals.config'
 import { getBusinessInitials, getBusinessColor } from '@/features/business/business.utils'
 import './side-nav-rail.css'
+import { Heading } from '@/components/ui/Heading'
 
 export function SideNavRail() {
   const navigate = useNavigate()
@@ -58,7 +59,7 @@ export function SideNavRail() {
         {/* Business switcher — compact at rail width */}
         {businesses.length > 0 && (
           <section className="side-nav-rail__section">
-            <h3 className="side-nav-rail__section-title">{t.yourBusinesses ?? 'Businesses'}</h3>
+            <Heading level={3} className="side-nav-rail__section-title">{t.yourBusinesses ?? 'Businesses'}</Heading>
             <div className="side-nav-rail__biz-list">
               {businesses.map((biz) => {
                 const isActive = biz.id === user?.businessId
@@ -94,10 +95,10 @@ export function SideNavRail() {
           if (items.length === 0) return null
           return (
             <section key={group.id} className="side-nav-rail__section">
-              <h3 className="side-nav-rail__section-title">
+              <Heading level={3} className="side-nav-rail__section-title">
                 <span aria-hidden="true">{group.emoji}</span>
                 {group.label}
-              </h3>
+              </Heading>
               <ul className="side-nav-rail__menu">
                 {items.map((item) => {
                   const Icon = ICON_REGISTRY[item.icon]

@@ -1,5 +1,6 @@
 /** Share Ledger Sheet — Create/manage share links for a party ledger */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Copy, Trash2, Link, Clock, Eye } from 'lucide-react'
 import { EXPIRY_OPTIONS } from '../shared-ledger.constants'
@@ -8,6 +9,7 @@ import type { LedgerShare, CreateLedgerShareData } from '../shared-ledger.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import { Select, SelectItem } from '@/components/ui/Select'
+import { Heading } from '@/components/ui/Heading'
 
 const NEVER = '__never__' as const
 
@@ -34,10 +36,10 @@ export function ShareLedgerSheet({
   return (
     <div className="share-ledger-sheet">
       <div className="share-ledger-header">
-        <h3 className="share-ledger-title">{t.shareLedger}</h3>
-        <p className="share-ledger-subtitle">
+        <Heading level={3} className="share-ledger-title">{t.shareLedger}</Heading>
+        <Text className="share-ledger-subtitle">
           {t.shareTxnHistory}
-        </p>
+        </Text>
       </div>
 
       {/* Create new share */}
@@ -69,7 +71,7 @@ export function ShareLedgerSheet({
       {/* Existing shares */}
       {shares.length > 0 && (
         <div className="share-ledger-list">
-          <h4 className="share-ledger-list-title">{t.activeLinks}</h4>
+          <Heading level={4} className="share-ledger-list-title">{t.activeLinks}</Heading>
           {shares.map((share) => {
             const expired = isShareExpired(share)
             return (

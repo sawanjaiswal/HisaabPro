@@ -1,5 +1,6 @@
 /** RecipeCostCard (V3) — one recipe: sale price, derived cost, margin, breakdown. */
 
+import { Text } from '@/components/ui/Text'
 import { AlertTriangle } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -7,6 +8,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { formatPaise } from '@/lib/format'
 import type { RecipeCost } from '../recipe-cost.types'
 import { marginTone, formatMarginPct } from '../recipe-cost.utils'
+import { Heading } from '@/components/ui/Heading'
 
 const TONE_BADGE = {
   good: 'paid',
@@ -27,8 +29,8 @@ export function RecipeCostCard({ recipe }: RecipeCostCardProps) {
     <Card className="recipe-cost-card">
       <div className="recipe-cost-card__head">
         <div>
-          <h2 className="recipe-cost-card__title">{recipe.productName}</h2>
-          <p className="recipe-cost-card__subtitle">{recipe.bomName}</p>
+          <Heading level={2} className="recipe-cost-card__title">{recipe.productName}</Heading>
+          <Text className="recipe-cost-card__subtitle">{recipe.bomName}</Text>
         </div>
         <Badge variant={TONE_BADGE[tone]}>
           {tone === 'loss' ? t.recipeLossMaking : formatMarginPct(recipe.marginPct)}
@@ -37,26 +39,26 @@ export function RecipeCostCard({ recipe }: RecipeCostCardProps) {
 
       <div className="recipe-cost-card__metrics">
         <div className="recipe-cost-metric">
-          <p className="recipe-cost-metric__label">{t.recipeSalePrice}</p>
-          <p className="recipe-cost-metric__value tabular-nums">{formatPaise(recipe.salePricePaise)}</p>
+          <Text className="recipe-cost-metric__label">{t.recipeSalePrice}</Text>
+          <Text className="recipe-cost-metric__value tabular-nums">{formatPaise(recipe.salePricePaise)}</Text>
         </div>
         <div className="recipe-cost-metric">
-          <p className="recipe-cost-metric__label">{t.recipeDerivedCost}</p>
-          <p className="recipe-cost-metric__value tabular-nums">{formatPaise(recipe.recipeCostPaise)}</p>
+          <Text className="recipe-cost-metric__label">{t.recipeDerivedCost}</Text>
+          <Text className="recipe-cost-metric__value tabular-nums">{formatPaise(recipe.recipeCostPaise)}</Text>
         </div>
         <div className="recipe-cost-metric">
-          <p className="recipe-cost-metric__label">{t.recipeMargin}</p>
-          <p className={`recipe-cost-metric__value tabular-nums recipe-cost-metric__value--${tone}`}>
+          <Text className="recipe-cost-metric__label">{t.recipeMargin}</Text>
+          <Text className={`recipe-cost-metric__value tabular-nums recipe-cost-metric__value--${tone}`}>
             {formatPaise(recipe.marginPaise)}
-          </p>
+          </Text>
         </div>
       </div>
 
       {recipe.incompleteCosting && (
-        <p className="recipe-cost-card__warning">
+        <Text className="recipe-cost-card__warning">
           <AlertTriangle size={14} aria-hidden="true" />
           {t.recipeIncompleteCosting}
-        </p>
+        </Text>
       )}
 
       <ul className="recipe-cost-card__breakdown">

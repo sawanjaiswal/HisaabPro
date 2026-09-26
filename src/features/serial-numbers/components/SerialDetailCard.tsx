@@ -1,8 +1,10 @@
+import { Text } from '@/components/ui/Text'
 import { Package, Warehouse, FileText, User, Hash } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { SerialStatusBadge } from './SerialStatusBadge'
 import { formatSerialDate } from '../serial-number.utils'
 import type { SerialNumberDetail } from '../serial-number.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface SerialDetailCardProps {
   serial: SerialNumberDetail
@@ -14,10 +16,10 @@ export function SerialDetailCard({ serial }: SerialDetailCardProps) {
   return (
     <div className="serial-detail-card">
       <div className="serial-detail-card__header">
-        <h2 className="serial-detail-card__number">
+        <Heading level={2} className="serial-detail-card__number">
           <Hash size={16} aria-hidden="true" />
           {serial.serialNumber}
-        </h2>
+        </Heading>
         <SerialStatusBadge status={serial.status} />
       </div>
 
@@ -72,10 +74,10 @@ export function SerialDetailCard({ serial }: SerialDetailCardProps) {
         )}
       </dl>
 
-      <p className="serial-detail-card__meta">
+      <Text className="serial-detail-card__meta">
         {t.addedLabel} {formatSerialDate(serial.createdAt)}
         {serial.soldAt ? ` — ${t.sold} ${formatSerialDate(serial.soldAt)}` : ''}
-      </p>
+      </Text>
     </div>
   )
 }

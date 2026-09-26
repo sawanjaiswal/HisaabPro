@@ -11,6 +11,7 @@ import { QUICK_GRID_LIMIT } from '../pos.constants'
 
 import type { QuickProduct } from '../pos.types'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 interface QuickProductGridProps {
   onSelect: (product: QuickProduct) => void
@@ -68,7 +69,7 @@ export function QuickProductGrid({ onSelect }: QuickProductGridProps) {
 
   return (
     <div className="pos-quick-section py-0">
-      <h3 className="pos-quick-title">{t.posQuickAdd}</h3>
+      <Heading level={3} className="pos-quick-title">{t.posQuickAdd}</Heading>
       <div className="pos-quick-grid" role="list" aria-label={t.posFrequentProducts}>
         {products.map((p) => (
           <Button variant="none"

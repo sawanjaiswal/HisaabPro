@@ -1,8 +1,10 @@
+import { Text } from '@/components/ui/Text'
 import { useNavigate } from 'react-router-dom'
 import { MessageSquare, AlertTriangle, ChevronRight } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { Button } from '@/components/ui/Button'
 import type { HomeDashboardData } from '../../dashboard/dashboard.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface PreviewActionableRailProps {
   data: HomeDashboardData
@@ -29,7 +31,7 @@ export function PreviewActionableRail({ data }: PreviewActionableRailProps) {
   return (
     <section className="action-rail" aria-label="Action required">
       <div className="action-rail__header">
-        <h3 className="action-rail__title">Action Required</h3>
+        <Heading level={3} className="action-rail__title">Action Required</Heading>
         <Button
           variant="none"
           className="action-rail__all"
@@ -47,8 +49,8 @@ export function PreviewActionableRail({ data }: PreviewActionableRailProps) {
               <span className="action-card__badge-dot" />
               <span>Overdue ₹{Math.round(topDebtor.outstanding / 100)}</span>
             </div>
-            <h4 className="action-card__party">{topDebtor.name}</h4>
-            <p className="action-card__desc">Payment pending for {topDebtor.daysOverdue ?? 14} days</p>
+            <Heading level={4} className="action-card__party">{topDebtor.name}</Heading>
+            <Text className="action-card__desc">Payment pending for {topDebtor.daysOverdue ?? 14} days</Text>
             <Button
               variant="none"
               className="action-card__cta"
@@ -66,8 +68,8 @@ export function PreviewActionableRail({ data }: PreviewActionableRailProps) {
               <AlertTriangle size={12} aria-hidden="true" />
               <span>{data.alerts.lowStockCount} Items Low</span>
             </div>
-            <h4 className="action-card__party">Inventory Alert</h4>
-            <p className="action-card__desc">Reorder suggested to avoid stockout</p>
+            <Heading level={4} className="action-card__party">Inventory Alert</Heading>
+            <Text className="action-card__desc">Reorder suggested to avoid stockout</Text>
             <Button
               variant="none"
               className="action-card__cta action-card__cta--secondary"

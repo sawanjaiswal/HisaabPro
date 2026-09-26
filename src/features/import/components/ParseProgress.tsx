@@ -6,12 +6,14 @@
  * the upcoming preview table. Polling itself is owned by the page.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useState } from 'react'
 import { FileText } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { Spinner } from '@/components/feedback/Spinner'
 import type { ImportFormat } from '../types/import.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface ParseProgressProps {
   fileName: string | null
@@ -58,13 +60,13 @@ export function ParseProgress({ fileName, format, startedAt, t }: ParseProgressP
           <FileText size={20} />
         </div>
         <div className="flex-1 min-w-0">
-          <h2
+          <Heading level={2}
             className="font-semibold truncate"
             style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
           >
             {t.importParseProgressTitle ?? 'Parsing your file…'}
-          </h2>
-          <p
+          </Heading>
+          <Text
             className="truncate"
             style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}
           >
@@ -73,15 +75,15 @@ export function ParseProgress({ fileName, format, startedAt, t }: ParseProgressP
             {formatLabel}
             {' · '}
             <span className="tabular-nums">{formatElapsed(elapsed)}</span>
-          </p>
+          </Text>
         </div>
         <Spinner size="sm" />
       </div>
 
-      <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
         {t.importParseProgressBody ??
           'This usually takes a few seconds. Stay on this screen — we will show the preview as soon as it is ready.'}
-      </p>
+      </Text>
 
       <div className="space-y-2" aria-hidden="true">
         <Skeleton height="0.75rem" width="75%" />

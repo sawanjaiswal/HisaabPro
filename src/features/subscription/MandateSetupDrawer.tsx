@@ -5,6 +5,7 @@
  * Polls mandate status every 30s via useMandateStatus while PENDING.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Smartphone, ShieldCheck, Loader2 } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
@@ -68,7 +69,7 @@ export function MandateSetupDrawer({ open, onClose }: MandateSetupDrawerProps) {
     <Drawer open={open} onClose={handleClose} title={t.mandateSetupTitle} size="md">
       <div className="px-4 py-4 space-y-4">
         <div
-          className="rounded-[var(--radius-md)] p-3 flex items-start gap-3"
+          className="rounded-md p-3 flex items-start gap-3"
           style={{
             backgroundColor: 'var(--color-primary-100)',
             border: '1px solid var(--color-primary-400)',
@@ -79,17 +80,17 @@ export function MandateSetupDrawer({ open, onClose }: MandateSetupDrawerProps) {
             style={{ color: 'var(--color-primary-500)' }}
             aria-hidden
           />
-          <p
-            className="text-[var(--fs-sm)]"
+          <Text
+            className="text-sm"
             style={{ color: 'var(--text-primary)' }}
           >
             {t.mandateSetupDesc}
-          </p>
+          </Text>
         </div>
 
         {isActive ? (
           <div
-            className="rounded-[var(--radius-md)] p-3 flex items-center gap-2"
+            className="rounded-md p-3 flex items-center gap-2"
             style={{
               backgroundColor: 'var(--color-success-50)',
               border: '1px solid var(--color-success-500)',
@@ -101,7 +102,7 @@ export function MandateSetupDrawer({ open, onClose }: MandateSetupDrawerProps) {
               aria-hidden
             />
             <span
-              className="text-[var(--fs-sm)] font-medium"
+              className="text-sm font-medium"
               style={{ color: 'var(--text-primary)' }}
             >
               {t.mandateActive}
@@ -109,7 +110,7 @@ export function MandateSetupDrawer({ open, onClose }: MandateSetupDrawerProps) {
           </div>
         ) : isPending ? (
           <div
-            className="rounded-[var(--radius-md)] p-3 flex items-center gap-2"
+            className="rounded-md p-3 flex items-center gap-2"
             style={{
               backgroundColor: 'var(--color-warning-50)',
               border: '1px solid var(--color-warning-500)',
@@ -121,7 +122,7 @@ export function MandateSetupDrawer({ open, onClose }: MandateSetupDrawerProps) {
               aria-hidden
             />
             <span
-              className="text-[var(--fs-sm)]"
+              className="text-sm"
               style={{ color: 'var(--text-primary)' }}
             >
               {t.mandateCheckingStatus}
@@ -131,7 +132,7 @@ export function MandateSetupDrawer({ open, onClose }: MandateSetupDrawerProps) {
 
         <Button
           variant="primary"
-          className="w-full min-h-[44px]"
+          className="w-full min-h-11"
           loading={creating}
           disabled={creating || isActive}
           onClick={handleCreate}
@@ -141,12 +142,12 @@ export function MandateSetupDrawer({ open, onClose }: MandateSetupDrawerProps) {
         </Button>
 
         {mandate?.mandateId && (
-          <p
-            className="text-[var(--fs-xs)] text-center"
+          <Text
+            className="text-xs text-center"
             style={{ color: 'var(--text-muted)' }}
           >
             ID: {mandate.mandateId}
-          </p>
+          </Text>
         )}
       </div>
     </Drawer>

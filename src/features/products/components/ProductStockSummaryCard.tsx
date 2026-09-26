@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import type { ProductStockSummary } from '../product-analytics.types'
 import { formatQuantity as fmt } from '@/lib/format'
+import { Heading } from '@/components/ui/Heading'
 
 interface ProductStockSummaryCardProps {
   summary: ProductStockSummary
@@ -39,7 +40,7 @@ export const ProductStockSummaryCard: React.FC<ProductStockSummaryCardProps> = (
   return (
     <section className="pd-card pd-summary" aria-label={t.stockSummaryHeading}>
       <header className="pd-card__head">
-        <h3 className="pd-card__title">{t.stockSummaryHeading}</h3>
+        <Heading level={3} className="pd-card__title">{t.stockSummaryHeading}</Heading>
         <Button variant="none" type="button" className="pd-card__link" onClick={onViewAll}>{t.viewAll}</Button>
       </header>
 

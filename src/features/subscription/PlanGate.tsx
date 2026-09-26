@@ -83,7 +83,7 @@ export function PlanGate({ feature, featureLabel, children, fallback }: PlanGate
           <Button variant="none"
             type="button"
             onClick={() => setUpgradeOpen(true)}
-            className="text-[var(--fs-sm)] underline"
+            className="text-sm underline"
             style={{ color: 'var(--color-primary-500)' }}
           >
             See all plans

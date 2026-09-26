@@ -3,6 +3,7 @@ import { ArrowUpRight, ArrowDownLeft, ChevronRight, FileText } from 'lucide-reac
 import { ROUTES } from '@/config/routes.config'
 import { Button } from '@/components/ui/Button'
 import type { RecentActivityItem } from '../../dashboard/dashboard.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface PreviewActivityStreamProps {
   items: RecentActivityItem[]
@@ -32,7 +33,7 @@ export function PreviewActivityStream({ items }: PreviewActivityStreamProps) {
     <section className="activity-stream" aria-label="Recent transactions">
       <div className="activity-stream__header">
         <div className="activity-stream__title-box">
-          <h3 className="activity-stream__title">Recent Stream</h3>
+          <Heading level={3} className="activity-stream__title">Recent Stream</Heading>
           <span className="activity-stream__count">{items.length} records</span>
         </div>
         <Button

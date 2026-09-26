@@ -14,6 +14,7 @@ import { CampaignWizardStep5Preview } from '../components/CampaignWizardStep5Pre
 import { MARKETING_ROUTES } from '../marketing.constants'
 import type { WizardStep } from '../marketing.types'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 function StepIndicator({ current, total, ariaLabel }: { current: WizardStep; total: number; ariaLabel: string }) {
   return (
@@ -106,7 +107,7 @@ export default function CampaignWizardPage() {
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingNewCampaignTitle}</h1>
+          <Heading level={1} style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingNewCampaignTitle}</Heading>
           <div style={{ fontSize: '12px', color: 'var(--color-gray-500)' }}>{stepLabel}</div>
         </div>
       </div>

@@ -20,6 +20,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { RECON_STATUS_LABELS, RECON_TYPE_LABELS } from './reconciliation.constants'
 import './reconciliation.css'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 export default function ReconciliationListPage() {
   const navigate = useNavigate()
@@ -67,7 +68,7 @@ export default function ReconciliationListPage() {
 
         {showForm && (
           <div className="recon-new-form-panel py-0">
-            <h2 className="recon-new-form-panel__title py-0">{t.newReconciliation}</h2>
+            <Heading level={2} className="recon-new-form-panel__title py-0">{t.newReconciliation}</Heading>
             <ReconciliationUploadForm onSuccess={handleNewSuccess} />
           </div>
         )}

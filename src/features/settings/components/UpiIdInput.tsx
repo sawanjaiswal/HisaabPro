@@ -6,6 +6,7 @@
  * Follows offline rules: api() + entityType + entityLabel.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Smartphone } from 'lucide-react'
@@ -95,14 +96,14 @@ export function UpiIdInput({ initialValue, onSaved }: UpiIdInputProps) {
         disabled={isSaving}
       />
       {error && (
-        <p id="upi-vpa-error" className="form-error" role="alert" aria-live="polite">
+        <Text id="upi-vpa-error" className="form-error" role="alert" aria-live="polite">
           {error}
-        </p>
+        </Text>
       )}
       {!error && (
-        <p id="upi-vpa-help" className="form-help" aria-hidden="true">
+        <Text id="upi-vpa-help" className="form-help" aria-hidden="true">
           {t.upiVpaSettingsHelp}
-        </p>
+        </Text>
       )}
       {isDirty && !error && (
         <Button

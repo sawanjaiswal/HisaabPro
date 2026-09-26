@@ -1,5 +1,6 @@
 /** JobDetailPage — /jobs/:id — header, status pill, actions, items, convert CTA */
 
+import { Text } from '@/components/ui/Text'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import { Pencil, Calendar, User, IndianRupee } from 'lucide-react'
@@ -15,6 +16,7 @@ import { JobItemsList } from '../components/JobItemsList'
 import { JobConvertButton } from '../components/JobConvertButton'
 import { formatJobNumber, formatPaise } from '../jobs.utils'
 import { JOB_ROUTES } from '../jobs.constants'
+import { Heading } from '@/components/ui/Heading'
 
 function DetailSkeleton() {
   return (
@@ -29,7 +31,7 @@ function DetailSkeleton() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-      <h2 style={{ fontSize: 'var(--fs-sm)', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>{title}</h2>
+      <Heading level={2} style={{ fontSize: 'var(--fs-sm)', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>{title}</Heading>
       {children}
     </section>
   )
@@ -84,7 +86,7 @@ export default function JobDetailPage() {
         {/* Header card */}
         <div style={{ padding: 'var(--space-4)', background: 'var(--color-surface)', borderRadius: 12, boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-2)' }}>
-            <h1 style={{ fontSize: 'var(--fs-lg)', fontWeight: 700, color: 'var(--color-text)', margin: 0, lineHeight: 1.3 }}>{job.title}</h1>
+            <Heading level={1} style={{ fontSize: 'var(--fs-lg)', fontWeight: 700, color: 'var(--color-text)', margin: 0, lineHeight: 1.3 }}>{job.title}</Heading>
             <JobStatusPill status={job.status} size="md" />
           </div>
 
@@ -107,9 +109,9 @@ export default function JobDetailPage() {
           </div>
 
           {job.description && (
-            <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
+            <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
               {job.description}
-            </p>
+            </Text>
           )}
         </div>
 
@@ -123,9 +125,9 @@ export default function JobDetailPage() {
         {/* Convert to invoice CTA */}
         {job.status === 'COMPLETED' && !job.invoiceId && (
           <Section title={t.jobInvoiceSection}>
-            <p style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
+            <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
               {t.jobCompleteInvoiceHint}
-            </p>
+            </Text>
             <JobConvertButton jobId={id} jobTitle={job.title} isOnline={isOnline} />
           </Section>
         )}
@@ -166,9 +168,9 @@ export default function JobDetailPage() {
         {/* Cancel info */}
         {job.status === 'CANCELLED' && job.cancelReason && (
           <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-50)', borderRadius: 8 }}>
-            <p style={{ margin: 0, fontSize: 'var(--fs-sm)', color: 'var(--color-error-700)' }}>
+            <Text style={{ margin: 0, fontSize: 'var(--fs-sm)', color: 'var(--color-error-700)' }}>
               <strong>{t.jobCancelledLabel}</strong> {job.cancelReason}
-            </p>
+            </Text>
           </div>
         )}
         </div>

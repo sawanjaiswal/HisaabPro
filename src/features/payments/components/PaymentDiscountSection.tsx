@@ -4,6 +4,7 @@
  * calculated amount display, reason field, and settlement summary.
  */
 
+import { Text } from '@/components/ui/Text'
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PAYMENT_DISCOUNT_TYPE_LABELS } from '../payment.constants'
@@ -92,9 +93,9 @@ export function PaymentDiscountSection({
 
           {/* Calculated discount */}
           {discount.calculatedAmount > 0 && (
-            <p className="payment-discount-calc">
+            <Text className="payment-discount-calc">
               {t.discountColon} {formatPaise(discount.calculatedAmount)}
-            </p>
+            </Text>
           )}
 
           {/* Reason */}

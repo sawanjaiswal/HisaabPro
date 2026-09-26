@@ -4,6 +4,7 @@
  * Format/template/qty state extracted to LabelPrintOptions.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/Button'
 import { X, Download, Printer, RefreshCw } from 'lucide-react'
@@ -16,6 +17,7 @@ import { LabelPrintOptions } from './LabelPrintOptions'
 import { SHEETS, expandToCells, pageCount } from './label-layout'
 import './label-print.css'
 import type { LabelItem, LabelTemplate, SheetFormat } from './label-print.types'
+import { Heading } from '@/components/ui/Heading'
 
 interface LabelPrintDialogProps {
   productIds: string[]
@@ -76,7 +78,7 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
       <div className="label-dialog label-print-root">
         {/* Header */}
         <div className="label-dialog-header">
-          <h2 className="label-dialog-title">Print Labels</h2>
+          <Heading level={2} className="label-dialog-title">Print Labels</Heading>
           <Button variant="none" type="button" className="label-dialog-close" onClick={onClose} aria-label="Close">
             <X size={20} aria-hidden="true" />
           </Button>
@@ -85,7 +87,7 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
         {/* ── LOADING ─────────────────────────────────────────────────── */}
         {dialogState === 'loading' && (
           <div className="label-dialog-body" aria-live="polite">
-            <p className="sr-only">Loading label data…</p>
+            <Text className="sr-only">Loading label data…</Text>
             <div className="label-skeleton-list">
               {productIds.slice(0, 5).map((id) => (
                 <div key={id} className="label-skeleton-row" aria-hidden="true" />
@@ -97,7 +99,7 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
         {/* ── ERROR ───────────────────────────────────────────────────── */}
         {dialogState === 'error' && (
           <div className="label-dialog-body label-dialog-error" role="alert">
-            <p>Could not load label data.</p>
+            <Text>Could not load label data.</Text>
             <Button variant="outline" type="button" onClick={loadLabels}>
               <RefreshCw size={16} aria-hidden="true" />
               Retry
@@ -108,7 +110,7 @@ export function LabelPrintDialog({ productIds, onClose }: LabelPrintDialogProps)
         {/* ── EMPTY ───────────────────────────────────────────────────── */}
         {dialogState === 'empty' && (
           <div className="label-dialog-body label-dialog-empty">
-            <p>No products selected.</p>
+            <Text>No products selected.</Text>
             <Button type="button" variant="ghost" onClick={onClose}>Close</Button>
           </div>
         )}

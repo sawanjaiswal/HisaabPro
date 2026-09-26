@@ -4,6 +4,7 @@
  * Category filter pills. Inline drawer to add entries.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useState, useCallback, useMemo } from 'react'
 import { TrendingUp, Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -162,7 +163,7 @@ export default function OtherIncomePage() {
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={t.addOtherIncome}>
         <form className="income-drawer__form py-0" onSubmit={handleSubmit}>
-          {formError && <p className="income-drawer__error py-0" role="alert">{formError}</p>}
+          {formError && <Text className="income-drawer__error py-0" role="alert">{formError}</Text>}
           <div className="income-drawer__field py-0">
             <label className="income-drawer__label py-0" htmlFor="incCategory">{t.categoryLabel}</label>
             <Input id="incCategory" className="income-drawer__input py-0" list="income-categories" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} placeholder="e.g. Interest, Rental" />

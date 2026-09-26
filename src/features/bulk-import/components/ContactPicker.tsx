@@ -1,11 +1,13 @@
 /** Contact Picker — Choose import method (Contact Picker API or CSV) */
 
+import { Text } from '@/components/ui/Text'
 import { useRef } from 'react'
 import { Users, FileSpreadsheet } from 'lucide-react'
 import { HAS_CONTACT_PICKER, CSV_ACCEPT } from '../bulk-import.constants'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Heading } from '@/components/ui/Heading'
 
 interface ContactPickerProps {
   onPickContacts: () => void
@@ -28,10 +30,10 @@ export function ContactPicker({ onPickContacts, onImportCsv }: ContactPickerProp
         <Users size={48} strokeWidth={1.5} />
       </div>
 
-      <h2 className="bulk-import-title">{t.importParties}</h2>
-      <p className="bulk-import-description">
+      <Heading level={2} className="bulk-import-title">{t.importParties}</Heading>
+      <Text className="bulk-import-description">
         {t.addMultipleCustomers}
-      </p>
+      </Text>
 
       <div className="bulk-import-buttons">
         {HAS_CONTACT_PICKER && (
@@ -57,11 +59,11 @@ export function ContactPicker({ onPickContacts, onImportCsv }: ContactPickerProp
         </Button>
       </div>
 
-      <p className="bulk-import-hint">
+      <Text className="bulk-import-hint">
         {HAS_CONTACT_PICKER
           ? 'Select contacts from your phone or upload a CSV with Name and Phone columns'
           : 'Upload a CSV file with "name" and "phone" columns'}
-      </p>
+      </Text>
 
       <Input
         ref={fileRef}

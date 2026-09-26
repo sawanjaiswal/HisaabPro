@@ -1,5 +1,6 @@
 /** ProductionRunDetailPage — /production-runs/:id */
 
+import { Text } from '@/components/ui/Text'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { ErrorState } from '@/components/feedback/ErrorState'
@@ -10,6 +11,7 @@ import { formatRunDate, formatCostPaise } from '../production-run.utils'
 import { useLanguage } from '@/context/LanguageContext'
 import '../production-run.css'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 function PRDetailSkeleton() {
   const { t } = useLanguage()
@@ -42,7 +44,7 @@ export default function ProductionRunDetailPage() {
         <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/production-runs')} aria-label={t.prBackToRuns}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
-        <h1 className="bom-page__title">{t.prDetailTitle}</h1>
+        <Heading level={1} className="bom-page__title">{t.prDetailTitle}</Heading>
       </div>
 
       {/* Loading */}
@@ -67,7 +69,7 @@ export default function ProductionRunDetailPage() {
                 {statusLabel[run.status] ?? run.status}
               </span>
             </div>
-            {run.notes && <p className="bom-detail-card__notes">{run.notes}</p>}
+            {run.notes && <Text className="bom-detail-card__notes">{run.notes}</Text>}
             <div className="bom-detail-card__meta">
               <span>{t.qty}: {run.quantityProduced}</span>
               <span>{formatRunDate(run.runDate)}</span>
@@ -86,7 +88,7 @@ export default function ProductionRunDetailPage() {
 
           {/* Components consumed */}
           <section className="bom-section">
-            <h2 className="bom-section__title">{t.prComponentsConsumed}</h2>
+            <Heading level={2} className="bom-section__title">{t.prComponentsConsumed}</Heading>
             <div className="pr-components-table-wrap">
               {run.components.map((c) => (
                 <div key={c.componentProductId} className="pr-component-row">

@@ -1,17 +1,10 @@
-/** Invoice Items Section — party search + price-list override chip (Epic B PR2)
- * + line item editors, stock warnings, product search toggle.
- * GST Phase 2: TaxPickerColumn + HsnTypeahead conditionally per line.
- * #132 Batch 6: usePartyTier drives client-side price resolution per line.
- */
-
 import { useCallback } from 'react'
-import { Plus, X, AlertTriangle, PackagePlus } from 'lucide-react'
+import { Plus, X, AlertTriangle, Package, User, Sparkles } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { LineItemEditor } from './LineItemEditor'
 import { useLinePriceMeta } from './useLinePriceMeta'
 import { useBogoPermission } from '../useBogoPermission'
 import { PartySearchInput } from './PartySearchInput'
-import { FormSection } from '@/components/ui/FormSection'
 import { ProductSearchInput } from './ProductSearchInput'
 import { FrequentProductChips } from './FrequentProductChips'
 import { InvoiceScanButton } from './InvoiceScanButton'
@@ -104,8 +97,17 @@ export function InvoiceItemsSection({
   const addedQuantities = Object.fromEntries(lineItems.map((item) => [item.productId, item.quantity]))
 
   return (
-    <div className="line-items-section py-0 space-y-6">
-      <FormSection title={t.customer}>
+    <div className="line-items-section py-0 space-y-4">
+      {/* ── 1. Customer Card ── */}
+      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text-primary)]">
+            <User size={15} className="text-emerald-700" />
+            <span>{t.customer || 'Customer'}</span>
+            <span className="text-red-500">*</span>
+          </label>
+        </div>
+
         <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} showLabel={false} />
 
         {partyId && (
@@ -120,123 +122,142 @@ export function InvoiceItemsSection({
             onReset={resetOverride}
           />
         )}
-      </FormSection>
+      </div>
 
-      <FormSection
-        title={t.sectionItems}
-        action={
+      {/* ── 2. Items Card ── */}
+      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs space-y-4">
+        <div className="flex items-center justify-between">
+          <label className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text-primary)]">
+            <Package size={15} className="text-emerald-700" />
+            <span>{t.sectionItems || 'Items'}</span>
+          </label>
           <Button
             variant="none"
             type="button"
-            className="form-section-action"
+            className="text-emerald-700 hover:text-emerald-800 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
             onClick={onToggleProductSearch}
             aria-label={showProductSearch ? t.hideProductSearch : t.addLineItemLabel}
             aria-expanded={showProductSearch}
           >
-            {showProductSearch ? <X size={15} aria-hidden="true" /> : <Plus size={15} aria-hidden="true" />}
-            {showProductSearch ? t.hideSearch : t.addItem}
+            {showProductSearch ? <X size={14} aria-hidden="true" /> : <Plus size={14} aria-hidden="true" />}
+            <span>{showProductSearch ? t.hideSearch : `+ ${t.addItem || 'Add Item'}`}</span>
           </Button>
-        }
-      >
-      {showProductSearch && (
-        <div className="product-search-panel py-0">
-          <ProductSearchInput onSelect={handleProductSelect} addedProductIds={addedProductIds} autoFocus />
         </div>
-      )}
 
-      {lineItems.length === 0 && !showProductSearch && (
-        <div className="invoice-items-empty-state">
-          <PackagePlus size={24} className="invoice-items-empty-icon-svg" aria-hidden="true" />
-          <p className="invoice-items-empty-title">{t.noItemsAdded}</p>
-          <div className="invoice-items-empty-actions">
-            <Button variant="outline" size="sm" type="button" onClick={onToggleProductSearch}>
-              <Plus size={15} aria-hidden="true" />
-              <span>{t.addItem}</span>
-            </Button>
+        {showProductSearch && (
+          <div className="product-search-panel py-0">
+            <ProductSearchInput onSelect={handleProductSelect} addedProductIds={addedProductIds} autoFocus />
+          </div>
+        )}
+
+        {lineItems.length === 0 && !showProductSearch && (
+          <div className="bg-[var(--color-gray-50)]/40 border-2 border-dashed border-[var(--color-border)] rounded-2xl p-6 text-center flex flex-col items-center justify-center space-y-2">
+            <div className="relative inline-flex items-center justify-center p-3.5 bg-emerald-50 rounded-2xl text-emerald-700 mb-1">
+              <Package size={34} strokeWidth={1.5} />
+              <Sparkles size={16} className="absolute -top-1 -right-1 text-emerald-500" />
+            </div>
+            <h4 className="text-sm font-bold text-[var(--text-primary)]">
+              {t.noItemsAdded || 'No items added yet'}
+            </h4>
+            <p className="text-xs text-[var(--text-secondary)] max-w-xs">
+              Add products or services to this invoice
+            </p>
+            <div className="flex items-center gap-2.5 pt-3">
+              <Button
+                variant="none"
+                type="button"
+                className="bg-[#026F39] hover:bg-[#025a2e] text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-95 transition-all"
+                onClick={onToggleProductSearch}
+              >
+                <Plus size={14} />
+                <span>+ {t.addItem || 'Add Item'}</span>
+              </Button>
+              <div className="[&>button]:bg-emerald-50 [&>button]:text-emerald-800 [&>button]:border [&>button]:border-emerald-200/80 [&>button]:hover:bg-emerald-100 [&>button]:font-bold [&>button]:text-xs [&>button]:px-4 [&>button]:py-2.5 [&>button]:rounded-xl">
+                <InvoiceScanButton onAdd={handleProductSelect} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {lineItems.map((item, index) => {
+          const { lineTotal, discountAmount } = calculateLineTotal(
+            item.quantity, item.rate, item.discountType, item.discountValue,
+          )
+          const { profit, profitPercent } = calculateLineProfit(item.rate, 0, item.quantity, discountAmount)
+          const meta = lineMeta[index] ?? { mode: isEditMode ? ('EDITED' as PriceMode) : ('AUTO' as PriceMode), salePrice: 0 }
+
+          return (
+            <div key={item.productId} className="line-item-with-gst">
+              <LineItemEditor
+                item={{ ...item, productName: productNames[item.productId] ?? `${t.item} ${index + 1}`,
+                  discountAmount, lineTotal, profit, profitPercent }}
+                index={index}
+                onUpdate={handleUpdateLineItem}
+                onRemove={onRemoveLineItem}
+                showProfit={false}
+                canMarkFree={canMarkFree}
+                priceTier={tier}
+                partyPricing={partyPricing}
+                productSalePrice={meta.salePrice || undefined}
+                priceMode={meta.mode}
+                onPriceModeChange={handlePriceModeChange}
+              />
+              {gstEnabled && (
+                <div className="line-item-gst-row">
+                  {!compositionScheme && (
+                    <TaxPickerColumn
+                      lineIndex={index}
+                      taxCategoryId={item.taxCategoryId}
+                      compositionScheme={compositionScheme}
+                      onChange={(id) => onUpdateLineItem(index, { taxCategoryId: id })}
+                    />
+                  )}
+                  <HsnTypeahead
+                    lineIndex={index}
+                    value={item.hsnCode ?? ''}
+                    onSelect={(code, _rate) => onUpdateLineItem(index, { hsnCode: code })}
+                  />
+                </div>
+              )}
+            </div>
+          )
+        })}
+
+        {errors.lineItems && <span className="field-error" role="alert">{errors.lineItems}</span>}
+
+        {stockWarnings.length > 0 && (
+          <div className={`stock-warnings${hasStockBlocks ? ' stock-warnings--block' : ''}`} role="alert">
+            <div className="stock-warnings-title">
+              <AlertTriangle size={16} aria-hidden="true" />
+              {hasStockBlocks ? t.insufficientStock : t.lowStockWarning}
+            </div>
+            {stockWarnings.map((w) => (
+              <div key={w.productId} className="stock-warning-item">
+                <span className="stock-warning-name">{w.productName}</span>
+                <span className="stock-warning-detail">
+                  {w.currentStock} {w.requestedUnit} {t.availableLabel}, {w.requestedQty} {t.requestedLabel}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {errors.stock && <span className="field-error" role="alert">{errors.stock}</span>}
+
+        {partyId && (
+          <FrequentProductChips
+            partyId={partyId}
+            quantities={addedQuantities}
+            onAdd={handleProductSelect}
+          />
+        )}
+
+        {lineItems.length > 0 && (
+          <div className="invoice-scan-row">
             <InvoiceScanButton onAdd={handleProductSelect} />
           </div>
-        </div>
-      )}
-
-      {lineItems.map((item, index) => {
-        const { lineTotal, discountAmount } = calculateLineTotal(
-          item.quantity, item.rate, item.discountType, item.discountValue,
-        )
-        const { profit, profitPercent } = calculateLineProfit(item.rate, 0, item.quantity, discountAmount)
-        const meta = lineMeta[index] ?? { mode: isEditMode ? ('EDITED' as PriceMode) : ('AUTO' as PriceMode), salePrice: 0 }
-
-        return (
-          <div key={item.productId} className="line-item-with-gst">
-            <LineItemEditor
-              item={{ ...item, productName: productNames[item.productId] ?? `${t.item} ${index + 1}`,
-                discountAmount, lineTotal, profit, profitPercent }}
-              index={index}
-              onUpdate={handleUpdateLineItem}
-              onRemove={onRemoveLineItem}
-              showProfit={false}
-              canMarkFree={canMarkFree}
-              priceTier={tier}
-              partyPricing={partyPricing}
-              productSalePrice={meta.salePrice || undefined}
-              priceMode={meta.mode}
-              onPriceModeChange={handlePriceModeChange}
-            />
-            {gstEnabled && (
-              <div className="line-item-gst-row">
-                {!compositionScheme && (
-                  <TaxPickerColumn
-                    lineIndex={index}
-                    taxCategoryId={item.taxCategoryId}
-                    compositionScheme={compositionScheme}
-                    onChange={(id) => onUpdateLineItem(index, { taxCategoryId: id })}
-                  />
-                )}
-                <HsnTypeahead
-                  lineIndex={index}
-                  value={item.hsnCode ?? ''}
-                  onSelect={(code, _rate) => onUpdateLineItem(index, { hsnCode: code })}
-                />
-              </div>
-            )}
-          </div>
-        )
-      })}
-
-      {errors.lineItems && <span className="field-error" role="alert">{errors.lineItems}</span>}
-
-      {stockWarnings.length > 0 && (
-        <div className={`stock-warnings${hasStockBlocks ? ' stock-warnings--block' : ''}`} role="alert">
-          <div className="stock-warnings-title">
-            <AlertTriangle size={16} aria-hidden="true" />
-            {hasStockBlocks ? t.insufficientStock : t.lowStockWarning}
-          </div>
-          {stockWarnings.map((w) => (
-            <div key={w.productId} className="stock-warning-item">
-              <span className="stock-warning-name">{w.productName}</span>
-              <span className="stock-warning-detail">
-                {w.currentStock} {w.requestedUnit} {t.availableLabel}, {w.requestedQty} {t.requestedLabel}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {errors.stock && <span className="field-error" role="alert">{errors.stock}</span>}
-
-      {partyId && (
-        <FrequentProductChips
-          partyId={partyId}
-          quantities={addedQuantities}
-          onAdd={handleProductSelect}
-        />
-      )}
-
-      {lineItems.length > 0 && (
-        <div className="invoice-scan-row">
-          <InvoiceScanButton onAdd={handleProductSelect} />
-        </div>
-      )}
-      </FormSection>
+        )}
+      </div>
     </div>
   )
 }

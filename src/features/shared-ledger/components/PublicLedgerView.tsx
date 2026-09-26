@@ -1,7 +1,9 @@
 /** Public Ledger View — Read-only ledger displayed to share recipients */
 
+import { Text } from '@/components/ui/Text'
 import type { PublicLedgerData } from '../shared-ledger.types'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Heading } from '@/components/ui/Heading'
 
 interface PublicLedgerViewProps {
   data: PublicLedgerData
@@ -15,8 +17,8 @@ export function PublicLedgerView({ data }: PublicLedgerViewProps) {
   return (
     <div className="public-ledger">
       <div className="public-ledger-header">
-        <h1 className="public-ledger-business">{data.businessName}</h1>
-        <p className="public-ledger-party">{t.ledgerFor} {data.partyName}</p>
+        <Heading level={1} className="public-ledger-business">{data.businessName}</Heading>
+        <Text className="public-ledger-party">{t.ledgerFor} {data.partyName}</Text>
         <span className="public-ledger-badge">{t.readOnlyView}</span>
       </div>
 
@@ -61,9 +63,9 @@ export function PublicLedgerView({ data }: PublicLedgerViewProps) {
         ))}
       </div>
 
-      <p className="public-ledger-watermark">
+      <Text className="public-ledger-watermark">
         {t.sharedViaHisaabPro} {new Date(data.generatedAt).toLocaleDateString('en-IN')}
-      </p>
+      </Text>
     </div>
   )
 }

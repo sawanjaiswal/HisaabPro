@@ -4,6 +4,7 @@
  * Memoised by (format, template, items, qtyMap) to avoid re-renders on unrelated state.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useMemo, memo } from 'react'
 import { BarcodeDisplay } from '../components/BarcodeDisplay'
 import { SHEETS, expandToCells, paginateCells } from './label-layout'
@@ -49,10 +50,10 @@ function LabelCellInner({ item, template, cellW, cellH }: CellProps) {
         <span className="label-cell-no-barcode">No barcode</span>
       )}
       {showName && (
-        <p className="label-cell-name">{item.name}</p>
+        <Text className="label-cell-name">{item.name}</Text>
       )}
       {showPrice && (
-        <p className="label-cell-price">{formatProductPrice(item.salePrice)}</p>
+        <Text className="label-cell-price">{formatProductPrice(item.salePrice)}</Text>
       )}
     </div>
   )

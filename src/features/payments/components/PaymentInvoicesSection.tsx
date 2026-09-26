@@ -4,6 +4,7 @@
  * auto-allocate (FIFO) button, and unallocated summary.
  */
 
+import { Text } from '@/components/ui/Text'
 import { formatPaise } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentFormAllocation } from '../payment.types'
@@ -33,9 +34,9 @@ export function PaymentInvoicesSection({
   if (allocations.length === 0) {
     return (
       <div className="payment-form">
-        <p className="payment-empty-text">
+        <Text className="payment-empty-text">
           {t.noUnpaidInvoices}
-        </p>
+        </Text>
       </div>
     )
   }

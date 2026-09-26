@@ -1,16 +1,31 @@
 /** Ledger — Empty state */
 
-import { BookOpen } from 'lucide-react'
+import { BookOpen, RotateCcw } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { Button } from '@/components/ui/Button'
 
-export function LedgerEmpty() {
+interface LedgerEmptyProps {
+  isFiltered?: boolean
+  onResetFilter?: () => void
+}
+
+export function LedgerEmpty({ isFiltered, onResetFilter }: LedgerEmptyProps) {
   const { t } = useLanguage()
   return (
     <EmptyState
-      icon={<BookOpen size={22} aria-hidden="true" />}
+      icon={<BookOpen size={24} aria-hidden="true" />}
       title={t.ledgerEmptyTitle}
       description={t.ledgerEmptyBody}
+      action={
+        isFiltered && onResetFilter ? (
+          <Button variant="outline" size="sm" onClick={onResetFilter}>
+            <RotateCcw size={14} aria-hidden="true" />
+            <span>{t.viewAll}</span>
+          </Button>
+        ) : undefined
+      }
     />
   )
 }
+

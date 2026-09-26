@@ -6,6 +6,7 @@
  * 320px minimum, UPI deep-link sticky button.
  */
 
+import { Text } from '@/components/ui/Text'
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useOutletContext } from 'react-router-dom'
 import { Package, SearchX, AlertCircle, MessageCircle } from 'lucide-react'
@@ -15,6 +16,7 @@ import type { PublicStorefrontDto, PublicStoreStatus } from '@/features/storefro
 import type { PublicLang } from '@/features/public/hooks/usePublicLang'
 import './public-store.css'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 
 // ─── Strings ──────────────────────────────────────────────────────────────────
 
@@ -92,8 +94,8 @@ function StoreStatusScreen({
       <div className="pub-store-status__icon pub-store-status__icon--error" aria-hidden="true">
         {icon}
       </div>
-      <p className="pub-store-status__title">{title}</p>
-      <p className="pub-store-status__msg">{msg}</p>
+      <Text className="pub-store-status__title">{title}</Text>
+      <Text className="pub-store-status__msg">{msg}</Text>
       {onRetry && retryLabel && (
         <Button variant="none" type="button" className="pub-store-status__retry" onClick={onRetry}>
           {retryLabel}
@@ -162,8 +164,8 @@ export function PublicStorePage() {
               {store.business.name.charAt(0).toUpperCase()}
             </div>
         }
-        <h1 className="pub-store__biz-name">{store.business.name}</h1>
-        {store.tagline && <p className="pub-store__tagline">{store.tagline}</p>}
+        <Heading level={1} className="pub-store__biz-name">{store.business.name}</Heading>
+        {store.tagline && <Text className="pub-store__tagline">{store.tagline}</Text>}
       </div>
       <StoreStatusScreen
         icon={<Package size={28} />}
@@ -184,8 +186,8 @@ export function PublicStorePage() {
                 {store.business.name.charAt(0).toUpperCase()}
               </div>
           }
-          <h1 className="pub-store__biz-name">{store.business.name}</h1>
-          {store.tagline && <p className="pub-store__tagline">{store.tagline}</p>}
+          <Heading level={1} className="pub-store__biz-name">{store.business.name}</Heading>
+          {store.tagline && <Text className="pub-store__tagline">{store.tagline}</Text>}
         </header>
 
         <div className="pub-store__body">
@@ -201,8 +203,8 @@ export function PublicStorePage() {
                   )
                 }
                 <div className="pub-store__product-body">
-                  <p className="pub-store__product-name">{product.name}</p>
-                  <p className="pub-store__product-price">{formatPaise(product.sellingPrice)}</p>
+                  <Text className="pub-store__product-name">{product.name}</Text>
+                  <Text className="pub-store__product-price">{formatPaise(product.sellingPrice)}</Text>
                   {store.whatsapp && (
                     <a
                       href={buildWhatsAppUrl(store.whatsapp, store.business.name, product.name)}

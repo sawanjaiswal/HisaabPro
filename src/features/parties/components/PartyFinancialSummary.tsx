@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
-import { SummaryTiles } from '@/components/ui/SummaryTiles'
+import { SummaryTiles, type SummaryTileTone } from '@/components/ui/SummaryTiles'
 import type { PartyDetail } from '../party.types'
 import { formatAmount } from '../party.utils'
 
@@ -20,6 +20,9 @@ export const PartyFinancialSummary: React.FC<PartyFinancialSummaryProps> = ({ pa
   const due = Math.max(party.outstandingBalance, 0)
   const last = party.stats?.lastPayment ?? null
 
+  const dueTone: SummaryTileTone = due > 0 ? 'due' : 'paid'
+  const dueHint = due === 0 ? t.settled : (party.stats?.isOverdue && party.stats?.oldestDueDays ? `${party.stats.oldestDueDays}d ${t.overdue}` : undefined)
+
   return (
     <SummaryTiles
       variant="divided"
@@ -29,15 +32,19 @@ export const PartyFinancialSummary: React.FC<PartyFinancialSummaryProps> = ({ pa
           id: 'due',
           label: isSupplier ? t.totalPayable : t.outstanding,
           value: formatAmount(due),
-          tone: 'due',
+          tone: dueTone,
+          hint: dueHint,
+          hintTone: due === 0 ? 'paid' : 'due',
         },
         {
           id: 'last-payment',
           label: t.lastPayment,
           value: last ? formatAmount(last.amount) : '—',
-          tone: 'paid',
+          tone: 'neutral',
+          hint: last?.date ? new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short' }).format(new Date(last.date)) : undefined,
         },
       ]}
     />
   )
 }
+

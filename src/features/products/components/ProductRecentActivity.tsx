@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/feedback/EmptyState'
 import type { StockMovement } from '../product.types'
 import { formatMovementType } from '../product.utils'
 import { formatQuantity, formatDateTime } from '@/lib/format'
+import { Heading } from '@/components/ui/Heading'
 
 interface ProductRecentActivityProps {
   movements: StockMovement[]
@@ -31,7 +32,7 @@ export const ProductRecentActivity: React.FC<ProductRecentActivityProps> = ({
   return (
     <section className="pd-card pd-activity" aria-label={t.recentActivity}>
       <header className="pd-card__head">
-        <h3 className="pd-card__title">{t.recentActivity}</h3>
+        <Heading level={3} className="pd-card__title">{t.recentActivity}</Heading>
         <Button variant="none" type="button" className="pd-card__link" onClick={onViewAll}>{t.viewAll}</Button>
       </header>
 
