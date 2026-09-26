@@ -5,7 +5,6 @@
  */
 
 import { useState } from 'react'
-import { FormSection } from '@/components/ui/FormSection'
 import {
   Accordion,
   AccordionItem,
@@ -67,23 +66,21 @@ export function PaymentFormSections({
 
   return (
     <>
-      <FormSection title={t.sectionDetails}>
-        <PaymentDetailsSection
-          partyId={form.partyId}
-          amount={form.amount}
-          date={form.date}
-          mode={form.mode}
-          referenceNumber={form.referenceNumber}
-          notes={form.notes}
-          errors={errors}
-          onPartyChange={(id) => updateField('partyId', id)}
-          onAmountChange={(paise) => updateField('amount', paise)}
-          onDateChange={(d) => updateField('date', d)}
-          onModeChange={updateMode}
-          onReferenceChange={(ref) => updateField('referenceNumber', ref)}
-          onNotesChange={(n) => updateField('notes', n)}
-        />
-      </FormSection>
+      <PaymentDetailsSection
+        partyId={form.partyId}
+        amount={form.amount}
+        date={form.date}
+        mode={form.mode}
+        referenceNumber={form.referenceNumber}
+        notes={form.notes}
+        errors={errors}
+        onPartyChange={(id) => updateField('partyId', id)}
+        onAmountChange={(paise) => updateField('amount', paise)}
+        onDateChange={(d) => updateField('date', d)}
+        onModeChange={updateMode}
+        onReferenceChange={(ref) => updateField('referenceNumber', ref)}
+        onNotesChange={(n) => updateField('notes', n)}
+      />
 
       <Accordion
         type="multiple"

@@ -4,6 +4,7 @@
  * <PaymentFormSections> so Edit renders the same thing. Sticky bottom save.
  */
 
+import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { FormPageShell } from '@/components/layout/FormPageShell'
 import { Button } from '@/components/ui/Button'
@@ -27,6 +28,12 @@ export default function RecordPaymentPage() {
     updateField, updateMode, toggleAllocation, updateAllocationAmount,
     autoAllocate, toggleDiscount, updateDiscount, handleSubmit,
   } = usePaymentForm({ defaultType: typeParam, defaultPartyId: partyIdParam })
+
+  useEffect(() => {
+    if (partyIdParam && form.partyId !== partyIdParam) {
+      updateField('partyId', partyIdParam)
+    }
+  }, [partyIdParam, form.partyId, updateField])
 
   const title = form.type === 'PAYMENT_IN' ? t.recordPaymentIn : t.recordPaymentOut
 

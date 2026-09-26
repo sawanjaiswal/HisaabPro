@@ -1,10 +1,11 @@
-/** Payment Details Section — shared between Record & Edit pages
+/** 2026 Ultra-Modern Fintech Payment Screen
  *
- * Level 6 HisaabPro Fintech Transaction Form:
- * - Rich Party Card with Avatar, Name & Live Balance
- * - Hero Currency Amount Card with prominent tabular digits
- * - Iconic 2x4 Payment Mode selector with emerald active state
- * - Clean Date, Reference & Notes cards with responsive touch targets
+ * Design Language:
+ * - Center-staged Hero Amount display (Apple Pay / Revolut / Linear style)
+ * - Sleek floating Party Island with live balance pill
+ * - Modern 2026 Segmented Mode Pill Chips with clean micro-icons
+ * - iOS/macOS grouped metadata card (Date, Reference, Notes)
+ * - Floating glass bottom action bar
  */
 
 import React from 'react'
@@ -19,7 +20,6 @@ import {
   Calendar,
   Hash,
   FileText,
-  IndianRupee,
 } from 'lucide-react'
 import { PartySearchInput } from '@/components/ui/PartySearch'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -30,6 +30,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
 import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
+import { formatRupees } from '@/lib/format'
 
 const PAYMENT_MODES: PaymentMode[] = [
   'CASH',
@@ -85,60 +86,65 @@ export function PaymentDetailsSection({
   const { t } = useLanguage()
   const showReference = MODES_WITH_REFERENCE.includes(mode)
 
+  const quickAmounts = [500, 1000, 2000, 5000]
+
   return (
-    <div className="space-y-4">
-      {/* 1. Party Selector Card */}
+    <div className="space-y-4 max-w-lg mx-auto">
+      {/* ── 1. Party Floating Card ─────────────────────────────────────── */}
       <div
-        className="p-4 rounded-[var(--radius-xl)] border transition-all"
+        className="p-3.5 rounded-[var(--radius-xl)] border transition-all"
         style={{
-          backgroundColor: 'var(--color-gray-0)',
-          borderColor: errors.partyId ? 'var(--color-error-400)' : 'var(--color-gray-200)',
+          backgroundColor: 'var(--color-surface)',
+          borderColor: errors.partyId ? 'var(--color-error-400)' : 'var(--color-border)',
           boxShadow: 'var(--shadow-xs)',
         }}
       >
         <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} />
       </div>
 
-      {/* 2. Hero Amount Card */}
+      {/* ── 2. 2026 Hero Amount Center Stage ───────────────────────────── */}
       <div
-        className="p-4 sm:p-5 rounded-[var(--radius-xl)] border transition-all space-y-2"
+        className="py-6 px-4 rounded-[var(--radius-2xl)] border text-center transition-all relative overflow-hidden"
         style={{
-          backgroundColor: 'var(--color-gray-0)',
-          borderColor: errors.amount ? 'var(--color-error-400)' : 'var(--color-gray-200)',
-          boxShadow: 'var(--shadow-xs)',
+          backgroundColor: 'var(--color-surface)',
+          borderColor: errors.amount ? 'var(--color-error-400)' : 'var(--color-border)',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
-        <label
-          className="block text-[var(--fs-xs)] font-semibold uppercase tracking-wider select-none"
+        {/* Subtle Ambient Glow */}
+        <div
+          className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-24 rounded-full blur-2xl opacity-15 pointer-events-none"
+          style={{ backgroundColor: 'var(--color-primary-500)' }}
+        />
+
+        <p
+          className="text-[var(--fs-xs)] font-bold uppercase tracking-widest mb-2"
           style={{ color: 'var(--text-secondary)' }}
-          htmlFor="payment-amount"
         >
           {t.amountRequired}
-        </label>
+        </p>
 
-        <div
-          className="flex items-center gap-3 px-4 py-2.5 rounded-[var(--radius-lg)] border transition-all"
-          style={{ backgroundColor: 'var(--color-gray-50)', borderColor: 'var(--color-gray-200)' }}
-        >
-          <div
-            className="flex items-center justify-center w-10 h-10 rounded-[var(--radius-md)] flex-shrink-0 select-none"
-            style={{
-              backgroundColor: 'var(--color-primary-bg-subtle)',
-              color: 'var(--color-primary-600)',
-            }}
+        {/* Center-staged Amount Display */}
+        <div className="flex items-center justify-center gap-1.5 my-2">
+          <span
+            className="text-[2.5rem] sm:text-[3rem] font-bold select-none leading-none"
+            style={{ color: 'var(--color-primary-600)' }}
           >
-            <IndianRupee className="w-5 h-5" strokeWidth={2.5} />
-          </div>
-
-          <Input
+            ₹
+          </span>
+          <input
             id="payment-amount"
             type="number"
             step="0.01"
             min="0"
             inputMode="decimal"
-            placeholder="0.00"
-            className="w-full bg-transparent border-0 text-[var(--fs-3xl)] font-bold placeholder:text-[var(--color-gray-300)] focus:ring-0 focus:outline-none tabular-nums p-0 shadow-none"
-            style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-primary)' }}
+            placeholder="0"
+            className="w-48 sm:w-64 bg-transparent border-0 text-center text-[2.75rem] sm:text-[3.25rem] font-black focus:outline-none tabular-nums p-0 shadow-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            style={{
+              color: 'var(--text-primary)',
+              fontFamily: 'var(--font-primary)',
+              letterSpacing: '-0.03em',
+            }}
             value={amount > 0 ? (amount / 100).toFixed(2) : ''}
             onChange={(e) => {
               const parsed = parseFloat(e.target.value || '0')
@@ -149,27 +155,50 @@ export function PaymentDetailsSection({
           />
         </div>
 
+        {/* Quick Amount Suggestion Chips */}
+        <div className="flex items-center justify-center gap-1.5 mt-3 flex-wrap">
+          {quickAmounts.map((q) => (
+            <Button
+              key={q}
+              type="button"
+              variant="none"
+              onClick={() => onAmountChange(q * 100)}
+              className="px-2.5 py-1 rounded-full text-[var(--fs-xs)] font-semibold border transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              style={{
+                backgroundColor: 'var(--color-gray-50)',
+                borderColor: 'var(--color-gray-200)',
+                color: 'var(--text-secondary)',
+              }}
+            >
+              +{formatRupees(q * 100)}
+            </Button>
+          ))}
+        </div>
+
         {errors.amount && (
-          <span className="block text-[var(--fs-xs)] font-medium mt-1" style={{ color: 'var(--color-error-600)' }} role="alert">
+          <span className="block text-[var(--fs-xs)] font-medium mt-2" style={{ color: 'var(--color-error-600)' }} role="alert">
             {errors.amount}
           </span>
         )}
       </div>
 
-      {/* 3. Payment Mode Selector Card */}
+      {/* ── 3. Modern Segmented Payment Mode Pills ──────────────────────── */}
       <div
-        className="p-4 rounded-[var(--radius-xl)] border transition-all space-y-3"
+        className="p-3.5 rounded-[var(--radius-xl)] border space-y-2.5"
         style={{
-          backgroundColor: 'var(--color-gray-0)',
-          borderColor: errors.mode ? 'var(--color-error-400)' : 'var(--color-gray-200)',
+          backgroundColor: 'var(--color-surface)',
+          borderColor: errors.mode ? 'var(--color-error-400)' : 'var(--color-border)',
           boxShadow: 'var(--shadow-xs)',
         }}
       >
-        <label className="block text-[var(--fs-xs)] font-semibold uppercase tracking-wider select-none" style={{ color: 'var(--text-secondary)' }}>
+        <p
+          className="text-[var(--fs-xs)] font-bold uppercase tracking-wider select-none px-0.5"
+          style={{ color: 'var(--text-secondary)' }}
+        >
           {t.paymentModeRequired}
-        </label>
+        </p>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5" role="radiogroup" aria-label={t.paymentModeAriaLabel}>
+        <div className="grid grid-cols-4 gap-1.5" role="radiogroup" aria-label={t.paymentModeAriaLabel}>
           {PAYMENT_MODES.map((m) => {
             const isSelected = mode === m
             const Icon = MODE_ICONS[m]
@@ -178,10 +207,10 @@ export function PaymentDetailsSection({
                 key={m}
                 type="button"
                 variant="none"
-                className="flex items-center gap-2.5 p-2.5 rounded-[var(--radius-lg)] border transition-all text-left min-h-[48px] cursor-pointer"
+                className="flex flex-col items-center justify-center gap-1.5 p-2 rounded-[var(--radius-lg)] border transition-all text-center min-h-[58px] cursor-pointer active:scale-95"
                 style={{
-                  backgroundColor: isSelected ? 'var(--color-primary-bg-subtle)' : 'var(--color-gray-0)',
-                  borderColor: isSelected ? 'var(--color-primary-500)' : 'var(--color-gray-200)',
+                  backgroundColor: isSelected ? 'var(--color-primary-bg-subtle)' : 'var(--color-gray-50)',
+                  borderColor: isSelected ? 'var(--color-primary-500)' : 'transparent',
                   color: isSelected ? 'var(--color-primary-700)' : 'var(--text-secondary)',
                   boxShadow: isSelected ? '0 0 0 1px var(--color-primary-500)' : 'none',
                 }}
@@ -191,15 +220,15 @@ export function PaymentDetailsSection({
                 aria-label={PAYMENT_MODE_LABELS[m]}
               >
                 <div
-                  className="flex items-center justify-center w-7 h-7 rounded-[var(--radius-md)] flex-shrink-0 transition-all"
+                  className="flex items-center justify-center w-7 h-7 rounded-full transition-all"
                   style={{
-                    backgroundColor: isSelected ? 'var(--color-primary-500)' : 'var(--color-gray-100)',
-                    color: isSelected ? 'var(--color-gray-0)' : 'var(--color-gray-600)',
+                    backgroundColor: isSelected ? 'var(--color-primary-500)' : 'var(--color-gray-200)',
+                    color: isSelected ? 'var(--color-gray-0)' : 'var(--color-gray-700)',
                   }}
                 >
                   <Icon className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-[var(--fs-xs)] font-semibold truncate leading-tight">
+                <span className="text-[10px] font-bold truncate max-w-full leading-tight">
                   {PAYMENT_MODE_LABELS[m]}
                 </span>
               </Button>
@@ -214,14 +243,23 @@ export function PaymentDetailsSection({
         )}
       </div>
 
-      {/* 4. Date & Reference Number Card */}
+      {/* ── 4. Compact Grouped Metadata Card ───────────────────────────── */}
       <div
-        className="p-4 rounded-[var(--radius-xl)] border transition-all space-y-3.5"
-        style={{ backgroundColor: 'var(--color-gray-0)', borderColor: 'var(--color-gray-200)', boxShadow: 'var(--shadow-xs)' }}
+        className="p-3.5 rounded-[var(--radius-xl)] border space-y-3"
+        style={{
+          backgroundColor: 'var(--color-surface)',
+          borderColor: 'var(--color-border)',
+          boxShadow: 'var(--shadow-xs)',
+        }}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <div className="space-y-1.5">
-            <label className="flex items-center gap-1.5 text-[var(--fs-xs)] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }} htmlFor="payment-date">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Date */}
+          <div className="space-y-1">
+            <label
+              className="flex items-center gap-1.5 text-[var(--fs-xs)] font-bold uppercase tracking-wider"
+              style={{ color: 'var(--text-secondary)' }}
+              htmlFor="payment-date"
+            >
               <Calendar className="w-3.5 h-3.5 text-[var(--color-primary-500)]" />
               {t.dateRequired}
             </label>
@@ -229,9 +267,14 @@ export function PaymentDetailsSection({
             {errors.date && <span className="block text-[var(--fs-xs)] font-medium" style={{ color: 'var(--color-error-600)' }} role="alert">{errors.date}</span>}
           </div>
 
+          {/* Reference */}
           {showReference && (
-            <div className="space-y-1.5">
-              <label className="flex items-center gap-1.5 text-[var(--fs-xs)] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }} htmlFor="payment-ref">
+            <div className="space-y-1">
+              <label
+                className="flex items-center gap-1.5 text-[var(--fs-xs)] font-bold uppercase tracking-wider"
+                style={{ color: 'var(--text-secondary)' }}
+                htmlFor="payment-ref"
+              >
                 <Hash className="w-3.5 h-3.5 text-[var(--color-primary-500)]" />
                 {t.referenceNumberLabel}
               </label>
@@ -242,8 +285,12 @@ export function PaymentDetailsSection({
         </div>
 
         {/* Notes */}
-        <div className="space-y-1.5">
-          <label className="flex items-center gap-1.5 text-[var(--fs-xs)] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }} htmlFor="payment-notes">
+        <div className="space-y-1">
+          <label
+            className="flex items-center gap-1.5 text-[var(--fs-xs)] font-bold uppercase tracking-wider"
+            style={{ color: 'var(--text-secondary)' }}
+            htmlFor="payment-notes"
+          >
             <FileText className="w-3.5 h-3.5 text-[var(--color-primary-500)]" />
             {t.notesLabel}
           </label>
