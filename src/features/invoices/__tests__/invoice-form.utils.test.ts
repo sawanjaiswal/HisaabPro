@@ -159,4 +159,22 @@ describe('normalizeFormPayload', () => {
     const result = normalizeFormPayload({ ...baseForm, vehicleNumber: '' }, 'SAVED')
     expect(result.transportDetails).toBeNull()
   })
+
+  it('filters out additional charges with empty names', () => {
+    const result = normalizeFormPayload(
+      {
+        ...baseForm,
+        additionalCharges: [
+          { name: '  ', type: 'FIXED', value: 100 },
+          { name: 'Delivery', type: 'FIXED', value: 5000 },
+          { name: '', type: 'PERCENTAGE', value: 500 },
+        ],
+      },
+      'SAVED',
+    )
+    expect(result.additionalCharges).toHaveLength(1)
+    expect(result.additionalCharges[0].name).toBe('Delivery')
+    expect(result.additionalCharges[0].value).toBe(5000)
+  })
 })
+
