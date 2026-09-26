@@ -6,7 +6,6 @@
 
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { MoreVertical } from 'lucide-react'
 import { FormPageShell } from '@/components/layout/FormPageShell'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -36,19 +35,12 @@ export default function RecordPaymentPage() {
     }
   }, [partyIdParam, form.partyId, updateField])
 
-  const title = form.type === 'PAYMENT_IN' ? (t.recordPaymentIn || 'Record Payment') : (t.recordPaymentOut || 'Record Payment Out')
-  const subtitle = form.type === 'PAYMENT_IN' ? 'Add payment received' : 'Add payment made'
+  const title = form.type === 'PAYMENT_IN' ? (t.recordPaymentIn || 'Record Payment In') : (t.recordPaymentOut || 'Record Payment Out')
 
   return (
     <FormPageShell
       title={title}
-      subtitle={subtitle}
       backTo={ROUTES.PAYMENTS}
-      actions={
-        <Button variant="none" type="button" className="header-icon-btn text-white/90 hover:text-white" aria-label="More options">
-          <MoreVertical size={20} aria-hidden="true" />
-        </Button>
-      }
       onSubmit={(e) => {
         e.preventDefault()
         handleSubmit()
@@ -58,7 +50,7 @@ export default function RecordPaymentPage() {
           type="button"
           variant="none"
           size="lg"
-          className="w-full bg-[#026F39] hover:bg-[#025a2e] active:scale-[0.99] text-white font-bold py-3.5 rounded-xl shadow-xs text-base transition-all flex items-center justify-center cursor-pointer"
+          className="w-full bg-[#024724] hover:bg-[#01351a] active:scale-[0.99] text-white font-bold py-4 rounded-2xl shadow-md text-base transition-all flex items-center justify-center cursor-pointer"
           loading={isSubmitting}
           onClick={handleSubmit}
           aria-label={isSubmitting ? t.savingPayment : 'Save Payment'}

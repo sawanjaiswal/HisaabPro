@@ -97,10 +97,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-1.5">
             <label
               htmlFor={inputId}
-              className="block text-[var(--fs-xs)] font-bold uppercase tracking-wider text-[var(--color-text-secondary)] select-none"
+              className="block text-sm font-medium text-[var(--text-primary)] select-none"
             >
               {label}
               {required && (
@@ -110,7 +110,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               )}
             </label>
             {hint && !error && (
-              <span className="text-[10px] text-[var(--color-text-muted)]">{hint}</span>
+              <span className="text-xs text-[var(--text-muted)]">{hint}</span>
             )}
           </div>
         )}

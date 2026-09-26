@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Camera, MoreVertical } from 'lucide-react'
+import { Camera } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -109,28 +109,17 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
     <AppShell>
       <Header
         title={formTitle}
-        subtitle="Create and send an invoice"
         backTo={getCreateBackTo(type)}
         actions={
-          <div className="flex items-center gap-1">
-            <Button
-              variant="none"
-              type="button"
-              className="header-icon-btn text-white/90 hover:text-white"
-              onClick={() => nav(ROUTES.BILL_SCAN)}
-              aria-label={t.scanBillAddItems}
-            >
-              <Camera size={20} aria-hidden="true" />
-            </Button>
-            <Button
-              variant="none"
-              type="button"
-              className="header-icon-btn text-white/90 hover:text-white"
-              aria-label="More options"
-            >
-              <MoreVertical size={20} aria-hidden="true" />
-            </Button>
-          </div>
+          <Button
+            variant="none"
+            type="button"
+            className="header-icon-btn text-white/90 hover:text-white"
+            onClick={() => nav(ROUTES.BILL_SCAN)}
+            aria-label={t.scanBillAddItems}
+          >
+            <Camera size={20} aria-hidden="true" />
+          </Button>
         }
       />
 

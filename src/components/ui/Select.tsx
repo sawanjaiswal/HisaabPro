@@ -237,7 +237,14 @@ export function Select({
 
   return (
     <div className={cn('relative w-full', className)}>
-      {label && <label htmlFor={id} className="label">{label}</label>}
+      {label && (
+        <div className="flex items-center justify-between mb-1.5">
+          <label htmlFor={id} className="block text-sm font-medium text-[var(--text-primary)] select-none">
+            {label}
+            {required && <span className="text-[var(--color-error-500)] ml-1 font-bold" aria-hidden="true">*</span>}
+          </label>
+        </div>
+      )}
       <button
         ref={triggerRef}
         id={id}
