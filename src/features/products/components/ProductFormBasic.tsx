@@ -2,16 +2,16 @@
 
 import { Text } from '@/components/ui/Text'
 import { useState, useEffect, useCallback } from 'react'
-import { Plus } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
-import { Select, SelectItem } from '@/components/ui/Select'
+import { CurrencyInput } from '@/components/ui/CurrencyInput'
+import { Select } from '@/components/ui/Select'
+import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatName } from '@/lib/format'
 import type { ProductFormData, Category, Unit } from '../product.types'
 import { getCategories, getUnits, createUnit } from '../product.service'
 import type { UnitInput } from '../unit.service'
 import { AddUnitSheet } from '@/features/units/components/AddUnitSheet'
-import { Button } from '@/components/ui/Button'
 
 interface ProductFormBasicProps {
   form: ProductFormData
@@ -42,16 +42,15 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
     getCategories(undefined, controller.signal)
       .then((cats) => {
         setCategories(cats)
-        if (!form.categoryId && cats.length > 0) {
-          onUpdate('categoryId', cats[0].id)
-        }
+        // Fix 3: No auto-select — placeholder stays until user explicitly picks
       })
       .catch(() => {/* aborted or network error — silent, dropdown stays empty */})
 
     getUnits(undefined, controller.signal)
       .then((fetchedUnits) => {
         setUnits(fetchedUnits)
-        if (!form.unitId && fetchedUnits.length > 0) {
+        // Fix 4: Auto-select ONLY when exactly 1 unit exists (single-unit shops)
+        if (!form.unitId && fetchedUnits.length === 1) {
           onUpdate('unitId', fetchedUnits[0].id)
         }
       })
@@ -60,6 +59,9 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
     return () => controller.abort()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // fetch once on mount; onUpdate is stable (useCallback), form defaults applied once
+
+  const categoryOptions = categories.map((c) => ({ value: c.id, label: c.name }))
+  const unitOptions = units.map((u) => ({ value: u.id, label: `${u.name} (${u.symbol})` }))
 
   return (
     <div className="create-party-section py-0">
@@ -83,28 +85,29 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
         aria-required="true"
       />
 
-
       <div className="input-group">
-        <span className="input-label" id="sku-mode-label">{t.sku}</span>
-        <div className="pill-tabs pill-tabs--with-input" role="group" aria-labelledby="sku-mode-label">
-          <Button variant="none"
-            type="button"
-            className={`pill-tab${form.autoGenerateSku ? ' active' : ''}`}
-            onClick={() => onUpdate('autoGenerateSku', true)}
-            aria-pressed={form.autoGenerateSku}
-            aria-label={t.autoGenerateSku}
-          >
-            {t.autoGenerate}
-          </Button>
-          <Button variant="none"
-            type="button"
-            className={`pill-tab${!form.autoGenerateSku ? ' active' : ''}`}
-            onClick={() => onUpdate('autoGenerateSku', false)}
-            aria-pressed={!form.autoGenerateSku}
-            aria-label={t.enterSkuManually}
-          >
-            {t.manualEntry}
-          </Button>
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <span className="input-label mb-0" id="sku-mode-label">{t.sku}</span>
+          <div className="pill-tabs mb-0 py-0" role="group" aria-labelledby="sku-mode-label">
+            <Button variant="none"
+              type="button"
+              className={`pill-tab${form.autoGenerateSku ? ' active' : ''}`}
+              onClick={() => onUpdate('autoGenerateSku', true)}
+              aria-pressed={form.autoGenerateSku}
+              aria-label={t.autoGenerateSku}
+            >
+              {t.autoGenerate}
+            </Button>
+            <Button variant="none"
+              type="button"
+              className={`pill-tab${!form.autoGenerateSku ? ' active' : ''}`}
+              onClick={() => onUpdate('autoGenerateSku', false)}
+              aria-pressed={!form.autoGenerateSku}
+              aria-label={t.enterSkuManually}
+            >
+              {t.manualEntry}
+            </Button>
+          </div>
         </div>
         {!form.autoGenerateSku && (
           <Input
@@ -119,84 +122,74 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
         {errors.sku && <Text className="input-error" role="alert">{errors.sku}</Text>}
       </div>
 
+      {/* Fix 1 & 6 — Category: searchable options= API + skeleton loading state */}
       <div className="input-group">
         <label htmlFor="product-category" className="input-label">{t.category}</label>
-        <Select
-          value={form.categoryId || undefined}
-          onValueChange={(v) => onUpdate('categoryId', v)}
-          ariaLabel={t.selectProductCategory}
-          placeholder={categories.length === 0 ? t.loading : undefined}
-          disabled={categories.length === 0}
-        >
-          {categories.map((cat) => (
-            <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-          ))}
-        </Select>
+        {categories.length === 0 ? (
+          <div
+            className="h-11 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-gray-200)]"
+            role="status"
+            aria-label={t.loading}
+          />
+        ) : (
+          <Select
+            id="product-category"
+            value={form.categoryId || undefined}
+            onValueChange={(v) => onUpdate('categoryId', v)}
+            options={categoryOptions}
+            searchable
+            placeholder={t.selectProductCategory}
+            ariaLabel={t.selectProductCategory}
+          />
+        )}
       </div>
 
+      {/* Fix 2 & 6 — Unit: searchable + onCreateOption inline CTA + skeleton */}
       <div className="input-group">
         <label htmlFor="product-unit" className="input-label">{t.unit}</label>
-        <div className="input-with-action">
+        {units.length === 0 && !form.unitId ? (
+          <div
+            className="h-11 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-gray-200)]"
+            role="status"
+            aria-label={t.loading}
+          />
+        ) : (
           <Select
+            id="product-unit"
             value={form.unitId || undefined}
             onValueChange={(v) => onUpdate('unitId', v)}
+            options={unitOptions}
+            searchable
+            onCreateOption={() => setAddUnitOpen(true)}
+            createOptionLabel={t.addCustomUnit}
+            placeholder={t.selectProductUnit}
             ariaLabel={t.selectProductUnit}
-            placeholder={units.length === 0 ? t.loading : undefined}
-            disabled={units.length === 0}
-          >
-            {units.map((unit) => (
-              <SelectItem key={unit.id} value={unit.id}>{unit.name} ({unit.symbol})</SelectItem>
-            ))}
-          </Select>
-          <Button
-            type="button"
-            variant="ghost" size="sm" className="input-with-action__btn"
-            onClick={() => setAddUnitOpen(true)}
-            aria-label={t.addCustomUnit}
-          >
-            <Plus size={16} aria-hidden="true" />
-          </Button>
-        </div>
+          />
+        )}
         {errors.unitId && <Text className="input-error" role="alert">{errors.unitId}</Text>}
       </div>
 
+      {/* Sale Price */}
       <div className="input-group">
-        <span className="input-label">{t.salePriceLabel}</span>
-        <div className="input-prefix-wrap">
-          <span className="input-prefix" aria-hidden="true">{t.currencyPrefix}</span>
-          <Input
-            id="product-sale-price"
-            className={`input input-prefixed${errors.salePrice ? ' input-error-border' : ''}`}
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.salePrice > 0 ? form.salePrice / 100 : ''}
-            onChange={(e) => onUpdate('salePrice', Math.round((parseFloat(e.target.value) || 0) * 100))}
-            placeholder="0.00"
-            aria-label={t.salePriceRupees}
-            inputMode="decimal"
-          />
-        </div>
-        {errors.salePrice && <Text className="input-error" role="alert">{errors.salePrice}</Text>}
+        <CurrencyInput
+          id="product-sale-price"
+          label={t.salePriceLabel}
+          value={form.salePrice}
+          onChange={(val) => onUpdate('salePrice', val)}
+          error={errors.salePrice}
+          placeholder="0.00"
+        />
       </div>
 
+      {/* Purchase Price */}
       <div className="input-group">
-        <span className="input-label">{t.purchasePriceLabel} <span className="text-optional">({t.notesOptionalLabel})</span></span>
-        <div className="input-prefix-wrap">
-          <span className="input-prefix" aria-hidden="true">{t.currencyPrefix}</span>
-          <Input
-            id="product-purchase-price"
-            className="input input-prefixed"
-            type="number"
-            min="0"
-            step="0.01"
-            value={form.purchasePrice && form.purchasePrice > 0 ? form.purchasePrice / 100 : ''}
-            onChange={(e) => onUpdate('purchasePrice', Math.round((parseFloat(e.target.value) || 0) * 100))}
-            placeholder="0.00"
-            aria-label={t.purchasePriceRupees}
-            inputMode="decimal"
-          />
-        </div>
+        <CurrencyInput
+          id="product-purchase-price"
+          label={`${t.purchasePriceLabel} (${t.notesOptionalLabel})`}
+          value={form.purchasePrice ?? 0}
+          onChange={(val) => onUpdate('purchasePrice', val)}
+          placeholder="0.00"
+        />
       </div>
 
       <AddUnitSheet

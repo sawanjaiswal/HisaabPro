@@ -16,6 +16,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Button } from '@/components/ui/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useProductDetail } from './useProductDetail'
@@ -146,21 +147,15 @@ export default function ProductDetailPage() {
                 onMore={soon}
               />
 
-              <div className="pill-tabs product-detail-tabs" role="tablist" aria-label={t.productDetailSections}>
-                {TABS.map((tab) => (
-                  <Button
-                    variant="none"
-                    key={tab.id}
-                    role="tab"
-                    className={`pill-tab${activeTab === tab.id ? ' active' : ''}`}
-                    onClick={() => setActiveTab(tab.id)}
-                    aria-selected={activeTab === tab.id}
-                    aria-controls={`panel-${tab.id}`}
-                  >
-                    {tab.label}
-                  </Button>
-                ))}
-              </div>
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as DetailTab)}>
+                <TabsList variant="line" aria-label={t.productDetailSections}>
+                  {TABS.map((tab) => (
+                    <TabsTrigger key={tab.id} value={tab.id}>
+                      {tab.label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
 
               <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} ${t.tabContent}`}>
                 {activeTab === 'overview' && (

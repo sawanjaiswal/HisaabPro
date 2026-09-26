@@ -18,7 +18,12 @@ import { Tabs as RX } from 'radix-ui'
 import { cn } from '@/lib/utils'
 import './tabs.css'
 
-export type TabsVariant = 'segmented' | 'underline' | 'pills'
+/** 'line' = shadcn underline style: bold active label + 2px emerald bottom border.
+ *  'underline' kept as alias for backward compatibility.
+ *  'segmented' = filled pill group (existing default).
+ *  'pills' = outlined pill tabs.
+ */
+export type TabsVariant = 'segmented' | 'underline' | 'line' | 'pills'
 
 export const Tabs = RX.Root
 

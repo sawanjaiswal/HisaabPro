@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { useParams, useNavigate } from 'react-router-dom'
 import { FileText } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
@@ -112,20 +113,15 @@ export default function ChallanDetailPage() {
 
             <InvoiceDetailHeader document={document} />
 
-            <nav className="pill-tabs" role="tablist">
-              {DETAIL_TABS.map((tab) => (
-                <Button variant="none"
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  className={`pill-tab${activeTab === tab.id ? ' active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
-                  aria-selected={activeTab === tab.id}
-                >
-                  {tab.label}
-                </Button>
-              ))}
-            </nav>
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
+              <TabsList variant="line">
+                {DETAIL_TABS.map((tab) => (
+                  <TabsTrigger key={tab.id} value={tab.id}>
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
 
             {activeTab === 'overview' && <InvoiceOverviewPanel document={document} />}
             {activeTab === 'items'    && <InvoiceItemsPanel lineItems={document.lineItems} />}

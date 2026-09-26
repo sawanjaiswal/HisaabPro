@@ -1,16 +1,16 @@
-/** Create Product — Stock configuration section */
+/** Create/Edit Product — Stock configuration section */
 
-import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductFormData, StockValidationMode } from '../product.types'
 import { STOCK_VALIDATION_LABELS } from '../product.constants'
-import { Input } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
+import { NumberInput } from '@/components/ui/NumberInput'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 
 interface ProductFormStockProps {
   form: ProductFormData
   errors: Record<string, string>
   onUpdate: <K extends keyof ProductFormData>(key: K, value: ProductFormData[K]) => void
+  isEditMode?: boolean
 }
 
 const VALIDATION_MODE_OPTIONS: { value: StockValidationMode; label: string }[] = [
@@ -19,84 +19,68 @@ const VALIDATION_MODE_OPTIONS: { value: StockValidationMode; label: string }[] =
   { value: 'HARD_BLOCK', label: STOCK_VALIDATION_LABELS.HARD_BLOCK },
 ]
 
-export function ProductFormStock({ form, errors, onUpdate }: ProductFormStockProps) {
+export function ProductFormStock({ form, errors, onUpdate, isEditMode }: ProductFormStockProps) {
   const { t } = useLanguage()
   return (
     <div className="create-party-section py-0">
       <div className="input-group">
-        <label htmlFor="product-opening-stock" className="input-label">{t.openingStockLabel}</label>
-        <Input
+        <NumberInput
           id="product-opening-stock"
-          className={`input${errors.openingStock ? ' input-error-border' : ''}`}
-          type="number"
-          min="0"
-          step="any"
-          value={form.openingStock || ''}
-          onChange={(e) => onUpdate('openingStock', parseFloat(e.target.value) || 0)}
+          label={isEditMode ? (t.currentStock || 'Current Stock') : t.openingStockLabel}
+          value={form.openingStock}
+          onChange={(val) => onUpdate('openingStock', val)}
+          allowDecimals={true}
           placeholder="0"
-          aria-label={t.openingStockQty}
-          inputMode="decimal"
+          error={errors.openingStock}
+          hint={isEditMode ? 'Modifying this quantity will automatically record a stock adjustment.' : undefined}
         />
-        {errors.openingStock && <Text className="input-error" role="alert">{errors.openingStock}</Text>}
       </div>
 
       <div className="input-group">
-        <label htmlFor="product-min-stock" className="input-label">
-          {t.minimumStockLevel}
-          <span className="text-optional"> ({t.lowStockAlertHint})</span>
-        </label>
-        <Input
+        <NumberInput
           id="product-min-stock"
-          className={`input${errors.minStockLevel ? ' input-error-border' : ''}`}
-          type="number"
-          min="0"
-          step="any"
-          value={form.minStockLevel || ''}
-          onChange={(e) => onUpdate('minStockLevel', parseFloat(e.target.value) || 0)}
+          label={t.minimumStockLevel}
+          value={form.minStockLevel}
+          onChange={(val) => onUpdate('minStockLevel', val)}
+          allowDecimals={true}
           placeholder={t.minStockPlaceholder}
-          aria-label={t.minimumStockLevel}
-          inputMode="decimal"
+          error={errors.minStockLevel}
+          hint={t.lowStockAlertHint}
         />
-        {errors.minStockLevel && <Text className="input-error" role="alert">{errors.minStockLevel}</Text>}
       </div>
 
       <div className="input-group">
-        <label htmlFor="product-moq" className="input-label">
-          {t.moqLabel}
-          <span className="text-optional"> ({t.moqHint})</span>
-        </label>
-        <Input
+        <NumberInput
           id="product-moq"
-          className={`input${errors.moq ? ' input-error-border' : ''}`}
-          type="number"
-          min="0"
-          step="1"
-          value={form.moq || ''}
-          onChange={(e) => onUpdate('moq', parseInt(e.target.value, 10) || 0)}
+          label={t.moqLabel}
+          value={form.moq}
+          onChange={(val) => onUpdate('moq', val)}
+          allowDecimals={false}
           placeholder="0"
-          aria-label={t.moqLabel}
-          inputMode="numeric"
+          error={errors.moq}
+          hint={t.moqHelperText}
         />
-        <Text className="input-helper-text">{t.moqHelperText}</Text>
-        {errors.moq && <Text className="input-error" role="alert">{errors.moq}</Text>}
       </div>
 
       <div className="input-group">
         <span className="input-label" id="stock-validation-label">{t.stockValidationMode}</span>
-        <div className="pill-tabs" role="group" aria-labelledby="stock-validation-label">
-          {VALIDATION_MODE_OPTIONS.map((option) => (
-            <Button variant="none"
-              key={option.value}
-              type="button"
-              className={`pill-tab${form.stockValidation === option.value ? ' active' : ''}`}
-              onClick={() => onUpdate('stockValidation', option.value)}
-              aria-pressed={form.stockValidation === option.value}
-              aria-label={`${t.stockValidationPrefix}: ${option.label}`}
-            >
-              {option.label}
-            </Button>
-          ))}
-        </div>
+        <Tabs
+          value={form.stockValidation}
+          onValueChange={(val) => onUpdate('stockValidation', val as StockValidationMode)}
+          className="w-full"
+        >
+          <TabsList variant="segmented" fullWidth aria-labelledby="stock-validation-label">
+            {VALIDATION_MODE_OPTIONS.map((option) => (
+              <TabsTrigger
+                key={option.value}
+                value={option.value}
+                aria-label={`${t.stockValidationPrefix}: ${option.label}`}
+              >
+                {option.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </div>
     </div>
   )

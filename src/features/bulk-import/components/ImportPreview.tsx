@@ -6,6 +6,7 @@ import type { ImportedContact } from '../bulk-import.types'
 import type { PartyType } from '@/lib/types/party.types'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 
 interface ImportPreviewProps {
   contacts: ImportedContact[]
@@ -33,20 +34,15 @@ export function ImportPreview({
       {/* Type selector */}
       <div className="import-preview-type">
         <span className="import-preview-type-label">{t.importAs}:</span>
-        <div className="pill-tabs" role="tablist">
-          {PARTY_TYPES.map((t) => (
-            <Button variant="none"
-              key={t}
-              type="button"
-              role="tab"
-              className={`pill-tab${partyType === t ? ' active' : ''}`}
-              onClick={() => onTypeChange(t)}
-              aria-selected={partyType === t}
-            >
-              {PARTY_TYPE_LABELS[t]}
-            </Button>
-          ))}
-        </div>
+        <Tabs value={partyType} onValueChange={(val) => onTypeChange(val as PartyType)}>
+          <TabsList variant="line">
+            {PARTY_TYPES.map((pt) => (
+              <TabsTrigger key={pt} value={pt}>
+                {PARTY_TYPE_LABELS[pt]}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </div>
 
       {/* Stats bar */}

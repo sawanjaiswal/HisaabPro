@@ -1,67 +1,79 @@
-/** Product list — Hero card pair (Stock Value / Low Stock Alert)
+/** Products — Hero card pair (Stock Value / Low Stock)
  *
- * Uses shared summary-hero CSS pattern.
- * Teal card (value) + amber card (alert) / lime card (safe).
+ * Matches Parties (PartySummaryBar) pattern:
+ * Emerald card (Total Stock Value) + Lime card (Low Stock / Need Reorder).
+ * Uses shared summary-hero CSS tokens. All amounts in PAISE.
  */
 
-import { Text } from '@/components/ui/Text'
 import React from 'react'
-import { ChevronRight, TrendingUp, AlertTriangle } from 'lucide-react'
+import { ChevronRight, Layers, AlertTriangle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
-import { formatProductPrice } from '../product.utils'
-import type { ProductListResponse } from '../product.types'
 import { Button } from '@/components/ui/Button'
+import { formatRupees } from '@/lib/format'
+import type { ProductListResponse } from '../product.types'
 
 interface ProductSummaryBarProps {
   summary: ProductListResponse['summary']
-  onStockClick?: () => void
+  onStockValueClick?: () => void
   onLowStockClick?: () => void
 }
 
 export const ProductSummaryBar: React.FC<ProductSummaryBarProps> = ({
   summary,
-  onStockClick,
+  onStockValueClick,
   onLowStockClick,
 }) => {
   const { t } = useLanguage()
-  const { totalProducts, lowStockCount, totalStockValue } = summary
+  const { totalProducts, lowStockCount, totalStockValue, outOfStockCount } = summary
 
   return (
     <div className="summary-hero" role="list" aria-label={t.inventorySummary}>
-      <Text className="summary-hero-count">{totalProducts} {totalProducts === 1 ? t.product : t.products}</Text>
-
       <div className="summary-hero-cards">
-        {/* Stock Value — teal gradient */}
-        <Button variant="none"
-          className="summary-hero-card summary-hero-card--teal"
+        {/* Total Stock Value — emerald gradient */}
+        <Button
+          variant="none"
+          className="summary-hero-card summary-hero-card--teal summary-hero-card--v2"
           role="listitem"
-          onClick={onStockClick}
-          aria-label={`${t.stockValue}: ${formatProductPrice(totalStockValue)}`}
+          onClick={onStockValueClick}
+          aria-label={`${t.inventoryValue}: ${formatRupees(totalStockValue)}`}
         >
-          <div className="summary-hero-card-content">
-            <span className="summary-hero-amount">{formatProductPrice(totalStockValue)}</span>
-            <span className="summary-hero-label">
-              {t.stockValue}
-              <TrendingUp size={14} aria-hidden="true" />
+          <span className="summary-hero-icon-ring" aria-hidden="true">
+            <Layers size={22} />
+          </span>
+          <span className="summary-hero-card-content">
+            <span className="summary-hero-label">{t.inventoryValue}</span>
+            <span className="summary-hero-amount">
+              {formatRupees(totalStockValue)}
             </span>
-          </div>
+            <span className="summary-hero-sub">
+              {totalProducts} {totalProducts === 1 ? t.item : t.items}
+            </span>
+          </span>
           <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron" />
         </Button>
 
-        {/* Low Stock Alert — amber/warning or lime/safe */}
-        <Button variant="none"
-          className={`summary-hero-card ${lowStockCount > 0 ? 'summary-hero-card--amber' : 'summary-hero-card--safe'}`}
+        {/* Low Stock — lime */}
+        <Button
+          variant="none"
+          className="summary-hero-card summary-hero-card--lime summary-hero-card--v2"
           role="listitem"
           onClick={onLowStockClick}
-          aria-label={lowStockCount > 0 ? `${lowStockCount} ${t.lowOnStock}` : t.allStocked}
+          aria-label={`${t.lowStock}: ${lowStockCount}`}
         >
-          <div className="summary-hero-card-content">
-            <span className="summary-hero-amount">{lowStockCount}</span>
-            <span className="summary-hero-label">
-              {lowStockCount > 0 ? t.lowOnStock : t.allStocked}
-              <AlertTriangle size={14} aria-hidden="true" />
+          <span className="summary-hero-icon-ring summary-hero-icon-ring--dark" aria-hidden="true">
+            <AlertTriangle size={22} />
+          </span>
+          <span className="summary-hero-card-content">
+            <span className="summary-hero-label">{t.lowStock}</span>
+            <span className="summary-hero-amount">
+              {lowStockCount}
             </span>
-          </div>
+            <span className="summary-hero-sub">
+              {outOfStockCount > 0
+                ? `${outOfStockCount} ${t.outOfStock ?? 'Out of stock'}`
+                : (t.needReorder ?? 'Need reorder')}
+            </span>
+          </span>
           <ChevronRight size={20} aria-hidden="true" className="summary-hero-chevron summary-hero-chevron--dark" />
         </Button>
       </div>

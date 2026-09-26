@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { useNavigate, useParams } from 'react-router-dom'
 import { FileText } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
@@ -152,20 +153,15 @@ export default function InvoiceDetailPage() {
             {/* Summary tiles (Total / Paid / Due) — GPT new-design pattern */}
             <InvoiceSummaryTiles document={document} />
 
-            <div className="pill-tabs invoice-detail-tabs" role="tablist" aria-label={t.invoiceDetailSections}>
-              {DETAIL_TABS.map((tab) => (
-                <Button variant="none"
-                  key={tab.id}
-                  role="tab"
-                  className={`pill-tab${activeTab === tab.id ? ' active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
-                  aria-selected={activeTab === tab.id}
-                  aria-controls={`panel-${tab.id}`}
-                >
-                  {tab.label}
-                </Button>
-              ))}
-            </div>
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
+              <TabsList variant="line" aria-label={t.invoiceDetailSections}>
+                {DETAIL_TABS.map((tab) => (
+                  <TabsTrigger key={tab.id} value={tab.id}>
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
 
             <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} ${t.tabContent}`}>
               {activeTab === 'overview' && <InvoiceOverviewPanel document={document} />}

@@ -18,6 +18,7 @@ import { GODOWN_TABS } from './godown.constants'
 import type { GodownTab } from './godown.constants'
 import './godowns.css'
 import { Button } from '@/components/ui/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 
 export default function GodownsPage() {
   const navigate = useNavigate()
@@ -33,28 +34,27 @@ export default function GodownsPage() {
       <Header
         title={t.godownsList}
         actions={
-          <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.GODOWN_TRANSFER)} aria-label={t.transferStock}>
-            {t.transfer}
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.GODOWN_TRANSFER)} aria-label={t.transferStock}>
+              {t.transfer}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={goToCreate} aria-label={t.addNewGodown}>
+              <Plus size={20} aria-hidden="true" />
+            </Button>
+          </div>
         }
       />
 
       <HeroPage className="space-y-6">
-        <nav className="pill-tabs" role="tablist" aria-label={t.godownSections}>
-          {GODOWN_TABS.map((tab) => (
-            <Button variant="none"
-              key={tab.id}
-              type="button"
-              role="tab"
-              className={`pill-tab${activeTab === tab.id ? ' active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-              aria-selected={activeTab === tab.id}
-              aria-controls={`godown-panel-${tab.id}`}
-            >
-              {tab.label}
-            </Button>
-          ))}
-        </nav>
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as GodownTab)}>
+          <TabsList variant="line" aria-label={t.godownSections}>
+            {GODOWN_TABS.map((tab) => (
+              <TabsTrigger key={tab.id} value={tab.id}>
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
 
         <div id={`godown-panel-${activeTab}`} role="tabpanel" aria-label={activeTab}>
           {activeTab === 'godowns' && (
@@ -107,11 +107,7 @@ export default function GodownsPage() {
         </div>
       </HeroPage>
 
-      {activeTab === 'godowns' && status === 'success' && data && data.godowns.length > 0 && (
-        <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewGodown}>
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
+
     </AppShell>
   )
 }

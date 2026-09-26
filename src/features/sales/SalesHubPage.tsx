@@ -12,8 +12,8 @@ import { Header } from '@/components/layout/Header'
 import { useLanguage } from '@/hooks/useLanguage'
 import { DocumentListSkeleton } from './components/DocumentListSkeleton'
 import { SALES_HUB_TABS, type SalesHubTab } from './sales.constants'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import './SalesHubPage.css'
-import { Button } from '@/components/ui/Button'
 
 const InvoicesContent  = lazy(() => import('../invoices/InvoicesPage'))
 const EstimatesContent = lazy(() => import('./EstimatesPage'))
@@ -51,25 +51,23 @@ export default function SalesHubPage() {
     <AppShell>
       <Header title={t.salesHub ?? 'Sales'} />
 
-      <nav
-        className="sales-hub-tabs"
-        role="tablist"
-        aria-label={t.salesHubTabs ?? 'Sales document types'}
+      <Tabs
+        value={activeTab}
+        onValueChange={(val) => {
+          const target = SALES_HUB_TABS.find((t) => t.id === val)
+          if (target) handleTabClick(target.id, target.route)
+        }}
+        className="sticky z-10 bg-[var(--color-gray-0)]"
         style={{ top: 'var(--header-height)' }}
       >
-        {SALES_HUB_TABS.map((tab) => (
-          <Button variant="none"
-            key={tab.id}
-            type="button"
-            role="tab"
-            aria-selected={activeTab === tab.id}
-            className={`sales-hub-tab${activeTab === tab.id ? ' sales-hub-tab--active' : ''}`}
-            onClick={() => handleTabClick(tab.id, tab.route)}
-          >
-            {tab.label}
-          </Button>
-        ))}
-      </nav>
+        <TabsList variant="line" aria-label={t.salesHubTabs ?? 'Sales document types'}>
+          {SALES_HUB_TABS.map((tab) => (
+            <TabsTrigger key={tab.id} value={tab.id}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       <div className="sales-hub-content" role="tabpanel">
         <Suspense fallback={<DocumentListSkeleton />}>

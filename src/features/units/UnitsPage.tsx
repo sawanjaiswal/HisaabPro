@@ -22,6 +22,7 @@ import { UNITS_PAGE_TABS } from './unit.constants'
 import { UNIT_CATEGORY_LABELS } from './unit.constants'
 import { groupUnitsByCategory } from './unit.utils'
 import type { Unit } from './unit.types'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import './units.css'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
@@ -113,20 +114,15 @@ export default function UnitsPage() {
         {status === 'success' && (
           <>
             {/* Tabs */}
-            <nav className="pill-tabs stagger-filters" role="tablist" aria-label="Units sections">
-              {UNITS_PAGE_TABS.map((tab) => (
-                <Button variant="none"
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  className={`pill-tab${activeTab === tab.id ? ' active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
-                  aria-selected={activeTab === tab.id}
-                >
-                  {tab.label}
-                </Button>
-              ))}
-            </nav>
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
+              <TabsList variant="line" aria-label="Units sections">
+                {UNITS_PAGE_TABS.map((tab) => (
+                  <TabsTrigger key={tab.id} value={tab.id}>
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
 
             {activeTab === 'units' && (
               <>
