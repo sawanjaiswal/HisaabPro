@@ -129,7 +129,12 @@ export function usePaymentForm({
     onError: (err) => {
       // #150 — a CONFLICT opens the reconcile dialog (handled below), not a toast.
       if (isConflictError(err)) return
-      toast.error('Failed to save payment. Please try again.')
+      const fallback = 'Failed to save payment. Please try again.'
+      if (err instanceof Error) {
+        toast.error(err.message || fallback, { detail: err })
+      } else {
+        toast.error(err ?? fallback)
+      }
     },
   })
 

@@ -83,7 +83,7 @@ export function EntityPicker({ value, onChange, disabled = false }: EntityPicker
                 >
                   {tx[opt.labelKey] ?? opt.value}
                 </span>
-                <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+                <span className="text-xs text-[var(--text-secondary)]">
                   {tx[opt.descKey] ?? ''}
                 </span>
               </span>

@@ -87,6 +87,10 @@ describe('useLogin', () => {
     mockLogin.mockRejectedValue(new ApiError('captcha', 'CAPTCHA_REQUIRED', 429))
     const { result } = renderHook(() => useLogin(), { wrapper })
 
+    act(() => {
+      result.current.setUsername('admin')
+      result.current.setPassword('pass')
+    })
     await act(() => result.current.handleLogin())
 
     expect(result.current.captchaRequired).toBe(true)

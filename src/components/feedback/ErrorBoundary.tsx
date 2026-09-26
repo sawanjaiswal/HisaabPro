@@ -10,22 +10,22 @@ interface Props {
 interface State {
   hasError: boolean
   error: Error | null
+  errorInfo: ErrorInfo | null
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  state: State = { hasError: false, error: null }
+  state: State = { hasError: false, error: null, errorInfo: null }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     return { hasError: true, error }
   }
 
-  componentDidCatch(_error: Error, _info: ErrorInfo) {
-    // Monitoring integration (Sentry/LogRocket) will be added when credentials are configured.
-    // Errors are already visible in the UI via the fallback ErrorState.
+  componentDidCatch(_error: Error, errorInfo: ErrorInfo) {
+    this.setState({ errorInfo })
   }
 
   handleRetry = () => {
-    this.setState({ hasError: false, error: null })
+    this.setState({ hasError: false, error: null, errorInfo: null })
   }
 
   render() {
@@ -34,6 +34,8 @@ export class ErrorBoundary extends Component<Props, State> {
         <ErrorState
           title="Something went wrong"
           message={this.state.error?.message}
+          error={this.state.error}
+          errorInfo={this.state.errorInfo}
           onRetry={this.handleRetry}
         />
       )

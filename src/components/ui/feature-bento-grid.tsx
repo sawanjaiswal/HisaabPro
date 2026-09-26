@@ -163,7 +163,7 @@ const InteractiveBar = ({ height, isActive, label }: { height: number; isActive:
         e.currentTarget.style.transform = 'scaleY(1)'
       }}
     />
-    <span className="mt-2" style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>{label}</span>
+    <span className="mt-2 text-xs text-[var(--text-muted)]" >{label}</span>
   </div>
 )
 
@@ -360,7 +360,7 @@ export const SkeletonTwo = () => {
             <div className="rounded-full" style={{ width: '30%', backgroundColor: 'var(--lp-mock-success)' }} />
             <div className="rounded-full" style={{ width: '15%', backgroundColor: 'var(--lp-text-muted)' }} />
           </div>
-          <div className="flex gap-4 mt-2" style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>
+          <div className="flex gap-4 mt-2 text-xs text-[var(--text-muted)]" >
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: 'var(--lp-accent)' }} /> UPI
             </span>

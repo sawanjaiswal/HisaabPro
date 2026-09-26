@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import type { ReactNode } from 'react';
 
 export const TOAST_DURATION = 5000;
+export const TOAST_ERROR_DURATION = 8000;
 const DEDUP_WINDOW_MS = 3000;
 const MAX_VISIBLE_TOASTS = 3;
 
@@ -17,13 +18,21 @@ export interface Toast {
   createdAt: number;
   onUndo?: () => void;
   undoLabel?: string;
+  code?: string;
+  status?: number;
+  detail?: unknown;
+  duration?: number;
 }
 
-type ToastInput = {
+export type ToastInput = {
   type: Toast['type'];
   message: string | ReactNode;
   onUndo?: () => void;
   undoLabel?: string;
+  code?: string;
+  status?: number;
+  detail?: unknown;
+  duration?: number;
 };
 
 interface ToastStore {
@@ -61,6 +70,9 @@ export const useToastStore = create<ToastStore>((set, get) => ({
     set((state) => ({
       toasts: [...state.toasts, newToast],
     }));
+
+    const duration = toast.duration ?? (toast.type === 'error' ? TOAST_ERROR_DURATION : TOAST_DURATION);
+
     const timeoutId = setTimeout(() => {
       const { timeouts: t } = get();
       t.delete(id);
@@ -68,7 +80,7 @@ export const useToastStore = create<ToastStore>((set, get) => ({
         toasts: state.toasts.filter((v) => v.id !== id),
         timeouts: new Map(t),
       }));
-    }, TOAST_DURATION);
+    }, duration);
 
     timeouts.set(id, timeoutId);
     set({ timeouts: new Map(timeouts) });
@@ -95,9 +107,13 @@ export const useToastStore = create<ToastStore>((set, get) => ({
   },
 }));
 
-type ToastOptions = {
+export type ToastOptions = {
   onUndo?: () => void;
   undoLabel?: string;
+  code?: string;
+  status?: number;
+  detail?: unknown;
+  duration?: number;
 };
 
 /**
@@ -109,8 +125,43 @@ export const useToast = () => {
   return {
     success: (message: string | ReactNode, options?: ToastOptions) =>
       addToast({ type: 'success', message, ...options }),
-    error: (message: string | ReactNode, options?: ToastOptions) =>
-      addToast({ type: 'error', message, ...options }),
+    error: (errorOrMessage: unknown, options?: ToastOptions) => {
+      let message: string | ReactNode = 'An unexpected error occurred';
+      let code = options?.code;
+      let status = options?.status;
+      let detail = options?.detail;
+
+      if (typeof errorOrMessage === 'string') {
+        message = errorOrMessage;
+      } else if (errorOrMessage && typeof errorOrMessage === 'object') {
+        const err = errorOrMessage as Record<string, unknown>;
+        if (typeof err.message === 'string') {
+          message = err.message;
+        }
+        if (typeof err.code === 'string') {
+          code = code ?? err.code;
+        }
+        if (typeof err.status === 'number') {
+          status = status ?? err.status;
+        }
+        if (err.detail !== undefined) {
+          detail = detail ?? err.detail;
+        } else if (err.details !== undefined) {
+          detail = detail ?? err.details;
+        } else if (err.cause !== undefined) {
+          detail = detail ?? err.cause;
+        }
+      }
+
+      addToast({
+        type: 'error',
+        message,
+        code,
+        status,
+        detail,
+        ...options,
+      });
+    },
     info: (message: string | ReactNode, options?: ToastOptions) =>
       addToast({ type: 'info', message, ...options }),
     warning: (message: string | ReactNode, options?: ToastOptions) =>

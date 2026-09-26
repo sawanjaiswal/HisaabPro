@@ -45,7 +45,8 @@
 
 .txn-row__mon {
   font-size: var(--fs-xs);
-  color: var(--text-muted);
+  font-weight: 600;
+  color: var(--text-secondary);
   text-transform: uppercase;
 }
 
@@ -99,8 +100,8 @@
 
 .txn-row__ref {
   flex: 0 1 auto;
-  font-size: var(--fs-xs);
-  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -108,7 +109,8 @@
 
 .txn-row__status {
   flex-shrink: 0;
-  font-size: var(--fs-2xs);
+  font-size: var(--fs-xs);
+  font-weight: 600;
   padding: 1px var(--space-2);
 }
 

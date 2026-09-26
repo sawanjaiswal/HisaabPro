@@ -108,12 +108,12 @@ function BatchRow({
         </span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
           {batch.expiryDate && (
-            <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>
+            <span className="text-xs text-[var(--text-muted)]">
               <Clock size={10} style={{ display: 'inline', marginRight: 3 }} aria-hidden="true" />
               {formatExpiry(batch.expiryDate)}
             </span>
           )}
-          <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>
+          <span className="text-xs text-[var(--text-muted)]">
             {t.batchPickerAvail}: <strong style={{ color: batch.currentStock === 0 ? 'var(--color-error-500)' : 'var(--color-text-primary)' }}>{batch.currentStock}</strong>
           </span>
           <ExpiryBadge isExpired={batch.isExpired} expiryDate={batch.expiryDate} expiredLabel={t.expired} daysLeftLabel="d" />

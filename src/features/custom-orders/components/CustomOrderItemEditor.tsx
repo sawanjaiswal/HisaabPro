@@ -46,7 +46,7 @@ export function CustomOrderItemEditor({ item, index, showRemove, onUpdate, onRem
       />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-2)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>{t.qty}</label>
+          <label className="text-xs text-[var(--text-secondary)]">{t.qty}</label>
           <Input
             type="number"
             className="input"
@@ -58,7 +58,7 @@ export function CustomOrderItemEditor({ item, index, showRemove, onUpdate, onRem
           />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>{t.coRate}</label>
+          <label className="text-xs text-[var(--text-secondary)]">{t.coRate}</label>
           <Input
             type="number"
             className="input"
@@ -70,7 +70,7 @@ export function CustomOrderItemEditor({ item, index, showRemove, onUpdate, onRem
           />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>{t.coDiscountRs}</label>
+          <label className="text-xs text-[var(--text-secondary)]">{t.coDiscountRs}</label>
           <Input
             type="number"
             className="input"

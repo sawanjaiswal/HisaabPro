@@ -98,7 +98,7 @@ export function PaymentLinkSheet({
         {isLoading && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-3)', paddingTop: 'var(--space-6)' }}>
             <Loader2 size={32} className="spin" aria-hidden="true" />
-            <span style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)' }}>
+            <span className="text-sm text-[var(--text-secondary)]">
               {mutation.isPending ? 'Generating link…' : 'Loading…'}
             </span>
           </div>

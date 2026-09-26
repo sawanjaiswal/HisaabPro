@@ -163,7 +163,12 @@ export function useInvoiceForm(
       }
       // #150 — a CONFLICT opens the reconcile dialog (handled below), not a toast.
       if (isConflictError(err)) return
-      toast.error(isEditMode ? 'Failed to update invoice.' : 'Failed to save invoice. Please try again.')
+      const fallback = isEditMode ? 'Failed to update invoice.' : 'Failed to save invoice. Please try again.'
+      if (err instanceof Error) {
+        toast.error(err.message || fallback, { detail: err })
+      } else {
+        toast.error(err ?? fallback)
+      }
     },
   })
 

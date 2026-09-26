@@ -62,8 +62,8 @@ export function DedupResolution({
       <Card variant="default" className="p-4 space-y-3">
         <header className="space-y-1">
           <Heading level={2}
-            className="font-semibold"
-            style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
+            className="font-semibold text-base text-[var(--text-primary)] font-semibold"
+            
           >
             {entity === 'payments'
               ? (t.importDedupTitlePayment ?? t.importDedupTitle ?? 'Review duplicate payments')
@@ -73,7 +73,7 @@ export function DedupResolution({
                   ? (t.importDedupTitleProduct ?? t.importDedupTitle ?? 'Review duplicate products')
                   : (t.importDedupTitle ?? 'Review duplicates')}
           </Heading>
-          <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+          <Text className="text-sm text-[var(--text-secondary)]">
             {entity === 'payments'
               ? (t.importDedupIntroPayment ??
                 'These rows look like payments you already have. Pick what should happen for each one before committing.')
@@ -92,8 +92,8 @@ export function DedupResolution({
 
         <Text
           aria-live="polite"
-          className="tabular-nums"
-          style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}
+          className="tabular-nums text-sm text-[var(--text-secondary)]"
+          
         >
           {(t.importDedupCountsLine ?? '{skip} skip · {overwrite} overwrite · {createNew} create new')
             .replace('{skip}', String(counts.skip))

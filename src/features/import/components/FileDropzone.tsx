@@ -83,12 +83,12 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
               aria-hidden="true"
             />
             <span
-              className="font-semibold break-all"
-              style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
+              className="font-semibold break-all text-sm text-[var(--text-primary)] font-medium"
+              
             >
               {file.name}
             </span>
-            <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+            <span className="text-xs text-[var(--text-secondary)]">
               {formatBytes(file.size)}
             </span>
             <Button variant="none"
@@ -114,12 +114,12 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
               aria-hidden="true"
             />
             <span
-              className="font-semibold"
-              style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
+              className="font-semibold text-sm text-[var(--text-primary)] font-medium"
+              
             >
               {tx.importDropzoneTitle ?? 'Drop file here or tap to browse'}
             </span>
-            <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+            <span className="text-xs text-[var(--text-secondary)]">
               {tx.importDropzoneHint ?? 'XML, CSV, or XLSX up to 10 MB'}
             </span>
           </>

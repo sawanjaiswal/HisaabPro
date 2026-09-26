@@ -111,7 +111,8 @@ describe('usePartyForm — handleSubmit', () => {
     })
 
     expect(mockToast.error).toHaveBeenCalledWith(
-      'Failed to save party. Please try again.',
+      'Network error',
+      expect.objectContaining({ detail: expect.any(Error) }),
     )
   })
 

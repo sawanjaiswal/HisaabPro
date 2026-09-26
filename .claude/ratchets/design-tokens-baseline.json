@@ -1,5 +1,5 @@
 {
-  "count": 612,
+  "count": 796,
   "violations": [
     {
       "file": "src/App.tsx",
@@ -66,6 +66,78 @@
       "line": 82,
       "type": "RAW_HEX",
       "text": "<stop offset=\"55%\" stopColor=\"#fff\" />"
+    },
+    {
+      "file": "src/components/feedback/ErrorState.tsx",
+      "line": 106,
+      "type": "ARBITRARY_BRACKET",
+      "text": "{error?.stack && <pre className=\"whitespace-pre-wrap text-[11px] opacity-80\">{error.stack}</pre>}"
+    },
+    {
+      "file": "src/components/feedback/ErrorState.tsx",
+      "line": 108,
+      "type": "ARBITRARY_BRACKET",
+      "text": "<pre className=\"whitespace-pre-wrap text-[11px] opacity-70 mt-2 text-zinc-400\">{errorInfo.componentStack}</pre>"
+    },
+    {
+      "file": "src/components/feedback/ErrorState.tsx",
+      "line": 111,
+      "type": "ARBITRARY_BRACKET",
+      "text": "<pre className=\"whitespace-pre-wrap text-[11px] opacity-80 mt-2\">"
+    },
+    {
+      "file": "src/components/feedback/toast.css",
+      "line": 97,
+      "type": "RAW_HEX",
+      "text": "color: #EF4444;"
+    },
+    {
+      "file": "src/components/feedback/toast.css",
+      "line": 103,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-text-secondary, #6B7280);"
+    },
+    {
+      "file": "src/components/feedback/toast.css",
+      "line": 122,
+      "type": "RAW_HEX",
+      "text": "background-color: var(--color-surface, #FFFFFF);"
+    },
+    {
+      "file": "src/components/feedback/toast.css",
+      "line": 124,
+      "type": "RAW_HEX",
+      "text": "border: 1px solid var(--color-border, #E2E0DA);"
+    },
+    {
+      "file": "src/components/feedback/toast.css",
+      "line": 132,
+      "type": "RAW_HEX",
+      "text": "background-color: var(--color-surface-hover, #F5F4F0);"
+    },
+    {
+      "file": "src/components/feedback/toast.css",
+      "line": 137,
+      "type": "RAW_HEX",
+      "text": "background-color: var(--color-emerald-50, #ECFDF5);"
+    },
+    {
+      "file": "src/components/feedback/toast.css",
+      "line": 139,
+      "type": "RAW_HEX",
+      "text": "border-color: var(--color-emerald-300, #6EE7B7);"
+    },
+    {
+      "file": "src/components/feedback/toast.css",
+      "line": 155,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-text-secondary, #6B7280);"
+    },
+    {
+      "file": "src/components/feedback/toast.css",
+      "line": 170,
+      "type": "RAW_HEX",
+      "text": "background-color: #18181B;"
     },
     {
       "file": "src/components/feedback/useFeedbackWidget.ts",
@@ -212,94 +284,22 @@
       "text": "<Check className=\"h-3.5 w-3.5 stroke-[3]\" />"
     },
     {
-      "file": "src/components/ui/DateField.tsx",
-      "line": 51,
+      "file": "src/components/ui/CurrencyInput.tsx",
+      "line": 156,
       "type": "ARBITRARY_BRACKET",
-      "text": "className={cn('date-field', error && 'border-[var(--color-error-500)]', className)}"
+      "text": "className=\"block text-[var(--fs-xs)] font-bold uppercase tracking-wider text-[var(--color-text-secondary)] select-none\""
     },
     {
-      "file": "src/components/ui/DateField.tsx",
-      "line": 64,
+      "file": "src/components/ui/CurrencyInput.tsx",
+      "line": 159,
       "type": "ARBITRARY_BRACKET",
-      "text": "className=\"flex items-center gap-1.5 text-[var(--fs-xs)] font-bold uppercase tracking-wider text-[var(--text-secondary)] select-none\""
+      "text": "{required && <span className=\"text-[var(--color-error-500)] ml-1 font-bold\">*</span>}"
     },
     {
-      "file": "src/components/ui/DateField.tsx",
-      "line": 66,
+      "file": "src/components/ui/CurrencyInput.tsx",
+      "line": 165,
       "type": "ARBITRARY_BRACKET",
-      "text": "<Calendar className=\"w-3.5 h-3.5 text-[var(--color-primary-500)]\" />"
-    },
-    {
-      "file": "src/components/ui/DateField.tsx",
-      "line": 69,
-      "type": "ARBITRARY_BRACKET",
-      "text": "<span className=\"text-[var(--color-error-500)] font-bold\" aria-hidden=\"true\">"
-    },
-    {
-      "file": "src/components/ui/DateField.tsx",
-      "line": 75,
-      "type": "ARBITRARY_BRACKET",
-      "text": "<span className=\"text-[10px] text-[var(--text-muted)]\">{hint}</span>"
-    },
-    {
-      "file": "src/components/ui/DateField.tsx",
-      "line": 84,
-      "type": "ARBITRARY_BRACKET",
-      "text": "className={cn('date-field w-full', error && 'border-[var(--color-error-500)]')}"
-    },
-    {
-      "file": "src/components/ui/DateField.tsx",
-      "line": 93,
-      "type": "ARBITRARY_BRACKET",
-      "text": "className=\"text-[var(--fs-xs)] font-medium text-[var(--color-error-600)]\""
-    },
-    {
-      "file": "src/components/ui/EntitySearch/entity-search.css",
-      "line": 143,
-      "type": "RAW_HEX",
-      "text": "color: var(--color-white-inverse, #ffffff);"
-    },
-    {
-      "file": "src/components/ui/FormField.tsx",
-      "line": 41,
-      "type": "ARBITRARY_BRACKET",
-      "text": "<span className=\"text-[10px] text-[var(--text-muted)] select-none\">{hint}</span>"
-    },
-    {
-      "file": "src/components/ui/FormField.tsx",
-      "line": 51,
-      "type": "ARBITRARY_BRACKET",
-      "text": "className=\"text-[var(--fs-xs)] font-medium text-[var(--color-error-600)]\""
-    },
-    {
-      "file": "src/components/ui/Input.tsx",
-      "line": 36,
-      "type": "ARBITRARY_BRACKET",
-      "text": "hero: 'min-h-[56px] px-0 py-1 text-[var(--fs-3xl)] font-bold tabular-nums',"
-    },
-    {
-      "file": "src/components/ui/Input.tsx",
-      "line": 113,
-      "type": "ARBITRARY_BRACKET",
-      "text": "<span className=\"text-[10px] text-text-muted\">{hint}</span>"
-    },
-    {
-      "file": "src/components/ui/Label.tsx",
-      "line": 25,
-      "type": "ARBITRARY_BRACKET",
-      "text": "sm: 'text-[10px] tracking-widest',"
-    },
-    {
-      "file": "src/components/ui/PartyAvatar.tsx",
-      "line": 16,
-      "type": "RAW_HEX",
-      "text": "'#D4C5F9', // wisteria"
-    },
-    {
-      "file": "src/components/ui/PartyAvatar.tsx",
-      "line": 18,
-      "type": "RAW_HEX",
-      "text": "'#C8E6DC', // celadon"
+      "text": "'flex items-center gap-2.5 px-3.5 py-2 rounded-[var(--radius-md)] border transition-all focus-within:ring-2 focus-within:ring-[var(--color-primary-100)] focus-within:border-[var(--color-primary-500)]',"
     }
   ]
 }

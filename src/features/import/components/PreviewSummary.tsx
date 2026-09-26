@@ -59,12 +59,12 @@ export function PreviewSummary({ counts, t }: PreviewSummaryProps) {
   return (
     <Card variant="default" className="p-4 space-y-3">
       <Heading level={2}
-        className="font-semibold"
-        style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
+        className="font-semibold text-base text-[var(--text-primary)] font-semibold"
+        
       >
         {t.importPreviewSummaryTitle ?? 'Preview summary'}
       </Heading>
-      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <Text className="text-sm text-[var(--text-secondary)]">
         {t.importPreviewSummaryBody ?? 'Nothing is saved yet. Review each row before committing.'}
       </Text>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -84,8 +84,8 @@ export function PreviewSummary({ counts, t }: PreviewSummaryProps) {
               {tile.value}
             </div>
             <div
-              className="mt-1"
-              style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}
+              className="mt-1 text-xs text-[var(--text-secondary)]"
+              
             >
               {t[tile.labelKey] ?? tile.fallback}
             </div>

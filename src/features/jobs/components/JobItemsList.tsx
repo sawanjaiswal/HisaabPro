@@ -13,7 +13,7 @@ export function JobItemsList({ items }: JobItemsListProps) {
   const { t } = useLanguage()
   if (items.length === 0) {
     return (
-      <Text style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)' }}>
+      <Text className="text-sm text-[var(--text-secondary)]">
         {t.jobNoItems}
       </Text>
     )

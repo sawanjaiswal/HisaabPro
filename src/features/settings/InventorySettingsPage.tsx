@@ -61,7 +61,7 @@ function PolicyOption({
         {icon}
       </span>
       <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <span style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}>
+        <span className="text-sm font-semibold text-[var(--text-primary)]">
           {label}
         </span>
         <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
@@ -124,7 +124,7 @@ export default function InventorySettingsPage() {
             <div className="card-primary" style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
               <label
                 htmlFor="expiry-alert-days"
-                style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
+                className="text-sm font-semibold text-[var(--text-primary)]"
               >
                 {t.expiryAlertDaysLabel}
               </label>

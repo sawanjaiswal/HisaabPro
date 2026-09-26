@@ -66,12 +66,12 @@ export function FormatPicker({ value, onChange, disabled = false }: FormatPicker
                 aria-hidden="true"
               />
               <span
-                className="font-semibold"
-                style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
+                className="font-semibold text-sm text-[var(--text-primary)] font-medium"
+                
               >
                 {tx[opt.labelKey] ?? opt.value}
               </span>
-              <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+              <span className="text-xs text-[var(--text-secondary)]">
                 {tx[opt.descKey] ?? ''}
               </span>
             </Card>

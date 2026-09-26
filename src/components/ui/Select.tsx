@@ -71,6 +71,7 @@ export function Select({
   triggerClassName,
   dropdownClassName,
   searchable,
+  required,
   align = 'start',
   ariaLabel,
   onCreateOption,

@@ -187,7 +187,7 @@ export function HeroDashboardMockup() {
                           minHeight: 4,
                         }}
                       />
-                      <span className="mt-1.5" style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>{d.day}</span>
+                      <span className="mt-1.5 text-xs text-[var(--text-muted)]" >{d.day}</span>
                     </div>
                   ))}
                 </div>
@@ -239,7 +239,7 @@ export function HeroDashboardMockup() {
                 <div className="rounded-full" style={{ width: '15%', backgroundColor: '#8b5cf6' }} />
                 <div className="rounded-full" style={{ width: '12%', backgroundColor: 'var(--lp-text-muted)' }} />
               </div>
-              <div className="flex gap-5 mt-2" style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>
+              <div className="flex gap-5 mt-2 text-xs text-[var(--text-muted)]" >
                 <span className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: 'var(--lp-accent)' }} /> UPI ₹4.2L
                 </span>

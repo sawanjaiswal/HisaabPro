@@ -52,8 +52,8 @@ export function DedupRowCard({ item, decision, onChange, t }: DedupRowCardProps)
     <Card variant="default" className="p-4 space-y-3">
       <header className="flex items-start justify-between gap-2">
         <span
-          className="font-medium tabular-nums"
-          style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}
+          className="font-medium tabular-nums text-sm text-[var(--text-secondary)]"
+          
         >
           {t.importPreviewColRow ?? 'Row'} {row.sourceIndex + 1}
         </span>
@@ -97,8 +97,8 @@ export function DedupRowCard({ item, decision, onChange, t }: DedupRowCardProps)
         {DEDUP_DECISIONS.map((d) => (
           <label
             key={d}
-            className="inline-flex items-center gap-2 min-h-11 cursor-pointer"
-            style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
+            className="inline-flex items-center gap-2 min-h-11 cursor-pointer text-sm text-[var(--text-primary)] font-medium"
+            
           >
             <Input
               type="radio"
@@ -139,21 +139,21 @@ function DedupSide({ title, name, phone, balance, t }: DedupSideProps) {
   return (
     <div className="space-y-1">
       <Text
-        className="font-medium"
-        style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}
+        className="font-medium text-xs text-[var(--text-secondary)]"
+        
       >
         {title}
       </Text>
-      <Text style={{ fontSize: 'var(--fs-base)', color: 'var(--color-text-primary)' }}>
+      <Text className="text-sm text-[var(--text-primary)]">
         {name}
       </Text>
-      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <Text className="text-sm text-[var(--text-secondary)]">
         {phone}
       </Text>
       {balance !== null && (
         <Text
-          className="tabular-nums"
-          style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}
+          className="tabular-nums text-sm text-[var(--text-secondary)]"
+          
         >
           {t.importPreviewColBalance ?? 'Balance'}: {balance}
         </Text>

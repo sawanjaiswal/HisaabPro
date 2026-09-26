@@ -72,9 +72,9 @@
   --color-info-600: #2563EB;
   --color-info-700: #1D4ED8;
 
-  /* Neutrals — warm-tinted (not cool gray) */
+  /* Neutrals — 1% cool-blue tinted off-white base for high card contrast */
   --color-gray-0:   #FFFFFF;
-  --color-gray-50:  #F8F7F4;  /* warm cream page bg — NexoWallet signature */
+  --color-gray-50:  #EFF3F8;  /* 1% blue tinted page bg for white card elevation */
   --color-gray-100: #F0EFEB;  /* card borders, dividers */
   --color-gray-200: #E2E0DA;  /* disabled borders */
   --color-gray-300: #C5C3BB;  /* placeholder text */
@@ -142,10 +142,10 @@
   --gradient-calc-start: #026F39;
   --gradient-calc-end:   #013D20;
 
-  /* Warm cream page gradient (dashboard, landing) */
-  --color-cream-start: #f9f9ed;
-  --color-cream-mid: #fafaef;
-  --color-cream-end: #fdfdfd;
+  /* Page gradient (1% cool blue off-white for crisp white card contrast) */
+  --color-cream-start: #EFF3F8;
+  --color-cream-mid:   #F1F5F9;
+  --color-cream-end:   #F6F8FB;
 
   /* Toast (dark overlay style) */
   --toast-bg: #1a1a2e;

@@ -183,8 +183,14 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
         toast.success(queuedSuffix(`${form.name} added successfully`))
         navigate(ROUTES.PARTIES)
       }
-    } catch {
-      toast.error(isEditMode ? 'Failed to update party.' : 'Failed to save party. Please try again.')
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message || (isEditMode ? 'Failed to update party.' : 'Failed to save party. Please try again.'), {
+          detail: err,
+        })
+      } else {
+        toast.error(err ?? (isEditMode ? 'Failed to update party.' : 'Failed to save party. Please try again.'))
+      }
     } finally {
       setIsSubmitting(false)
     }

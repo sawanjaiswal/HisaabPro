@@ -61,14 +61,14 @@ export function ParseProgress({ fileName, format, startedAt, t }: ParseProgressP
         </div>
         <div className="flex-1 min-w-0">
           <Heading level={2}
-            className="font-semibold truncate"
-            style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
+            className="font-semibold truncate text-base text-[var(--text-primary)] font-semibold"
+            
           >
             {t.importParseProgressTitle ?? 'Parsing your file…'}
           </Heading>
           <Text
-            className="truncate"
-            style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}
+            className="truncate text-sm text-[var(--text-secondary)]"
+            
           >
             {fileName ?? t.importParseProgressUnknownFile ?? 'Uploaded file'}
             {' · '}
@@ -80,7 +80,7 @@ export function ParseProgress({ fileName, format, startedAt, t }: ParseProgressP
         <Spinner size="sm" />
       </div>
 
-      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <Text className="text-sm text-[var(--text-secondary)]">
         {t.importParseProgressBody ??
           'This usually takes a few seconds. Stay on this screen — we will show the preview as soon as it is ready.'}
       </Text>

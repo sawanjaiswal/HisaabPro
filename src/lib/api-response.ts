@@ -68,6 +68,7 @@ export async function parseApiResponse<T>(response: Response): Promise<T> {
       json.error?.message || `Request failed (${response.status})`,
       json.error?.code || 'UNKNOWN',
       response.status,
+      json.error?.details ?? json.error,
     )
   }
 

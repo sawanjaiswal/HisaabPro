@@ -23,12 +23,12 @@ export function StubPanel({ title, body }: PanelProps) {
   return (
     <Card variant="default" className="p-4 space-y-2">
       <Heading level={2}
-        className="font-semibold"
-        style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
+        className="font-semibold text-base text-[var(--text-primary)] font-semibold"
+        
       >
         {title}
       </Heading>
-      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <Text className="text-sm text-[var(--text-secondary)]">
         {body}
       </Text>
     </Card>
@@ -40,12 +40,12 @@ export function CommittingPanel({ title, body }: PanelProps) {
     <Card variant="default" className="p-6 flex flex-col items-center text-center gap-3">
       <Spinner size="lg" />
       <Heading level={2}
-        className="font-semibold"
-        style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
+        className="font-semibold text-base text-[var(--text-primary)] font-semibold"
+        
       >
         {title}
       </Heading>
-      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <Text className="text-sm text-[var(--text-secondary)]">
         {body}
       </Text>
     </Card>

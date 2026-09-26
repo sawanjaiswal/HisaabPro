@@ -52,15 +52,15 @@ export function ProductRowCard({ row, t }: ProductRowCardProps) {
       <header className="flex items-start justify-between gap-2">
         <div className="flex flex-col min-w-0">
           <span
-            className="font-semibold truncate"
-            style={{ fontSize: 'var(--fs-base)', color: 'var(--color-text-primary)' }}
+            className="font-semibold truncate text-sm text-[var(--text-primary)]"
+            
           >
             {name}
           </span>
           {sku && (
             <span
-              className="truncate"
-              style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}
+              className="truncate text-xs text-[var(--text-secondary)]"
+              
             >
               {(t.productSku ?? 'SKU')}: {sku}
             </span>
@@ -99,8 +99,8 @@ export function ProductRowCard({ row, t }: ProductRowCardProps) {
 
       {issueMsg && (
         <Text
-          style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}
-          className="truncate"
+          className="text-xs text-[var(--text-secondary)] truncate"
+          
           title={issueMsg}
         >
           {issueMsg}
@@ -119,12 +119,12 @@ function Stat({ label, value }: StatProps) {
   return (
     <div className="flex flex-col">
       <dt
-        style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}
+        className="text-xs text-[var(--text-secondary)]"
       >
         {label}
       </dt>
       <dd
-        style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
+        className="text-sm text-[var(--text-primary)] font-medium"
       >
         {value}
       </dd>

@@ -63,12 +63,12 @@ export function ParseFailed({ jobId, errorCount, t }: ParseFailedProps) {
         </div>
         <div className="flex-1 min-w-0">
           <Heading level={2}
-            className="font-semibold"
-            style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
+            className="font-semibold text-base text-[var(--text-primary)] font-semibold"
+            
           >
             {t.importParseFailedTitle ?? 'We could not read this file'}
           </Heading>
-          <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+          <Text className="text-sm text-[var(--text-secondary)]">
             {t.importParseFailedBody ??
               'The file format may be different from what was selected, or the file may be corrupt. Cancel this import and try again with a fresh export.'}
           </Text>
@@ -77,7 +77,7 @@ export function ParseFailed({ jobId, errorCount, t }: ParseFailedProps) {
 
       {errorCount > 0 && (
         <Text
-          style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}
+          className="text-sm text-[var(--text-secondary)]"
         >
           {(t.importParseFailedErrorCount ?? 'Rows with errors:')}{' '}
           <span className="font-semibold tabular-nums">{errorCount}</span>

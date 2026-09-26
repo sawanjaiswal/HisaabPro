@@ -89,12 +89,12 @@ export function CommitConfirm({
     <div className="space-y-4">
       <Card variant="default" className="p-4 space-y-3">
         <Heading level={2}
-          className="font-semibold"
-          style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
+          className="font-semibold text-base text-[var(--text-primary)] font-semibold"
+          
         >
           {t.importCommitTitle ?? 'Ready to commit'}
         </Heading>
-        <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+        <Text className="text-sm text-[var(--text-secondary)]">
           {t.importCommitBody ?? 'Review the summary before we save these rows to your business.'}
         </Text>
         <dl className="space-y-2 pt-2">
@@ -159,7 +159,7 @@ export function CommitConfirm({
 function CommitCountRow({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex items-center justify-between">
-      <dt style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <dt className="text-sm text-[var(--text-secondary)]">
         {label}
       </dt>
       <dd

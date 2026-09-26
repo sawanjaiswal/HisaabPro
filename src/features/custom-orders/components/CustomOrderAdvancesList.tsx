@@ -65,11 +65,11 @@ export function CustomOrderAdvancesList({
                 <span style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-text)' }}>
                   ₹{formatPaise(adv.amountPaise)}
                 </span>
-                <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+                <span className="text-xs text-[var(--text-secondary)]">
                   {METHOD_LABELS[adv.method] ?? adv.method}
                   {adv.reference ? ` · ${adv.reference}` : ''}
                 </span>
-                <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+                <span className="text-xs text-[var(--text-secondary)]">
                   {new Date(adv.receivedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </span>
                 {adv.notes && (

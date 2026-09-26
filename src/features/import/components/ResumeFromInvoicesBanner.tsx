@@ -48,7 +48,7 @@ export function ResumeFromInvoicesBanner({
         {'← '}
         {t.backToPaymentImport ?? 'Back to payment import'}
       </Link>
-      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <Text className="text-sm text-[var(--text-secondary)]">
         {t.backToPaymentImportDesc ??
           'Return to the payment import you started — your staged rows are still waiting.'}
       </Text>

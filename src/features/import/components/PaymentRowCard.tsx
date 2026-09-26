@@ -47,14 +47,14 @@ export function PaymentRowCard({ row, t }: PaymentRowCardProps) {
       <header className="flex items-start justify-between gap-3 flex-wrap">
         <div className="flex flex-col min-w-0">
           <span
-            className="font-semibold truncate"
-            style={{ fontSize: 'var(--fs-base)', color: 'var(--color-text-primary)' }}
+            className="font-semibold truncate text-sm text-[var(--text-primary)]"
+            
           >
             {partyName}
           </span>
           <span
-            className="truncate"
-            style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}
+            className="truncate text-xs text-[var(--text-secondary)]"
+            
           >
             {date}
           </span>
@@ -93,8 +93,8 @@ export function PaymentRowCard({ row, t }: PaymentRowCardProps) {
         />
         {norm?.notes && (
           <span
-            className="truncate"
-            style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}
+            className="truncate text-xs text-[var(--text-secondary)]"
+            
           >
             {norm.notes}
           </span>
@@ -168,12 +168,12 @@ function formatLinePaise(paise: number | null | undefined): string {
 function Meta({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col min-w-0">
-      <dt style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+      <dt className="text-xs text-[var(--text-secondary)]">
         {label}
       </dt>
       <dd
-        className="truncate"
-        style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
+        className="truncate text-sm text-[var(--text-primary)] font-medium"
+        
       >
         {value}
       </dd>

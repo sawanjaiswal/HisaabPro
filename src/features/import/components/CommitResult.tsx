@@ -103,14 +103,14 @@ export function CommitResult({ job, t }: CommitResultProps) {
     <div className="space-y-4">
       <Card variant="default" className="p-4 space-y-3">
         <Heading level={2}
-          className="font-semibold"
-          style={{ fontSize: 'var(--fs-lg)', color: 'var(--color-text-primary)' }}
+          className="font-semibold text-base text-[var(--text-primary)] font-semibold"
+          
         >
           {isPartial
             ? (t.importResultPartialTitle ?? 'Import partially saved')
             : (t.importResultTitle ?? 'Import complete')}
         </Heading>
-        <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+        <Text className="text-sm text-[var(--text-secondary)]">
           {isPartial
             ? (t.importResultPartialBody ??
               'Some rows could not be saved. Download the error CSV to see what went wrong.')
@@ -189,7 +189,7 @@ export function CommitResult({ job, t }: CommitResultProps) {
 function ResultCountRow({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex items-center justify-between">
-      <dt style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <dt className="text-sm text-[var(--text-secondary)]">
         {label}
       </dt>
       <dd

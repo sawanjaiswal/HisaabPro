@@ -114,7 +114,7 @@ export default function MarketingHubPage() {
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
         <div>
-          <Heading level={1} style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketing}</Heading>
+          <Heading level={1} className="text-xl font-bold text-[var(--text-primary)] m-0">{t.marketing}</Heading>
           <Text style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0 }}>{t.marketingSubtitle}</Text>
         </div>
       </div>

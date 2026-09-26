@@ -181,7 +181,7 @@ describe('useProductForm', () => {
       const { result } = renderHook(() => useProductForm(), { wrapper: wrap })
       fillValid(result)
       await act(() => result.current.handleSubmit())
-      expect(mockToast.error).toHaveBeenCalledWith('Failed to save product. Please try again.')
+      expect(mockToast.error).toHaveBeenCalledWith('Network', expect.objectContaining({ detail: expect.any(Error) }))
       expect(result.current.isSubmitting).toBe(false)
     })
     it('does not submit when validation fails', async () => {

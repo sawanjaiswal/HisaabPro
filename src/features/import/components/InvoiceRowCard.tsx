@@ -51,22 +51,22 @@ export function InvoiceRowCard({ row, t }: InvoiceRowCardProps) {
       <header className="flex items-start justify-between gap-3 flex-wrap">
         <div className="flex flex-col min-w-0">
           <span
-            className="font-semibold truncate tabular-nums"
-            style={{ fontSize: 'var(--fs-base)', color: 'var(--color-text-primary)' }}
+            className="font-semibold truncate tabular-nums text-sm text-[var(--text-primary)]"
+            
           >
             {(t.importInvoiceNumberLabel ?? 'Invoice #')} {documentNumber}
           </span>
           <span
-            className="truncate"
-            style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}
+            className="truncate text-xs text-[var(--text-secondary)]"
+            
           >
             {documentDate}
           </span>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <span
-            className="truncate font-medium"
-            style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
+            className="truncate font-medium text-sm text-[var(--text-primary)] font-medium"
+            
           >
             {partyName}
           </span>
@@ -75,7 +75,7 @@ export function InvoiceRowCard({ row, t }: InvoiceRowCardProps) {
       </header>
 
       {lines.length === 0 ? (
-        <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+        <Text className="text-xs text-[var(--text-secondary)]">
           {t.importInvoiceNoLines ?? 'No line items on this invoice'}
         </Text>
       ) : (
@@ -91,22 +91,22 @@ export function InvoiceRowCard({ row, t }: InvoiceRowCardProps) {
                   t={t}
                 />
                 <span
-                  className="truncate"
-                  style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)' }}
+                  className="truncate text-sm text-[var(--text-primary)] font-medium"
+                  
                 >
                   {line.resolved?.source?.name ?? line.source?.productNameRaw ?? '—'}
                 </span>
               </span>
               <span
-                className="tabular-nums shrink-0"
-                style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}
+                className="tabular-nums shrink-0 text-sm text-[var(--text-secondary)]"
+                
               >
                 {formatQty(line)} · {formatLinePaise(line.lineTotalPaise)}
               </span>
             </li>
           ))}
           {remaining > 0 && (
-            <li style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+            <li className="text-xs text-[var(--text-secondary)]">
               {(t.importInvoiceLineMore ?? '+{count} more').replace(
                 '{count}',
                 String(remaining),
@@ -194,7 +194,7 @@ interface StatProps {
 function Stat({ label, value, emphasize = false }: StatProps) {
   return (
     <div className="flex flex-col">
-      <dt style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+      <dt className="text-xs text-[var(--text-secondary)]">
         {label}
       </dt>
       <dd

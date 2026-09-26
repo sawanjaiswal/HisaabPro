@@ -170,7 +170,12 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
     onError: (err) => {
       // #150 — a CONFLICT opens the reconcile dialog (handled below), not a toast.
       if (isConflictError(err)) return
-      toast.error(isEditMode ? t.productUpdateFailed : t.productSaveFailed)
+      const fallback = isEditMode ? t.productUpdateFailed : t.productSaveFailed
+      if (err instanceof Error) {
+        toast.error(err.message || fallback, { detail: err })
+      } else {
+        toast.error(err ?? fallback)
+      }
     },
   })
 

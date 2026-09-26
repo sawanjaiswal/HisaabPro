@@ -19,7 +19,7 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
           className="flex items-center justify-between px-5 pt-2 pb-1"
           style={{ background: 'var(--lp-bg-card)' }}
         >
-          <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>9:41</span>
+          <span className="text-xs text-[var(--text-muted)]">9:41</span>
           <div
             className="w-16 h-4 rounded-full"
             style={{ background: 'var(--lp-phone-border, var(--color-gray-700))' }}
@@ -49,7 +49,7 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
           {/* Greeting */}
           <div>
             <p className="font-semibold lp-text" style={{ fontSize: '0.6875rem' }}>Good morning!</p>
-            <p style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>Sharma Electronics</p>
+            <p className="text-xs text-[var(--text-muted)]">Sharma Electronics</p>
           </div>
 
           {/* Stats row */}

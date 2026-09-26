@@ -50,7 +50,7 @@ export function ResumeInvoiceImportBanner({
         {'← '}
         {t.backToInvoiceImport ?? 'Back to invoice import'}
       </Link>
-      <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <Text className="text-sm text-[var(--text-secondary)]">
         {t.backToInvoiceImportDesc ??
           'Return to the invoice import you started — your staged rows are still waiting.'}
       </Text>

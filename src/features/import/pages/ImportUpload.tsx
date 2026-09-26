@@ -108,8 +108,8 @@ export default function ImportUploadPage() {
       <PageContainer variant="form" className="space-y-6">
         <div className="space-y-2">
           <Heading level={1}
-            className="font-semibold"
-            style={{ fontSize: 'var(--fs-xl)', color: 'var(--color-text-primary)' }}
+            className="font-semibold text-lg text-[var(--text-primary)] font-semibold"
+            
           >
             {entity === 'payments'
               ? (tx.importPayments ?? 'Import payments')

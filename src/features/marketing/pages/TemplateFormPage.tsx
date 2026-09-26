@@ -90,7 +90,7 @@ export default function TemplateFormPage() {
         <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(MARKETING_ROUTES.TEMPLATES)} aria-label={t.marketingBackToTemplates}>
           <ArrowLeft size={20} aria-hidden="true" />
         </Button>
-        <Heading level={1} style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>
+        <Heading level={1} className="text-xl font-bold text-[var(--text-primary)] m-0">
           {isEdit ? t.marketingEditTemplate : t.marketingNewTemplate}
         </Heading>
       </div>

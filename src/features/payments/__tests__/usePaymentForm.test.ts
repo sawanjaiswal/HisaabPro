@@ -154,7 +154,8 @@ describe('usePaymentForm', () => {
     await act(async () => { await result.current.handleSubmit() })
 
     expect(mockToast.error).toHaveBeenCalledWith(
-      'Failed to save payment. Please try again.',
+      'Network',
+      expect.objectContaining({ detail: expect.any(Error) }),
     )
     expect(mockNavigate).not.toHaveBeenCalled()
   })

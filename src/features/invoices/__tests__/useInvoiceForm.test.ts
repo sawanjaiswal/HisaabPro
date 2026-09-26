@@ -239,7 +239,8 @@ describe('useInvoiceForm', () => {
     await act(async () => { await result.current.handleSubmit() })
 
     expect(mockToast.error).toHaveBeenCalledWith(
-      'Failed to save invoice. Please try again.',
+      'Network',
+      expect.objectContaining({ detail: expect.any(Error) }),
     )
     expect(result.current.isSubmitting).toBe(false)
   })

@@ -57,7 +57,7 @@ export function ExpiryAlertCard({ alert }: ExpiryAlertCardProps) {
         <AlertTriangle size={16} aria-hidden="true" style={{ color, flexShrink: 0, marginTop: 2 }} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-            <span style={{ fontWeight: 600, fontSize: 'var(--fs-base)', color: 'var(--color-text-primary)' }}>
+            <span className="text-sm font-semibold text-[var(--text-primary)]">
               {alert.product.name}
             </span>
             <span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color, background: surface, borderRadius: 'var(--radius-full)', padding: '2px 8px' }}>
@@ -66,19 +66,19 @@ export function ExpiryAlertCard({ alert }: ExpiryAlertCardProps) {
           </div>
           <div style={{ marginTop: 'var(--space-2)', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--space-2)' }}>
             <div>
-              <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>{t.expiryBatchLabel}</div>
+              <div className="text-xs text-[var(--text-muted)]">{t.expiryBatchLabel}</div>
               <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 500 }}>{alert.batch.batchNumber}</div>
             </div>
             <div>
-              <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>{t.expiryDateLabel}</div>
+              <div className="text-xs text-[var(--text-muted)]">{t.expiryDateLabel}</div>
               <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color }}>{formatExpiryDate(alert.batch.expiryDate)}</div>
             </div>
             <div>
-              <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>{t.expiryStockLabel}</div>
+              <div className="text-xs text-[var(--text-muted)]">{t.expiryStockLabel}</div>
               <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 500 }}>{alert.batch.currentStock} {alert.product.unit.symbol}</div>
             </div>
             <div>
-              <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)' }}>Status</div>
+              <div className="text-xs text-[var(--text-muted)]">Status</div>
               <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color }}>{expiryLabel(alert.daysRemaining, alert.alertType)}</div>
             </div>
           </div>

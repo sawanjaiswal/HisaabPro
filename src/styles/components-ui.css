@@ -96,9 +96,11 @@
 .pill-tabs--with-input { margin-bottom: var(--space-2); }
 
 .input-label {
-  font-size: var(--fs-sm);
+  display: block;
+  font-size: var(--fs-df);
   font-weight: 500;
-  color: var(--color-gray-600);
+  color: var(--text-primary);
+  margin-bottom: var(--space-1-5);
 }
 
 .input-wrapper { position: relative; }

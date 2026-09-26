@@ -31,5 +31,5 @@ export interface ApiOptions extends RequestInit {
 export interface ApiResponse<T> {
   success: boolean
   data: T
-  error?: { code: string; message: string }
+  error?: { code: string; message: string; details?: unknown; [key: string]: unknown }
 }
