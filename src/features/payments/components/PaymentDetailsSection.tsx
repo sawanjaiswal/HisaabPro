@@ -89,17 +89,17 @@ export function PaymentDetailsSection({
   const quickAmounts = [500, 1000, 2000, 5000]
 
   return (
-    <div className="space-y-4 max-w-lg mx-auto">
-      {/* ── 1. Party Identity Card ─────────────────────────────────────── */}
-      <div className="bg-white rounded-3xl p-5 shadow-xs border-0 space-y-3">
-        <div className="text-sm font-semibold text-slate-700">
-          {t.customerSupplierLabel || 'Customer / Supplier'}
+    <div className="space-y-6 max-w-lg mx-auto">
+      {/* ── 1. Party Identity ─────────────────────────────────────────── */}
+      <div className="space-y-1.5">
+        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+          {t.customerSupplierLabel || 'CUSTOMER / SUPPLIER'}
         </div>
         <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} showLabel={false} />
       </div>
 
-      {/* ── 2. Amount Card ─────────────────────────────────────────────── */}
-      <div className="bg-white rounded-3xl p-6 shadow-xs border-0 space-y-4 text-center">
+      {/* ── 2. Amount ─────────────────────────────────────────────────── */}
+      <div className="space-y-3 text-center py-2">
         <label
           htmlFor="payment-amount"
           className="text-xs font-bold uppercase tracking-widest text-slate-500 block"
@@ -145,7 +145,7 @@ export function PaymentDetailsSection({
               type="button"
               variant="none"
               onClick={() => onAmountChange(q * 100)}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#F1F3F5] hover:bg-slate-200 text-slate-700 transition-all active:scale-95 cursor-pointer border-0"
+              className="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all active:scale-95 cursor-pointer border-0"
             >
               +{formatRupees(q * 100)}
             </Button>
@@ -159,14 +159,14 @@ export function PaymentDetailsSection({
         )}
       </div>
 
-      {/* ── 3. Payment Mode Card ───────────────────────────────────────── */}
-      <div className="bg-white rounded-3xl p-5 shadow-xs border-0 space-y-4">
+      {/* ── 3. Payment Mode ───────────────────────────────────────────── */}
+      <div className="space-y-3">
         <label className="text-xs font-bold uppercase tracking-widest text-slate-500 block">
           {t.paymentModeLabel || 'PAYMENT MODE'} <span className="text-red-500">*</span>
         </label>
 
         {/* Row 1: 4 columns */}
-        <div className="grid grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-4 gap-2">
           {PAYMENT_MODES.slice(0, 4).map((m) => {
             const isSelected = mode === m
             const Icon = MODE_ICONS[m]
@@ -178,7 +178,7 @@ export function PaymentDetailsSection({
                 className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-2xl transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${
                   isSelected
                     ? 'bg-[#E8F5E9] border-2 border-[#026F39]'
-                    : 'bg-[#F8F9FA] border-0 hover:bg-slate-100'
+                    : 'bg-slate-100/90 hover:bg-slate-200/80 border-0'
                 }`}
                 onClick={() => onModeChange(m)}
                 role="radio"
@@ -205,7 +205,7 @@ export function PaymentDetailsSection({
         </div>
 
         {/* Row 2: 3 columns */}
-        <div className="grid grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-4 gap-2">
           {PAYMENT_MODES.slice(4).map((m) => {
             const isSelected = mode === m
             const Icon = MODE_ICONS[m]
@@ -217,7 +217,7 @@ export function PaymentDetailsSection({
                 className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-2xl transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${
                   isSelected
                     ? 'bg-[#E8F5E9] border-2 border-[#026F39]'
-                    : 'bg-[#F8F9FA] border-0 hover:bg-slate-100'
+                    : 'bg-slate-100/90 hover:bg-slate-200/80 border-0'
                 }`}
                 onClick={() => onModeChange(m)}
                 role="radio"
@@ -250,12 +250,12 @@ export function PaymentDetailsSection({
         )}
       </div>
 
-      {/* ── 4. Date & Details Card ─────────────────────────────────────── */}
-      <div className="bg-white rounded-3xl p-5 shadow-xs border-0 space-y-4">
+      {/* ── 4. Date & Details ─────────────────────────────────────────── */}
+      <div className="space-y-4">
         {/* Date Row */}
         <div>
           <label
-            className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-1.5"
+            className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5 flex items-center gap-1.5"
             htmlFor="payment-date"
           >
             <Calendar className="w-3.5 h-3.5 text-[#026F39]" />
@@ -265,7 +265,7 @@ export function PaymentDetailsSection({
           <DateField
             id="payment-date"
             type="date"
-            className="w-full bg-[#F8F9FA] border-0 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20"
+            className="w-full bg-slate-100/90 border-0 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20"
             value={date}
             onChange={(e) => onDateChange(e.target.value)}
             aria-label={t.paymentDate2}
@@ -276,7 +276,7 @@ export function PaymentDetailsSection({
         {showReference && (
           <div>
             <label
-              className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-1.5"
+              className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5 flex items-center gap-1.5"
               htmlFor="payment-ref"
             >
               <Hash className="w-3.5 h-3.5 text-[#026F39]" />
@@ -285,7 +285,7 @@ export function PaymentDetailsSection({
             <Input
               id="payment-ref"
               type="text"
-              className="w-full bg-[#F8F9FA] border-0 rounded-xl px-4 py-3 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20"
+              className="w-full bg-slate-100/90 border-0 rounded-xl px-4 py-3 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20"
               placeholder={getReferencePlaceholder(mode)}
               value={referenceNumber}
               onChange={(e) => onReferenceChange(e.target.value)}
@@ -298,7 +298,7 @@ export function PaymentDetailsSection({
         {/* Notes Row */}
         <div>
           <label
-            className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-1.5"
+            className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5 flex items-center gap-1.5"
             htmlFor="payment-notes"
           >
             <FileText className="w-3.5 h-3.5 text-[#026F39]" />
@@ -306,7 +306,7 @@ export function PaymentDetailsSection({
           </label>
           <Textarea
             id="payment-notes"
-            className="w-full text-sm bg-[#F8F9FA] border-0 rounded-xl p-3.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900"
+            className="w-full text-sm bg-slate-100/90 border-0 rounded-xl p-3.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900"
             rows={2}
             placeholder="Add a note (optional)..."
             value={notes}

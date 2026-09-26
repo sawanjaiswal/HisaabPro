@@ -85,15 +85,15 @@ export function PaymentFormSections({
       >
         <AccordionItem
           value="invoices"
-          className="bg-white rounded-3xl p-5 shadow-xs border-0 transition-all"
+          className="border-0 transition-all py-1"
         >
-          <AccordionTrigger className="flex items-center justify-between font-semibold text-sm py-0 text-slate-800 hover:no-underline cursor-pointer">
+          <AccordionTrigger className="flex items-center justify-between font-semibold text-sm py-2 text-slate-800 hover:no-underline cursor-pointer">
             <span className="flex items-center gap-2">
               <Link2 className="w-4 h-4 text-[#026F39]" />
               <span>{t.sectionLinkInvoices || 'Link Invoices'}</span>
             </span>
           </AccordionTrigger>
-          <AccordionContent className="pt-4">
+          <AccordionContent className="pt-2">
             <PaymentInvoicesSection
               allocations={form.allocations}
               unallocatedAmount={unallocated}
@@ -107,15 +107,15 @@ export function PaymentFormSections({
 
         <AccordionItem
           value="discount"
-          className="bg-white rounded-3xl p-5 shadow-xs border-0 transition-all"
+          className="border-0 transition-all py-1"
         >
-          <AccordionTrigger className="flex items-center justify-between font-semibold text-sm py-0 text-slate-800 hover:no-underline cursor-pointer">
+          <AccordionTrigger className="flex items-center justify-between font-semibold text-sm py-2 text-slate-800 hover:no-underline cursor-pointer">
             <span className="flex items-center gap-2">
               <Percent className="w-4 h-4 text-[#026F39]" />
               <span>{t.discount || 'Discount'}</span>
             </span>
           </AccordionTrigger>
-          <AccordionContent className="pt-4">
+          <AccordionContent className="pt-2">
             <PaymentDiscountSection
               discount={form.discount}
               amount={form.amount}
