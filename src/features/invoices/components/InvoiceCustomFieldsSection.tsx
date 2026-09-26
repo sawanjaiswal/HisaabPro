@@ -54,10 +54,10 @@ export function InvoiceCustomFieldsSection({ documentType, values, errors, onCha
     return (
       <div className="line-items-section py-0">
         <div className="line-item-field">
-          <div className="h-12 rounded-[var(--radius-md)] animate-pulse" style={{ backgroundColor: 'var(--color-gray-100)' }} />
+          <div className="h-12 rounded-md animate-pulse" style={{ backgroundColor: 'var(--color-gray-100)' }} />
         </div>
         <div className="line-item-field">
-          <div className="h-12 rounded-[var(--radius-md)] animate-pulse" style={{ backgroundColor: 'var(--color-gray-100)' }} />
+          <div className="h-12 rounded-md animate-pulse" style={{ backgroundColor: 'var(--color-gray-100)' }} />
         </div>
       </div>
     )
@@ -70,7 +70,7 @@ export function InvoiceCustomFieldsSection({ documentType, values, errors, onCha
 
   return (
     <div className="line-items-section py-0">
-      <h3 className="text-[var(--fs-lg)] font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+      <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
         {t.additionalDetails}
       </h3>
 
@@ -138,7 +138,7 @@ export function InvoiceCustomFieldsSection({ documentType, values, errors, onCha
             )}
 
             {err && (
-              <p className="mt-1 text-[var(--fs-xs)]" style={{ color: 'var(--color-error-500)' }}>
+              <p className="mt-1 text-xs" style={{ color: 'var(--color-error-500)' }}>
                 {err}
               </p>
             )}

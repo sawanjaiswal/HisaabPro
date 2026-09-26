@@ -1,8 +1,9 @@
-/** Dropdown list for party search results — loading, error, empty, hint, and result states */
+/** Dropdown list for party search results — loading, error, empty, hint, result states, and instant Add Client */
 
 import React from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, User } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 import type { PartySummary, PartyType } from '@/lib/types/party.types'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -35,8 +36,6 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
     CUSTOMER: t.customer,
     SUPPLIER: t.supplier,
     BOTH: t.both,
-    // Phase 6 #136 PR1A — STAFF parties never reach this picker (server
-    // filters `type != 'STAFF'` for invoice party search).
     STAFF: 'Staff',
   }
   const trimmedQuery = debouncedQuery.trim()
@@ -61,8 +60,32 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
       )}
 
       {!isLoading && !fetchError && trimmedQuery.length > 0 && results.length === 0 && (
-        <li className="party-search-status party-search-empty">
-          {t.noPartiesFoundFor} &ldquo;{debouncedQuery}&rdquo;
+        <li className="party-search-status party-search-empty flex flex-col items-center gap-2 py-4 px-3 text-center">
+          <p className="text-xs text-[var(--color-gray-500)] font-medium">
+            {t.noPartiesFoundFor} &ldquo;{debouncedQuery}&rdquo;
+          </p>
+          <Button
+            variant="none"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              onAddNew()
+            }}
+            disabled={isCreating}
+            className="w-full py-2 px-3 rounded-xl bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
+          >
+            {isCreating ? (
+              <>
+                <span className="party-search-spinner" aria-hidden="true" />
+                <span>{t.creatingParty}</span>
+              </>
+            ) : (
+              <>
+                <Plus className="w-3.5 h-3.5" />
+                <span>{t.addParty} &ldquo;{trimmedQuery}&rdquo; {t.addAsNewClient}</span>
+              </>
+            )}
+          </Button>
         </li>
       )}
 
@@ -75,6 +98,7 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
 
       {!isLoading && !fetchError && trimmedQuery.length === 0 && results.length === 0 && (
         <li className="party-search-status party-search-hint">
+          <User size={14} className="mr-1 inline" aria-hidden="true" />
           {t.typeToSearchParties}
         </li>
       )}
@@ -103,26 +127,32 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
         </li>
       ))}
 
-      {/* Instant "Add new party" — creates a party named after the query and
-          selects it without leaving the invoice. Shown whenever the user has
-          typed something that isn't an exact existing match. */}
-      {!isLoading && !fetchError && trimmedQuery.length > 0 && (
+      {/* Instant "Add party" option shown when the user has typed a query */}
+      {!isLoading && !fetchError && trimmedQuery.length > 0 && results.length > 0 && (
         <li
           className="party-search-add-new"
           role="option"
           aria-selected={false}
           aria-busy={isCreating}
           tabIndex={0}
-          onClick={onAddNew}
+          onClick={(e) => {
+            e.stopPropagation()
+            onAddNew()
+          }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') onAddNew()
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              onAddNew()
+            }
           }}
         >
           <span className="party-search-add-icon" aria-hidden="true">
             {isCreating ? <span className="party-search-spinner" /> : <Plus size={16} />}
           </span>
-          <span className="party-search-add-label">
-            {isCreating ? t.creatingParty : <>{t.addParty} &ldquo;{trimmedQuery}&rdquo;</>}
+          <span className="party-search-add-label truncate">
+            {isCreating
+              ? t.creatingParty
+              : `${t.addParty} "${trimmedQuery}" ${t.addAsNewClient}`}
           </span>
         </li>
       )}

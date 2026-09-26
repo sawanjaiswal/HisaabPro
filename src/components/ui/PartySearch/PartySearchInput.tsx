@@ -9,13 +9,15 @@ import { PartySearchField } from './PartySearchField'
 import { PartySearchDropdown } from './PartySearchDropdown'
 import { PartyAvatar } from '@/components/ui/PartyAvatar'
 import { PartyBalanceChip } from '@/features/invoices/components/PartyBalanceChip'
+import { useInstantAddParty } from '@/features/invoices/components/useInstantAddParty'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import '@/features/invoices/invoice-party-search.css'
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const SEARCH_LIMIT = 5
+const SEARCH_LIMIT = 8
+const RECENT_LIMIT = 8
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -24,6 +26,7 @@ interface PartySearchInputProps {
   value: string
   onChange: (id: string, name: string) => void
   error?: string
+  showLabel?: boolean
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -32,6 +35,7 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
   value,
   onChange,
   error,
+  showLabel = true,
 }) => {
   const { t } = useLanguage()
   const [query, setQuery] = useState('')
@@ -58,34 +62,31 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
     const controller = new AbortController()
     getParty(value, controller.signal)
       .then((p) => {
-        if (p?.name) setSelectedName(p.name)
+        if (p?.name) {
+          setSelectedName(p.name)
+          onChange(p.id, p.name)
+        }
       })
       .catch(() => {
         // Fallback gracefully
       })
 
     return () => controller.abort()
-  }, [value, selectedName])
+  }, [value, selectedName, onChange])
 
   // ─── Fetch results when debounced query changes ──────────────────────────
 
   useEffect(() => {
     if (!isOpen) return
-    if (debouncedQuery.trim().length === 0) {
-      setResults([])
-      return
-    }
-
-    // Abort any in-flight request
     abortRef.current?.abort()
     const controller = new AbortController()
     abortRef.current = controller
-
     setIsLoading(true)
     setFetchError(false)
 
+    const trimmed = debouncedQuery.trim()
     getParties(
-      { search: debouncedQuery.trim(), limit: SEARCH_LIMIT },
+      trimmed.length > 0 ? { search: trimmed, limit: SEARCH_LIMIT } : { limit: RECENT_LIMIT },
       controller.signal,
     )
       .then((res) => {
@@ -101,9 +102,7 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
         setIsLoading(false)
       })
 
-    return () => {
-      controller.abort()
-    }
+    return () => controller.abort()
   }, [debouncedQuery, isOpen])
 
   // ─── Close dropdown on outside click ────────────────────────────────────
@@ -125,6 +124,24 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
       abortRef.current?.abort()
     }
   }, [])
+
+  // ─── Instant Party Creation ───────────────────────────────────────────────
+
+  const { isCreating, addParty } = useInstantAddParty({
+    onCreated: (id, name) => {
+      setSelectedName(name)
+      setQuery('')
+      setResults([])
+      setIsOpen(false)
+      onChange(id, name)
+    },
+    onError: () => setFetchError(true),
+  })
+
+  const handleAddNew = useCallback(() => {
+    setFetchError(false)
+    void addParty(query)
+  }, [addParty, query])
 
   // ─── Handlers ────────────────────────────────────────────────────────────
 
@@ -149,7 +166,6 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
     setQuery('')
     setResults([])
     onChange('', '')
-    // Focus the input after clearing
     requestAnimationFrame(() => inputRef.current?.focus())
   }, [onChange])
 
@@ -164,9 +180,12 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
       if (e.key === 'Escape') {
         setIsOpen(false)
         inputRef.current?.blur()
+      } else if (e.key === 'Enter' && query.trim() && results.length === 0 && !isLoading) {
+        e.preventDefault()
+        handleAddNew()
       }
     },
-    [],
+    [handleAddNew, isLoading, query, results.length],
   )
 
   const handleClearQuery = useCallback(() => {
@@ -183,12 +202,18 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
 
   return (
     <div className="party-search" ref={containerRef}>
-      <label className="label" htmlFor="party-search-input">
-        {t.customerSupplierLabel || 'Customer / Supplier'}
-      </label>
+      {showLabel && (
+        <label className="label" htmlFor="party-search-input">
+          {t.customerSupplierLabel || 'Customer / Supplier'}
+        </label>
+      )}
 
       {isSelected ? (
-        <div className="party-selector-selected" role="status" aria-label={`Selected: ${selectedName}`}>
+        <div
+          className="party-selector-selected"
+          role="status"
+          aria-label={`Selected: ${selectedName}`}
+        >
           <PartyAvatar name={selectedName} size="md" className="party-selector-avatar" />
           <div className="party-selector-info">
             <div className="party-selector-name">{selectedName}</div>
@@ -222,8 +247,10 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
           results={results}
           isLoading={isLoading}
           fetchError={fetchError}
+          isCreating={isCreating}
           debouncedQuery={debouncedQuery}
           onSelect={handleSelect}
+          onAddNew={handleAddNew}
         />
       )}
 

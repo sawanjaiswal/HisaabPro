@@ -71,7 +71,7 @@ export function InvoiceTemplatesSection() {
               }}
             >
               {/* Mini real invoice preview — white background like a real document */}
-              <div className="p-3" style={{ backgroundColor: '#ffffff', color: '#111827', height: 220, overflow: 'hidden' }}>
+              <div className="p-3" style={{ backgroundColor: '#ffffff', color: 'var(--color-gray-900)', height: 220, overflow: 'hidden' }}>
                 {/* Accent bar */}
                 <div className="h-1 w-full rounded-full mb-2.5" style={{ backgroundColor: tpl.accent }} />
 
@@ -94,9 +94,9 @@ export function InvoiceTemplatesSection() {
                     <p style={{ fontSize: 'var(--fs-xs)', fontWeight: 700, fontFamily: 'Georgia, serif' }}>{tpl.business.name}</p>
                     {tpl.business.tagline && <p style={{ fontSize: '0.3125rem', color: tpl.accent, fontStyle: 'italic' }}>{tpl.business.tagline}</p>}
                     <div className="flex items-center gap-1.5 mt-1">
-                      <div className="h-px flex-1" style={{ backgroundColor: '#e5e7eb' }} />
+                      <div className="h-px flex-1" style={{ backgroundColor: 'var(--color-gray-200)' }} />
                       <span style={{ fontSize: '0.3125rem', color: tpl.accent, fontWeight: 600, letterSpacing: '0.08em' }}>INVOICE</span>
-                      <div className="h-px flex-1" style={{ backgroundColor: '#e5e7eb' }} />
+                      <div className="h-px flex-1" style={{ backgroundColor: 'var(--color-gray-200)' }} />
                     </div>
                   </div>
                 ) : tpl.headerStyle === 'minimal' ? (
@@ -107,33 +107,33 @@ export function InvoiceTemplatesSection() {
                   </div>
                 ) : (
                   /* GST Standard: side-by-side */
-                  <div className="flex items-start justify-between mb-2 pb-1.5" style={{ borderBottom: '1px solid #e5e7eb' }}>
+                  <div className="flex items-start justify-between mb-2 pb-1.5" style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
                     <div className="flex items-center gap-1.5">
                       <div className="w-3.5 h-3.5 rounded flex items-center justify-center" style={{ backgroundColor: tpl.accent }}>
                         <FileText size={7} className="text-white" />
                       </div>
                       <div>
                         <p style={{ fontSize: '0.4375rem', fontWeight: 700 }}>{tpl.business.name}</p>
-                        <p style={{ fontSize: '0.3125rem', color: '#9ca3af' }}>{tpl.business.address.split(',')[0]}</p>
+                        <p style={{ fontSize: '0.3125rem', color: 'var(--color-gray-400)' }}>{tpl.business.address.split(',')[0]}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p style={{ fontSize: '0.3125rem', color: tpl.accent, fontWeight: 600 }}>TAX INVOICE</p>
-                      <p style={{ fontSize: '0.25rem', color: '#9ca3af' }}>{tpl.invoiceNo}</p>
+                      <p style={{ fontSize: '0.25rem', color: 'var(--color-gray-400)' }}>{tpl.invoiceNo}</p>
                     </div>
                   </div>
                 )}
 
                 {/* Bill To */}
                 <div className="mb-1.5">
-                  <p style={{ fontSize: '0.25rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>Bill To</p>
+                  <p style={{ fontSize: '0.25rem', color: 'var(--color-gray-400)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>Bill To</p>
                   <p style={{ fontSize: '0.375rem', fontWeight: 500 }}>{tpl.customer.name}</p>
                 </div>
 
                 {/* Line items — real data */}
                 <div
                   className="rounded overflow-hidden mb-1.5"
-                  style={{ border: tpl.tableStyle === 'bordered' ? '1px solid #e5e7eb' : 'none' }}
+                  style={{ border: tpl.tableStyle === 'bordered' ? '1px solid var(--color-gray-200)' : 'none' }}
                 >
                   {/* Table header */}
                   <div
@@ -141,9 +141,9 @@ export function InvoiceTemplatesSection() {
                     style={{
                       fontSize: '0.25rem',
                       fontWeight: 600,
-                      color: '#6b7280',
-                      backgroundColor: tpl.tableStyle === 'bordered' ? '#f3f4f6' : 'transparent',
-                      borderBottom: `1px solid ${tpl.tableStyle === 'minimal' ? '#e5e7eb' : tpl.accent}`,
+                      color: 'var(--color-gray-500)',
+                      backgroundColor: tpl.tableStyle === 'bordered' ? 'var(--color-gray-100)' : 'transparent',
+                      borderBottom: `1px solid ${tpl.tableStyle === 'minimal' ? 'var(--color-gray-200)' : tpl.accent}`,
                     }}
                   >
                     <span>Item</span>
@@ -156,11 +156,11 @@ export function InvoiceTemplatesSection() {
                       className="flex justify-between px-1 py-0.5"
                       style={{
                         fontSize: '0.3125rem',
-                        backgroundColor: tpl.tableStyle === 'striped' && idx % 2 === 0 ? '#f9fafb' : 'transparent',
-                        borderBottom: tpl.tableStyle === 'bordered' ? '1px solid #f3f4f6' : 'none',
+                        backgroundColor: tpl.tableStyle === 'striped' && idx % 2 === 0 ? 'var(--color-gray-50)' : 'transparent',
+                        borderBottom: tpl.tableStyle === 'bordered' ? '1px solid var(--color-gray-100)' : 'none',
                       }}
                     >
-                      <span style={{ color: '#374151' }}>{item.name.length > 22 ? item.name.slice(0, 22) + '...' : item.name}</span>
+                      <span style={{ color: 'var(--color-gray-700)' }}>{item.name.length > 22 ? item.name.slice(0, 22) + '...' : item.name}</span>
                       <span style={{ fontWeight: 500 }}>₹{item.amount.toLocaleString('en-IN')}</span>
                     </div>
                   ))}
@@ -168,7 +168,7 @@ export function InvoiceTemplatesSection() {
 
                 {/* Total */}
                 <div className="flex justify-between items-center pt-1" style={{ borderTop: `1.5px solid ${tpl.accent}` }}>
-                  <span style={{ fontSize: '0.3125rem', fontWeight: 600, color: '#6b7280' }}>Total</span>
+                  <span style={{ fontSize: '0.3125rem', fontWeight: 600, color: 'var(--color-gray-500)' }}>Total</span>
                   <span style={{ fontSize: '0.4375rem', fontWeight: 700, color: tpl.accent }}>
                     ₹{tpl.items.reduce((s, item) => s + item.amount, 0).toLocaleString('en-IN')}
                   </span>
@@ -178,7 +178,7 @@ export function InvoiceTemplatesSection() {
                   <div className="flex items-center gap-1 mt-1">
                     <span
                       className="px-1 py-0.5 rounded-sm"
-                      style={{ fontSize: '0.25rem', fontWeight: 600, backgroundColor: '#f0fdf4', color: '#059669' }}
+                      style={{ fontSize: '0.25rem', fontWeight: 600, backgroundColor: '#f0fdf4', color: 'var(--color-success-600)' }}
                     >
                       GST Included
                     </span>

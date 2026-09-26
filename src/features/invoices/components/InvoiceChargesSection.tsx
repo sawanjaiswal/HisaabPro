@@ -30,7 +30,7 @@ export function InvoiceChargesSection({
         <div key={`charge-${charge.name || index}`} className="charge-row">
           <Input
             type="text"
-            className="input min-h-[44px] flex-1"
+            className="input min-h-11 flex-1"
             placeholder={t.chargeNamePlaceholder}
             value={charge.name}
             onChange={(e) => onUpdateCharge(index, { name: e.target.value })}
@@ -38,7 +38,7 @@ export function InvoiceChargesSection({
           />
           <Input
             type="number"
-            className="input min-h-[44px] w-[100px]"
+            className="input min-h-11 w-[100px]"
             placeholder={t.amount}
             value={charge.value || ''}
             onChange={(e) => onUpdateCharge(index, { value: parseFloat(e.target.value) || 0 })}

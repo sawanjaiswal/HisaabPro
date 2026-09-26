@@ -5,7 +5,7 @@
  */
 
 import { useCallback } from 'react'
-import { Plus, AlertTriangle } from 'lucide-react'
+import { Plus, X, AlertTriangle, PackagePlus } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { LineItemEditor } from './LineItemEditor'
 import { useLinePriceMeta } from './useLinePriceMeta'
@@ -125,18 +125,39 @@ export function InvoiceItemsSection({
       <FormSection
         title={t.sectionItems}
         action={
-          <Button variant="none"
+          <Button
+            variant="none"
             type="button"
             className="form-section-action"
             onClick={onToggleProductSearch}
             aria-label={showProductSearch ? t.hideProductSearch : t.addLineItemLabel}
             aria-expanded={showProductSearch}
           >
-            <Plus size={16} aria-hidden="true" />
+            {showProductSearch ? <X size={15} aria-hidden="true" /> : <Plus size={15} aria-hidden="true" />}
             {showProductSearch ? t.hideSearch : t.addItem}
           </Button>
         }
       >
+      {showProductSearch && (
+        <div className="product-search-panel py-0">
+          <ProductSearchInput onSelect={handleProductSelect} addedProductIds={addedProductIds} autoFocus />
+        </div>
+      )}
+
+      {lineItems.length === 0 && !showProductSearch && (
+        <div className="invoice-items-empty-state">
+          <PackagePlus size={24} className="invoice-items-empty-icon-svg" aria-hidden="true" />
+          <p className="invoice-items-empty-title">{t.noItemsAdded}</p>
+          <div className="invoice-items-empty-actions">
+            <Button variant="outline" size="sm" type="button" onClick={onToggleProductSearch}>
+              <Plus size={15} aria-hidden="true" />
+              <span>{t.addItem}</span>
+            </Button>
+            <InvoiceScanButton onAdd={handleProductSelect} />
+          </div>
+        </div>
+      )}
+
       {lineItems.map((item, index) => {
         const { lineTotal, discountAmount } = calculateLineTotal(
           item.quantity, item.rate, item.discountType, item.discountValue,
@@ -210,13 +231,9 @@ export function InvoiceItemsSection({
         />
       )}
 
-      <div className="invoice-scan-row">
-        <InvoiceScanButton onAdd={handleProductSelect} />
-      </div>
-
-      {showProductSearch && (
-        <div className="product-search-panel py-0">
-          <ProductSearchInput onSelect={handleProductSelect} addedProductIds={addedProductIds} autoFocus />
+      {lineItems.length > 0 && (
+        <div className="invoice-scan-row">
+          <InvoiceScanButton onAdd={handleProductSelect} />
         </div>
       )}
       </FormSection>

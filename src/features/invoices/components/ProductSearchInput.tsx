@@ -7,10 +7,11 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { getProducts } from '@/lib/services/product.service'
 import type { ProductSummary } from '@/lib/types/product.types'
 import type { ProductPick } from '../invoice.types'
-import { paiseToRupees } from '../invoice-format.utils'
 import { ProductSearchDropdown } from './ProductSearchDropdown'
-import { Input } from '@/components/ui/Input'
+import { paiseToRupees } from '../invoice-format.utils'
+import { useInstantAddProduct } from './useInstantAddProduct'
 import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -46,6 +47,26 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const abortRef = useRef<AbortController | null>(null)
+
+  // ─── Instant product creation ─────────────────────────────────────────────
+
+  const { isCreating, addProduct } = useInstantAddProduct({
+    onCreated: (createdPick) => {
+      onSelect(createdPick)
+      setQuery('')
+      setResults([])
+      setIsOpen(false)
+      requestAnimationFrame(() => inputRef.current?.focus())
+    },
+    onError: () => {
+      setFetchError(true)
+    },
+  })
+
+  const handleAddNew = useCallback(() => {
+    setFetchError(false)
+    void addProduct(query)
+  }, [addProduct, query])
 
   // ─── Fetch results when debounced query changes ──────────────────────────
 
@@ -109,7 +130,6 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
 
   useEffect(() => {
     if (!autoFocus) return
-    // rAF so the focus lands after the panel has painted (keyboard stays up).
     const id = requestAnimationFrame(() => inputRef.current?.focus())
     return () => cancelAnimationFrame(id)
   }, [autoFocus])
@@ -139,21 +159,26 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
         salePrice: product.salePrice,
         taxCategoryId: product.taxCategory?.id ?? null,
       })
-      // Keep search open so user can add more items
     },
     [onSelect],
   )
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape') {
-      setIsOpen(false)
-      inputRef.current?.blur()
-    }
-  }, [])
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false)
+        inputRef.current?.blur()
+      } else if (e.key === 'Enter' && query.trim() && results.length === 0 && !isLoading) {
+        e.preventDefault()
+        handleAddNew()
+      }
+    },
+    [handleAddNew, isLoading, query, results.length],
+  )
 
   // ─── Derived ──────────────────────────────────────────────────────────────
 
-  const showDropdown = isOpen
+  const showDropdown = isOpen && (debouncedQuery.trim().length > 0 || isLoading || fetchError)
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
@@ -169,7 +194,7 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
           id="product-search-input"
           ref={inputRef}
           type="text"
-          className="input product-search-field"
+          className="product-search-field"
           placeholder={t.searchProductNameSku}
           value={query}
           onChange={handleQueryChange}
@@ -182,7 +207,8 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
           aria-autocomplete="list"
         />
         {query.length > 0 && (
-          <Button variant="none"
+          <Button
+            variant="none"
             type="button"
             className="product-search-clear"
             onClick={handleClearQuery}
@@ -201,7 +227,9 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
           fetchError={fetchError}
           debouncedQuery={debouncedQuery}
           addedProductIds={addedProductIds}
+          isCreating={isCreating}
           onAdd={handleAdd}
+          onAddNew={handleAddNew}
         />
       )}
     </div>

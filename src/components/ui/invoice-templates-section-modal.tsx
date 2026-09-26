@@ -8,11 +8,11 @@ import { EASE_OUT } from './invoice-templates-section.data'
 
 /* Document-rendering color constants (not design tokens — only used in this file) */
 const DOC_COLORS = {
-  TEXT_PRIMARY: '#111827', TEXT_BODY: '#374151', TEXT_MUTED: '#6b7280',
-  TEXT_LIGHT: '#9ca3af', TEXT_FAINT: '#d1d5db', TEXT_WHITE: '#fff',
-  BG_WHITE: '#ffffff', BG_SUBTLE: '#fafafa', BG_STRIPE: '#f9fafb', BG_TABLE_HEADER: '#f3f4f6',
-  BORDER: '#e5e7eb', BORDER_SIGNATURE: '#d1d5db',
-  STAMP_GREEN: '#059669', WATERMARK: '#e5e7eb',
+  TEXT_PRIMARY: 'var(--color-gray-900)', TEXT_BODY: 'var(--color-gray-700)', TEXT_MUTED: 'var(--color-gray-500)',
+  TEXT_LIGHT: 'var(--color-gray-400)', TEXT_FAINT: 'var(--color-gray-300)', TEXT_WHITE: '#fff',
+  BG_WHITE: '#ffffff', BG_SUBTLE: '#fafafa', BG_STRIPE: 'var(--color-gray-50)', BG_TABLE_HEADER: 'var(--color-gray-100)',
+  BORDER: 'var(--color-gray-200)', BORDER_SIGNATURE: 'var(--color-gray-300)',
+  STAMP_GREEN: 'var(--color-success-600)', WATERMARK: 'var(--color-gray-200)',
 } as const
 
 export function TemplatePreviewModal({ template: t, onClose }: { template: TemplateData; onClose: () => void }) {

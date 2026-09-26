@@ -1,8 +1,9 @@
-/** Dropdown list for product search — shows loading, error, empty, hint, and results */
+/** Dropdown list for product search — shows loading, error, empty, hint, results, and instant Add Product */
 
 import React from 'react'
-import { Package } from 'lucide-react'
+import { Package, Plus } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 import type { ProductSummary } from '@/lib/types/product.types'
 import { ProductSearchResultItem } from './ProductSearchResultItem'
 
@@ -14,7 +15,9 @@ interface ProductSearchDropdownProps {
   fetchError: boolean
   debouncedQuery: string
   addedProductIds: string[]
+  isCreating?: boolean
   onAdd: (product: ProductSummary) => void
+  onAddNew?: () => void
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -25,10 +28,13 @@ export const ProductSearchDropdown: React.FC<ProductSearchDropdownProps> = ({
   fetchError,
   debouncedQuery,
   addedProductIds,
+  isCreating = false,
   onAdd,
+  onAddNew,
 }) => {
   const { t } = useLanguage()
-  const hasQuery = debouncedQuery.trim().length > 0
+  const trimmedQuery = debouncedQuery.trim()
+  const hasQuery = trimmedQuery.length > 0
 
   return (
     <ul
@@ -50,8 +56,34 @@ export const ProductSearchDropdown: React.FC<ProductSearchDropdownProps> = ({
       )}
 
       {!isLoading && !fetchError && hasQuery && results.length === 0 && (
-        <li className="product-search-status product-search-empty">
-          {t.noProductsFoundFor} &ldquo;{debouncedQuery}&rdquo;
+        <li className="product-search-status product-search-empty flex flex-col items-center gap-2 py-4 px-3 text-center">
+          <p className="text-xs text-gray-500 font-medium">
+            {t.noProductsFoundFor} &ldquo;{debouncedQuery}&rdquo;
+          </p>
+          {onAddNew && (
+            <Button
+              variant="none"
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                onAddNew()
+              }}
+              disabled={isCreating}
+              className="w-full py-2 px-3 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
+            >
+              {isCreating ? (
+                <>
+                  <span className="product-search-spinner" aria-hidden="true" />
+                  <span>{t.creatingProduct}</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>+ {t.addProduct} &ldquo;{trimmedQuery}&rdquo; {t.addAsNewProduct}</span>
+                </>
+              )}
+            </Button>
+          )}
         </li>
       )}
 
@@ -70,6 +102,38 @@ export const ProductSearchDropdown: React.FC<ProductSearchDropdownProps> = ({
           onAdd={onAdd}
         />
       ))}
+
+      {/* Quick "Add new product" option at bottom when query typed or results present */}
+      {!isLoading && !fetchError && onAddNew && (hasQuery || results.length > 0) && (
+        <li
+          className="product-search-add-new"
+          role="option"
+          aria-selected={false}
+          aria-busy={isCreating}
+          tabIndex={0}
+          onClick={(e) => {
+            e.stopPropagation()
+            onAddNew()
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              onAddNew()
+            }
+          }}
+        >
+          <span className="product-search-add-icon" aria-hidden="true">
+            {isCreating ? <span className="product-search-spinner" /> : <Plus size={16} />}
+          </span>
+          <span className="product-search-add-label truncate">
+            {isCreating
+              ? t.creatingProduct
+              : hasQuery
+              ? `+ ${t.addProduct} "${trimmedQuery}" ${t.addAsNewProduct}`
+              : t.addNewProductEntity}
+          </span>
+        </li>
+      )}
     </ul>
   )
 }

@@ -48,17 +48,17 @@ function fmtDate(iso: string): string {
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
 const s = StyleSheet.create({
-  page:        { padding: 32, fontSize: 9, fontFamily: 'Helvetica', color: '#111827', backgroundColor: '#FFFFFF' },
+  page:        { padding: 32, fontSize: 9, fontFamily: 'Helvetica', color: 'var(--color-gray-900)', backgroundColor: '#FFFFFF' },
   heading:     { fontSize: 14, fontFamily: 'Helvetica-Bold', marginBottom: 2 },
-  subheading:  { fontSize: 8, color: '#6B7280', marginBottom: 1 },
+  subheading:  { fontSize: 8, color: 'var(--color-gray-500)', marginBottom: 1 },
   row2col:     { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  divider:     { borderBottomWidth: 1, borderBottomColor: '#E5E7EB', marginVertical: 6 },
-  label:       { fontSize: 7, color: '#9CA3AF', marginBottom: 1 },
-  value:       { fontSize: 9, color: '#111827' },
+  divider:     { borderBottomWidth: 1, borderBottomColor: 'var(--color-gray-200)', marginVertical: 6 },
+  label:       { fontSize: 7, color: 'var(--color-gray-400)', marginBottom: 1 },
+  value:       { fontSize: 9, color: 'var(--color-gray-900)' },
   bold:        { fontFamily: 'Helvetica-Bold' },
   // line items table
-  tableHeader: { flexDirection: 'row', backgroundColor: '#F3F4F6', paddingVertical: 4, paddingHorizontal: 2 },
-  tableRow:    { flexDirection: 'row', paddingVertical: 3, paddingHorizontal: 2, borderBottomWidth: 0.5, borderBottomColor: '#F3F4F6' },
+  tableHeader: { flexDirection: 'row', backgroundColor: 'var(--color-gray-100)', paddingVertical: 4, paddingHorizontal: 2 },
+  tableRow:    { flexDirection: 'row', paddingVertical: 3, paddingHorizontal: 2, borderBottomWidth: 0.5, borderBottomColor: 'var(--color-gray-100)' },
   colNo:       { width: '6%' },
   colItem:     { width: '40%' },
   colQty:      { width: '12%', textAlign: 'right' },
@@ -67,9 +67,9 @@ const s = StyleSheet.create({
   // totals
   totalsBlock: { marginTop: 6, alignSelf: 'flex-end', width: '55%' },
   totalsRow:   { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 2 },
-  grandTotal:  { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3, borderTopWidth: 1, borderTopColor: '#111827', marginTop: 2 },
-  footer:      { position: 'absolute', bottom: 20, left: 32, right: 32, fontSize: 7, color: '#9CA3AF', textAlign: 'center' },
-  notesBox:    { marginTop: 6, fontSize: 8, color: '#4B5563' },
+  grandTotal:  { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3, borderTopWidth: 1, borderTopColor: 'var(--color-gray-900)', marginTop: 2 },
+  footer:      { position: 'absolute', bottom: 20, left: 32, right: 32, fontSize: 7, color: 'var(--color-gray-400)', textAlign: 'center' },
+  notesBox:    { marginTop: 6, fontSize: 8, color: 'var(--color-gray-600)' },
 })
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
@@ -101,24 +101,24 @@ function TotalsBlock({ doc }: { doc: DocumentDetail }) {
   return (
     <View style={s.totalsBlock}>
       <View style={s.totalsRow}>
-        <Text style={{ color: '#6B7280' }}>Subtotal</Text>
+        <Text style={{ color: 'var(--color-gray-500)' }}>Subtotal</Text>
         <Text>{fmtPaise(doc.subtotal)}</Text>
       </View>
       {doc.totalDiscount > 0 && (
         <View style={s.totalsRow}>
-          <Text style={{ color: '#6B7280' }}>Discount</Text>
+          <Text style={{ color: 'var(--color-gray-500)' }}>Discount</Text>
           <Text>- {fmtPaise(doc.totalDiscount)}</Text>
         </View>
       )}
       {doc.additionalCharges.map((c) => (
         <View key={c.id} style={s.totalsRow}>
-          <Text style={{ color: '#6B7280' }}>{c.name}</Text>
+          <Text style={{ color: 'var(--color-gray-500)' }}>{c.name}</Text>
           <Text>{fmtPaise(c.amount)}</Text>
         </View>
       ))}
       {doc.roundOff !== 0 && (
         <View style={s.totalsRow}>
-          <Text style={{ color: '#6B7280' }}>Round Off</Text>
+          <Text style={{ color: 'var(--color-gray-500)' }}>Round Off</Text>
           <Text>{doc.roundOff > 0 ? '+' : ''}{fmtPaise(doc.roundOff)}</Text>
         </View>
       )}
@@ -128,14 +128,14 @@ function TotalsBlock({ doc }: { doc: DocumentDetail }) {
       </View>
       {doc.paidAmount > 0 && (
         <View style={s.totalsRow}>
-          <Text style={{ color: '#6B7280' }}>Paid</Text>
+          <Text style={{ color: 'var(--color-gray-500)' }}>Paid</Text>
           <Text>- {fmtPaise(doc.paidAmount)}</Text>
         </View>
       )}
       {doc.balanceDue > 0 && (
-        <View style={[s.grandTotal, { borderTopColor: '#E5E7EB' }]}>
-          <Text style={{ ...s.bold, color: '#DC2626' }}>Balance Due</Text>
-          <Text style={{ ...s.bold, color: '#DC2626' }}>{fmtPaise(doc.balanceDue)}</Text>
+        <View style={[s.grandTotal, { borderTopColor: 'var(--color-gray-200)' }]}>
+          <Text style={{ ...s.bold, color: 'var(--color-error-600)' }}>Balance Due</Text>
+          <Text style={{ ...s.bold, color: 'var(--color-error-600)' }}>{fmtPaise(doc.balanceDue)}</Text>
         </View>
       )}
     </View>

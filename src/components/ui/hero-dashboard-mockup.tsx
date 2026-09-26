@@ -81,10 +81,10 @@ export function HeroDashboardMockup() {
                 className="rounded-lg p-3 border"
                 style={{ borderColor: 'var(--lp-border-subtle)', background: 'var(--lp-bg-card)' }}
               >
-                <p className="text-[0.625rem] lp-text-muted mb-1">{stat.label}</p>
+                <p className="text-xs lp-text-muted mb-1">{stat.label}</p>
                 <p className="text-base font-bold lp-text leading-tight">{stat.value}</p>
                 <p
-                  className="text-[0.625rem] mt-1 flex items-center gap-0.5"
+                  className="text-xs mt-1 flex items-center gap-0.5"
                   style={{ color: stat.up ? 'var(--lp-mock-success)' : 'var(--lp-mock-warning)' }}
                 >
                   {stat.up && <ArrowUpRight className="w-2.5 h-2.5" />}
@@ -104,7 +104,7 @@ export function HeroDashboardMockup() {
             ].map(({ icon: Icon, label, color }) => (
               <div
                 key={label}
-                className="flex items-center justify-center gap-1.5 py-2 rounded-lg border text-[0.625rem] font-medium"
+                className="flex items-center justify-center gap-1.5 py-2 rounded-lg border text-xs font-medium"
                 style={{ borderColor: 'var(--lp-border-subtle)', color }}
               >
                 <Icon className="w-3 h-3" />
@@ -122,13 +122,13 @@ export function HeroDashboardMockup() {
             >
               <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: 'var(--lp-border-subtle)' }}>
                 <p className="text-xs font-semibold lp-text">Recent Invoices</p>
-                <p className="text-[0.625rem] lp-text-muted">View all</p>
+                <p className="text-xs lp-text-muted">View all</p>
               </div>
               {[
                 { id: 'INV-1042', party: 'Sharma Electronics', amount: '₹12,450', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
                 { id: 'INV-1041', party: 'Gupta Traders', amount: '₹8,200', status: 'Due', statusColor: 'var(--lp-mock-warning)' },
                 { id: 'INV-1040', party: 'Patel & Sons', amount: '₹15,600', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
-                { id: 'INV-1039', party: 'Verma Stores', amount: '₹6,800', status: 'Overdue', statusColor: 'var(--lp-mock-error, #ef4444)' },
+                { id: 'INV-1039', party: 'Verma Stores', amount: '₹6,800', status: 'Overdue', statusColor: 'var(--lp-mock-error, var(--color-error-500))' },
                 { id: 'INV-1038', party: 'Singh Enterprises', amount: '₹22,100', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
                 { id: 'INV-1037', party: 'Jain Brothers', amount: '₹4,500', status: 'Due', statusColor: 'var(--lp-mock-warning)' },
                 { id: 'INV-1036', party: 'Mehta & Co.', amount: '₹31,200', status: 'Paid', statusColor: 'var(--lp-mock-success)' },
@@ -145,7 +145,7 @@ export function HeroDashboardMockup() {
                   <div className="flex items-center gap-3 shrink-0">
                     <span className="font-semibold lp-text">{inv.amount}</span>
                     <span
-                      className="text-[0.625rem] px-1.5 py-0.5 rounded-full font-medium"
+                      className="text-xs px-1.5 py-0.5 rounded-full font-medium"
                       style={{ color: inv.statusColor, background: `color-mix(in srgb, ${inv.statusColor} 15%, transparent)` }}
                     >
                       {inv.status}

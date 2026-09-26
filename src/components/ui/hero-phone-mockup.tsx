@@ -10,7 +10,7 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
       <div
         className="rounded-[2rem] border-[3px] overflow-hidden shadow-2xl"
         style={{
-          borderColor: 'var(--lp-phone-border, #374151)',
+          borderColor: 'var(--lp-phone-border, var(--color-gray-700))',
           background: 'var(--lp-bg-surface)',
         }}
       >
@@ -22,7 +22,7 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
           <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--lp-text-muted)' }}>9:41</span>
           <div
             className="w-16 h-4 rounded-full"
-            style={{ background: 'var(--lp-phone-border, #374151)' }}
+            style={{ background: 'var(--lp-phone-border, var(--color-gray-700))' }}
           />
           <div className="flex items-center gap-1">
             <div className="w-3 h-1.5 rounded-sm" style={{ background: 'var(--lp-text-muted)' }} />
@@ -106,7 +106,7 @@ export function HeroPhoneMockup({ className = '' }: { className?: string }) {
               { id: 'INV-1042', party: 'Sharma Elec.', amount: '₹12,450', status: 'Paid', color: 'var(--lp-mock-success)' },
               { id: 'INV-1041', party: 'Gupta Traders', amount: '₹8,200', status: 'Due', color: 'var(--lp-mock-warning)' },
               { id: 'INV-1040', party: 'Patel & Sons', amount: '₹15,600', status: 'Paid', color: 'var(--lp-mock-success)' },
-              { id: 'INV-1039', party: 'Verma Stores', amount: '₹6,800', status: 'Overdue', color: 'var(--lp-mock-error, #ef4444)' },
+              { id: 'INV-1039', party: 'Verma Stores', amount: '₹6,800', status: 'Overdue', color: 'var(--lp-mock-error, var(--color-error-500))' },
             ].map((inv) => (
               <div
                 key={inv.id}

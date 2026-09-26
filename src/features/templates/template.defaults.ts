@@ -94,9 +94,9 @@ const DEFAULT_COLORS_CONFIG: TemplateColorsConfig = {
   accent:           '#2563EB',
   headerBg:         '#2563EB',
   headerText:       '#FFFFFF',
-  tableBorderColor: '#E5E7EB',
-  tableHeaderBg:    '#F3F4F6',
-  tableHeaderText:  '#111827',
+  tableBorderColor: 'var(--color-gray-200)',
+  tableHeaderBg:    'var(--color-gray-100)',
+  tableHeaderText:  'var(--color-gray-900)',
 }
 
 /**

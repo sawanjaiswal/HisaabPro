@@ -11,6 +11,56 @@
   gap: var(--space-2);
 }
 
+/* Empty items container */
+.invoice-items-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-gray-50);
+  border: 1px dashed var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  gap: var(--space-2);
+}
+
+.invoice-items-empty-icon-svg {
+  color: var(--text-muted);
+}
+
+.invoice-items-empty-title {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.invoice-items-empty-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.invoice-items-empty-actions .btn {
+  border-radius: var(--radius-sm);
+  min-height: 38px;
+  font-weight: 500;
+}
+
+[data-theme='dark'] .invoice-items-empty-state {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] .invoice-items-empty-icon {
+  background: var(--color-primary-bg-subtle);
+  color: var(--color-primary-300);
+}
+
 .line-item-row {
   display: flex;
   flex-direction: column;
@@ -221,10 +271,10 @@
 /* === Inline product search panel === */
 
 .product-search-panel {
-  border: 1px solid var(--color-primary-200);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  background: var(--color-primary-50);
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
 }
 
 /* ─── GST Line Item Extensions (PR 4) ──────────────────────────────────── */

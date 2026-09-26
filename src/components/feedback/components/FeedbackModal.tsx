@@ -3,6 +3,8 @@ import { X, Send, CheckCircle, WifiOff } from 'lucide-react';
 import { Z } from '../../../config/zIndexes';
 import { TYPE_PILLS } from '../feedback-widget.constants';
 import type { FeedbackModalProps } from '../feedback-widget.types';
+import { Button } from '@/components/ui/Button';
+import { Textarea } from '@/components/ui/Textarea';
 import '../feedback-widget.css';
 
 const SuccessView: React.FC = () => (
@@ -50,9 +52,9 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
             {/* Header */}
             <div className="feedback-header">
               <h2>Send Feedback</h2>
-              <button onClick={onClose} aria-label="Close feedback" className="feedback-close">
+              <Button variant="none" onClick={onClose} aria-label="Close feedback" className="feedback-close">
                 <X size={20} />
-              </button>
+              </Button>
             </div>
 
             {/* Screenshot preview */}
@@ -69,19 +71,20 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
             {/* Type pills */}
             <div className="feedback-pills">
               {TYPE_PILLS.map(({ key, label }) => (
-                <button
+                <Button
                   key={key}
+                  variant="none"
                   onClick={() => onFeedbackTypeChange(key)}
                   className={`feedback-pill${feedbackType === key ? ' active' : ''}`}
                 >
                   {label}
-                </button>
+                </Button>
               ))}
             </div>
 
             {/* Note + Send */}
             <div className="feedback-body">
-              <textarea
+              <Textarea
                 value={note}
                 onChange={(e) => onNoteChange(e.target.value)}
                 onKeyDown={(e) => {
@@ -96,7 +99,8 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 className="feedback-textarea"
                 disabled={widgetState === 'sending'}
               />
-              <button
+              <Button
+                variant="none"
                 onClick={onSend}
                 disabled={widgetState === 'sending'}
                 className="feedback-send"
@@ -104,7 +108,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
               >
                 <Send size={16} />
                 {widgetState === 'sending' ? 'Sending...' : 'Send Feedback'}
-              </button>
+              </Button>
             </div>
           </>
         )}

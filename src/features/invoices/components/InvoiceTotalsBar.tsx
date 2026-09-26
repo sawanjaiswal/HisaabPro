@@ -90,8 +90,11 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
         )}
 
         <div className="invoice-summary-row invoice-summary-row-total" role="listitem">
-          <span>{t.grandTotal}</span>
-          <span>{formatInvoiceAmount(grandTotal)}</span>
+          <div className="invoice-summary-total-label">
+            <span>{t.grandTotal}</span>
+            {totalTax > 0 && <span className="invoice-summary-tax-note">({t.tax})</span>}
+          </div>
+          <span className="tabular-nums font-bold">{formatInvoiceAmount(grandTotal)}</span>
         </div>
       </div>
 

@@ -25,11 +25,11 @@ const css = readFileSync(
 /** Body of the first rule whose selector list contains `selector`. */
 function ruleBody(selector: string): string {
   const rules = css.split('}')
-  const match = rules.find((r) => {
+  const match = rules.find((r: string) => {
     const head = r.split('{')[0]
     return head
       .split(',')
-      .map((s) => s.trim())
+      .map((s: string) => s.trim())
       .includes(selector)
   })
   if (!match) throw new Error(`No rule found for selector "${selector}"`)

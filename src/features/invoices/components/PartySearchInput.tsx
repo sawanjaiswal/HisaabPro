@@ -8,6 +8,7 @@ import type { PartySummary } from '@/lib/types/party.types'
 import { PartySearchField } from './PartySearchField'
 import { PartySearchDropdown } from './PartySearchDropdown'
 import { PartyBalanceChip } from './PartyBalanceChip'
+import { PartyAvatar } from '@/components/ui/PartyAvatar'
 import { useInstantAddParty } from './useInstantAddParty'
 import { Button } from '@/components/ui/Button'
 
@@ -50,47 +51,47 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const abortRef = useRef<AbortController | null>(null)
 
-  // ─── Fetch results when debounced query changes ──────────────────────────
+  // Auto-resolve selected name when value is passed (e.g. from URL ?partyId=)
+  useEffect(() => {
+    if (value && !selectedName) {
+      const controller = new AbortController()
+      getParties({ limit: 50 }, controller.signal)
+        .then((res) => {
+          const match = res.parties.find((p) => p.id === value)
+          if (match) {
+            setSelectedName(match.name)
+            onChange(match.id, match.name)
+          }
+        })
+        .catch(() => {})
+      return () => controller.abort()
+    }
+  }, [value, selectedName, onChange])
 
+  // Fetch results when debounced query changes
   useEffect(() => {
     if (!isOpen) return
-
-    // Abort any in-flight request
     abortRef.current?.abort()
     const controller = new AbortController()
     abortRef.current = controller
-
     setIsLoading(true)
     setFetchError(false)
 
-    // Empty query → show the most recent parties immediately (no typing needed);
-    // otherwise search by the debounced query.
     const trimmed = debouncedQuery.trim()
     getParties(
-      trimmed.length > 0
-        ? { search: trimmed, limit: SEARCH_LIMIT }
-        : { limit: RECENT_LIMIT },
+      trimmed.length > 0 ? { search: trimmed, limit: SEARCH_LIMIT } : { limit: RECENT_LIMIT },
       controller.signal,
     )
-      .then((res) => {
-        setResults(res.parties)
-        setFetchError(false)
-      })
+      .then((res) => { setResults(res.parties); setFetchError(false) })
       .catch((err: unknown) => {
         if (err instanceof Error && err.name === 'AbortError') return
         setFetchError(true)
         setResults([])
       })
-      .finally(() => {
-        setIsLoading(false)
-      })
+      .finally(() => setIsLoading(false))
 
-    return () => {
-      controller.abort()
-    }
+    return () => controller.abort()
   }, [debouncedQuery, isOpen])
-
-  // ─── Close dropdown on outside click ────────────────────────────────────
 
   useEffect(() => {
     function handleOutside(e: MouseEvent) {
@@ -102,31 +103,20 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
     return () => document.removeEventListener('mousedown', handleOutside)
   }, [])
 
-  // ─── Cleanup on unmount ──────────────────────────────────────────────────
-
-  useEffect(() => {
-    return () => {
-      abortRef.current?.abort()
-    }
-  }, [])
-
-  // ─── Handlers ────────────────────────────────────────────────────────────
+  useEffect(() => () => { abortRef.current?.abort() }, [])
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value)
     setIsOpen(true)
   }, [])
 
-  const handleSelect = useCallback(
-    (party: PartySummary) => {
-      setSelectedName(party.name)
-      setQuery('')
-      setResults([])
-      setIsOpen(false)
-      onChange(party.id, party.name)
-    },
-    [onChange],
-  )
+  const handleSelect = useCallback((party: PartySummary) => {
+    setSelectedName(party.name)
+    setQuery('')
+    setResults([])
+    setIsOpen(false)
+    onChange(party.id, party.name)
+  }, [onChange])
 
   const { isCreating, addParty } = useInstantAddParty({
     onCreated: (id, name) => {
@@ -149,14 +139,11 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
     setQuery('')
     setResults([])
     onChange('', '')
-    // Focus the input after clearing
     requestAnimationFrame(() => inputRef.current?.focus())
   }, [onChange])
 
   const handleInputFocus = useCallback(() => {
-    if (!value) {
-      setIsOpen(true)
-    }
+    if (!value) setIsOpen(true)
   }, [value])
 
   const handleKeyDown = useCallback(
@@ -164,9 +151,12 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
       if (e.key === 'Escape') {
         setIsOpen(false)
         inputRef.current?.blur()
+      } else if (e.key === 'Enter' && query.trim() && results.length === 0 && !isLoading) {
+        e.preventDefault()
+        handleAddNew()
       }
     },
-    [],
+    [handleAddNew, isLoading, query, results.length],
   )
 
   const handleClearQuery = useCallback(() => {
@@ -191,15 +181,18 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
 
       {isSelected ? (
         <div className="party-selector-selected" role="status" aria-label={`Selected: ${selectedName}`}>
+          <PartyAvatar name={selectedName} size="md" className="party-selector-avatar" />
           <div className="party-selector-info">
             <div className="party-selector-name">{selectedName}</div>
             {/* Balance + GSTIN surface the moment a customer is picked, so the
                 seller sees existing dues before adding items. */}
             <PartyBalanceChip partyId={value} />
           </div>
-          <Button variant="none"
+          <Button
+            variant="outline"
+            size="sm"
             type="button"
-            className="party-selector-change"
+            className="party-selector-change-btn"
             onClick={handleClear}
             aria-label={t.changeSelectedParty}
           >

@@ -71,7 +71,7 @@ const SectionWithMockup: React.FC<SectionWithMockupProps> = ({
                         variants={itemVariants}
                     >
                         <motion.div
-                             className={`absolute w-[300px] h-[317px] md:w-[472px] md:h-[500px] bg-[#090909] rounded-[32px] z-0`}
+                             className={`absolute w-[300px] h-[317px] md:w-[472px] md:h-[500px] bg-[#090909] rounded-3xl z-0`}
                              style={{
                                 top: reverseLayout ? 'auto' : '10%',
                                 bottom: reverseLayout ? '10%' : 'auto',
@@ -86,7 +86,7 @@ const SectionWithMockup: React.FC<SectionWithMockupProps> = ({
                             viewport={{ once: true, amount: 0.5 }}
                         >
                             <div
-                                className="relative w-full h-full bg-cover bg-center rounded-[32px]"
+                                className="relative w-full h-full bg-cover bg-center rounded-3xl"
                                 style={{
                                     backgroundImage: `url(${secondaryImageSrc})`,
                                 }}
@@ -94,7 +94,7 @@ const SectionWithMockup: React.FC<SectionWithMockupProps> = ({
                         </motion.div>
 
                         <motion.div
-                            className="relative w-full h-[405px] md:h-[637px] bg-[#ffffff0a] rounded-[32px] backdrop-blur-[15px] backdrop-brightness-[100%] border-0 z-10 overflow-hidden"
+                            className="relative w-full h-[405px] md:h-[637px] bg-[#ffffff0a] rounded-3xl backdrop-blur-[15px] backdrop-brightness-[100%] border-0 z-10 overflow-hidden"
                             initial={{ y: reverseLayout ? 0 : 0 }}
                             whileInView={{ y: reverseLayout ? 20 : 30 }}
                              transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}

@@ -50,8 +50,8 @@ export const MODERN_AND_INDIAN_CONFIGS: Partial<Record<BaseTemplate, DeepPartial
     },
     typography: { fontFamily: 'poppins', fontSize: 'large', headerFontSize: 'large' },
     colors: {
-      accent: '#DC2626', headerBg: '#DC2626', headerText: '#FFFFFF',
-      tableBorderColor: '#FECACA', tableHeaderBg: '#FEF2F2', tableHeaderText: '#991B1B',
+      accent: 'var(--color-error-600)', headerBg: 'var(--color-error-600)', headerText: '#FFFFFF',
+      tableBorderColor: '#FECACA', tableHeaderBg: 'var(--color-error-50)', tableHeaderText: '#991B1B',
     },
   },
 
@@ -63,7 +63,7 @@ export const MODERN_AND_INDIAN_CONFIGS: Partial<Record<BaseTemplate, DeepPartial
     typography: { fontFamily: 'roboto', fontSize: 'medium', headerFontSize: 'medium' },
     colors: {
       accent: '#1E3A5F', headerBg: '#1E3A5F', headerText: '#FFFFFF',
-      tableBorderColor: '#CBD5E1', tableHeaderBg: '#F1F5F9', tableHeaderText: '#1E293B',
+      tableBorderColor: '#CBD5E1', tableHeaderBg: 'var(--color-gray-100)', tableHeaderText: 'var(--color-gray-800)',
     },
     fields: {
       businessGstin: true, businessPan: true, businessPhone: true, businessEmail: true,
@@ -173,8 +173,8 @@ export const MODERN_AND_INDIAN_CONFIGS: Partial<Record<BaseTemplate, DeepPartial
     },
     typography: { fontFamily: 'noto-sans', fontSize: 'large', headerFontSize: 'large' },
     colors: {
-      accent: '#059669', headerBg: '#ECFDF5', headerText: '#065F46',
-      tableBorderColor: '#A7F3D0', tableHeaderBg: '#ECFDF5', tableHeaderText: '#065F46',
+      accent: 'var(--color-success-600)', headerBg: 'var(--color-success-50)', headerText: '#065F46',
+      tableBorderColor: '#A7F3D0', tableHeaderBg: 'var(--color-success-50)', tableHeaderText: '#065F46',
     },
     footerText: 'Goods once sold will not be taken back.',
   },
@@ -207,7 +207,7 @@ export const MODERN_AND_INDIAN_CONFIGS: Partial<Record<BaseTemplate, DeepPartial
     typography: { fontFamily: 'noto-sans', fontSize: 'large', headerFontSize: 'large' },
     colors: {
       accent: '#16A34A', headerBg: '#FFFFFF', headerText: '#166534',
-      tableBorderColor: '#D1D5DB', tableHeaderBg: '#F9FAFB', tableHeaderText: '#111827',
+      tableBorderColor: 'var(--color-gray-300)', tableHeaderBg: 'var(--color-gray-50)', tableHeaderText: 'var(--color-gray-900)',
     },
     footerText: '\u0927\u0928\u094D\u092F\u0935\u093E\u0926! \u092B\u093F\u0930 \u0938\u0947 \u092A\u0927\u093E\u0930\u0947\u0902\u0964',
   },

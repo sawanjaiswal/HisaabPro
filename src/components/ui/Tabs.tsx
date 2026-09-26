@@ -1,36 +1,78 @@
-/** Tabs — Radix Tabs re-skinned as the standard pill-tab control.
+/** Tabs — shadcn UI Radix Tabs primitive.
  *
- * Consolidates the hand-rolled `.pill-tabs` pattern (e.g. JournalEntriesPage)
- * into one accessible primitive with arrow-key roving focus.
+ * Provides segmented, underline, and pills tab controls for the design system.
+ * Full keyboard arrow-key navigation and screen-reader accessibility via Radix.
  *
- *   <Tabs value={tab} onValueChange={setTab}>
- *     <TabsList>
- *       <TabsTrigger value="all">All</TabsTrigger>
- *       <TabsTrigger value="customers">Customers</TabsTrigger>
+ * Usage:
+ *   <Tabs value={activeTab} onValueChange={setActiveTab}>
+ *     <TabsList variant="segmented" fullWidth>
+ *       <TabsTrigger value="ledger" icon={<List size={16} />}>Ledger</TabsTrigger>
+ *       <TabsTrigger value="invoices" badge={3}>Invoices</TabsTrigger>
  *     </TabsList>
- *     <TabsContent value="all">…</TabsContent>
+ *     <TabsContent value="ledger">…</TabsContent>
  *   </Tabs>
  */
-import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+
+import * as React from 'react'
 import { Tabs as RX } from 'radix-ui'
 import { cn } from '@/lib/utils'
-import './overlay.css'
+import './tabs.css'
+
+export type TabsVariant = 'segmented' | 'underline' | 'pills'
 
 export const Tabs = RX.Root
-export const TabsContent = RX.Content
 
-export function TabsList({ children, className }: { children: ReactNode; className?: string }) {
-  return <RX.List className={cn('rx-tabs-list', className)}>{children}</RX.List>
+export interface TabsListProps extends React.ComponentPropsWithoutRef<typeof RX.List> {
+  variant?: TabsVariant
+  fullWidth?: boolean
 }
 
-export function TabsTrigger({
-  children,
-  className,
-  ...props
-}: ComponentPropsWithoutRef<typeof RX.Trigger>) {
-  return (
-    <RX.Trigger className={cn('rx-tab', className)} {...props}>
-      {children}
-    </RX.Trigger>
-  )
+export const TabsList = React.forwardRef<
+  React.ElementRef<typeof RX.List>,
+  TabsListProps
+>(({ className, variant = 'segmented', fullWidth = false, ...props }, ref) => (
+  <RX.List
+    ref={ref}
+    className={cn(
+      'ui-tabs-list',
+      `ui-tabs-list--${variant}`,
+      fullWidth && 'ui-tabs-list--full-width',
+      className,
+    )}
+    {...props}
+  />
+))
+TabsList.displayName = 'TabsList'
+
+export interface TabsTriggerProps extends React.ComponentPropsWithoutRef<typeof RX.Trigger> {
+  icon?: React.ReactNode
+  badge?: string | number
 }
+
+export const TabsTrigger = React.forwardRef<
+  React.ElementRef<typeof RX.Trigger>,
+  TabsTriggerProps
+>(({ className, children, icon, badge, ...props }, ref) => (
+  <RX.Trigger
+    ref={ref}
+    className={cn('ui-tabs-trigger', className)}
+    {...props}
+  >
+    {icon && <span className="ui-tabs-icon" aria-hidden="true">{icon}</span>}
+    <span>{children}</span>
+    {badge != null && <span className="ui-tabs-badge">{badge}</span>}
+  </RX.Trigger>
+))
+TabsTrigger.displayName = 'TabsTrigger'
+
+export const TabsContent = React.forwardRef<
+  React.ElementRef<typeof RX.Content>,
+  React.ComponentPropsWithoutRef<typeof RX.Content>
+>(({ className, ...props }, ref) => (
+  <RX.Content
+    ref={ref}
+    className={cn('ui-tabs-content', className)}
+    {...props}
+  />
+))
+TabsContent.displayName = 'TabsContent'

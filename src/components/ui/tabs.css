@@ -1,0 +1,211 @@
+/* ─── Shadcn UI Tabs Component ───────────────────────────────────────────
+   Tokens & variants for Tabs, TabsList, TabsTrigger, and TabsContent.
+   Variants: segmented (default), underline, pills
+   ───────────────────────────────────────────────────────────────────────── */
+
+.ui-tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ─── TabsList ─────────────────────────────────────────────────────────── */
+
+.ui-tabs-list {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.ui-tabs-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Variant: Segmented (default shadcn look) */
+.ui-tabs-list--segmented {
+  background: var(--color-gray-100);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  padding: 3px;
+  min-height: 42px;
+}
+
+/* Variant: Underline */
+.ui-tabs-list--underline {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-gray-200);
+  border-radius: 0;
+  padding: 0;
+  gap: var(--space-2);
+}
+
+/* Variant: Pills */
+.ui-tabs-list--pills {
+  background: transparent;
+  border: none;
+  padding: var(--space-1) 0;
+  gap: var(--space-1-5);
+}
+
+/* Full-width / Grid distribution */
+.ui-tabs-list--full-width {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  width: 100%;
+}
+
+/* ─── TabsTrigger ──────────────────────────────────────────────────────── */
+
+.ui-tabs-trigger {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1-5);
+  font-family: var(--font-primary);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--duration-snappy) var(--ease-default),
+    background var(--duration-snappy) var(--ease-default),
+    box-shadow var(--duration-snappy) var(--ease-default),
+    border-color var(--duration-snappy) var(--ease-default);
+  box-sizing: border-box;
+}
+
+.ui-tabs-trigger:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+.ui-tabs-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Segmented trigger */
+.ui-tabs-list--segmented .ui-tabs-trigger {
+  padding: var(--space-1-5) var(--space-3);
+  min-height: 34px;
+  border-radius: var(--radius-md);
+}
+
+.ui-tabs-list--segmented .ui-tabs-trigger:hover:not(:disabled):not([data-state='active']) {
+  color: var(--color-gray-800);
+  background: var(--overlay-black-5);
+}
+
+.ui-tabs-list--segmented .ui-tabs-trigger[data-state='active'] {
+  background: var(--color-gray-0);
+  color: var(--color-primary-600);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Underline trigger */
+.ui-tabs-list--underline .ui-tabs-trigger {
+  padding: var(--space-2-5) var(--space-3);
+  min-height: 40px;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  margin-bottom: -1px;
+}
+
+.ui-tabs-list--underline .ui-tabs-trigger:hover:not(:disabled):not([data-state='active']) {
+  color: var(--color-gray-800);
+}
+
+.ui-tabs-list--underline .ui-tabs-trigger[data-state='active'] {
+  color: var(--color-primary-600);
+  border-bottom-color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+/* Pills trigger */
+.ui-tabs-list--pills .ui-tabs-trigger {
+  padding: var(--space-1-5) var(--space-3-5);
+  min-height: 36px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-0);
+}
+
+.ui-tabs-list--pills .ui-tabs-trigger[data-state='active'] {
+  background: var(--color-primary-50);
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-700);
+  font-weight: 600;
+}
+
+/* ─── Badge inside Tab Trigger ─────────────────────────────────────────── */
+
+.ui-tabs-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-gray-200);
+  color: var(--color-gray-700);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.ui-tabs-trigger[data-state='active'] .ui-tabs-badge {
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
+}
+
+/* ─── TabsContent ──────────────────────────────────────────────────────── */
+
+.ui-tabs-content {
+  margin-top: var(--space-4);
+  outline: none;
+}
+
+.ui-tabs-content:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* ─── Dark Mode Support ────────────────────────────────────────────────── */
+
+[data-theme='dark'] .ui-tabs-list--segmented {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] .ui-tabs-list--segmented .ui-tabs-trigger:hover:not(:disabled):not([data-state='active']) {
+  background: var(--overlay-white-10);
+  color: var(--color-gray-800);
+}
+
+[data-theme='dark'] .ui-tabs-list--segmented .ui-tabs-trigger[data-state='active'] {
+  background: var(--color-gray-200);
+  color: var(--color-primary-400);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] .ui-tabs-list--pills .ui-tabs-trigger {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] .ui-tabs-list--pills .ui-tabs-trigger[data-state='active'] {
+  background: var(--color-primary-bg-subtle);
+  border-color: var(--color-primary-700);
+  color: var(--color-primary-300);
+}

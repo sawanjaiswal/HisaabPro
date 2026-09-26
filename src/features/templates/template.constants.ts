@@ -55,11 +55,11 @@ export const MAX_COPIES               = 5
 /** Quick-select accent colours shown in the Style tab colour picker */
 export const COLOR_PRESETS: { name: string; hex: string }[] = [
   { name: 'Blue',   hex: '#2563EB' },
-  { name: 'Green',  hex: '#059669' },
-  { name: 'Red',    hex: '#DC2626' },
+  { name: 'Green',  hex: 'var(--color-success-600)' },
+  { name: 'Red',    hex: 'var(--color-error-600)' },
   { name: 'Purple', hex: '#7C3AED' },
   { name: 'Orange', hex: '#EA580C' },
-  { name: 'Black',  hex: '#111827' },
+  { name: 'Black',  hex: 'var(--color-gray-900)' },
 ]
 
 // --- Legacy aliases (kept for backwards compatibility with template.utils.ts) -

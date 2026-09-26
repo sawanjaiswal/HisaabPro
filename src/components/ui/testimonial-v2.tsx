@@ -11,7 +11,7 @@ interface Testimonial {
 }
 
 // --- Data ---
-const AVATAR_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#14b8a6', '#eab308', '#ef4444', '#06b6d4', '#22c55e']
+const AVATAR_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#14b8a6', '#eab308', 'var(--color-error-500)', '#06b6d4', 'var(--color-success-500)']
 
 function avatarUrl(name: string, index: number): string {
   const bg = AVATAR_COLORS[index % AVATAR_COLORS.length].replace('#', '')

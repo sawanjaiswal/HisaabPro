@@ -93,8 +93,8 @@ export const INDUSTRY_AND_SPECIAL_CONFIGS: Partial<Record<BaseTemplate, DeepPart
     },
     typography: { fontFamily: 'poppins', fontSize: 'medium', headerFontSize: 'large' },
     colors: {
-      accent: '#B91C1C', headerBg: '#FEF2F2', headerText: '#991B1B',
-      tableBorderColor: '#FECACA', tableHeaderBg: '#FEF2F2', tableHeaderText: '#991B1B',
+      accent: 'var(--color-error-700)', headerBg: 'var(--color-error-50)', headerText: '#991B1B',
+      tableBorderColor: '#FECACA', tableHeaderBg: 'var(--color-error-50)', tableHeaderText: '#991B1B',
     },
     footerText: 'Thank you! Visit again.',
   },
@@ -155,8 +155,8 @@ export const INDUSTRY_AND_SPECIAL_CONFIGS: Partial<Record<BaseTemplate, DeepPart
     },
     typography: { fontFamily: 'noto-sans', fontSize: 'small', headerFontSize: 'medium' },
     colors: {
-      accent: '#374151', headerBg: '#F9FAFB', headerText: '#111827',
-      tableBorderColor: '#E5E7EB', tableHeaderBg: '#F3F4F6', tableHeaderText: '#374151',
+      accent: 'var(--color-gray-700)', headerBg: 'var(--color-gray-50)', headerText: 'var(--color-gray-900)',
+      tableBorderColor: 'var(--color-gray-200)', tableHeaderBg: 'var(--color-gray-100)', tableHeaderText: 'var(--color-gray-700)',
     },
   },
 

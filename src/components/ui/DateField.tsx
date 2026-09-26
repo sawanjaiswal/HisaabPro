@@ -1,64 +1,98 @@
-/** DateField — the standard native date/time input.
+/** DateField — Canonical Date/Time Input Primitive
  *
- * One home for every `type="date" | "datetime-local" | "month" | "time"`
- * field so the calendar-picker glyph, height, colours and the `color-scheme`
- * that keeps the native control light on a dark-OS desktop all live in one
- * place. Mirrors the `<Input>` API (optional `label` / `error`, else naked)
- * so it is a drop-in wherever a raw date input used to sit.
- *
- *   <DateField label={t.fromDate} value={from} max={to} onChange={…} />
- *   <DateField type="month" value={period} onChange={…} aria-label={t.period} />
+ * Design System SSOT:
+ * - Supports type: "date" | "datetime-local" | "month" | "time"
+ * - Calendar icon prefix with primary tint
+ * - 44px minimum touch target
+ * - Consistent error and label layout
  */
 
 import { forwardRef } from 'react'
 import type { InputHTMLAttributes } from 'react'
+import { Calendar } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import './date-field.css'
 
 export type DateFieldType = 'date' | 'datetime-local' | 'month' | 'time'
 
-interface DateFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+export interface DateFieldProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label?: string
   error?: string
+  hint?: string
+  required?: boolean
   /** Native input type — defaults to `date`. */
   type?: DateFieldType
 }
 
 export const DateField = forwardRef<HTMLInputElement, DateFieldProps>(
-  ({ label, error, id, className, type = 'date', ...props }, ref) => {
-    const inputId = id || label?.toLowerCase().replace(/\s+/g, '-')
+  (
+    {
+      label,
+      error,
+      hint,
+      required,
+      id,
+      className,
+      type = 'date',
+      ...props
+    },
+    ref
+  ) => {
+    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined)
 
-    // Naked mode: no label/error — caller owns the layout (toolbars, inline rows).
-    if (!label && !error) {
+    // Naked mode: no label/error/hint — caller owns layout
+    if (!label && !error && !hint) {
       return (
         <input
           ref={ref}
           id={inputId}
           type={type}
-          className={cn('date-field', className)}
+          className={cn('date-field', error && 'border-[var(--color-error-500)]', className)}
+          aria-invalid={Boolean(error)}
           {...props}
         />
       )
     }
 
     return (
-      <div className={cn('date-field-group', error && 'date-field-group--error', className)}>
+      <div className={cn('w-full space-y-1.5', className)}>
         {label && (
-          <label htmlFor={inputId} className="date-field-label">
-            {label}
-          </label>
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor={inputId}
+              className="flex items-center gap-1.5 text-[var(--fs-xs)] font-bold uppercase tracking-wider text-[var(--text-secondary)] select-none"
+            >
+              <Calendar className="w-3.5 h-3.5 text-[var(--color-primary-500)]" />
+              {label}
+              {required && (
+                <span className="text-[var(--color-error-500)] font-bold" aria-hidden="true">
+                  *
+                </span>
+              )}
+            </label>
+            {hint && !error && (
+              <span className="text-[10px] text-[var(--text-muted)]">{hint}</span>
+            )}
+          </div>
         )}
+
         <input
           ref={ref}
           id={inputId}
           type={type}
-          className="date-field"
-          aria-invalid={!!error}
+          className={cn('date-field w-full', error && 'border-[var(--color-error-500)]')}
+          aria-invalid={Boolean(error)}
           aria-describedby={error ? `${inputId}-error` : undefined}
           {...props}
         />
+
         {error && (
-          <p id={`${inputId}-error`} className="date-field-error" role="alert">
+          <p
+            id={`${inputId}-error`}
+            className="text-[var(--fs-xs)] font-medium text-[var(--color-error-600)]"
+            role="alert"
+          >
             {error}
           </p>
         )}

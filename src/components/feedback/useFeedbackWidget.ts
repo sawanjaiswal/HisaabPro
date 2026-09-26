@@ -85,14 +85,14 @@ export function useFeedbackWidget() {
       canvas.height = vh;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        ctx.fillStyle = '#f1f5f9';
+        ctx.fillStyle = 'var(--color-gray-100)';
         ctx.fillRect(0, 0, vw, vh);
         ctx.fillStyle = '#475569';
         ctx.font = 'bold 16px system-ui, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('Screenshot unavailable', vw / 2, vh / 2 - 10);
         ctx.font = '13px system-ui, sans-serif';
-        ctx.fillStyle = '#94a3b8';
+        ctx.fillStyle = 'var(--color-gray-400)';
         ctx.fillText('Describe the issue below', vw / 2, vh / 2 + 15);
         dataUrl = canvas.toDataURL('image/png');
       }

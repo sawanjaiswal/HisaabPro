@@ -60,12 +60,12 @@ export function ConvertDocumentDrawer({ open, onClose, documentId, sourceType, o
       }
     >
       <div className="space-y-4 px-1 py-2">
-        <p className="text-[var(--fs-sm)]" style={{ color: 'var(--text-secondary)' }}>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
           {t.convertFromLabel}: <strong style={{ color: 'var(--text-primary)' }}>{DOCUMENT_TYPE_LABELS[sourceType]}</strong>
         </p>
 
         <div>
-          <label className="block text-[var(--fs-sm)] font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
+          <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-secondary)' }}>
             {t.convertToLabel}
           </label>
           <div className="grid grid-cols-1 gap-2">
@@ -76,14 +76,14 @@ export function ConvertDocumentDrawer({ open, onClose, documentId, sourceType, o
                   key={tt}
                   type="button"
                   onClick={() => setTarget(tt)}
-                  className="flex items-center justify-between px-3 py-3 border rounded-[var(--radius-md)] transition-all text-left"
+                  className="flex items-center justify-between px-3 py-3 border rounded-md transition-all text-left"
                   style={{
                     borderColor: selected ? 'var(--color-primary-500)' : 'var(--color-gray-200)',
                     backgroundColor: selected ? 'var(--color-primary-100)' : 'var(--color-gray-0)',
                     color: selected ? 'var(--color-primary-700)' : 'var(--text-primary)',
                   }}
                 >
-                  <span className="text-[var(--fs-df)] font-medium">{DOCUMENT_TYPE_LABELS[tt]}</span>
+                  <span className="text-base font-medium">{DOCUMENT_TYPE_LABELS[tt]}</span>
                   <ArrowRight className="w-4 h-4" style={{ color: selected ? 'var(--color-primary-700)' : 'var(--text-muted)' }} />
                 </Button>
               )
@@ -91,7 +91,7 @@ export function ConvertDocumentDrawer({ open, onClose, documentId, sourceType, o
           </div>
         </div>
 
-        <p className="text-[var(--fs-xs)]" style={{ color: 'var(--text-muted)' }}>
+        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
           {t.convertNote}
         </p>
       </div>

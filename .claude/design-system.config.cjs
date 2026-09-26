@@ -296,6 +296,13 @@ const COMPONENTS = {
     sizes: ['sm', 'md', 'lg'],
   },
   Input: { import: '@/components/ui/Input' },
+  CurrencyInput: { import: '@/components/ui/CurrencyInput', variants: ['default', 'filled', 'hero'] },
+  DateField: { import: '@/components/ui/DateField' },
+  Textarea: { import: '@/components/ui/Textarea' },
+  Checkbox: { import: '@/components/ui/Checkbox' },
+  Label: { import: '@/components/ui/Label' },
+  FormField: { import: '@/components/ui/FormField' },
+  Select: { import: '@/components/ui/Select' },
   Card: { import: '@/components/ui/Card' },
   Badge: { import: '@/components/ui/Badge', variants: ['success', 'error', 'warning', 'info', 'default'] },
   Drawer: { import: '@/components/ui/Drawer' },
@@ -304,6 +311,10 @@ const COMPONENTS = {
   PartyAvatar: { import: '@/components/ui/PartyAvatar' },
   BarcodeScanner: { import: '@/components/ui/BarcodeScanner' },
   BulkActionBar: { import: '@/components/ui/BulkActionBar' },
+  Tabs: { import: '@/components/ui/Tabs', variants: ['segmented', 'underline', 'pills'] },
+  FormPageShell: { import: '@/components/layout/FormPageShell' },
+  DataViewShell: { import: '@/components/layout/DataViewShell' },
+  OverlayShell: { import: '@/components/ui/OverlayShell' },
 };
 
 /** Architectural rules. */

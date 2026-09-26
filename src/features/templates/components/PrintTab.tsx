@@ -1,8 +1,7 @@
-/** Print tab — page size, orientation, margins, copies, and print options */
-
 import React from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
-
+import { Select } from '@/components/ui/Select'
+import { Button } from '@/components/ui/Button'
 import type {
   PrintSettings,
   PageSize,
@@ -32,21 +31,23 @@ interface PrintTabProps {
 
 export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) => {
   const { t } = useLanguage()
+
+  const pageSizeOptions = (Object.keys(PAGE_SIZE_LABELS) as PageSize[]).map((size) => ({
+    value: size,
+    label: PAGE_SIZE_LABELS[size],
+  }))
+
   return (
   <>
     <Section title={t.pageSection}>
       <ControlRow label={t.pageSizeLabel}>
-        <select
-          className="input"
+        <Select
           value={printSettings.pageSize}
-          aria-label={t.pageSizeAria}
-          onChange={(e) => onChange({ pageSize: e.target.value as PageSize })}
-          style={{ minHeight: 44 }}
-        >
-          {(Object.keys(PAGE_SIZE_LABELS) as PageSize[]).map((size) => (
-            <option key={size} value={size}>{PAGE_SIZE_LABELS[size]}</option>
-          ))}
-        </select>
+          onValueChange={(val) => onChange({ pageSize: val as PageSize })}
+          options={pageSizeOptions}
+          ariaLabel={t.pageSizeAria}
+          className="w-full"
+        />
       </ControlRow>
 
       <ControlRow label={t.orientationLabel}>
@@ -73,8 +74,9 @@ export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) =
     <Section title={t.printOptionsSection}>
       <ControlRow label={t.copiesLabel}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-          <button
+          <Button
             type="button"
+            variant="none"
             className="template-segmented-btn"
             aria-label={t.decreaseCopies}
             disabled={printSettings.copies <= 1}
@@ -82,7 +84,7 @@ export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) =
             style={{ minWidth: 44, minHeight: 44, fontWeight: 700 }}
           >
             −
-          </button>
+          </Button>
           <span
             style={{ minWidth: 32, textAlign: 'center', fontWeight: 600, fontSize: 'var(--fs-base)' }}
             aria-live="polite"
@@ -90,8 +92,9 @@ export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) =
           >
             {printSettings.copies}
           </span>
-          <button
+          <Button
             type="button"
+            variant="none"
             className="template-segmented-btn"
             aria-label={t.increaseCopies}
             disabled={printSettings.copies >= MAX_COPIES}
@@ -99,7 +102,7 @@ export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) =
             style={{ minWidth: 44, minHeight: 44, fontWeight: 700 }}
           >
             +
-          </button>
+          </Button>
         </div>
       </ControlRow>
 

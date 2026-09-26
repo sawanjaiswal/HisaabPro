@@ -1,7 +1,7 @@
 /** Create Invoice — Page (lazy). One continuous scroll; sticky totals bar saves. */
 
-import { useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useCallback, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Camera } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -15,7 +15,7 @@ import { useInvoiceForm } from './useInvoiceForm'
 import { useInvoiceHotkeys } from './useInvoiceHotkeys'
 import { useBillScanPrefill } from './useBillScanPrefill'
 import { getCreateTitle, getCreateBackTo } from '@/features/sales/sales.utils'
-import type { DocumentType } from './invoice.types'
+import type { DocumentType, ProductPick } from './invoice.types'
 import { InvoiceTotalsBar } from './components/InvoiceTotalsBar'
 import { InvoiceHeaderMeta } from './components/InvoiceHeaderMeta'
 import { InvoiceItemsSection } from './components/InvoiceItemsSection'
@@ -32,7 +32,6 @@ import './invoice-line-items.css'
 import './invoice-product-search.css'
 import './invoice-summary.css'
 import './invoice-gst-banners.css'
-import type { ProductPick } from './invoice.types'
 
 interface CreateInvoicePageProps {
   /** Document type override — Estimate / Sale Order / Challan share this engine. */
@@ -41,35 +40,17 @@ interface CreateInvoicePageProps {
 
 export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoicePageProps) {
   const nav = useNavigate()
+  const [searchParams] = useSearchParams()
   const { t } = useLanguage()
   const toast = useToast()
+  const queryPartyId = searchParams.get('partyId')
+
   const {
-    form,
-    errors,
-    isSubmitting,
-    updateField,
-    addLineItem,
-    updateLineItem,
-    removeLineItem,
-    addCharge,
-    updateCharge,
-    removeCharge,
-    totals,
-    stockWarnings,
-    hasStockBlocks,
-    handleSubmit,
-    handleSaveDraft,
-    gstEnabled,
-    showUntaggedDialog,
-    confirmUntaggedSubmit,
-    dismissUntaggedDialog,
-    stockShortageItems,
-    clearStockShortage,
-    batchErrorCode,
-    clearBatchError,
-    priceListId,
-    validate,
-    gstSummary,
+    form, errors, isSubmitting, updateField, addLineItem, updateLineItem, removeLineItem,
+    addCharge, updateCharge, removeCharge, totals, stockWarnings, hasStockBlocks,
+    handleSubmit, handleSaveDraft, gstEnabled, showUntaggedDialog, confirmUntaggedSubmit,
+    dismissUntaggedDialog, stockShortageItems, clearStockShortage, batchErrorCode,
+    clearBatchError, priceListId, validate, gstSummary,
   } = useInvoiceForm(type)
 
   const { compositionScheme } = useGstGate()
@@ -84,12 +65,16 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
 
   useBillScanPrefill({ addLineItem, updateField, setProductNames })
 
+  useEffect(() => {
+    if (queryPartyId && !form.partyId) {
+      updateField('partyId', queryPartyId)
+    }
+  }, [queryPartyId, form.partyId, updateField])
+
   const handlePartyChange = useCallback((id: string, name: string) => {
     updateField('partyId', id)
-    setPartyName(name) // kept for the preview's "Bill To" block
-    // Picking a customer flows straight into item search — only when empty.
-    if (id && form.lineItems.length === 0) setShowProductSearch(true)
-  }, [updateField, form.lineItems.length])
+    setPartyName(name)
+  }, [updateField])
 
   const handleProductSelect = useCallback((pick: ProductPick) => {
     // Re-selecting an already-added product bumps its qty (tap the same chip
@@ -134,7 +119,7 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
         }
       />
 
-      <PageContainer className="invoice-details-section stagger-enter py-0 space-y-6">
+      <PageContainer variant="form" className="invoice-details-section stagger-enter py-0 space-y-6">
         {stockShortageItems.length > 0 && (
           <StockShortageBanner items={stockShortageItems} onDismiss={clearStockShortage} />
         )}
