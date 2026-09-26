@@ -74,10 +74,10 @@
   gap: 4px;
   padding: 6px 4px;
   text-decoration: none;
-  color: var(--color-gray-500);
-  font-size: var(--fs-2xs);
-  font-weight: 600;
-  letter-spacing: -0.1px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   line-height: 1;
   background: transparent;
   border: none;
@@ -87,7 +87,7 @@
 }
 
 .bnav__tab:hover {
-  color: var(--color-gray-700);
+  color: #334155;
 }
 
 .bnav__tab:focus-visible {
@@ -101,29 +101,21 @@
 }
 
 .bnav__tab--active {
-  color: var(--color-primary-700);
+  color: #026F39;
+  font-weight: 600;
 }
 
-/* Active icons stay OUTLINE-only (lucide stroke icons: Users, SquareActivity) —
-   the active state is conveyed by the emerald `color` + the underline, not a
-   fill. Filling stroke icons produced solid blobs (esp. the Customers "Users"
-   glyph), so only the purpose-built solid Home glyph gets a fill. */
-.bnav__tab--active .bnav__icon--home svg,
-.bnav__tab--active .bnav__icon--home svg :first-child {
-  fill: currentColor;
-}
-
-/* Green rounded underline centered beneath the active label. */
+/* Green rounded indicator centered beneath the active label. */
 .bnav__tab--active::after {
   content: '';
   position: absolute;
   bottom: 2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
-  height: 4px;
+  width: 20px;
+  height: 2.5px;
   border-radius: var(--radius-full);
-  background: var(--color-primary-700);
+  background: #026F39;
 }
 
 .bnav__tab--active .bnav__icon {
@@ -132,7 +124,7 @@
 
 @keyframes tab-pop {
   0%   { transform: scale(1); }
-  40%  { transform: scale(1.2); }
+  40%  { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
 
@@ -151,16 +143,16 @@
 }
 
 /* Create tab — solid-green circular FAB, lifted so it rises above the bar's
- * top edge (matches mockup). No label under it. */
+ * top edge. No label under it. */
 .bnav__icon--create {
-  width: 52px;
-  height: 52px;
+  width: 50px;
+  height: 50px;
   border-radius: var(--radius-full);
-  background: var(--color-primary-700);
-  color: var(--color-gray-0);
-  transform: translateY(-14px);
-  box-shadow: 0 6px 16px -4px var(--overlay-primary-25);
-  transition: transform 0.18s var(--ease-spring);
+  background: linear-gradient(145deg, #038344 0%, #026F39 100%);
+  color: #ffffff;
+  transform: translateY(-12px);
+  box-shadow: 0 8px 20px -4px rgba(2, 111, 57, 0.42), inset 0 1px 1px 0 rgba(255, 255, 255, 0.3);
+  transition: transform 0.18s var(--ease-spring), box-shadow 0.18s ease;
 }
 
 /* The lifted FAB leaves a gap where the label would sit; collapse the cell's
@@ -177,11 +169,11 @@
 }
 
 .bnav__tab--create:hover .bnav__icon--create {
-  transform: translateY(-14px) scale(1.06);
+  transform: translateY(-12px) scale(1.05);
 }
 
 .bnav__tab--create:active .bnav__icon--create {
-  transform: translateY(-14px) scale(0.92);
+  transform: translateY(-12px) scale(0.93);
 }
 
 /* Reserve page space so content never hides behind the bar.
