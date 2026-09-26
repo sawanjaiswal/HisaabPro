@@ -58,21 +58,21 @@ export const DateField = forwardRef<HTMLInputElement, DateFieldProps>(
     return (
       <div className={cn('w-full space-y-1.5', className)}>
         {label && (
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-1.5">
             <label
               htmlFor={inputId}
-              className="flex items-center gap-1.5 text-[var(--fs-xs)] font-bold uppercase tracking-wider text-[var(--text-secondary)] select-none"
+              className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-primary)] select-none"
             >
               <Calendar className="w-3.5 h-3.5 text-[var(--color-primary-500)]" />
               {label}
               {required && (
-                <span className="text-[var(--color-error-500)] font-bold" aria-hidden="true">
+                <span className="text-[var(--color-error-500)] ml-1 font-bold" aria-hidden="true">
                   *
                 </span>
               )}
             </label>
             {hint && !error && (
-              <span className="text-[10px] text-[var(--text-muted)]">{hint}</span>
+              <span className="text-xs text-[var(--text-muted)]">{hint}</span>
             )}
           </div>
         )}
