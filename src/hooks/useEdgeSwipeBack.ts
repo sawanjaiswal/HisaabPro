@@ -7,7 +7,7 @@
  * preventDefault, so native scrolling is untouched. */
 
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useFlowEngine } from '@/lib/navigation'
 
 const EDGE_ZONE_PX = 24 // how close to the left edge the touch must start
 const TRIGGER_PX = 72 // minimum rightward travel to count as a back-swipe
@@ -15,7 +15,7 @@ const MAX_OFF_AXIS = 0.6 // |dy| must stay under dx * this (keeps it horizontal)
 const MAX_DURATION_MS = 600 // a flick, not a slow drag
 
 export function useEdgeSwipeBack(enabled = true): void {
-  const navigate = useNavigate()
+  const { goBack } = useFlowEngine()
 
   useEffect(() => {
     if (!enabled) return
@@ -45,8 +45,8 @@ export function useEdgeSwipeBack(enabled = true): void {
       const dy = Math.abs(touch.clientY - startY)
       const dt = Date.now() - startedAt
       const horizontal = dx >= TRIGGER_PX && dy <= dx * MAX_OFF_AXIS
-      if (horizontal && dt <= MAX_DURATION_MS && window.history.length > 1) {
-        navigate(-1)
+      if (horizontal && dt <= MAX_DURATION_MS) {
+        goBack()
       }
     }
 
@@ -56,5 +56,5 @@ export function useEdgeSwipeBack(enabled = true): void {
       document.removeEventListener('touchstart', onStart)
       document.removeEventListener('touchend', onEnd)
     }
-  }, [enabled, navigate])
+  }, [enabled, goBack])
 }

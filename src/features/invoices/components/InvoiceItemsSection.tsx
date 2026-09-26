@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Plus, X, AlertTriangle, Package, User, Sparkles } from 'lucide-react'
+import { Plus, X, Package, User } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { LineItemEditor } from './LineItemEditor'
 import { useLinePriceMeta } from './useLinePriceMeta'
@@ -10,6 +10,8 @@ import { FrequentProductChips } from './FrequentProductChips'
 import { InvoiceScanButton } from './InvoiceScanButton'
 import { TaxPickerColumn } from './TaxPickerColumn'
 import { HsnTypeahead } from './HsnTypeahead'
+import { InvoiceItemsEmptyState } from './InvoiceItemsEmptyState'
+import { InvoiceStockWarnings } from './InvoiceStockWarnings'
 import { calculateLineTotal } from '../invoice-calc.utils'
 import { calculateLineProfit } from '../invoice-totals.utils'
 import { usePartyTier } from '@/features/price-lists/use-party-tier'
@@ -30,11 +32,8 @@ interface InvoiceItemsSectionProps {
   hasStockBlocks: boolean
   gstEnabled?: boolean
   compositionScheme?: boolean
-  /** #132 Batch 6 — when true, existing lines start as EDITED so rates are not auto-replaced. */
   isEditMode?: boolean
-  /** Epic B PR2 — current price-list override id from form state (null = party default) */
   priceListId?: string | null
-  /** Epic B PR2 — called when user changes the tier override */
   onPriceListChange?: (id: string | null) => void
   onPartyChange: (id: string, name: string) => void
   onProductSelect: (pick: ProductPick) => void
@@ -43,7 +42,6 @@ interface InvoiceItemsSectionProps {
   onToggleProductSearch: () => void
 }
 
-// Stable no-op for optional onPriceListChange
 const noop = (_id: string | null) => { /* no-op */ }
 
 export function InvoiceItemsSection({
@@ -97,9 +95,9 @@ export function InvoiceItemsSection({
   const addedQuantities = Object.fromEntries(lineItems.map((item) => [item.productId, item.quantity]))
 
   return (
-    <div className="line-items-section py-0 space-y-4">
-      {/* ── 1. Customer Card ── */}
-      <div className="bg-white rounded-3xl p-5 shadow-xs border-0 space-y-3">
+    <div className="line-items-section py-0 space-y-6">
+      {/* ── 1. Customer Section ── */}
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-slate-500">
             <User size={14} className="text-[#026F39]" />
@@ -124,8 +122,8 @@ export function InvoiceItemsSection({
         )}
       </div>
 
-      {/* ── 2. Items Card ── */}
-      <div className="bg-white rounded-3xl p-5 shadow-xs border-0 space-y-4">
+      {/* ── 2. Items Section ── */}
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-slate-500">
             <Package size={14} className="text-[#026F39]" />
@@ -151,32 +149,13 @@ export function InvoiceItemsSection({
         )}
 
         {lineItems.length === 0 && !showProductSearch && (
-          <div className="bg-[#F8F9FA] rounded-2xl p-6 text-center flex flex-col items-center justify-center space-y-2 border-0">
-            <div className="relative inline-flex items-center justify-center p-3.5 bg-emerald-50 rounded-2xl text-[#026F39] mb-1">
-              <Package size={34} strokeWidth={1.5} />
-              <Sparkles size={16} className="absolute -top-1 -right-1 text-emerald-500" />
-            </div>
-            <h4 className="text-sm font-bold text-slate-900">
-              {t.noItemsAdded || 'No items added yet'}
-            </h4>
-            <p className="text-xs text-slate-500 max-w-xs">
-              Add products or services to this invoice
-            </p>
-            <div className="flex items-center gap-2.5 pt-3">
-              <Button
-                variant="none"
-                type="button"
-                className="bg-[#026F39] hover:bg-[#025a2e] text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-xs cursor-pointer active:scale-95 transition-all"
-                onClick={onToggleProductSearch}
-              >
-                <Plus size={14} />
-                <span>+ {t.addItem || 'Add Item'}</span>
-              </Button>
-              <div className="[&>button]:bg-emerald-50 [&>button]:text-[#026F39] [&>button]:hover:bg-emerald-100 [&>button]:font-bold [&>button]:text-xs [&>button]:px-4 [&>button]:py-2.5 [&>button]:rounded-xl [&>button]:border-0">
-                <InvoiceScanButton onAdd={handleProductSelect} />
-              </div>
-            </div>
-          </div>
+          <InvoiceItemsEmptyState
+            emptyTitle={t.noItemsAdded || 'No items added yet'}
+            emptySub="Add products or services to this invoice"
+            addItemLabel={t.addItem || 'Add Item'}
+            onToggleProductSearch={onToggleProductSearch}
+            onProductSelect={handleProductSelect}
+          />
         )}
 
         {lineItems.map((item, index) => {
@@ -189,8 +168,14 @@ export function InvoiceItemsSection({
           return (
             <div key={item.productId} className="line-item-with-gst">
               <LineItemEditor
-                item={{ ...item, productName: productNames[item.productId] ?? `${t.item} ${index + 1}`,
-                  discountAmount, lineTotal, profit, profitPercent }}
+                item={{
+                  ...item,
+                  productName: productNames[item.productId] ?? `${t.item} ${index + 1}`,
+                  discountAmount,
+                  lineTotal,
+                  profit,
+                  profitPercent,
+                }}
                 index={index}
                 onUpdate={handleUpdateLineItem}
                 onRemove={onRemoveLineItem}
@@ -225,22 +210,14 @@ export function InvoiceItemsSection({
 
         {errors.lineItems && <span className="field-error" role="alert">{errors.lineItems}</span>}
 
-        {stockWarnings.length > 0 && (
-          <div className={`stock-warnings${hasStockBlocks ? ' stock-warnings--block' : ''}`} role="alert">
-            <div className="stock-warnings-title">
-              <AlertTriangle size={16} aria-hidden="true" />
-              {hasStockBlocks ? t.insufficientStock : t.lowStockWarning}
-            </div>
-            {stockWarnings.map((w) => (
-              <div key={w.productId} className="stock-warning-item">
-                <span className="stock-warning-name">{w.productName}</span>
-                <span className="stock-warning-detail">
-                  {w.currentStock} {w.requestedUnit} {t.availableLabel}, {w.requestedQty} {t.requestedLabel}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+        <InvoiceStockWarnings
+          stockWarnings={stockWarnings}
+          hasStockBlocks={hasStockBlocks}
+          insufficientStockLabel={t.insufficientStock}
+          lowStockWarningLabel={t.lowStockWarning}
+          availableLabel={t.availableLabel}
+          requestedLabel={t.requestedLabel}
+        />
 
         {errors.stock && <span className="field-error" role="alert">{errors.stock}</span>}
 

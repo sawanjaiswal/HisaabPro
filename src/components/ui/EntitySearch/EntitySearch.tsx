@@ -32,6 +32,10 @@ export function EntitySearch<T = any>({
   entityPlural = 'items',
   onCreateOption,
   isCreating = false,
+  emptyText,
+  createOptionLabel,
+  creatingLabel,
+  searchHintLabel,
   renderSelected,
   renderItem,
   error,
@@ -234,7 +238,13 @@ export function EntitySearch<T = any>({
           {!isLoading && !fetchError && hasQuery && items.length === 0 && (
             <li className="entity-search-empty-box">
               <p className="entity-search-empty-text">
-                {t.noPartiesFoundFor || 'No results found for'} &ldquo;{trimmedQuery}&rdquo;
+                {emptyText ? (
+                  emptyText(trimmedQuery)
+                ) : (
+                  <>
+                    No {entityPlural} found for &ldquo;{trimmedQuery}&rdquo;
+                  </>
+                )}
               </p>
               {onCreateOption && (
                 <button
@@ -249,12 +259,14 @@ export function EntitySearch<T = any>({
                   {isCreating ? (
                     <>
                       <span className="entity-search-spinner" aria-hidden="true" />
-                      <span>{t.creatingParty || 'Adding…'}</span>
+                      <span>{creatingLabel || `Adding ${entityName}…`}</span>
                     </>
+                  ) : createOptionLabel ? (
+                    createOptionLabel(trimmedQuery)
                   ) : (
                     <>
                       <Plus size={16} aria-hidden="true" />
-                      <span>{t.addParty || 'Add'} &ldquo;{trimmedQuery}&rdquo; {t.addAsNewClient || `as a ${entityName}`}</span>
+                      <span>+ Add &ldquo;{trimmedQuery}&rdquo; as a new {entityName}</span>
                     </>
                   )}
                 </button>
@@ -264,7 +276,7 @@ export function EntitySearch<T = any>({
 
           {!isLoading && !fetchError && !hasQuery && items.length === 0 && (
             <li className="entity-search-status entity-search-status--hint">
-              <span>{t.typeToSearchParties || `Type to search ${entityPlural}...`}</span>
+              <span>{searchHintLabel || `Type to search ${entityPlural}...`}</span>
             </li>
           )}
 
@@ -284,17 +296,17 @@ export function EntitySearch<T = any>({
                     <div className="entity-search-item-title">{item.title}</div>
                     <div className="entity-search-item-meta">
                       {item.subtitle && <span>{item.subtitle}</span>}
-                      {item.badge && (
-                        <span className={`entity-search-badge entity-search-badge--${item.badge.variant || 'default'}`}>
-                          {item.badge.text}
-                        </span>
-                      )}
                     </div>
                   </div>
                   <div className="entity-search-item-right">
                     {item.pricePaise !== undefined && (
                       <span className="entity-search-item-price">
                         {formatRupees(item.pricePaise)}
+                      </span>
+                    )}
+                    {item.badge && (
+                      <span className={`entity-search-badge entity-search-badge--${item.badge.variant || 'default'}`}>
+                        {item.badge.text}
                       </span>
                     )}
                     {item.isAdded && (
@@ -325,7 +337,11 @@ export function EntitySearch<T = any>({
                 ) : (
                   <Plus size={16} aria-hidden="true" />
                 )}
-                <span>{t.addParty || 'Add'} &ldquo;{trimmedQuery}&rdquo; {t.addAsNewClient || `as a ${entityName}`}</span>
+                {createOptionLabel ? (
+                  createOptionLabel(trimmedQuery)
+                ) : (
+                  <span>+ Add &ldquo;{trimmedQuery}&rdquo; as a new {entityName}</span>
+                )}
               </button>
             </li>
           )}

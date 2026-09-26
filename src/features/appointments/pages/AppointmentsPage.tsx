@@ -90,7 +90,14 @@ export default function AppointmentsPage() {
     <AppShell>
       <Header
         title={t.appointments ?? 'Appointments'}
-        actions={<DayPicker dateISO={dateISO} onChange={setDateISO} step={viewMode === 'week' ? 7 : 1} />}
+        actions={
+          <div className="flex items-center gap-1">
+            <DayPicker dateISO={dateISO} onChange={setDateISO} step={viewMode === 'week' ? 7 : 1} />
+            <Button variant="ghost" size="sm" onClick={() => openCreate()} aria-label={t.newAppointment ?? 'New appointment'}>
+              <Plus size={20} aria-hidden="true" />
+            </Button>
+          </div>
+        }
       />
 
       <HeroPage className="space-y-4">
@@ -152,15 +159,6 @@ export default function AppointmentsPage() {
           )
         )}
       </HeroPage>
-
-      <Button
-        variant="none"
-        onClick={() => openCreate()}
-        aria-label={t.newAppointment ?? 'New appointment'}
-        className="appt-fab"
-      >
-        <Plus size={24} aria-hidden="true" />
-      </Button>
 
       <CreateAppointmentDrawer
         open={drawerOpen}

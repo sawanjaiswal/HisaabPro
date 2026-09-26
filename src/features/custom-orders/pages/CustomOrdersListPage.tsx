@@ -48,7 +48,14 @@ export default function CustomOrdersListPage() {
 
   return (
     <AppShell>
-      <Header title={t.coTitle} />
+      <Header
+        title={t.coTitle}
+        actions={
+          <Button variant="ghost" size="sm" onClick={goToNew} aria-label={t.coCreateNewAria}>
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
 
       <PageContainer>
         {/* Status filter pills */}
@@ -129,16 +136,6 @@ export default function CustomOrdersListPage() {
         )}
       </PageContainer>
 
-      {status === 'success' && allItems.length > 0 && (
-        <Button variant="none"
-          type="button"
-          className="fab"
-          onClick={goToNew}
-          aria-label={t.coCreateNewAria}
-        >
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
     </AppShell>
   )
 }

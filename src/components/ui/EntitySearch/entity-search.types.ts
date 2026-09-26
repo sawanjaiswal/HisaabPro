@@ -39,6 +39,12 @@ export interface EntitySearchProps<T = any> {
   onCreateOption?: (query: string) => Promise<void> | void
   isCreating?: boolean
   
+  /** Customizable Strings for SSOT separation */
+  emptyText?: (query: string) => ReactNode
+  createOptionLabel?: (query: string) => ReactNode
+  creatingLabel?: string
+  searchHintLabel?: string
+  
   /** Custom renderers */
   renderSelected?: (props: { id: string; title: string; onClear: () => void }) => ReactNode
   renderItem?: (item: EntitySearchItem, onSelect: () => void, isHighlighted: boolean) => ReactNode

@@ -1,14 +1,9 @@
-/** Products — List page (GPT mockup redesign, lazy loaded).
- * Title + scan/add · 4 stat tiles · search + chip filters · sortable rows ·
- * "keep stock healthy" footer. Bulk-select (long-press) reuses BulkActionBar.
- */
-
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Package } from 'lucide-react'
+import { Package, Camera, Upload, Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
-import { PageContainer } from '@/components/layout/PageContainer'
+import { HeroPage } from '@/components/layout/HeroPage'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { BulkActionBar } from '@/components/ui/BulkActionBar'
@@ -20,8 +15,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useProducts } from './useProducts'
 import { useProductFilterActions } from './useProductFilterActions'
 import { useProductBulkActions } from './useProductBulkActions'
-import { ProductsPageHeader } from './components/ProductsPageHeader'
-import { ProductStatTiles } from './components/ProductStatTiles'
+import { ProductSummaryBar } from './components/ProductSummaryBar'
 import { ProductFilterBar } from './components/ProductFilterBar'
 import { ProductListHeader } from './components/ProductListHeader'
 import { ProductCard } from './components/ProductCard'
@@ -92,20 +86,45 @@ export default function ProductsPage() {
     <AppShell>
       <Header
         scrollCondense
-        title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : undefined}
+        title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : (t.products ?? 'Products')}
+        actions={
+          !bulk.isActive ? (
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setScannerOpen(true)}
+                aria-label={t.scanBarcode ?? 'Scan Barcode'}
+              >
+                <Camera size={18} aria-hidden="true" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(ROUTES.IMPORTS)}
+                aria-label={t.import ?? 'Import'}
+              >
+                <Upload size={18} aria-hidden="true" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={goToCreate}
+                aria-label={t.addFirstProduct ?? 'Add Product'}
+              >
+                <Plus size={20} aria-hidden="true" />
+              </Button>
+            </div>
+          ) : undefined
+        }
       />
 
-      <PageContainer variant="list" className="space-y-6">
-        {!bulk.isActive && (
-          <ProductsPageHeader onScan={() => setScannerOpen(true)} onAdd={goToCreate} />
-        )}
-
-        {status === 'success' && data && !bulk.isActive && (
-          <ProductStatTiles
+      <HeroPage>
+        {!bulk.isActive && status === 'success' && data && (
+          <ProductSummaryBar
             summary={data.summary}
-            onLowStock={enableLowStock}
-            onValue={() => toast.info(t.comingSoon)}
-            onOutOfStock={() => toast.info(t.comingSoon)}
+            onLowStockClick={enableLowStock}
+            onStockValueClick={() => toast.info(t.comingSoon)}
           />
         )}
 
@@ -149,8 +168,14 @@ export default function ProductsPage() {
           />
         )}
 
+        {status === 'success' && data && (
+          <div role="status" aria-live="polite" className="sr-only">
+            {productsList.length} {productsList.length === 1 ? t.item : t.items}
+          </div>
+        )}
+
         {status === 'success' && data && productsList.length > 0 && (
-          <div className="product-list-section" role="status" aria-live="polite">
+          <div className="product-list-section">
             <ProductListHeader
               total={data.pagination?.total ?? productsList.length}
               activeSortBy={filters.sortBy}
@@ -183,16 +208,17 @@ export default function ProductsPage() {
               onLoadMore={loadMore}
               ariaLabel={t.loadMoreProducts}
             />
+            {!bulk.isActive && (
+              <ProductStockHealthCard
+                lowStockCount={data.summary?.lowStockCount ?? 0}
+                onViewLowStock={enableLowStock}
+              />
+            )}
           </div>
         )}
+      </HeroPage>
 
-        {status === 'success' && data && !bulk.isActive && (
-          <ProductStockHealthCard
-            lowStockCount={data.summary?.lowStockCount ?? 0}
-            onViewLowStock={enableLowStock}
-          />
-        )}
-      </PageContainer>
+
 
       <BulkActionBar
         selectedCount={bulk.selectedCount}

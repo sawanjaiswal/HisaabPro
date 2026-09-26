@@ -108,18 +108,28 @@ export default function PartiesPage() {
         title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.parties}
         actions={
           !bulk.isActive ? (
-            <Button
-              variant="ghost" size="sm"
-              onClick={() => {
-                const flag = import.meta.env.VITE_FEATURE_DATA_IMPORT
-                const enabled = flag === 'true' || flag === true || flag === '1'
-                navigate(enabled ? ROUTES.IMPORTS : ROUTES.BULK_IMPORT_PARTIES)
-              }}
-              aria-label={t.importPartiesLabel}
-            >
-              <Upload size={18} aria-hidden="true" />
-              <span>{t.import}</span>
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  const flag = import.meta.env.VITE_FEATURE_DATA_IMPORT
+                  const enabled = flag === 'true' || flag === true || flag === '1'
+                  navigate(enabled ? ROUTES.IMPORTS : ROUTES.BULK_IMPORT_PARTIES)
+                }}
+                aria-label={t.importPartiesLabel}
+              >
+                <Upload size={18} aria-hidden="true" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={goToCreate}
+                aria-label={t.addNewPartyLabel ?? 'Add Party'}
+              >
+                <Plus size={20} aria-hidden="true" />
+              </Button>
+            </div>
           ) : undefined
         }
       />
@@ -219,11 +229,7 @@ export default function PartiesPage() {
         )}
       </HeroPage>
 
-      {!bulk.isActive && status === 'success' && data && partiesList.length > 0 && (
-        <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.addNewPartyLabel}>
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
+
 
       <PartyFilterDrawer
         open={filterDrawerOpen}

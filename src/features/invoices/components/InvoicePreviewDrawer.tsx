@@ -92,12 +92,12 @@ export const InvoicePreviewDrawer: React.FC<InvoicePreviewDrawerProps> = ({
           </span>
         </div>
 
-        <section className="invoice-preview-billto py-0">
+        <section className="invoice-preview-billto">
           <span className="invoice-preview-billto-label">{t.billTo}</span>
           <span className="invoice-preview-billto-name">{partyName || '—'}</span>
         </section>
 
-        <section className="invoice-preview-items py-0" role="table" aria-label={t.itemsLabel}>
+        <section className="invoice-preview-items" role="table" aria-label={t.itemsLabel}>
           <div className="invoice-preview-row invoice-preview-row--head" role="row">
             <span role="columnheader">{t.itemLabel}</span>
             <span role="columnheader" className="text-right">{t.qty}</span>
@@ -126,7 +126,7 @@ export const InvoicePreviewDrawer: React.FC<InvoicePreviewDrawerProps> = ({
           })}
         </section>
 
-        <section className="invoice-preview-totals py-0">
+        <section className="invoice-preview-totals">
           <div className="invoice-preview-total-row">
             <span>{t.subtotal}</span>
             <span className="tabular-nums">{formatInvoiceAmount(totals.subtotal)}</span>

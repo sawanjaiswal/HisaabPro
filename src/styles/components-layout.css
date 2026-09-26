@@ -65,9 +65,18 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   min-width: 0;
+  transition: opacity var(--duration-fast) var(--ease-default);
 }
 
-.header-brand:active { background: var(--color-gray-100); }
+.header-brand:hover {
+  opacity: 0.88;
+  background: transparent;
+}
+
+.header-brand:active {
+  opacity: 0.75;
+  background: transparent;
+}
 
 .header-brand-logo {
   width: 28px;
@@ -89,7 +98,8 @@
 /* Two-tone wordmark: "Pro" renders in brand green on every surface. */
 .header-brand-accent { color: var(--color-success-600); }
 
-[data-theme="dark"] .header-brand:active { background: var(--color-gray-800); }
+[data-theme="dark"] .header-brand:hover { opacity: 0.88; background: transparent; }
+[data-theme="dark"] .header-brand:active { opacity: 0.75; background: transparent; }
 [data-theme="dark"] .header-brand-name { color: var(--color-gray-100); }
 
 /* NexoWallet thin chevron — subtle circular hit area */
@@ -148,8 +158,22 @@
   color: var(--color-white-inverse);
 }
 
+.header--emerald .header-back:hover {
+  background: var(--overlay-white-12);
+}
+
 .header--emerald .header-back:active {
-  background: var(--overlay-white-15);
+  background: var(--overlay-white-20);
+}
+
+.header--emerald .header-brand:hover {
+  opacity: 0.88;
+  background: transparent;
+}
+
+.header--emerald .header-brand:active {
+  opacity: 0.75;
+  background: transparent;
 }
 
 .header--emerald .header-brand-name {
@@ -173,16 +197,36 @@
 
 .header--emerald .header-icon-btn,
 .header--emerald .notif-bell,
-.header--emerald .header-actions .btn-ghost {
+.header--emerald .sync-badge-btn,
+.header--emerald .sync-icon-btn,
+.header--emerald .header-actions .btn,
+.header--emerald .header-actions .btn-ghost,
+.header--emerald .header-actions button {
   background: transparent;
   color: var(--color-white-inverse);
   box-shadow: none;
 }
 
+.header--emerald .header-icon-btn:hover,
+.header--emerald .notif-bell:hover,
+.header--emerald .sync-badge-btn:hover,
+.header--emerald .sync-icon-btn:hover,
+.header--emerald .header-actions .btn:hover:not(:disabled),
+.header--emerald .header-actions .btn-ghost:hover:not(:disabled),
+.header--emerald .header-actions button:hover:not(:disabled) {
+  background: var(--overlay-white-12);
+  color: var(--color-white-inverse);
+}
+
 .header--emerald .header-icon-btn:active,
 .header--emerald .notif-bell:active,
-.header--emerald .header-actions .btn-ghost:hover:not(:disabled) {
-  background: var(--overlay-white-15);
+.header--emerald .sync-badge-btn:active,
+.header--emerald .sync-icon-btn:active,
+.header--emerald .header-actions .btn:active:not(:disabled),
+.header--emerald .header-actions .btn-ghost:active:not(:disabled),
+.header--emerald .header-actions button:active:not(:disabled) {
+  background: var(--overlay-white-20);
+  color: var(--color-white-inverse);
 }
 
 /* === HEADER VARIANTS — centered title + scroll-condense (dashboard pattern) === */

@@ -10,7 +10,7 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Search, UserPlus } from 'lucide-react'
+import { Search, UserPlus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { HeroPage } from '@/components/layout/HeroPage'
@@ -158,11 +158,7 @@ export default function EmployeeListPage() {
         )}
       </HeroPage>
 
-      {!isLoading && !isError && rows.length > 0 && (
-        <Button variant="none" className="fab" onClick={() => setDrawerOpen(true)} aria-label={t.employeesAddCta as string}>
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
+
 
       <Drawer
         open={drawerOpen}

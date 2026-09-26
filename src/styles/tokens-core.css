@@ -184,12 +184,11 @@
   --overlay-dark-border-40: rgba(43, 51, 66, 0.4);
   --overlay-dark-border-50: rgba(43, 51, 66, 0.5);
   --overlay-dark-border-35: rgba(43, 51, 66, 0.35);
-  --overlay-dark-border-20: rgba(43, 51, 66, 0.2);
-  --header-glass-bg: rgba(248, 247, 244, 0.92);
+  --header-glass-bg: rgba(255, 255, 255, 0.92);
   --header-glass-bg-dark: rgba(20, 25, 34, 0.95);
-  --header-border-color: rgba(0, 0, 0, 0.04);
+  --header-border-color: rgba(0, 0, 0, 0.06);
   --header-icon-btn-bg-dark: rgba(26, 32, 48, 0.85);
-  --dashboard-scrolled-bg: rgba(249, 249, 237, 0.98);
+  --dashboard-scrolled-bg: rgba(255, 255, 255, 0.98);
 
   /* Font size extras */
   --fs-7xl: 3.5rem;     /* 56px — landing hero */

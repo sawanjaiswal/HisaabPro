@@ -125,7 +125,21 @@ export default function PaymentsPage() {
 
   return (
     <AppShell>
-      <Header title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.paymentHistory} />
+      <Header
+        title={bulk.isActive ? `${bulk.selectedCount} ${t.selected}` : t.paymentHistory}
+        actions={
+          !bulk.isActive ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(ROUTES.PAYMENT_NEW)}
+              aria-label={t.recordPayment ?? 'Record Payment'}
+            >
+              <Plus size={20} aria-hidden="true" />
+            </Button>
+          ) : undefined
+        }
+      />
 
       <PageContainer variant="list" className="space-y-6">
         {!bulk.isActive && (
@@ -191,15 +205,7 @@ export default function PaymentsPage() {
         )}
       </PageContainer>
 
-      {!bulk.isActive && status === 'success' && data && data.payments.length > 0 && (
-        <Button variant="none"
-          className="fab"
-          onClick={() => navigate(`${ROUTES.PAYMENT_NEW}?type=PAYMENT_IN`)}
-          aria-label={t.recordNewPayment}
-        >
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
+
 
       <BulkActionBar
         selectedCount={bulk.selectedCount}

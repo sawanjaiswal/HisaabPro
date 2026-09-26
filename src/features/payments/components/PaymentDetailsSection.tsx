@@ -88,11 +88,65 @@ export function PaymentDetailsSection({
   const showReference = MODES_WITH_REFERENCE.includes(mode)
   const quickAmounts = [500, 1000, 2000, 5000]
 
+  // Local string state so user can type freely, delete decimals, etc. without .00 cursor locks
+  const [displayAmount, setDisplayAmount] = React.useState<string>(() =>
+    amount > 0 ? (amount % 100 === 0 ? String(amount / 100) : (amount / 100).toFixed(2)) : '',
+  )
+
+  const amountInputRef = React.useRef<HTMLInputElement>(null)
+
+  // Auto-focus and select amount field on mount to immediately open keyboard
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (amountInputRef.current) {
+        amountInputRef.current.focus()
+        amountInputRef.current.select()
+      }
+    }, 50)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Sync with prop when changed externally (e.g. quick chips, invoice auto-allocate, props change)
+  React.useEffect(() => {
+    const currentPaise = displayAmount ? Math.round(parseFloat(displayAmount) * 100) : 0
+    if (isNaN(currentPaise) || currentPaise !== amount) {
+      if (amount <= 0) {
+        setDisplayAmount('')
+      } else {
+        setDisplayAmount(amount % 100 === 0 ? String(amount / 100) : String(amount / 100))
+      }
+    }
+  }, [amount])
+
+  const handleAmountInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9.]/g, '')
+    // Prevent multiple dots
+    const parts = raw.split('.')
+    const sanitized = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : raw
+    setDisplayAmount(sanitized)
+
+    if (sanitized === '' || sanitized === '.') {
+      onAmountChange(0)
+      return
+    }
+    const parsed = parseFloat(sanitized)
+    if (!isNaN(parsed)) {
+      onAmountChange(Math.round(parsed * 100))
+    }
+  }
+
+  const handleAmountBlur = () => {
+    if (!displayAmount || isNaN(parseFloat(displayAmount))) {
+      setDisplayAmount('')
+      onAmountChange(0)
+    }
+  }
+
   return (
     <div className="space-y-6 max-w-lg mx-auto">
       {/* ── 1. Party Identity ─────────────────────────────────────────── */}
       <div className="space-y-1.5">
-        <div className="text-xs font-bold uppercase tracking-widest text-slate-500">
+        <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-gray-500)]">
           {t.customerSupplierLabel || 'CUSTOMER / SUPPLIER'}
         </div>
         <PartySearchInput value={partyId} onChange={onPartyChange} error={errors.partyId} showLabel={false} />
@@ -102,36 +156,34 @@ export function PaymentDetailsSection({
       <div className="space-y-3 text-center py-2">
         <label
           htmlFor="payment-amount"
-          className="text-xs font-bold uppercase tracking-widest text-slate-500 block"
+          className="text-xs font-bold uppercase tracking-widest text-[var(--color-gray-500)] block"
         >
           {t.amount || 'AMOUNT'} <span className="text-red-500">*</span>
         </label>
 
         {/* Center Hero Display */}
         <div className="flex items-center justify-center gap-1.5 py-1">
-          <span className="text-3xl sm:text-4xl font-bold text-[#026F39] select-none">
+          <span className="text-3xl sm:text-4xl font-bold text-[var(--color-primary-600)] select-none">
             ₹
           </span>
           <div className="relative inline-flex items-center justify-center">
             <Input
+              ref={amountInputRef}
               id="payment-amount"
-              type="number"
-              step="0.01"
-              min="0"
+              type="text"
               inputMode="decimal"
+              pattern="[0-9]*[.]?[0-9]*"
               placeholder="0.00"
+              autoFocus
               variant="seamless"
-              className="w-48 sm:w-64 bg-transparent border-0 text-center text-5xl sm:text-6xl font-black focus-visible:ring-0 focus:outline-none tabular-nums p-0 shadow-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-900"
+              className="w-48 sm:w-64 bg-transparent border-0 text-center text-5xl sm:text-6xl font-black focus-visible:ring-0 focus:outline-none tabular-nums p-0 shadow-none text-[var(--color-gray-900)]"
               style={{
                 fontFamily: 'var(--font-primary)',
                 letterSpacing: '-0.03em',
               }}
-              value={amount > 0 ? (amount / 100).toFixed(2) : ''}
-              onChange={(e) => {
-                const parsed = parseFloat(e.target.value || '0')
-                const paise = Math.round(parsed * 100)
-                onAmountChange(isNaN(paise) ? 0 : paise)
-              }}
+              value={displayAmount}
+              onChange={handleAmountInputChange}
+              onBlur={handleAmountBlur}
               aria-label={t.paymentAmountRupees}
             />
           </div>
@@ -145,7 +197,7 @@ export function PaymentDetailsSection({
               type="button"
               variant="none"
               onClick={() => onAmountChange(q * 100)}
-              className="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all active:scale-95 cursor-pointer border-0"
+              className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[var(--color-gray-50)] hover:bg-[var(--color-gray-100)] text-[var(--color-gray-700)] border border-[var(--color-gray-200)] transition-all active:scale-95 cursor-pointer"
             >
               +{formatRupees(q * 100)}
             </Button>
@@ -160,14 +212,14 @@ export function PaymentDetailsSection({
       </div>
 
       {/* ── 3. Payment Mode ───────────────────────────────────────────── */}
-      <div className="space-y-3">
-        <label className="text-xs font-bold uppercase tracking-widest text-slate-500 block">
+      <div className="space-y-2">
+        <label className="text-xs font-bold uppercase tracking-widest text-[var(--color-gray-500)] block">
           {t.paymentModeLabel || 'PAYMENT MODE'} <span className="text-red-500">*</span>
         </label>
 
-        {/* Row 1: 4 columns */}
-        <div className="grid grid-cols-4 gap-2">
-          {PAYMENT_MODES.slice(0, 4).map((m) => {
+        {/* Minimal Icon Dock */}
+        <div className="grid grid-cols-4 sm:grid-cols-7 gap-1 sm:gap-2">
+          {PAYMENT_MODES.map((m) => {
             const isSelected = mode === m
             const Icon = MODE_ICONS[m]
             return (
@@ -175,10 +227,10 @@ export function PaymentDetailsSection({
                 key={m}
                 type="button"
                 variant="none"
-                className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-[8px] transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${
+                className={`flex flex-col items-center justify-center gap-1.5 py-2 px-1 rounded-xl transition-all text-center cursor-pointer active:scale-95 bg-transparent border-0 ${
                   isSelected
-                    ? 'bg-[#E8F5E9] border-2 border-[#026F39]'
-                    : 'bg-slate-100/90 hover:bg-slate-200/80 border-0'
+                    ? 'text-[var(--color-primary-600)]'
+                    : 'text-[var(--color-gray-500)] hover:text-[var(--color-gray-900)]'
                 }`}
                 onClick={() => onModeChange(m)}
                 role="radio"
@@ -186,54 +238,17 @@ export function PaymentDetailsSection({
                 aria-label={PAYMENT_MODE_LABELS[m]}
               >
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    isSelected ? 'bg-[#026F39] text-white' : 'bg-slate-200/80 text-slate-600'
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                    isSelected
+                      ? 'bg-[var(--color-primary-50)] text-[var(--color-primary-600)] shadow-xs scale-105'
+                      : 'text-[var(--color-gray-500)] hover:bg-[var(--color-gray-50)]'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-5 h-5" />
                 </div>
                 <span
-                  className={`text-[11px] truncate max-w-full leading-tight ${
-                    isSelected ? 'font-bold text-slate-900' : 'font-medium text-slate-700'
-                  }`}
-                >
-                  {PAYMENT_MODE_LABELS[m]}
-                </span>
-              </Button>
-            )
-          })}
-        </div>
-
-        {/* Row 2: 3 columns */}
-        <div className="grid grid-cols-4 gap-2">
-          {PAYMENT_MODES.slice(4).map((m) => {
-            const isSelected = mode === m
-            const Icon = MODE_ICONS[m]
-            return (
-              <Button
-                key={m}
-                type="button"
-                variant="none"
-                className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-[8px] transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${
-                  isSelected
-                    ? 'bg-[#E8F5E9] border-2 border-[#026F39]'
-                    : 'bg-slate-100/90 hover:bg-slate-200/80 border-0'
-                }`}
-                onClick={() => onModeChange(m)}
-                role="radio"
-                aria-checked={isSelected}
-                aria-label={PAYMENT_MODE_LABELS[m]}
-              >
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    isSelected ? 'bg-[#026F39] text-white' : 'bg-slate-200/80 text-slate-600'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                </div>
-                <span
-                  className={`text-[11px] truncate max-w-full leading-tight ${
-                    isSelected ? 'font-bold text-slate-900' : 'font-medium text-slate-700'
+                  className={`text-[11px] truncate max-w-full leading-tight transition-colors ${
+                    isSelected ? 'font-bold text-[var(--color-primary-700)]' : 'font-medium text-[var(--color-gray-600)]'
                   }`}
                 >
                   {PAYMENT_MODE_LABELS[m]}
@@ -255,17 +270,17 @@ export function PaymentDetailsSection({
         {/* Date Row */}
         <div>
           <label
-            className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1 flex items-center gap-1.5"
+            className="text-xs font-bold uppercase tracking-widest text-[var(--color-gray-500)] mb-1 flex items-center gap-1.5"
             htmlFor="payment-date"
           >
-            <Calendar className="w-3.5 h-3.5 text-[#026F39]" />
+            <Calendar className="w-3.5 h-3.5 text-[var(--color-primary-600)]" />
             <span>{t.dateRequired || 'DATE'}</span>
             <span className="text-red-500">*</span>
           </label>
           <DateField
             id="payment-date"
             type="date"
-            className="w-full bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20"
+            className="w-full bg-[var(--color-gray-50)] hover:bg-[var(--color-gray-100)] border border-[var(--color-gray-200)] rounded-[8px] px-3.5 py-2.5 text-sm font-medium text-[var(--color-gray-900)] focus:bg-white focus:ring-2 focus:ring-[var(--color-primary-500)]/20"
             value={date}
             onChange={(e) => onDateChange(e.target.value)}
             aria-label={t.paymentDate2}
@@ -276,16 +291,16 @@ export function PaymentDetailsSection({
         {showReference && (
           <div>
             <label
-              className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1 flex items-center gap-1.5"
+              className="text-xs font-bold uppercase tracking-widest text-[var(--color-gray-500)] mb-1 flex items-center gap-1.5"
               htmlFor="payment-ref"
             >
-              <Hash className="w-3.5 h-3.5 text-[#026F39]" />
+              <Hash className="w-3.5 h-3.5 text-[var(--color-primary-600)]" />
               <span>{t.referenceNumberLabel || 'REFERENCE NUMBER'}</span>
             </label>
             <Input
               id="payment-ref"
               type="text"
-              className="w-full bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20"
+              className="w-full bg-[var(--color-gray-50)] hover:bg-[var(--color-gray-100)] border border-[var(--color-gray-200)] rounded-[8px] px-3.5 py-2.5 text-sm text-[var(--color-gray-900)] focus:bg-white focus:ring-2 focus:ring-[var(--color-primary-500)]/20"
               placeholder={getReferencePlaceholder(mode)}
               value={referenceNumber}
               onChange={(e) => onReferenceChange(e.target.value)}
@@ -298,15 +313,15 @@ export function PaymentDetailsSection({
         {/* Notes Row */}
         <div>
           <label
-            className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1 flex items-center gap-1.5"
+            className="text-xs font-bold uppercase tracking-widest text-[var(--color-gray-500)] mb-1 flex items-center gap-1.5"
             htmlFor="payment-notes"
           >
-            <FileText className="w-3.5 h-3.5 text-[#026F39]" />
+            <FileText className="w-3.5 h-3.5 text-[var(--color-primary-600)]" />
             <span>{t.notesLabel || 'NOTES'}</span>
           </label>
           <Textarea
             id="payment-notes"
-            className="w-full text-sm bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900 placeholder:text-slate-400"
+            className="w-full text-sm bg-[var(--color-gray-50)] hover:bg-[var(--color-gray-100)] border border-[var(--color-gray-200)] rounded-[8px] px-3.5 py-2.5 focus:bg-white focus:ring-2 focus:ring-[var(--color-primary-500)]/20 resize-none transition-all text-[var(--color-gray-900)] placeholder:text-[var(--color-gray-400)]"
             rows={2}
             placeholder="Add a note (optional)..."
             value={notes}

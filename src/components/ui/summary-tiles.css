@@ -20,27 +20,13 @@
   min-width: 0;
 }
 
-/* Subtle toned backgrounds per the GPT detail-page spec. */
-.summary-tile--due {
-  background: var(--color-error-50);
-  border-color: var(--color-error-100);
-}
-
-.summary-tile--paid {
-  background: var(--color-success-50);
-  border-color: var(--color-success-100);
-}
-
-/* Sales = green tint (mockup: Total Sales) */
-.summary-tile--sales {
-  background: var(--color-success-50);
-  border-color: var(--color-success-100);
-}
-
-/* Info = blue tint (mockup: Total Paid) */
+/* Quiet Emerald: clean neutral card backgrounds for all tiles; only amounts carry tone */
+.summary-tile--due,
+.summary-tile--paid,
+.summary-tile--sales,
 .summary-tile--info {
-  background: var(--color-info-50);
-  border-color: var(--color-info-100);
+  background: var(--color-gray-50);
+  border-color: var(--color-gray-100);
 }
 
 .summary-tile__label {

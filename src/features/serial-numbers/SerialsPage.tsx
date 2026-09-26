@@ -28,9 +28,12 @@ export default function SerialsPage() {
       <Header
         title={t.serialNumbers}
         actions={
-          <div className="serial-header-actions">
+          <div className="serial-header-actions flex items-center gap-1">
             <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.SERIAL_BULK.replace(':productId', productId))} aria-label={t.bulkAddSerialNumbersAria}>
               <Upload size={18} aria-hidden="true" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.SERIAL_NEW.replace(':productId', productId))} aria-label={t.addSerialNumberFab}>
+              <Plus size={20} aria-hidden="true" />
             </Button>
           </div>
         }
@@ -99,11 +102,6 @@ export default function SerialsPage() {
         )}
       </PageContainer>
 
-      {status === 'success' && serials.length > 0 && (
-        <Button variant="none" className="fab" onClick={() => navigate(ROUTES.SERIAL_NEW.replace(':productId', productId))} aria-label={t.addSerialNumberFab}>
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
     </AppShell>
   )
 }

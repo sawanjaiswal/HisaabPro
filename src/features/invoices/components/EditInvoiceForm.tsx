@@ -140,13 +140,13 @@ export function EditInvoiceForm({
 
         <Accordion
           type="multiple"
-          className="form-accordion"
+          className="space-y-6"
           value={openSections}
           onValueChange={setOpenSections}
         >
-          <AccordionItem value="details">
-            <AccordionTrigger>{t.sectionDetails}</AccordionTrigger>
-            <AccordionContent className="space-y-6">
+          <AccordionItem value="details" className="bg-white rounded-[8px] p-4 shadow-[0_2px_8px_-1px_rgba(0,0,0,0.07),0_1px_4px_-1px_rgba(0,0,0,0.04)] border border-gray-100/80 transition-all">
+            <AccordionTrigger className="flex items-center justify-between py-0 hover:no-underline cursor-pointer">{t.sectionDetails}</AccordionTrigger>
+            <AccordionContent className="pt-4 space-y-6">
               <InvoiceDetailsSection
                 documentDate={form.documentDate}
                 paymentTerms={form.paymentTerms}
@@ -165,9 +165,9 @@ export function EditInvoiceForm({
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="charges">
-            <AccordionTrigger>{t.chargesLabel}</AccordionTrigger>
-            <AccordionContent>
+          <AccordionItem value="charges" className="bg-white rounded-[8px] p-4 shadow-[0_2px_8px_-1px_rgba(0,0,0,0.07),0_1px_4px_-1px_rgba(0,0,0,0.04)] border border-gray-100/80 transition-all">
+            <AccordionTrigger className="flex items-center justify-between py-0 hover:no-underline cursor-pointer">{t.chargesLabel}</AccordionTrigger>
+            <AccordionContent className="pt-4">
               <InvoiceChargesSection
                 charges={form.additionalCharges}
                 onUpdateCharge={updateCharge}

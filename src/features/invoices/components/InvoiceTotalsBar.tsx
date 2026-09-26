@@ -48,7 +48,7 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[var(--z-sticky)] bg-white/95 backdrop-blur-md border-t border-gray-100/80 px-4 py-3.5 shadow-lg"
+      className="fixed bottom-0 left-0 right-0 z-[var(--z-sticky)] bg-white/95 backdrop-blur-md rounded-t-2xl border-t border-gray-100/80 px-4 py-3.5 shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08),0_-3px_8px_-2px_rgba(0,0,0,0.04)]"
       aria-label={t.invoiceTotalsAriaLabel}
     >
       <div className="max-w-lg mx-auto flex items-center justify-between gap-3">

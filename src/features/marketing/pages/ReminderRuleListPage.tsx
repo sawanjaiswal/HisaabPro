@@ -40,7 +40,15 @@ export default function ReminderRuleListPage() {
 
   return (
     <AppShell>
-      <Header title={t.marketingReminderRulesTitle} backTo={MARKETING_ROUTES.HUB} />
+      <Header
+        title={t.marketingReminderRulesTitle}
+        backTo={MARKETING_ROUTES.HUB}
+        actions={
+          <Button variant="ghost" size="sm" onClick={goNew} aria-label={t.marketingReminderNewAria}>
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
       <HeroPage>
         {status === 'loading' && <ListSkeleton label={t.marketingReminderLoadingAria as string} />}
 
@@ -78,11 +86,7 @@ export default function ReminderRuleListPage() {
         )}
       </HeroPage>
 
-      {status === 'success' && rules.length > 0 && (
-        <Button variant="none" className="fab" onClick={goNew} aria-label={t.marketingReminderNewAria}>
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
+
 
       <ConfirmDialog
         open={confirmDelete !== null}

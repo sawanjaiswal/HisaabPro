@@ -39,13 +39,13 @@ export const InvoiceOptionalSections: React.FC<InvoiceOptionalSectionsProps> = (
   return (
     <Accordion
       type="multiple"
-      className="space-y-4"
+      className="space-y-6"
       value={openSections}
       onValueChange={onOpenSectionsChange}
     >
       <AccordionItem
         value="details"
-        className="bg-white rounded-3xl p-5 shadow-xs border-0 transition-all"
+        className="bg-white rounded-[8px] p-4 shadow-[0_2px_8px_-1px_rgba(0,0,0,0.07),0_1px_4px_-1px_rgba(0,0,0,0.04)] border border-gray-100/80 transition-all"
       >
         <AccordionTrigger className="flex items-center justify-between py-0 hover:no-underline cursor-pointer">
           <div className="flex items-center gap-2.5 text-left">
@@ -82,7 +82,7 @@ export const InvoiceOptionalSections: React.FC<InvoiceOptionalSectionsProps> = (
 
       <AccordionItem
         value="charges"
-        className="bg-white rounded-3xl p-5 shadow-xs border-0 transition-all"
+        className="bg-white rounded-[8px] p-4 shadow-[0_2px_8px_-1px_rgba(0,0,0,0.07),0_1px_4px_-1px_rgba(0,0,0,0.04)] border border-gray-100/80 transition-all"
       >
         <AccordionTrigger className="flex items-center justify-between py-0 hover:no-underline cursor-pointer">
           <div className="flex items-center gap-2.5 text-left">

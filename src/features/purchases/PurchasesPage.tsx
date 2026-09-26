@@ -153,11 +153,7 @@ export default function PurchasesPage() {
         )}
       </PageContainer>
 
-      {hasAny && (
-        <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.createPurchaseAriaLabel}>
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
+
     </AppShell>
   )
 }

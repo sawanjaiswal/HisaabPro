@@ -72,18 +72,18 @@
   --color-info-600: #2563EB;
   --color-info-700: #1D4ED8;
 
-  /* Neutrals — warm-tinted (not cool gray) */
+  /* Neutrals — clean modern palette */
   --color-gray-0:   #FFFFFF;
-  --color-gray-50:  #F8F7F4;  /* warm cream page bg — NexoWallet signature */
-  --color-gray-100: #F0EFEB;  /* card borders, dividers */
-  --color-gray-200: #E2E0DA;  /* disabled borders */
-  --color-gray-300: #C5C3BB;  /* placeholder text */
-  --color-gray-400: #9C9A92;  /* secondary icons */
-  --color-gray-500: #7A7870;  /* secondary text */
-  --color-gray-600: #5A584F;  /* body text */
-  --color-gray-700: #3D3B35;  /* strong text */
-  --color-gray-800: #2A2824;  /* headings */
-  --color-gray-900: #1A1917;  /* near-black */
+  --color-gray-50:  #F8FAFC;  /* clean light page bg */
+  --color-gray-100: #F1F5F9;  /* card borders, dividers */
+  --color-gray-200: #E2E8F0;  /* disabled borders */
+  --color-gray-300: #CBD5E1;  /* placeholder text */
+  --color-gray-400: #94A3B8;  /* secondary icons */
+  --color-gray-500: #64748B;  /* secondary text */
+  --color-gray-600: #475569;  /* body text */
+  --color-gray-700: #334155;  /* strong text */
+  --color-gray-800: #1E293B;  /* headings */
+  --color-gray-900: #0F172A;  /* near-black */
 
   /* Subtle backgrounds — badges, chips, status indicators */
   --color-success-bg-subtle: rgba(34, 197, 94, 0.12);
@@ -142,10 +142,10 @@
   --gradient-calc-start: #026F39;
   --gradient-calc-end:   #013D20;
 
-  /* Warm cream page gradient (dashboard, landing) */
-  --color-cream-start: #f9f9ed;
-  --color-cream-mid: #fafaef;
-  --color-cream-end: #fdfdfd;
+  /* Page background gradient */
+  --color-cream-start: #FFFFFF;
+  --color-cream-mid: #F8FAFC;
+  --color-cream-end: #F1F5F9;
 
   /* Toast (dark overlay style) */
   --toast-bg: #1a1a2e;

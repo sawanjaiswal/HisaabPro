@@ -217,9 +217,9 @@ export function Select({
 
   // Fallback to Radix when simple children and no custom search/create is needed
   if (!isSearchableCustom && !onCreateOption && !searchable) {
-    return (
+    const radixSelect = (
       <RX.Root value={controlledValue} defaultValue={defaultValue} onValueChange={onValueChange} disabled={disabled}>
-        <RX.Trigger className={cn('rx-select-trigger', className, triggerClassName)} aria-label={ariaLabel}>
+        <RX.Trigger className={cn('rx-select-trigger', className, triggerClassName)} aria-label={ariaLabel || label || placeholder}>
           <RX.Value placeholder={placeholder} />
           <RX.Icon className="rx-select-icon">
             <ChevronDown size={18} aria-hidden="true" />
@@ -232,14 +232,30 @@ export function Select({
         </RX.Portal>
       </RX.Root>
     )
+
+    if (label) {
+      return (
+        <div className={cn('w-full space-y-1.5', className)}>
+          <div className="flex items-center justify-between">
+            <label htmlFor={id} className="block text-sm font-medium text-[var(--text-primary)] select-none">
+              {label}
+              {required && <span className="text-[var(--color-error-500)] ml-1 font-bold" aria-hidden="true">*</span>}
+            </label>
+          </div>
+          {radixSelect}
+        </div>
+      )
+    }
+
+    return radixSelect
   }
 
   const selectedOpt = parsedOptions.find((o) => o.value === activeValue)
 
   return (
-    <div className={cn('relative w-full', className)}>
+    <div className={cn('relative w-full space-y-1.5', className)}>
       {label && (
-        <div className="flex items-center justify-between mb-1.5">
+        <div className="flex items-center justify-between">
           <label htmlFor={id} className="block text-sm font-medium text-[var(--text-primary)] select-none">
             {label}
             {required && <span className="text-[var(--color-error-500)] ml-1 font-bold" aria-hidden="true">*</span>}

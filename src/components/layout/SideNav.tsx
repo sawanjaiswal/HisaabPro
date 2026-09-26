@@ -15,14 +15,13 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useAuth } from '@/context/AuthContext'
 import { useTheme } from '@/context/ThemeContext'
 import { useLanguage } from '@/hooks/useLanguage'
-import { TenantChip } from '@/features/business/components/TenantChip'
 import { SideNavBusinessSwitcher } from './SideNavBusinessSwitcher'
 import { SideNavMenuGroups } from './SideNavMenuGroups'
 import { useSideNav } from './useSideNav'
 import './side-nav.css'
 
 export function SideNav() {
-  const { user, activeBusiness, handleLogout } = useAuth()
+  const { handleLogout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { t } = useLanguage()
   const {
@@ -40,8 +39,7 @@ export function SideNav() {
       <div className="side-nav-panel">
         <div className="side-nav-header">
           <div className="side-nav-identity">
-            <span className="side-nav-greeting">{t.menu}</span>
-            {user?.name && <span className="side-nav-user">{user.name}</span>}
+            <span className="side-nav-title">{t.menu}</span>
           </div>
           <div className="side-nav-header-actions">
             <button
@@ -82,13 +80,6 @@ export function SideNav() {
             </button>
           </div>
         </div>
-
-        {/* Phase 6 #138 PR2 — active tenant chip (suspend state visible at-a-glance). */}
-        {activeBusiness && (
-          <div className="side-nav-tenant-chip-row">
-            <TenantChip business={activeBusiness} variant="full" />
-          </div>
-        )}
 
         <div className="side-nav-body">
           <SideNavBusinessSwitcher onNavigate={handleNavigate} />

@@ -41,6 +41,7 @@ const ALLOWED_RAW_FETCH = new Set([
   'src/features/reports/finance.service.ts', // exportTally → plain-text XML; api() expects JSON
   'src/features/settings/audit-log.service.ts', // exportAuditLog → text/csv blob; api() expects JSON (Phase 6 PR4 FE)
   'src/lib/auth.ts',                         // warmupServer() — fire-and-forget health ping to wake cold-start server
+  'src/sync/NetworkDetector.ts',             // network connectivity pinger
 ])
 
 const SKIP_PATH_FRAGMENTS = ['__tests__', '/test/', '.test.', '.spec.', '/scripts/']

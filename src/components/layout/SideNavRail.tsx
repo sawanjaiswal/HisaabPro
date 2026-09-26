@@ -95,7 +95,7 @@ export function SideNavRail() {
           if (items.length === 0) return null
           return (
             <section key={group.id} className="side-nav-rail__section">
-              <Heading level={3} className="side-nav-rail__section-title">
+              <Heading level={3} variant="caption" color="muted" className="side-nav-rail__section-title">
                 <span aria-hidden="true">{group.emoji}</span>
                 {group.label}
               </Heading>

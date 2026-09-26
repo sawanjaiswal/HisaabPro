@@ -30,7 +30,15 @@ export default function TaxCategoriesPage() {
 
   return (
     <AppShell>
-      <Header title={t.taxRates} backTo={ROUTES.SETTINGS_GST} />
+      <Header
+        title={t.taxRates}
+        backTo={ROUTES.SETTINGS_GST}
+        actions={
+          <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label={t.createNewTaxRate}>
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
 
       <PageContainer>
         <div className="tax-cat-page space-y-6">
@@ -66,11 +74,7 @@ export default function TaxCategoriesPage() {
         </div>
       </PageContainer>
 
-      {status === 'success' && categories.length > 0 && (
-        <Button variant="none" type="button" className="fab" onClick={() => navigate(ROUTES.SETTINGS_TAX_RATE_NEW)} aria-label={t.createNewTaxRate}>
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
+
     </AppShell>
   )
 }

@@ -50,6 +50,8 @@
  * List bar: full-width hairline separator below.
  * Scrollable horizontally on mobile (no fade mask — full readability). */
 .ui-tabs-list--line {
+  display: flex;
+  align-items: stretch;
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--color-gray-200);
@@ -74,12 +76,13 @@
   gap: var(--space-1-5);
 }
 
-/* Full-width / Grid distribution */
+/* Full-width / Equal distribution */
 .ui-tabs-list--full-width {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+  display: flex;
   width: 100%;
+}
+.ui-tabs-list--full-width .ui-tabs-trigger {
+  flex: 1 1 0px;
 }
 
 /* ─── TabsTrigger ──────────────────────────────────────────────────────── */
@@ -175,7 +178,12 @@
 
 /* Line trigger — shadcn line tab style */
 .ui-tabs-list--line .ui-tabs-trigger {
-  padding: var(--space-2-5) var(--space-4);
+  flex: 1 1 0px;
+  min-width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2-5) var(--space-3);
   min-height: 44px;
   border-bottom: 2px solid transparent;
   border-radius: 0;
@@ -184,6 +192,7 @@
   font-size: var(--fs-sm);
   font-weight: 500;
   letter-spacing: -0.01em;
+  text-align: center;
   transition: color var(--duration-fast) var(--ease-default),
     border-color var(--duration-fast) var(--ease-default);
 }

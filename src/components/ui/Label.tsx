@@ -12,19 +12,19 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const labelVariants = cva(
-  'text-xs font-bold uppercase tracking-wider select-none leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 transition-colors',
+  'text-sm font-medium select-none leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 transition-colors',
   {
     variants: {
       variant: {
-        default: 'text-text-secondary',
+        default: 'text-text-primary',
         muted: 'text-text-muted',
         primary: 'text-primary-600',
         error: 'text-error-600',
       },
       size: {
-        sm: 'text-[10px] tracking-widest',
-        default: 'text-xs tracking-wider',
-        lg: 'text-sm font-semibold normal-case tracking-normal',
+        sm: 'text-xs',
+        default: 'text-sm font-medium normal-case tracking-normal',
+        lg: 'text-base font-semibold normal-case tracking-normal',
       },
     },
     defaultVariants: {

@@ -50,26 +50,15 @@
 
 .side-nav-identity {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   min-width: 0;
 }
 
-.side-nav-greeting {
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  color: var(--color-gray-500);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.side-nav-user {
-  font-size: var(--fs-lg);
+.side-nav-title {
+  font-size: var(--fs-xl);
   font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--color-gray-900);
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .side-nav-header-actions {
@@ -176,39 +165,69 @@
 .side-nav-section-title {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-1-5);
   font-size: var(--fs-xs);
+  line-height: 1.25;
   font-weight: 600;
-  color: var(--color-gray-500);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 0 var(--space-1);
+  color: var(--text-muted, var(--color-gray-500));
   margin: 0;
+  padding: 0 var(--space-1);
 }
 
-/* Phase 6 #138 PR2 — TenantChip row (sits between header + body, full-bleed) */
-.side-nav-tenant-chip-row {
-  padding: 0 var(--space-4) var(--space-2);
+.side-nav-section-title span[aria-hidden="true"] {
+  font-size: var(--fs-sm);
+  line-height: 1;
 }
 
-/* Business switcher — accordion (collapsed = active business summary only) */
+.side-nav-business-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Business switcher — accordion (collapsed = active business card only) */
 .side-nav-business-accordion-item {
   border: 1px solid var(--color-gray-200);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   overflow: hidden;
+  background: var(--color-gray-0);
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(0, 0, 0, 0.05));
 }
 
 .side-nav-business-accordion-trigger {
-  padding: var(--space-2) var(--space-3) !important;
+  padding: var(--space-2-5) var(--space-3) !important;
   border-radius: 0 !important;
+  text-decoration: none !important;
 }
 
-.side-nav-business-summary {
+.side-nav-business-accordion-trigger:hover {
+  text-decoration: none !important;
+}
+
+.side-nav-business-trigger-card {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   flex: 1;
   min-width: 0;
+  text-align: left;
+}
+
+.side-nav-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.side-nav-status-tag--danger {
+  color: var(--color-error-600);
+}
+
+.side-nav-status-tag--warning {
+  color: var(--color-warning-600);
 }
 
 .side-nav-business-accordion-content {

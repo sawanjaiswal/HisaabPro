@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
-import { createProduct, updateProduct } from './product.service'
+import { createProduct, updateProduct, adjustStock } from './product.service'
 import { uploadProductImages } from './product-images.service'
 import { validateBarcode } from './barcode.utils'
 import { useConflictReconcile, isConflictError } from '@/features/collaboration/useConflictReconcile'
@@ -110,8 +110,14 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
       next.purchasePrice = 'Purchase price cannot be negative'
     }
 
-    if (form.openingStock < 0) {
+    // In create mode: opening stock cannot be negative
+    if (!isEditMode && form.openingStock < 0) {
       next.openingStock = 'Opening stock cannot be negative'
+    }
+
+    // In edit mode: if the user explicitly enters a negative target stock, flag it
+    if (isEditMode && form.openingStock < 0 && form.openingStock !== (initialData?.openingStock ?? 0)) {
+      next.openingStock = 'Stock quantity cannot be negative'
     }
 
     if (form.minStockLevel < 0) {
@@ -132,19 +138,43 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
 
     setErrors(next)
     return Object.keys(next).length === 0
-  }, [form])
+  }, [form, isEditMode, initialData])
 
   // Submit mutation
   const submitMutation = useMutation({
     mutationFn: async (versionOverride?: number) => {
       if (isEditMode && editId) {
-        // openingStock and autoGenerateSku cannot be changed after creation
+        // openingStock and autoGenerateSku cannot be changed directly via PUT
         const { openingStock: _os, autoGenerateSku: _ag, pendingImages, ...editPayload } = form
         await updateProduct(editId, editPayload, undefined, versionOverride ?? version)
+
         // Upload any new images immediately in edit mode
         if (pendingImages && pendingImages.length > 0) {
           await uploadProductImages(editId, pendingImages)
         }
+
+        // Adjust stock if changed during product edit
+        const initialStock = initialData?.openingStock ?? 0
+        const targetStock = form.openingStock ?? 0
+        const stockDiff = targetStock - initialStock
+        if (stockDiff !== 0) {
+          if (stockDiff > 0) {
+            await adjustStock(editId, {
+              type: 'ADJUSTMENT_IN',
+              quantity: stockDiff,
+              reason: 'AUDIT',
+              notes: 'Stock updated via Edit Product',
+            })
+          } else {
+            await adjustStock(editId, {
+              type: 'ADJUSTMENT_OUT',
+              quantity: Math.abs(stockDiff),
+              reason: 'AUDIT',
+              notes: 'Stock updated via Edit Product',
+            })
+          }
+        }
+
         return { mode: 'edit' as const, editId }
       }
       // Form already stores prices in paise (ProductFormBasic multiplies by 100 on input)

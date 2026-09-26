@@ -37,10 +37,9 @@ export function PartyFormPriceList({ value, isEditMode = false, onUpdate }: Part
 
   return (
     <div className="input-group">
-      <label htmlFor="party-price-list" className="input-label">
-        {t.priceListLabel}
-      </label>
       <Select
+        id="party-price-list"
+        label={t.priceListLabel}
         value={value ?? NONE}
         onValueChange={handleChange}
         ariaLabel={t.priceListLabel}

@@ -9,7 +9,6 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import { IndianRupee } from 'lucide-react'
 import { queryKeys } from '@/lib/query-keys'
 import { getParty } from '@/features/parties/party.service'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -49,7 +48,6 @@ export function PartyBalanceChip({ partyId }: PartyBalanceChipProps) {
   return (
     <div className="party-balance-row">
       <span className={`party-balance-chip party-balance-chip--${tone}`}>
-        <IndianRupee size={12} aria-hidden="true" />
         <span className="tabular-nums">{label}</span>
       </span>
       {party.gstin && (

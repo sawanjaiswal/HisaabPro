@@ -4,34 +4,50 @@
 .frequent-chips {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
+  gap: 6px;
+  margin-top: 4px;
 }
 
 .frequent-chips-label {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   font-size: var(--fs-2xs);
-  font-weight: 600;
-  color: var(--color-text-secondary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-gray-500);
 }
 
 .frequent-chips-row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  align-items: center;
+  gap: 8px;
 }
 
-/* Compact pill that still meets the 40px tap floor. Layered on <Button
-   variant="outline">, so border/hover/focus come from the primitive. */
+/* Compact modern chip that meets touch targets */
 .frequent-chip {
-  gap: 4px;
-  min-height: 40px;
-  max-width: 100%;
-  padding: 0 var(--space-3);
-  font-size: var(--fs-2xs);
-  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-surface);
+  color: var(--color-gray-800);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all var(--duration-fast) var(--ease-default);
+  cursor: pointer;
+}
+
+.frequent-chip:hover {
+  background: var(--color-gray-50);
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-600);
 }
 
 .frequent-chip-name {
@@ -40,22 +56,29 @@
   white-space: nowrap;
   max-width: 140px;
   font-weight: 600;
-  color: var(--color-text-primary);
 }
 
 .frequent-chip-price {
   font-weight: 600;
-  color: var(--color-primary-600);
+  color: var(--color-gray-500);
+  font-size: var(--fs-2xs);
 }
 
-/* Once on the invoice the chip switches from price to a running "×N" count and
-   picks up an emerald wash so the seller sees at a glance what's already added. */
 .frequent-chip--added {
   background: var(--color-primary-50);
-  border-color: var(--color-primary-600);
+  border-color: var(--color-primary-200);
+  color: var(--color-primary-700);
+}
+
+.frequent-chip--added .frequent-chip-name {
+  color: var(--color-primary-800);
 }
 
 .frequent-chip-qty {
   font-weight: 700;
   color: var(--color-primary-700);
+  background: var(--color-primary-100);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-2xs);
 }

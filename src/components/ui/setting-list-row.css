@@ -74,6 +74,8 @@
   height: 36px;
   border-radius: var(--radius-md);
   flex-shrink: 0;
+  background-color: var(--color-gray-100);
+  color: var(--text-primary);
 }
 
 .setting-row-icon--primary {
@@ -87,8 +89,8 @@
 }
 
 .setting-row-icon--warning {
-  background-color: var(--color-warning-50);
-  color: var(--color-warning-600);
+  background-color: var(--color-gray-100);
+  color: var(--text-secondary);
 }
 
 /* A danger row tints its label too — the mockup's red Logout row. */

@@ -16,18 +16,18 @@ export const THEME_VARIANT_OPTIONS: ThemeVariantOption[] = [
     id: 'classic',
     labelKey: 'themeVariantClassic',
     descKey: 'themeVariantClassicDesc',
-    swatch: ['var(--color-primary-500)', 'var(--color-secondary-300)', '#F8F7F4'],
+    swatch: ['var(--color-primary-500)', 'var(--color-secondary-300)', '#F8FAFC'],
   },
   {
     id: 'modern',
     labelKey: 'themeVariantModern',
     descKey: 'themeVariantModernDesc',
-    swatch: ['#1E6FB8', '#38E0C4', '#F8F7F4'],
+    swatch: ['#1E6FB8', '#38E0C4', '#F8FAFC'],
   },
   {
     id: 'minimal',
     labelKey: 'themeVariantMinimal',
     descKey: 'themeVariantMinimalDesc',
-    swatch: ['#3A5A63', '#B8C275', '#F8F7F4'],
+    swatch: ['#3A5A63', '#B8C275', '#F8FAFC'],
   },
 ]

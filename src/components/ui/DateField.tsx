@@ -58,7 +58,7 @@ export const DateField = forwardRef<HTMLInputElement, DateFieldProps>(
     return (
       <div className={cn('w-full space-y-1.5', className)}>
         {label && (
-          <div className="flex items-center justify-between mb-1.5">
+          <div className="flex items-center justify-between">
             <label
               htmlFor={inputId}
               className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-primary)] select-none"

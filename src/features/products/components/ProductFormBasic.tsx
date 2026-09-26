@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Input } from '@/components/ui/Input'
 import { CurrencyInput } from '@/components/ui/CurrencyInput'
 import { Select } from '@/components/ui/Select'
-import { Button } from '@/components/ui/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatName } from '@/lib/format'
 import type { ProductFormData, Category, Unit } from '../product.types'
@@ -88,26 +88,20 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
       <div className="input-group">
         <div className="flex items-center justify-between gap-3 mb-2">
           <span className="input-label mb-0" id="sku-mode-label">{t.sku}</span>
-          <div className="pill-tabs mb-0 py-0" role="group" aria-labelledby="sku-mode-label">
-            <Button variant="none"
-              type="button"
-              className={`pill-tab${form.autoGenerateSku ? ' active' : ''}`}
-              onClick={() => onUpdate('autoGenerateSku', true)}
-              aria-pressed={form.autoGenerateSku}
-              aria-label={t.autoGenerateSku}
-            >
-              {t.autoGenerate}
-            </Button>
-            <Button variant="none"
-              type="button"
-              className={`pill-tab${!form.autoGenerateSku ? ' active' : ''}`}
-              onClick={() => onUpdate('autoGenerateSku', false)}
-              aria-pressed={!form.autoGenerateSku}
-              aria-label={t.enterSkuManually}
-            >
-              {t.manualEntry}
-            </Button>
-          </div>
+          <Tabs
+            value={form.autoGenerateSku ? 'auto' : 'manual'}
+            onValueChange={(val) => onUpdate('autoGenerateSku', val === 'auto')}
+            className="mb-0 py-0"
+          >
+            <TabsList variant="segmented" aria-labelledby="sku-mode-label">
+              <TabsTrigger value="auto" aria-label={t.autoGenerateSku}>
+                {t.autoGenerate}
+              </TabsTrigger>
+              <TabsTrigger value="manual" aria-label={t.enterSkuManually}>
+                {t.manualEntry}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
         {!form.autoGenerateSku && (
           <Input
@@ -124,16 +118,19 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
 
       {/* Fix 1 & 6 — Category: searchable options= API + skeleton loading state */}
       <div className="input-group">
-        <label htmlFor="product-category" className="input-label">{t.category}</label>
         {categories.length === 0 ? (
-          <div
-            className="h-11 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-gray-200)]"
-            role="status"
-            aria-label={t.loading}
-          />
+          <div>
+            <label className="input-label">{t.category}</label>
+            <div
+              className="h-11 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-gray-200)]"
+              role="status"
+              aria-label={t.loading}
+            />
+          </div>
         ) : (
           <Select
             id="product-category"
+            label={t.category}
             value={form.categoryId || undefined}
             onValueChange={(v) => onUpdate('categoryId', v)}
             options={categoryOptions}
@@ -146,16 +143,19 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
 
       {/* Fix 2 & 6 — Unit: searchable + onCreateOption inline CTA + skeleton */}
       <div className="input-group">
-        <label htmlFor="product-unit" className="input-label">{t.unit}</label>
         {units.length === 0 && !form.unitId ? (
-          <div
-            className="h-11 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-gray-200)]"
-            role="status"
-            aria-label={t.loading}
-          />
+          <div>
+            <label className="input-label">{t.unit}</label>
+            <div
+              className="h-11 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-gray-200)]"
+              role="status"
+              aria-label={t.loading}
+            />
+          </div>
         ) : (
           <Select
             id="product-unit"
+            label={t.unit}
             value={form.unitId || undefined}
             onValueChange={(v) => onUpdate('unitId', v)}
             options={unitOptions}

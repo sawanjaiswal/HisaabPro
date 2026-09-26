@@ -69,7 +69,15 @@ export default function ChequesPage() {
 
   return (
     <AppShell>
-      <Header title={t.cheques} backTo={ROUTES.DASHBOARD} />
+      <Header
+        title={t.cheques}
+        backTo={ROUTES.DASHBOARD}
+        actions={
+          <Button variant="ghost" size="sm" onClick={() => setDrawerOpen(true)} aria-label={t.addCheque}>
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
       <PageContainer variant="list" className="space-y-6">
         <div className="cheque-filter-pills stagger-filters" role="group" aria-label={t.filterByStatusGroup}>
           {CHEQUE_FILTER_OPTIONS.map((opt) => (

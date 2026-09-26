@@ -34,6 +34,10 @@
      white bg, radius-xl top corners, inset shadow and `position: relative`. */
   margin-top: calc(-1 * var(--space-5));
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: calc(100dvh - 120px);
 }
 
 /* Row 1 — back · identity · action icons */

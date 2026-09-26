@@ -138,7 +138,7 @@ describe('usePaymentForm', () => {
 
     expect(mockCreatePayment).toHaveBeenCalledTimes(1)
     expect(mockToast.success).toHaveBeenCalledWith('Payment recorded')
-    expect(mockNavigate).toHaveBeenCalledWith('/payments')
+    expect(mockNavigate).toHaveBeenCalledWith('/parties/party-1', { replace: true, state: undefined })
   })
 
   // 6. handleSubmit — failure shows error toast

@@ -159,7 +159,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center justify-between">
             <label
               htmlFor={inputId}
               className="block text-sm font-medium text-[var(--color-text-primary)] select-none"

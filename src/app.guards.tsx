@@ -17,7 +17,7 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useEdgeSwipeBack } from '@/hooks/useEdgeSwipeBack'
 import { useHardwareBackButton } from '@/hooks/useHardwareBackButton'
 import { hasCachedSession } from '@/lib/auth'
-import { CalculatorOverlay, FeedbackWidget, Login, Landing, AdminCoupons } from '@/app.routes'
+import { CalculatorOverlay, FeedbackWidget, WhatsAppFab, Login, Landing, AdminCoupons } from '@/app.routes'
 
 export function PageRoute({ children, fallback }: { children: ReactNode; fallback?: ReactNode }) {
   return (
@@ -126,3 +126,17 @@ export function FloatingWidgets() {
     </ErrorBoundary>
   )
 }
+
+/** WhatsApp support FAB — visible on every authenticated screen */
+export function WhatsAppSupportFab() {
+  const { isAuthenticated } = useAuth()
+  const { pathname } = useLocation()
+  // Hide on /pos (fullscreen mode) and auth/onboarding pages
+  if (!isAuthenticated || pathname === ROUTES.ONBOARDING || pathname.startsWith('/login') || pathname.startsWith('/register') || pathname.includes('/pos')) return null
+  return (
+    <ErrorBoundary fallback={null}>
+      <Suspense fallback={null}><WhatsAppFab /></Suspense>
+    </ErrorBoundary>
+  )
+}
+

@@ -4,12 +4,12 @@
  */
 
 import { useState, useCallback, useMemo, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
 import { ApiError } from '@/lib/api'
+import { useFlowEngine } from '@/lib/navigation'
 import { useConflictReconcile, isConflictError } from '@/features/collaboration/useConflictReconcile'
 import { createDocument, updateDocument } from './invoice.service'
 import { calculateInvoiceTotals } from './invoice-totals.utils'
@@ -35,7 +35,7 @@ export function useInvoiceForm(
   const { editId, initialData, version } = options
   const isEditMode = Boolean(editId)
 
-  const navigate = useNavigate()
+  const { completeFlow } = useFlowEngine()
   const toast = useToast()
   const queryClient = useQueryClient()
   const conflictReconcile = useConflictReconcile()
@@ -123,15 +123,15 @@ export function useInvoiceForm(
       const createPayload = form.payment.amountReceived > 0
         ? { ...payload, payment: form.payment }
         : payload
-      await createDocument(createPayload)
-      return { mode: 'create' as const, targetStatus }
+      const created = await createDocument(createPayload)
+      return { mode: 'create' as const, targetStatus, id: created?.id }
     },
     onSuccess: (result) => {
       setStockShortageItems([])
       clearBatchError()
 
       // BAT-05: WARN_ONLY — response may include expiry warnings
-      const raw = result as { mode: string; targetStatus: string; editId?: string; warnings?: { type: string }[] }
+      const raw = result as { mode: string; targetStatus: string; editId?: string; id?: string; warnings?: { type: string }[] }
       if (raw.warnings?.some((w) => w.type === 'EXPIRED_BATCH')) {
         toast.warning('Sale recorded with expired batch — review at /alerts')
       }
@@ -139,10 +139,10 @@ export function useInvoiceForm(
       queryClient.invalidateQueries({ queryKey: queryKeys.invoices.all() })
       if (raw.mode === 'edit' && raw.editId) {
         toast.success('Invoice updated')
-        navigate(`/invoices/${raw.editId}`)
+        completeFlow({ terminalPath: `/invoices/${raw.editId}` })
       } else if (raw.targetStatus === 'SAVED') {
         toast.success('Invoice saved')
-        navigate(ROUTES.INVOICES)
+        completeFlow({ terminalPath: raw.id ? `/invoices/${raw.id}` : ROUTES.INVOICES })
       } else {
         toast.success('Draft saved')
       }

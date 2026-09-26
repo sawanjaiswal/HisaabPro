@@ -226,7 +226,7 @@ describe('useInvoiceForm', () => {
 
     expect(mockCreateDocument).toHaveBeenCalledTimes(1)
     expect(mockToast.success).toHaveBeenCalledWith('Invoice saved')
-    expect(mockNavigate).toHaveBeenCalledWith('/invoices')
+    expect(mockNavigate).toHaveBeenCalledWith('/invoices/inv-1', { replace: true, state: undefined })
   })
 
   it('handleSubmit shows error toast on failure', async () => {

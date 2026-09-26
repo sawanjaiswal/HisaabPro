@@ -88,7 +88,7 @@ describe('usePartyForm — saving while offline', () => {
     expect(mockToast.error, 'a queued save is not a failure').not.toHaveBeenCalled()
     expect(mockToast.success).toHaveBeenCalledTimes(1)
     expect(String(mockToast.success.mock.calls[0]?.[0])).toMatch(/will sync when online/i)
-    expect(mockNavigate).toHaveBeenCalledWith('/parties')
+    expect(mockNavigate).toHaveBeenCalledWith('/parties', { replace: true, state: undefined })
   })
 
   it('still reports a plain success when the save reached the server', async () => {
@@ -105,6 +105,6 @@ describe('usePartyForm — saving while offline', () => {
     })
 
     expect(mockToast.success).toHaveBeenCalledWith('Raju Traders added successfully')
-    expect(mockNavigate).toHaveBeenCalledWith('/parties')
+    expect(mockNavigate).toHaveBeenCalledWith('/parties/new-id', { replace: true, state: undefined })
   })
 })

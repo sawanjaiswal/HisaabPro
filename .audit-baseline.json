@@ -175,6 +175,84 @@
       "context": "ctx.fillStyle = '#475569';"
     },
     {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 31,
+      "match": "#ffffff",
+      "context": "background: #ffffff;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 76,
+      "match": "#64748b",
+      "context": "color: #64748b;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 89,
+      "match": "#1e293b",
+      "context": "color: #1e293b;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 103,
+      "match": "#026F39",
+      "context": "color: #026F39;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 117,
+      "match": "#026F39",
+      "context": "background: #026F39;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 131,
+      "match": "#026F39",
+      "context": "color: #026F39;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 149,
+      "match": "#038344",
+      "context": "background: linear-gradient(135deg, #038344 0%, #026F39 60%, #01582c 100%);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 149,
+      "match": "#026F39",
+      "context": "background: linear-gradient(135deg, #038344 0%, #026F39 60%, #01582c 100%);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 149,
+      "match": "#01582c",
+      "context": "background: linear-gradient(135deg, #038344 0%, #026F39 60%, #01582c 100%);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 150,
+      "match": "#ffffff",
+      "context": "color: #ffffff;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 152,
+      "match": "#ffffff",
+      "context": "box-shadow: 0 10px 24px -4px rgba(2, 111, 57, 0.44), 0 0 0 4px #ffffff, inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 172,
+      "match": "#ffffff",
+      "context": "box-shadow: 0 12px 28px -4px rgba(2, 111, 57, 0.52), 0 0 0 4px #ffffff, inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 177,
+      "match": "#ffffff",
+      "context": "box-shadow: 0 6px 16px -2px rgba(2, 111, 57, 0.4), 0 0 0 4px #ffffff;"
+    },
+    {
       "file": "src/components/layout/SideNav.tsx",
       "line": 86,
       "match": "#138",
@@ -1636,13 +1714,13 @@
       "file": "src/features/invoices/components/InvoiceHeaderMeta.tsx",
       "line": 53,
       "match": "#F8F9FA",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[42px] focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
+      "context": "className=\"w-full bg-[#F8F9FA] !border-none !border-0 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[42px] focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
     },
     {
       "file": "src/features/invoices/components/InvoiceHeaderMeta.tsx",
       "line": 53,
       "match": "#026F39",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[42px] focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
+      "context": "className=\"w-full bg-[#F8F9FA] !border-none !border-0 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[42px] focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
     },
     {
       "file": "src/features/invoices/components/InvoiceItemsSection.tsx",
@@ -2552,12 +2630,6 @@
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
-      "line": 148,
-      "match": "#F1F3F5",
-      "context": "className=\"px-4 py-1.5 rounded-full text-xs font-semibold bg-[#F1F3F5] hover:bg-slate-200 text-slate-700 transition-all active:scale-95 cursor-pointer border-0\""
-    },
-    {
-      "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 180,
       "match": "#E8F5E9",
       "context": "? 'bg-[#E8F5E9] border-2 border-[#026F39]'"
@@ -2567,12 +2639,6 @@
       "line": 180,
       "match": "#026F39",
       "context": "? 'bg-[#E8F5E9] border-2 border-[#026F39]'"
-    },
-    {
-      "file": "src/features/payments/components/PaymentDetailsSection.tsx",
-      "line": 181,
-      "match": "#F8F9FA",
-      "context": ": 'bg-[#F8F9FA] border-0 hover:bg-slate-100'"
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
@@ -2594,12 +2660,6 @@
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
-      "line": 220,
-      "match": "#F8F9FA",
-      "context": ": 'bg-[#F8F9FA] border-0 hover:bg-slate-100'"
-    },
-    {
-      "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 229,
       "match": "#026F39",
       "context": "isSelected ? 'bg-[#026F39] text-white' : 'bg-slate-200/80 text-slate-600'"
@@ -2613,14 +2673,8 @@
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 268,
-      "match": "#F8F9FA",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
-    },
-    {
-      "file": "src/features/payments/components/PaymentDetailsSection.tsx",
-      "line": 268,
       "match": "#026F39",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
+      "context": "className=\"w-full bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
@@ -2631,14 +2685,8 @@
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 288,
-      "match": "#F8F9FA",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-4 py-3 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
-    },
-    {
-      "file": "src/features/payments/components/PaymentDetailsSection.tsx",
-      "line": 288,
       "match": "#026F39",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-4 py-3 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
+      "context": "className=\"w-full bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
@@ -2649,14 +2697,8 @@
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 309,
-      "match": "#F8F9FA",
-      "context": "className=\"w-full text-sm bg-[#F8F9FA] border-0 rounded-xl p-3.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900\""
-    },
-    {
-      "file": "src/features/payments/components/PaymentDetailsSection.tsx",
-      "line": 309,
       "match": "#026F39",
-      "context": "className=\"w-full text-sm bg-[#F8F9FA] border-0 rounded-xl p-3.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900\""
+      "context": "className=\"w-full text-sm bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900 placeholder:text-slate-400\""
     },
     {
       "file": "src/features/payments/components/PaymentFormSections.tsx",
@@ -6720,19 +6762,19 @@
       "file": "src/features/invoices/components/InvoiceHeaderMeta.tsx",
       "line": 53,
       "match": "bg-[#F8F9FA]",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[42px] focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
+      "context": "className=\"w-full bg-[#F8F9FA] !border-none !border-0 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[42px] focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
     },
     {
       "file": "src/features/invoices/components/InvoiceHeaderMeta.tsx",
       "line": 53,
       "match": "min-h-[42px]",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[42px] focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
+      "context": "className=\"w-full bg-[#F8F9FA] !border-none !border-0 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[42px] focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
     },
     {
       "file": "src/features/invoices/components/InvoiceHeaderMeta.tsx",
       "line": 53,
       "match": "ring-[#026F39]",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[42px] focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
+      "context": "className=\"w-full bg-[#F8F9FA] !border-none !border-0 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[42px] focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
     },
     {
       "file": "src/features/invoices/components/InvoiceItemsSection.tsx",
@@ -7041,6 +7083,12 @@
       "context": "<Heading level={1} className=\"flex-1 text-xl font-bold text-[var(--text-primary)] m-0\">{t.marketingTemplates}</Heading>"
     },
     {
+      "file": "src/features/parties/ledger/components/LedgerEmpty.tsx",
+      "line": 16,
+      "match": "min-h-[320px]",
+      "context": "<div className=\"ledger-empty-wrap flex-1 flex flex-col items-center justify-center my-auto min-h-[320px] py-8\">"
+    },
+    {
       "file": "src/features/payments/RecordPaymentPage.tsx",
       "line": 53,
       "match": "bg-[#024724]",
@@ -7066,15 +7114,15 @@
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
-      "line": 148,
-      "match": "bg-[#F1F3F5]",
-      "context": "className=\"px-4 py-1.5 rounded-full text-xs font-semibold bg-[#F1F3F5] hover:bg-slate-200 text-slate-700 transition-all active:scale-95 cursor-pointer border-0\""
+      "line": 178,
+      "match": "rounded-[8px]",
+      "context": "className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-[8px] transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${"
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 178,
       "match": "min-h-[72px]",
-      "context": "className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-2xl transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${"
+      "context": "className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-[8px] transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${"
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
@@ -7087,12 +7135,6 @@
       "line": 180,
       "match": "border-[#026F39]",
       "context": "? 'bg-[#E8F5E9] border-2 border-[#026F39]'"
-    },
-    {
-      "file": "src/features/payments/components/PaymentDetailsSection.tsx",
-      "line": 181,
-      "match": "bg-[#F8F9FA]",
-      "context": ": 'bg-[#F8F9FA] border-0 hover:bg-slate-100'"
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
@@ -7109,8 +7151,14 @@
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 217,
+      "match": "rounded-[8px]",
+      "context": "className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-[8px] transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${"
+    },
+    {
+      "file": "src/features/payments/components/PaymentDetailsSection.tsx",
+      "line": 217,
       "match": "min-h-[72px]",
-      "context": "className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-2xl transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${"
+      "context": "className={`flex flex-col items-center justify-center gap-1.5 p-2 rounded-[8px] transition-all text-center min-h-[72px] cursor-pointer active:scale-95 ${"
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
@@ -7123,12 +7171,6 @@
       "line": 219,
       "match": "border-[#026F39]",
       "context": "? 'bg-[#E8F5E9] border-2 border-[#026F39]'"
-    },
-    {
-      "file": "src/features/payments/components/PaymentDetailsSection.tsx",
-      "line": 220,
-      "match": "bg-[#F8F9FA]",
-      "context": ": 'bg-[#F8F9FA] border-0 hover:bg-slate-100'"
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
@@ -7151,14 +7193,14 @@
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 268,
-      "match": "bg-[#F8F9FA]",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
+      "match": "rounded-[8px]",
+      "context": "className=\"w-full bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 268,
       "match": "ring-[#026F39]",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
+      "context": "className=\"w-full bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
@@ -7169,14 +7211,14 @@
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 288,
-      "match": "bg-[#F8F9FA]",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-4 py-3 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
+      "match": "rounded-[8px]",
+      "context": "className=\"w-full bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 288,
       "match": "ring-[#026F39]",
-      "context": "className=\"w-full bg-[#F8F9FA] border-0 rounded-xl px-4 py-3 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
+      "context": "className=\"w-full bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 text-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20\""
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
@@ -7187,14 +7229,14 @@
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 309,
-      "match": "bg-[#F8F9FA]",
-      "context": "className=\"w-full text-sm bg-[#F8F9FA] border-0 rounded-xl p-3.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900\""
+      "match": "rounded-[8px]",
+      "context": "className=\"w-full text-sm bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900 placeholder:text-slate-400\""
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
       "line": 309,
       "match": "ring-[#026F39]",
-      "context": "className=\"w-full text-sm bg-[#F8F9FA] border-0 rounded-xl p-3.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900\""
+      "context": "className=\"w-full text-sm bg-slate-100/90 hover:bg-slate-200/80 border-0 rounded-[8px] px-3.5 py-2.5 focus:bg-white focus:ring-2 focus:ring-[#026F39]/20 resize-none transition-all text-slate-900 placeholder:text-slate-400\""
     },
     {
       "file": "src/features/payments/components/PaymentFormSections.tsx",

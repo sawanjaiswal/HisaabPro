@@ -10,11 +10,11 @@
  */
 
 import { useState, useCallback, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { queryKeys } from '@/lib/query-keys'
 import { ROUTES } from '@/config/routes.config'
+import { useFlowEngine } from '@/lib/navigation'
 import { createPayment, updatePayment } from './payment.service'
 import { validatePaymentForm } from './payment.utils'
 import { buildInitialForm, buildFormFromPayment, buildApiPayload } from './paymentForm.helpers'
@@ -66,7 +66,7 @@ export function usePaymentForm({
   defaultType = 'PAYMENT_IN',
   defaultPartyId = '',
 }: UsePaymentFormOptions = {}): UsePaymentFormReturn {
-  const navigate = useNavigate()
+  const { completeFlow } = useFlowEngine()
   const toast = useToast()
   const queryClient = useQueryClient()
   const conflictReconcile = useConflictReconcile()
@@ -110,8 +110,8 @@ export function usePaymentForm({
         await updatePayment(payment.id, apiPayload as unknown as PaymentFormData, versionOverride ?? payment.version)
         return { mode: 'edit' as const, paymentId: payment.id }
       }
-      await createPayment(apiPayload as unknown as PaymentFormData)
-      return { mode: 'create' as const }
+      const created = await createPayment(apiPayload as unknown as PaymentFormData)
+      return { mode: 'create' as const, paymentId: created?.id }
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() })
@@ -120,10 +120,12 @@ export function usePaymentForm({
 
       if (result.mode === 'edit') {
         toast.success('Payment updated')
-        navigate(ROUTES.PAYMENT_DETAIL.replace(':id', result.paymentId))
+        completeFlow({ terminalPath: ROUTES.PAYMENT_DETAIL.replace(':id', result.paymentId) })
       } else {
         toast.success('Payment recorded')
-        navigate(ROUTES.PAYMENTS)
+        completeFlow({
+          terminalPath: form.partyId ? `/parties/${form.partyId}` : (result.paymentId ? ROUTES.PAYMENT_DETAIL.replace(':id', result.paymentId) : ROUTES.PAYMENTS),
+        })
       }
     },
     onError: (err) => {

@@ -1,7 +1,7 @@
 /** Party Detail Page — shows full party info with tabs + quick actions */
 
 import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { Users } from 'lucide-react'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -14,6 +14,7 @@ import { PartyDetailSkeleton } from './components/PartyDetailSkeleton'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/hooks/useToast'
 import { useQueryClient } from '@tanstack/react-query'
+import { useFlowEngine } from '@/lib/navigation'
 import { usePartyDetail } from './usePartyDetail'
 import { deleteParty } from './party.service'
 import { reconcilePartyDeleted } from './party-cache'
@@ -37,7 +38,7 @@ import type { PartyDetailTab } from './usePartyDetailTabs'
 
 export default function PartyDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
+  const { goBack, completeFlow, navigateWithContext } = useFlowEngine()
   const toast = useToast()
   const queryClient = useQueryClient()
   const { t } = useLanguage()
@@ -53,9 +54,9 @@ export default function PartyDetailPage() {
   const [inviteOpen, setInviteOpen] = useState(false)
   const shareLedger = useShareLedger(partyId)
 
-  const handleEdit = () => navigate(`/parties/${partyId}/edit`)
-  const handleReceivePayment = () => navigate(`/payments/new?partyId=${partyId}`)
-  const handleNewInvoice = () => navigate(`/invoices/new?partyId=${partyId}`)
+  const handleEdit = () => navigateWithContext(`/parties/${partyId}/edit`)
+  const handleReceivePayment = () => navigateWithContext(`/payments/new?partyId=${partyId}`)
+  const handleNewInvoice = () => navigateWithContext(`/invoices/new?partyId=${partyId}`)
 
   const handleDelete = () => {
     setIsDeleting(true)
@@ -63,7 +64,7 @@ export default function PartyDetailPage() {
       .then(() => {
         reconcilePartyDeleted(queryClient, partyId)
         toast.success(t.partyMovedToTrash)
-        navigate(ROUTES.PARTIES)
+        completeFlow({ terminalPath: ROUTES.PARTIES })
       })
       .catch((err: unknown) => {
         const message = err instanceof Error ? err.message : t.failedDeleteParty
@@ -79,9 +80,9 @@ export default function PartyDetailPage() {
         {party ? (
           <PartyDetailHeader
             party={party}
-            onBack={() => navigate(ROUTES.PARTIES)}
+            onBack={() => goBack({ fallbackRoute: ROUTES.PARTIES })}
             onEdit={handleEdit}
-            onInvoice={() => navigate(`/invoices/new?partyId=${partyId}`)}
+            onInvoice={() => navigateWithContext(`/invoices/new?partyId=${partyId}`)}
             onShare={() => setShareOpen(true)}
             onInvite={() => setInviteOpen(true)}
             onStatement={() => setStmtOpen(true)}
@@ -115,7 +116,7 @@ export default function PartyDetailPage() {
               action={
                 <Button
                   variant="primary" size="md"
-                  onClick={() => navigate('/parties')}
+                  onClick={() => goBack({ fallbackRoute: ROUTES.PARTIES })}
                   aria-label={t.backToPartiesLabel}
                 >
                   {t.backToParties}
@@ -125,7 +126,7 @@ export default function PartyDetailPage() {
           )}
 
           {status === 'success' && party && (
-            <div className="stagger-enter space-y-4">
+            <div className="stagger-enter space-y-4 flex-1 flex flex-col min-h-0">
               <div role="status" aria-live="polite" className="sr-only">
                 {party.name} {t.detailsLoaded}
               </div>
@@ -159,8 +160,9 @@ export default function PartyDetailPage() {
               <Tabs
                 value={activeTab}
                 onValueChange={(val) => setActiveTab(val as PartyDetailTab)}
+                className="flex-1 flex flex-col min-h-0"
               >
-                <TabsList variant="segmented" fullWidth aria-label={t.partyDetailSections}>
+                <TabsList variant="line" aria-label={t.partyDetailSections}>
                   {TABS.map((tab) => (
                     <TabsTrigger
                       key={tab.id}
@@ -172,7 +174,7 @@ export default function PartyDetailPage() {
                   ))}
                 </TabsList>
 
-                <TabsContent value="ledger">
+                <TabsContent value="ledger" className="flex-1 flex flex-col min-h-0">
                   <PartyLedgerTab
                     partyId={partyId}
                     partyName={party.name}
@@ -180,7 +182,7 @@ export default function PartyDetailPage() {
                   />
                 </TabsContent>
 
-                <TabsContent value="invoices">
+                <TabsContent value="invoices" className="flex-1 flex flex-col min-h-0">
                   <PartyLedgerTab
                     partyId={partyId}
                     partyName={party.name}
@@ -189,7 +191,7 @@ export default function PartyDetailPage() {
                   />
                 </TabsContent>
 
-                <TabsContent value="payments">
+                <TabsContent value="payments" className="flex-1 flex flex-col min-h-0">
                   <PartyLedgerTab
                     partyId={partyId}
                     partyName={party.name}
@@ -198,7 +200,7 @@ export default function PartyDetailPage() {
                   />
                 </TabsContent>
 
-                <TabsContent value="info">
+                <TabsContent value="info" className="flex-1 flex flex-col min-h-0">
                   <div className="space-y-4">
                     <PartyOverviewTab party={party} />
                     <PartyAddressesTab addresses={party.addresses} />

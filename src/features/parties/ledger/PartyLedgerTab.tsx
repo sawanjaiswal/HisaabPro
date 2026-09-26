@@ -104,7 +104,7 @@ export function PartyLedgerTab({ partyId, partyName, businessName, lockTypes }: 
   }, [setSelectedTypes])
 
   return (
-    <div className="party-ledger-tab">
+    <div className="party-ledger-tab flex-1 flex flex-col min-h-0">
       <LedgerToolbar
         query={query}
         onQueryChange={setQuery}
@@ -137,7 +137,7 @@ export function PartyLedgerTab({ partyId, partyName, businessName, lockTypes }: 
 
       {/* Success */}
       {status === 'success' && (
-        <>
+        <div className="party-ledger-content flex-1 flex flex-col min-h-0">
           {visibleRows.length === 0 ? (
             <LedgerEmpty isFiltered={isFiltered} onResetFilter={handleResetFilters} />
           ) : (
@@ -164,7 +164,7 @@ export function PartyLedgerTab({ partyId, partyName, businessName, lockTypes }: 
               )}
             </>
           )}
-        </>
+        </div>
       )}
     </div>
   )

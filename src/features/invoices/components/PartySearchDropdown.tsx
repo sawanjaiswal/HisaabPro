@@ -116,11 +116,13 @@ export const PartySearchDropdown: React.FC<PartySearchDropdownProps> = ({
           }}
           tabIndex={0}
         >
-          <div className="party-search-result-name">{party.name}</div>
-          <div className="party-search-result-meta">
-            {party.phone && (
-              <span className="party-search-result-phone">{party.phone}</span>
-            )}
+          <div className="party-search-result-info">
+            <div className="party-search-result-name">{party.name}</div>
+            <div className="party-search-result-meta">
+              <span className="party-search-result-phone">{party.phone || '-'}</span>
+            </div>
+          </div>
+          <div className="party-search-result-right">
             <span className={`party-search-type-badge party-search-type-badge--${party.type.toLowerCase()}`}>
               {PARTY_TYPE_LABELS[party.type]}
             </span>

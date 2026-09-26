@@ -1,5 +1,6 @@
 # HisaabPro — Project Rules
 
+> **Level 6 Mandate:** All development must follow Level 6 Axiomatic Architecture — see `AGENTS.md`.
 > Indian billing/business management app. Mobile-first, offline-first, premium UI.
 
 ## Overview

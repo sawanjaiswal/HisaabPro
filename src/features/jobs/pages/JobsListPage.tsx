@@ -43,7 +43,14 @@ export default function JobsListPage() {
 
   return (
     <AppShell>
-      <Header title={t.jobsTitle} />
+      <Header
+        title={t.jobsTitle}
+        actions={
+          <Button variant="ghost" size="sm" onClick={goToNew} aria-label={t.jobCreateAriaLabel}>
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
 
       <PageContainer>
         {/* Status filter pills */}
@@ -113,16 +120,6 @@ export default function JobsListPage() {
         )}
       </PageContainer>
 
-      {status === 'success' && allItems.length > 0 && (
-      <Button variant="none"
-        type="button"
-        className="fab"
-        onClick={goToNew}
-        aria-label={t.jobCreateAriaLabel}
-      >
-        <Plus size={24} aria-hidden="true" />
-      </Button>
-      )}
     </AppShell>
   )
 }

@@ -11,7 +11,7 @@ const THEME_VARIANTS: ThemeVariant[] = ['classic', 'modern', 'minimal']
 /** Meta theme-color for mobile browser chrome, keyed by theme */
 const THEME_META_COLORS: Record<Theme, string> = {
   dark: '#0B0F15',
-  light: '#F8F7F4',
+  light: '#F8FAFC',
 }
 
 const VARIANT_KEY = 'theme-variant'

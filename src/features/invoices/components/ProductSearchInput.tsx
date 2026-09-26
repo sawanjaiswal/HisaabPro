@@ -68,12 +68,16 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
       onSelect={handleSelect}
       onFetchResults={handleFetchResults}
       mapToItem={handleMapToItem}
-      entityName={t.product || 'product'}
+      entityName="product"
       entityPlural="products"
+      emptyText={(q) => `No products found for "${q}"`}
+      createOptionLabel={(q) => `+ Add "${q}" as a new product`}
+      creatingLabel="Adding product…"
+      searchHintLabel="Type to search products..."
       onCreateOption={addProduct}
       isCreating={isCreating}
       showLabel={false}
-      keepOpenOnSelect={true}
+      keepOpenOnSelect={false}
     />
   )
 }

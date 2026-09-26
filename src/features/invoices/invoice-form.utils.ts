@@ -114,10 +114,14 @@ export function normalizeFormPayload(
       ...item,
       discountValue: discountToWire(item.discountType, item.discountValue),
     })),
-    additionalCharges: form.additionalCharges.map((charge) => ({
-      ...charge,
-      value: discountToWire(charge.type, charge.value),
-    })),
+    // Strip incomplete charge rows (empty name is a UI-only placeholder) so the
+    // server Zod schema never receives a name: "" entry and rejects the request.
+    additionalCharges: form.additionalCharges
+      .filter((charge) => charge.name.trim() !== '')
+      .map((charge) => ({
+        ...charge,
+        value: discountToWire(charge.type, charge.value),
+      })),
     // Normalise empty strings to undefined so the server omits them
     notes: form.notes?.trim() || undefined,
     termsAndConditions: form.termsAndConditions?.trim() || undefined,

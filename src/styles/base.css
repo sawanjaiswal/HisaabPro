@@ -29,9 +29,7 @@
   body {
     font-family: var(--font-primary);
     color: var(--color-gray-800);
-    /* Warm cream -> white gradient — HisaabPro signature background */
-    background: linear-gradient(180deg, var(--color-cream-start) 0%, var(--color-cream-mid) 40%, var(--color-cream-end) 100%);
-    background-attachment: fixed;
+    background: var(--color-gray-50);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     overscroll-behavior: none;

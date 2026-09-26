@@ -121,7 +121,15 @@ export default function OtherIncomePage() {
 
   return (
     <AppShell>
-      <Header title={t.otherIncome ?? "Other Income"} backTo={ROUTES.DASHBOARD} />
+      <Header
+        title={t.otherIncome ?? "Other Income"}
+        backTo={ROUTES.DASHBOARD}
+        actions={
+          <Button variant="ghost" size="sm" onClick={() => setDrawerOpen(true)} aria-label={t.addIncomeEntryAria}>
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
       <PageContainer variant="list" className="space-y-6">
         <div className="income-filter-bar stagger-filters" role="group" aria-label={t.filterByCategoryGroup}>
           <Button variant="none" type="button" className={`income-filter-pill${categoryFilter === null ? ' income-filter-pill--active' : ''}`} onClick={() => setCategoryFilter(null)} aria-pressed={categoryFilter === null}>{t.all}</Button>

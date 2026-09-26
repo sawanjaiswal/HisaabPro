@@ -1,21 +1,28 @@
 import { useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { Capacitor } from '@capacitor/core'
 import { App as CapacitorApp } from '@capacitor/app'
 import { ROUTES } from '@/config/routes.config'
+import { useFlowEngine, flowOverlayManager } from '@/lib/navigation'
 
 /**
  * Handles Android physical/gesture back button via Capacitor App plugin.
- * Pops React Router history stack gracefully instead of killing the app webview.
+ * Level 6 Axiom: Dispatches through the unified FlowEngine back bus.
  */
 export function useHardwareBackButton(enabled = true): void {
-  const navigate = useNavigate()
+  const { goBack } = useFlowEngine()
   const location = useLocation()
 
   useEffect(() => {
     if (!enabled || !Capacitor.isNativePlatform()) return
 
-    const listenerPromise = CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+    const listenerPromise = CapacitorApp.addListener('backButton', () => {
+      // 1. If an overlay / sheet is open, dismiss it and halt
+      if (flowOverlayManager.handleOverlayBack()) {
+        return
+      }
+
+      // 2. If at application root, exit app
       const isRoot =
         location.pathname === ROUTES.DASHBOARD ||
         location.pathname === ROUTES.LOGIN ||
@@ -23,15 +30,15 @@ export function useHardwareBackButton(enabled = true): void {
 
       if (isRoot) {
         CapacitorApp.exitApp()
-      } else if (canGoBack || window.history.length > 1) {
-        navigate(-1)
-      } else {
-        navigate(ROUTES.DASHBOARD, { replace: true })
+        return
       }
+
+      // 3. Dispatch unified back action
+      goBack()
     })
 
     return () => {
       listenerPromise.then((handle) => handle.remove()).catch(() => {})
     }
-  }, [enabled, navigate, location.pathname])
+  }, [enabled, goBack, location.pathname])
 }

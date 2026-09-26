@@ -61,7 +61,20 @@ export default function RolesPage() {
 
   return (
     <AppShell>
-      <Header title={t.roles} backTo={ROUTES.SETTINGS} />
+      <Header
+        title={t.roles}
+        backTo={ROUTES.SETTINGS}
+        actions={
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(ROUTES.SETTINGS_ROLE_NEW)}
+            aria-label={t.createNewRole}
+          >
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
 
       <HeroPage>
         <div className="roles-page space-y-6">
@@ -103,16 +116,6 @@ export default function RolesPage() {
           )}
         </div>
       </HeroPage>
-
-      {status === 'success' && roles.length > 0 && (
-        <Button variant="none"
-          className="fab"
-          onClick={() => navigate(ROUTES.SETTINGS_ROLE_NEW)}
-          aria-label={t.createNewRole}
-        >
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
     </AppShell>
   )
 }

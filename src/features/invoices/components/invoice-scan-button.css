@@ -2,7 +2,22 @@
  *  Tokens only; dark mode follows automatically via CSS variables. */
 
 .invoice-scan-btn {
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-  min-height: 40px;
-  border-radius: var(--radius-full);
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--color-gray-300);
+  background: var(--color-surface);
+  color: var(--color-gray-700);
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.invoice-scan-btn:hover {
+  background: var(--color-gray-50);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-600);
 }

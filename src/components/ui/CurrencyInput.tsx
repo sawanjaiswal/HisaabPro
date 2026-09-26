@@ -58,10 +58,29 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
   ) => {
     const inputId = id || 'currency-amount-input'
 
+    const [displayValue, setDisplayValue] = React.useState<string>(() =>
+      value > 0 ? (value % 100 === 0 ? String(value / 100) : (value / 100).toFixed(2)) : ''
+    )
+
+    React.useEffect(() => {
+      const currentPaise = displayValue ? Math.round(parseFloat(displayValue) * 100) : 0
+      if (isNaN(currentPaise) || currentPaise !== value) {
+        setDisplayValue(value > 0 ? (value % 100 === 0 ? String(value / 100) : String(value / 100)) : '')
+      }
+    }, [value])
+
     const handleInputChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         const raw = e.target.value.replace(/[^0-9.]/g, '')
-        const parsed = parseFloat(raw || '0')
+        const parts = raw.split('.')
+        const sanitized = parts.length > 2 ? `${parts[0]}.${parts.slice(1).join('')}` : raw
+        setDisplayValue(sanitized)
+
+        if (sanitized === '' || sanitized === '.') {
+          onChange(0)
+          return
+        }
+        const parsed = parseFloat(sanitized)
         const paise = Math.round(parsed * 100)
         onChange(isNaN(paise) ? 0 : paise)
       },
@@ -96,19 +115,18 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
             <input
               ref={ref}
               id={inputId}
-              type="number"
-              step="0.01"
-              min="0"
+              type="text"
               inputMode="decimal"
+              pattern="[0-9]*[.]?[0-9]*"
               placeholder="0"
               disabled={disabled}
-              className="w-56 sm:w-72 bg-transparent border-0 text-center text-5xl sm:text-6xl font-black focus:outline-none tabular-nums p-0 shadow-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50"
+              className="w-56 sm:w-72 bg-transparent border-0 text-center text-5xl sm:text-6xl font-black focus:outline-none tabular-nums p-0 shadow-none disabled:opacity-50"
               style={{
                 color: 'var(--text-primary)',
                 fontFamily: 'var(--font-primary)',
                 letterSpacing: '-0.03em',
               }}
-              value={value > 0 ? (value / 100).toFixed(2) : ''}
+              value={displayValue}
               onChange={handleInputChange}
               aria-label={label || 'Amount'}
             />
@@ -153,7 +171,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-[var(--fs-xs)] font-bold uppercase tracking-wider text-[var(--color-text-secondary)] select-none"
+            className="block text-sm font-medium text-[var(--color-text-primary)] select-none"
           >
             {label}
             {required && <span className="text-[var(--color-error-500)] ml-1 font-bold">*</span>}
@@ -179,14 +197,13 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
           <input
             ref={ref}
             id={inputId}
-            type="number"
-            step="0.01"
-            min="0"
+            type="text"
             inputMode="decimal"
+            pattern="[0-9]*[.]?[0-9]*"
             placeholder={placeholder}
             disabled={disabled}
-            className="w-full bg-transparent border-0 text-sm font-bold text-text-primary placeholder:text-text-muted focus:outline-none tabular-nums p-0 shadow-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            value={value > 0 ? (value / 100).toFixed(2) : ''}
+            className="w-full bg-transparent border-0 text-sm font-bold text-text-primary placeholder:text-text-muted focus:outline-none tabular-nums p-0 shadow-none"
+            value={displayValue}
             onChange={handleInputChange}
             aria-label={label || 'Amount in Rupees'}
             aria-invalid={Boolean(error)}

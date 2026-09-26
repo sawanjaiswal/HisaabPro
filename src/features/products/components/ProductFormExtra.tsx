@@ -13,7 +13,7 @@ import { ImageUploader } from './ImageUploader'
 import '../barcode.css'
 import './image-uploader.css'
 import { Textarea } from '@/components/ui/Textarea'
-import { Button } from '@/components/ui/Button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 
 interface ProductFormExtraProps {
   form: ProductFormData
@@ -33,8 +33,9 @@ export function ProductFormExtra({ form, errors, onUpdate, taxCategories = [] }:
     <div className="create-party-section py-0">
       {taxCategories.length > 0 && (
         <div className="input-group">
-          <label htmlFor="product-tax-cat" className="input-label">{t.taxCategoryLabel}</label>
           <Select
+            label={t.taxCategoryLabel}
+            id="product-tax-cat"
             value={form.taxCategoryId ?? NONE}
             onValueChange={(v) => onUpdate('taxCategoryId', v === NONE ? null : v)}
             ariaLabel={t.selectTaxCategory}
@@ -63,19 +64,36 @@ export function ProductFormExtra({ form, errors, onUpdate, taxCategories = [] }:
       <Input label={t.sacCodeServices} id="product-sac" value={form.sacCode ?? ''} onChange={(e) => onUpdate('sacCode', e.target.value || undefined)} error={errors.sacCode} placeholder="e.g. 998314" maxLength={SAC_CODE_MAX} autoComplete="off" />
 
       <div className="input-group">
-        <label htmlFor="product-description" className="input-label">{t.descriptionLabel}</label>
-        <Textarea id="product-description" className="input input-textarea" value={form.description ?? ''} onChange={(e) => onUpdate('description', e.target.value || undefined)} placeholder={t.additionalProductDetails} rows={3} maxLength={PRODUCT_DESCRIPTION_MAX} aria-label={t.descriptionLabel} />
+        <Textarea
+          label={t.descriptionLabel}
+          id="product-description"
+          value={form.description ?? ''}
+          onChange={(e) => onUpdate('description', e.target.value || undefined)}
+          placeholder={t.additionalProductDetails}
+          rows={3}
+          maxLength={PRODUCT_DESCRIPTION_MAX}
+        />
       </div>
 
       <div className="input-group">
         <span className="input-label" id="product-status-label">{t.statusLabel}</span>
-        <div className="pill-tabs" role="group" aria-labelledby="product-status-label">
-          {STATUS_OPTIONS.map((option) => (
-            <Button variant="none" key={option.value} type="button" className={`pill-tab${form.status === option.value ? ' active' : ''}`} onClick={() => onUpdate('status', option.value)} aria-pressed={form.status === option.value} aria-label={`${t.setProductStatusTo} ${option.label}`}>
-              {option.label}
-            </Button>
-          ))}
-        </div>
+        <Tabs
+          value={form.status}
+          onValueChange={(val) => onUpdate('status', val as ProductStatus)}
+          className="w-full"
+        >
+          <TabsList variant="segmented" fullWidth aria-labelledby="product-status-label">
+            {STATUS_OPTIONS.map((option) => (
+              <TabsTrigger
+                key={option.value}
+                value={option.value}
+                aria-label={`${t.setProductStatusTo} ${option.label}`}
+              >
+                {option.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </div>
     </div>
   )

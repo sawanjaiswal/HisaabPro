@@ -71,17 +71,32 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
   )
 
   const handleQuantity = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const qty = parseFloat(e.target.value)
-    if (!isNaN(qty) && qty >= 0.001) onChange({ quantity: qty })
+    const raw = e.target.value
+    if (raw === '') {
+      onChange({ quantity: 0 })
+      return
+    }
+    const qty = parseFloat(raw)
+    if (!isNaN(qty) && qty >= 0) onChange({ quantity: qty })
   }, [onChange])
 
   const handleRate = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const rupees = parseFloat(e.target.value)
+    const raw = e.target.value
+    if (raw === '') {
+      onChange({ rate: 0 })
+      return
+    }
+    const rupees = parseFloat(raw)
     if (!isNaN(rupees) && rupees >= 0) onChange({ rate: rupeesToPaise(rupees) })
   }, [onChange])
 
   const handleDiscountValue = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseFloat(e.target.value)
+    const raw = e.target.value
+    if (raw === '') {
+      onChange({ discountValue: 0 })
+      return
+    }
+    const val = parseFloat(raw)
     if (!isNaN(val) && val >= 0) {
       const next = discountType === 'AMOUNT' ? rupeesToPaise(val) : val
       onChange({ discountValue: next })
@@ -102,10 +117,12 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
           id={`line-qty-${index}`}
           type="number"
           className="input"
-          value={quantity}
-          min={0.001}
+          value={quantity === 0 ? '' : quantity}
+          placeholder="1"
+          min={0}
           step={0.001}
           onChange={handleQuantity}
+          onFocus={(e) => e.target.select()}
           onKeyDown={advanceOnEnter(`line-rate-${index}`)}
           aria-label={`${t.quantityFor} ${productName}`}
         />
@@ -117,11 +134,13 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
           id={`line-rate-${index}`}
           type="number"
           className="input"
-          value={paiseToRupees(rate)}
+          value={rate === 0 ? '' : paiseToRupees(rate)}
+          placeholder="0"
           min={0}
           step={0.01}
           disabled={readOnly}
           onChange={handleRate}
+          onFocus={(e) => e.target.select()}
           onKeyDown={advanceOnEnter(`line-discount-${index}`)}
           aria-label={`${t.rateInRupeesFor} ${productName}`}
         />
@@ -157,12 +176,14 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
             id={`line-discount-${index}`}
             type="number"
             className="input"
-            value={displayDiscount}
+            value={displayDiscount === 0 ? '' : displayDiscount}
+            placeholder="0"
             min={0}
             max={discountType === 'PERCENTAGE' ? 100 : undefined}
             step={0.01}
             disabled={readOnly}
             onChange={handleDiscountValue}
+            onFocus={(e) => e.target.select()}
             onKeyDown={advanceOnEnter(`line-qty-${index + 1}`)}
             aria-label={`${t.discount} ${discountType === 'AMOUNT' ? t.discountAmountFor : t.discountPercentFor} ${productName}`}
           />

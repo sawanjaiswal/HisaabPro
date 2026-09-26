@@ -146,7 +146,7 @@
   width: 52px;
   height: 52px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #038344 0%, #026F39 60%, #01582c 100%);
+  background: linear-gradient(135deg, var(--color-primary-400) 0%, var(--color-primary-500) 60%, var(--color-primary-600) 100%);
   color: #ffffff;
   transform: translateY(-13px);
   box-shadow: 0 10px 24px -4px rgba(2, 111, 57, 0.44), 0 0 0 4px #ffffff, inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);

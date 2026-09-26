@@ -47,7 +47,7 @@ export const BRAND = {
     primary: 'var(--color-primary-500)',
     leafGreen: 'var(--color-success-500)',
     leafLight: '#4ADE80',
-    creamBg: '#F8F7F4',
+    creamBg: '#F8FAFC',
     goldAccent: '#C89B3C',
   },
 } as const

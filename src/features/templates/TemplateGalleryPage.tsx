@@ -71,7 +71,20 @@ export default function TemplateGalleryPage() {
 
   return (
     <AppShell>
-      <Header title={t.invoiceTemplates} backTo={ROUTES.SETTINGS} />
+      <Header
+        title={t.invoiceTemplates}
+        backTo={ROUTES.SETTINGS}
+        actions={
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/settings/templates/new?base=A4_CLASSIC')}
+            aria-label={t.createNewTemplate}
+          >
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
 
       <PageContainer variant="list" className="space-y-6">
         {status === 'loading' && <TemplateGallerySkeleton />}
@@ -124,14 +137,6 @@ export default function TemplateGalleryPage() {
           </>
         )}
       </PageContainer>
-
-      <Button variant="none"
-        className="fab"
-        onClick={() => navigate('/settings/templates/new?base=A4_CLASSIC')}
-        aria-label={t.createNewTemplate}
-      >
-        <Plus size={24} aria-hidden="true" />
-      </Button>
     </AppShell>
   )
 }

@@ -1,18 +1,10 @@
-/**
- * SideNav — multi-company switcher section.
- *
- * Renders nothing when the user belongs to a single business: the active
- * business is already shown by the TenantChip above it, so a one-row switcher
- * would be pure duplication.
- */
-
-import { Check, Loader2, Plus } from 'lucide-react'
+import { Check, Loader2, Plus, PauseCircle } from 'lucide-react'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import { useAuth } from '@/context/AuthContext'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { getBusinessInitials, getBusinessColor } from '@/features/business/business.utils'
-import { Heading } from '@/components/ui/Heading'
+import { deriveSuspendState } from '@/features/business/suspend.service'
 
 interface Props {
   onNavigate: (route: string) => void
@@ -22,22 +14,47 @@ export function SideNavBusinessSwitcher({ onNavigate }: Props) {
   const { user, businesses, activeBusiness, switchBusiness, isSwitching, switchingBusinessId } = useAuth()
   const { t } = useLanguage()
 
-  if (businesses.length <= 1) return null
+  if (!activeBusiness && businesses.length === 0) return null
 
   const handleSwitchBusiness = (id: string) => {
     if (id === user?.businessId) return
     void switchBusiness(id)
   }
 
+  const suspendState = deriveSuspendState(activeBusiness)
+
   return (
-    <section className="side-nav-section">
-      <Heading level={3} className="side-nav-section-title">Your Businesses</Heading>
+    <div className="side-nav-business-wrapper">
       <Accordion type="single" collapsible className="side-nav-business-accordion">
         <AccordionItem value="businesses" className="side-nav-business-accordion-item">
           <AccordionTrigger className="side-nav-business-accordion-trigger">
-            <span className="side-nav-business-summary">
-              {activeBusiness?.name ?? t.switchBusiness ?? 'Switch business'}
-            </span>
+            <div className="side-nav-business-trigger-card">
+              <span
+                className="side-nav-business-avatar"
+                style={activeBusiness ? { background: getBusinessColor(activeBusiness.id) } : undefined}
+                aria-hidden="true"
+              >
+                {activeBusiness ? getBusinessInitials(activeBusiness.name) : '·'}
+              </span>
+              <div className="side-nav-business-info">
+                <span className="side-nav-business-name">{activeBusiness?.name ?? user?.name ?? 'Business'}</span>
+                <span className="side-nav-business-role">
+                  {suspendState === 'firm-suspended' ? (
+                    <span className="side-nav-status-tag side-nav-status-tag--danger">
+                      <PauseCircle size={12} aria-hidden="true" />
+                      {t.tenantChipFirmSuspended ?? 'Firm paused'}
+                    </span>
+                  ) : suspendState === 'member-suspended' ? (
+                    <span className="side-nav-status-tag side-nav-status-tag--warning">
+                      <PauseCircle size={12} aria-hidden="true" />
+                      {t.tenantChipMemberSuspended ?? 'Paused'}
+                    </span>
+                  ) : (
+                    activeBusiness?.roleName ?? 'Owner'
+                  )}
+                </span>
+              </div>
+            </div>
           </AccordionTrigger>
           <AccordionContent className="side-nav-business-accordion-content">
             <div className="side-nav-business-list">
@@ -88,6 +105,7 @@ export function SideNavBusinessSwitcher({ onNavigate }: Props) {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </section>
+    </div>
   )
 }
+

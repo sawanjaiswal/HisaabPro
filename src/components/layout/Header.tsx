@@ -1,31 +1,31 @@
 /** Header — global app header. Consistent on every page.
  *
- * Layout: [brand | back+title]  ............ [page tools] [sync] [☰]
+ * Layout: [brand | back+title]  ............ [page actions] [sync] [notifications]
  *
- * The hamburger fires OPEN_SIDE_NAV_EVENT, picked up by the global <SideNav />
- * mounted in App.tsx. Page-specific tools (Scan, Filter, etc.) go via the
- * `actions` prop and render to the LEFT of the always-on sync + menu icons.
+ * Page-specific tools (Scan, Filter, Import, etc.) render via the `actions` prop.
+ * Sync status icon and Notification bell render on the homepage (Dashboard/Home)
+ * by default, ensuring sub-pages and hero pages remain clean and uncluttered.
  */
 
 import { useEffect, useState, type ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ChevronLeft, Menu } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { APP_NAME, APP_NAME_MARK } from '@/config/app.config'
 import { ROUTES } from '@/config/routes.config'
-import { OPEN_SIDE_NAV_EVENT } from '@/config/events.config'
 import { SyncStatusPill } from '@/components/ui/sync-center'
 import { NotificationBell } from '@/features/notifications/components/NotificationBell'
 import { BrandLogo } from '@/components/brand/BrandLogo'
 import { Heading } from '@/components/ui/Heading'
+import { useFlowEngine } from '@/lib/navigation'
 
 interface HeaderProps {
-  /** Page title — shown when `backTo` is set (sub-page mode). */
+  /** Page title — shown when `backTo` is set (sub-page mode) or custom title on root. */
   title?: string
   /** Subtitle description shown beneath the title */
   subtitle?: string
-  /** Show a back arrow on the left — string = navigate to path; true = history.back() */
+  /** Show a back arrow on the left — string = fallback parent path; true = auto topology */
   backTo?: string | true
-  /** Page-specific action icons (Scan, Filter, etc.). Render LEFT of sync + ☰. */
+  /** Page-specific action icons (Scan, Filter, Import, etc.). Render LEFT of sync + notification. */
   actions?: ReactNode
   /** Apply a frosted-glass background only after the user scrolls 16px+. Default: false. */
   scrollCondense?: boolean
@@ -37,6 +37,10 @@ interface HeaderProps {
    * - `'emerald'` — deep-emerald hero surface, white back/title/action icons.
    */
   variant?: 'default' | 'emerald'
+  /** Explicitly show or hide the sync status icon. Defaults to true on homepage only. */
+  showSync?: boolean
+  /** Explicitly show or hide the notifications bell. Defaults to true on homepage only. */
+  showNotifications?: boolean
 }
 
 export function Header({
@@ -46,8 +50,12 @@ export function Header({
   actions,
   scrollCondense = false,
   variant,
+  showSync,
+  showNotifications,
 }: HeaderProps) {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { goBack } = useFlowEngine()
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
@@ -59,11 +67,17 @@ export function Header({
   }, [scrollCondense])
 
   const handleBack = () => {
-    if (typeof backTo === 'string' && backTo) navigate(backTo)
-    else navigate(-1)
+    goBack({ fallbackRoute: typeof backTo === 'string' ? backTo : undefined })
   }
 
-  const openSideNav = () => window.dispatchEvent(new Event(OPEN_SIDE_NAV_EVENT))
+  const isHomePage =
+    location.pathname === ROUTES.DASHBOARD ||
+    location.pathname === ROUTES.HOME ||
+    location.pathname === '/' ||
+    location.pathname === '/dashboard'
+
+  const shouldShowSync = showSync ?? isHomePage
+  const shouldShowNotifications = showNotifications ?? isHomePage
 
   // Back-button sub-pages get the emerald hero bar by default; brand/root and
   // scroll-condense hero pages (which bleed transparent) stay on the cream
@@ -130,16 +144,8 @@ export function Header({
 
       <div className="header-actions">
         {actions}
-        <SyncStatusPill />
-        <NotificationBell />
-        <button
-          type="button"
-          className="header-icon-btn lg:hidden"
-          onClick={openSideNav}
-          aria-label="Open menu"
-        >
-          <Menu size={20} aria-hidden="true" />
-        </button>
+        {shouldShowSync && <SyncStatusPill />}
+        {shouldShowNotifications && <NotificationBell />}
       </div>
     </header>
   )

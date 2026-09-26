@@ -102,7 +102,15 @@ export default function BankAccountsPage() {
 
   return (
     <AppShell>
-      <Header title={t.bankAccounts ?? "Bank Accounts"} backTo={ROUTES.DASHBOARD} />
+      <Header
+        title={t.bankAccounts ?? "Bank Accounts"}
+        backTo={ROUTES.DASHBOARD}
+        actions={
+          <Button variant="ghost" size="sm" onClick={() => setDrawerOpen(true)} aria-label={t.addFirstAccount}>
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
       <HeroPage>
         {status === 'loading' && (
           <div className="bank-skeleton" aria-busy="true" aria-label={t.loadingAccounts2}>

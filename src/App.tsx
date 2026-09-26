@@ -62,7 +62,7 @@ import {
 } from '@/app.routes'
 import {
   PageRoute, DashboardFallback, ProtectedRoute, GuestRoute,
-  HomeGate, PersistentNav, FloatingWidgets, EdgeSwipeBack,
+  HomeGate, PersistentNav, FloatingWidgets, EdgeSwipeBack, WhatsAppSupportFab,
 } from '@/app.guards'
 
 export function App() {
@@ -308,6 +308,7 @@ export function App() {
       <EdgeSwipeBack />
       <PersistentNav />
       <FloatingWidgets />
+      <WhatsAppSupportFab />
       <SideNav />
       <ToastContainer />
       <SWUpdatePrompt />

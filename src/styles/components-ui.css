@@ -95,11 +95,15 @@
 /* Pill-tabs that have a follow-on input below — extra bottom breathing room */
 .pill-tabs--with-input { margin-bottom: var(--space-2); }
 
-.input-label {
+.input-label,
+.form-label {
   display: block;
-  font-size: var(--fs-df);
+  font-family: var(--font-primary);
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--text-primary);
+  text-transform: none;
+  letter-spacing: -0.01em;
   margin-bottom: var(--space-1-5);
 }
 

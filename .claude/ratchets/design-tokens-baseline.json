@@ -1,5 +1,5 @@
 {
-  "count": 796,
+  "count": 801,
   "violations": [
     {
       "file": "src/App.tsx",
@@ -152,6 +152,66 @@
       "text": "ctx.fillStyle = '#475569';"
     },
     {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 31,
+      "type": "RAW_HEX",
+      "text": "background: #ffffff;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 76,
+      "type": "RAW_HEX",
+      "text": "color: #64748b;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 89,
+      "type": "RAW_HEX",
+      "text": "color: #1e293b;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 103,
+      "type": "RAW_HEX",
+      "text": "color: #026F39;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 117,
+      "type": "RAW_HEX",
+      "text": "background: #026F39;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 131,
+      "type": "RAW_HEX",
+      "text": "color: #026F39;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 149,
+      "type": "RAW_HEX",
+      "text": "background: linear-gradient(135deg, #038344 0%, #026F39 60%, #01582c 100%);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 152,
+      "type": "RAW_HEX",
+      "text": "box-shadow: 0 10px 24px -4px rgba(2, 111, 57, 0.44), 0 0 0 4px #ffffff, inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 172,
+      "type": "RAW_HEX",
+      "text": "box-shadow: 0 12px 28px -4px rgba(2, 111, 57, 0.52), 0 0 0 4px #ffffff, inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 177,
+      "type": "RAW_HEX",
+      "text": "box-shadow: 0 6px 16px -2px rgba(2, 111, 57, 0.4), 0 0 0 4px #ffffff;"
+    },
+    {
       "file": "src/components/layout/DataViewShell.tsx",
       "line": 102,
       "type": "ARBITRARY_BRACKET",
@@ -240,66 +300,6 @@
       "line": 177,
       "type": "RAW_HEX",
       "text": "color: var(--color-teal-800, #115e59);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
-      "line": 184,
-      "type": "RAW_HEX",
-      "text": "background: var(--color-teal-500, #14b8a6);"
-    },
-    {
-      "file": "src/components/layout/side-nav.css",
-      "line": 189,
-      "type": "RAW_HEX",
-      "text": "/* Phase 6 #138 PR2 — TenantChip row (sits between header + body, full-bleed) */"
-    },
-    {
-      "file": "src/components/magicui/shimmer-button.tsx",
-      "line": 17,
-      "type": "RAW_HEX",
-      "text": "shimmerColor = '#ffffff',"
-    },
-    {
-      "file": "src/components/magicui/shimmer-button.tsx",
-      "line": 59,
-      "type": "RAW_HEX",
-      "text": "'rounded-2xl px-4 py-1.5 text-sm font-medium shadow-[inset_0_-8px_10px_#ffffff1f]',"
-    },
-    {
-      "file": "src/components/magicui/shimmer-button.tsx",
-      "line": 61,
-      "type": "RAW_HEX",
-      "text": "'group-hover:shadow-[inset_0_-6px_10px_#ffffff3f]',"
-    },
-    {
-      "file": "src/components/ui/Checkbox.tsx",
-      "line": 31,
-      "type": "ARBITRARY_BRACKET",
-      "text": "'peer h-5 w-5 shrink-0 rounded-sm border border-border bg-surface ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-500)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary-500 data-[state=checked]:border-primary-500 data-[state=checked]:text-[var(--color-gray-0)] transition-all',"
-    },
-    {
-      "file": "src/components/ui/Checkbox.tsx",
-      "line": 39,
-      "type": "ARBITRARY_BRACKET",
-      "text": "<Check className=\"h-3.5 w-3.5 stroke-[3]\" />"
-    },
-    {
-      "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 156,
-      "type": "ARBITRARY_BRACKET",
-      "text": "className=\"block text-[var(--fs-xs)] font-bold uppercase tracking-wider text-[var(--color-text-secondary)] select-none\""
-    },
-    {
-      "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 159,
-      "type": "ARBITRARY_BRACKET",
-      "text": "{required && <span className=\"text-[var(--color-error-500)] ml-1 font-bold\">*</span>}"
-    },
-    {
-      "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 165,
-      "type": "ARBITRARY_BRACKET",
-      "text": "'flex items-center gap-2.5 px-3.5 py-2 rounded-[var(--radius-md)] border transition-all focus-within:ring-2 focus-within:ring-[var(--color-primary-100)] focus-within:border-[var(--color-primary-500)]',"
     }
   ]
 }

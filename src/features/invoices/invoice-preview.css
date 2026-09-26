@@ -1,46 +1,70 @@
 /* Invoice Preview (mockup #3) — the paper-document skin
  *
- * Used by InvoicePreviewDrawer.tsx. Deliberately flatter than the rest of the
- * app: this pane is a facsimile of the printed invoice, so it uses ruled rows
- * and a plain white sheet rather than the card-and-shadow chrome.
+ * Used by InvoicePreviewDrawer.tsx. This is a facsimile of the printed
+ * invoice: ruled rows, white paper sheet, no card chrome.
+ *
+ * Padding contract:
+ *   - drawer-body horizontal padding is zeroed via :has() so the article
+ *     owns the exact 16px side padding the user requested.
+ *   - Top / bottom of drawer-body retain var(--space-5) for breathing room.
  */
+
+/* ─── Collapse drawer-body horizontal padding for the preview ────────────── */
+
+.drawer-body:has(.invoice-preview-doc) {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* ─── Paper card ─────────────────────────────────────────────────────────── */
 
 .invoice-preview-doc {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  padding: var(--space-4);
+  gap: 0;
+  padding: 0 var(--space-4);   /* 16px sides only — all vertical handled per-section */
   background: var(--color-gray-0);
-  border-radius: var(--radius-lg);
 }
 
-/* ─── Brand row ──────────────────────────────────────────────────────────── */
+/* ─── Brand header strip ─────────────────────────────────────────────────── */
 
 .invoice-preview-brand {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
+  padding: var(--space-5) 0 var(--space-4);
+  border-bottom: 2px solid var(--color-primary-600);
+  margin-bottom: var(--space-4);
 }
 
 .invoice-preview-business {
-  font-size: var(--fs-lg);
-  font-weight: 700;
+  font-size: var(--fs-xl);
+  font-weight: 800;
   color: var(--color-primary-600);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .invoice-preview-doctype {
   font-size: var(--fs-2xs);
-  font-weight: 600;
-  color: var(--color-gray-400);
+  font-weight: 700;
+  color: var(--color-primary-600);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  background: color-mix(in srgb, var(--color-primary-600) 10%, transparent);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
 }
+
+/* ─── Meta (date) ────────────────────────────────────────────────────────── */
 
 .invoice-preview-meta {
   font-size: var(--fs-sm);
   color: var(--color-gray-500);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-gray-100);
+  margin-bottom: var(--space-4);
 }
 
 /* ─── Bill-to block ──────────────────────────────────────────────────────── */
@@ -49,20 +73,24 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-gray-100);
+  margin-bottom: var(--space-4);
 }
 
 .invoice-preview-billto-label {
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-gray-400);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 .invoice-preview-billto-name {
-  font-size: var(--fs-df);
-  font-weight: 600;
-  color: var(--color-gray-800);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--color-gray-900);
+  line-height: 1.3;
 }
 
 /* ─── Items table ────────────────────────────────────────────────────────── */
@@ -70,25 +98,28 @@
 .invoice-preview-items {
   display: flex;
   flex-direction: column;
+  margin-bottom: var(--space-4);
 }
 
 .invoice-preview-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 3rem 4.5rem 5.5rem;
+  grid-template-columns: minmax(0, 1fr) 2.75rem 4.5rem 5.5rem;
   gap: var(--space-2);
-  padding: var(--space-2) 0;
+  padding: var(--space-3) 0;
   font-size: var(--fs-sm);
-  color: var(--color-gray-700);
+  color: var(--color-gray-800);
   border-bottom: 1px solid var(--color-gray-100);
+  align-items: center;
 }
 
 .invoice-preview-row--head {
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-gray-400);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border-bottom-color: var(--color-gray-200);
+  letter-spacing: 0.05em;
+  padding-top: var(--space-2);
+  border-bottom: 2px solid var(--color-gray-200);
 }
 
 .invoice-preview-item-name {
@@ -96,6 +127,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: 500;
 }
 
 /* ─── Totals ─────────────────────────────────────────────────────────────── */
@@ -104,6 +136,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-gray-100);
+  margin-bottom: var(--space-4);
 }
 
 .invoice-preview-total-row {
@@ -111,17 +146,18 @@
   justify-content: space-between;
   gap: var(--space-3);
   font-size: var(--fs-sm);
-  color: var(--color-gray-600);
+  color: var(--color-gray-500);
 }
 
 .invoice-preview-total-row--grand {
-  margin-top: var(--space-1);
-  padding: var(--space-3);
-  background: var(--color-gray-50);
-  border-radius: var(--radius-md);
+  margin-top: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: color-mix(in srgb, var(--color-primary-600) 8%, transparent);
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--color-primary-600) 20%, transparent);
   font-size: var(--fs-df);
-  font-weight: 700;
-  color: var(--color-gray-800);
+  font-weight: 800;
+  color: var(--color-primary-700);
 }
 
 /* ─── Amount in words / notes ────────────────────────────────────────────── */
@@ -129,21 +165,29 @@
 .invoice-preview-words {
   font-size: var(--fs-sm);
   color: var(--color-gray-600);
+  padding-bottom: var(--space-5);
+  line-height: 1.5;
 }
 
 .invoice-preview-words-label {
   display: block;
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-gray-400);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-1);
 }
 
 .invoice-preview-notes {
   font-size: var(--fs-sm);
   color: var(--color-gray-500);
   white-space: pre-wrap;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-5);
+  border-left: 3px solid var(--color-gray-200);
 }
 
 /* ─── Footer actions ─────────────────────────────────────────────────────── */
@@ -152,6 +196,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
+  width: 100%;
 }
 
 .invoice-preview-actions > * {
@@ -164,11 +209,11 @@
   background: var(--color-gray-50);
 }
 
-[data-theme="dark"] .invoice-preview-billto-name,
-[data-theme="dark"] .invoice-preview-total-row--grand {
+[data-theme="dark"] .invoice-preview-billto-name {
   color: var(--color-gray-900);
 }
 
 [data-theme="dark"] .invoice-preview-total-row--grand {
-  background: var(--color-gray-100);
+  background: color-mix(in srgb, var(--color-primary-600) 15%, transparent);
+  border-color: color-mix(in srgb, var(--color-primary-600) 30%, transparent);
 }

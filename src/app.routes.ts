@@ -8,6 +8,9 @@ export const CalculatorOverlay = lazy(() =>
 export const FeedbackWidget = lazy(() =>
   import('@/components/feedback/FeedbackWidget').then((m) => ({ default: m.FeedbackWidget }))
 )
+export const WhatsAppFab = lazy(() =>
+  import('@/components/feedback/WhatsAppFab').then((m) => ({ default: m.WhatsAppFab }))
+)
 
 export const Login = lazy(() => import('@/features/auth/LoginPage'))
 export const Register = lazy(() => import('@/features/auth/RegisterPage'))

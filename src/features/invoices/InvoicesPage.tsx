@@ -137,9 +137,14 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
           title={bulk.isActive ? `${bulk.selectedCount} ${t.nSelected}` : typeLabel}
           actions={
             !bulk.isActive ? (
-              <Button variant="none" type="button" className="header-icon-btn" onClick={() => navigate(ROUTES.BILL_SCAN)} aria-label={t.scanBillAriaLabel}>
-                <Camera size={20} aria-hidden="true" />
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button variant="none" type="button" className="header-icon-btn" onClick={() => navigate(ROUTES.BILL_SCAN)} aria-label={t.scanBillAriaLabel}>
+                  <Camera size={20} aria-hidden="true" />
+                </Button>
+                <Button variant="none" type="button" className="header-icon-btn" onClick={goToCreate} aria-label={t.createNewInvoiceAriaLabel ?? 'New Invoice'}>
+                  <Plus size={20} aria-hidden="true" />
+                </Button>
+              </div>
             ) : undefined
           }
         />
@@ -221,11 +226,7 @@ export default function InvoicesPage({ embedded = false }: InvoicesPageProps) {
         )}
       </PageContainer>
 
-      {!bulk.isActive && status === 'success' && data && visibleDocuments.length > 0 && (
-        <Button variant="none" className="fab" onClick={goToCreate} aria-label={t.createNewInvoiceAriaLabel}>
-          <Plus size={24} aria-hidden="true" />
-        </Button>
-      )}
+
 
       <BulkActionBar
         selectedCount={bulk.selectedCount}

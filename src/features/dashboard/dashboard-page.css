@@ -34,22 +34,66 @@
 :root:has(.dashboard-page) .header-title,
 :root:has(.dashboard-page) .header-back,
 :root:has(.dashboard-page) .header-icon-btn,
-:root:has(.dashboard-page) .header-actions button {
-  color: var(--color-white-inverse);
-}
-
+:root:has(.dashboard-page) .sync-badge-btn,
+:root:has(.dashboard-page) .sync-icon-btn,
+:root:has(.dashboard-page) .notif-bell,
+:root:has(.dashboard-page) .header-actions .btn,
+:root:has(.dashboard-page) .header-actions .btn-ghost,
+:root:has(.dashboard-page) .header-actions button,
 :root:has(.dashboard-page) .header-actions svg {
   color: var(--color-white-inverse);
 }
 
-/* Kill the light glass circle + shadow on the sync/menu icon buttons so
- * they sit flat on the dark green header (bell is already transparent). */
-:root:has(.dashboard-page) .header-icon-btn {
+/* Kill opaque light backgrounds so buttons sit flat on the dark green header */
+:root:has(.dashboard-page) .header-icon-btn,
+:root:has(.dashboard-page) .sync-badge-btn,
+:root:has(.dashboard-page) .sync-icon-btn,
+:root:has(.dashboard-page) .notif-bell,
+:root:has(.dashboard-page) .header-actions .btn,
+:root:has(.dashboard-page) .header-actions .btn-ghost,
+:root:has(.dashboard-page) .header-actions button {
   background: transparent;
   box-shadow: none;
 }
-:root:has(.dashboard-page) .header-icon-btn:active {
+
+:root:has(.dashboard-page) .header-icon-btn:hover,
+:root:has(.dashboard-page) .sync-badge-btn:hover,
+:root:has(.dashboard-page) .sync-icon-btn:hover,
+:root:has(.dashboard-page) .notif-bell:hover,
+:root:has(.dashboard-page) .header-actions .btn:hover:not(:disabled),
+:root:has(.dashboard-page) .header-actions .btn-ghost:hover:not(:disabled),
+:root:has(.dashboard-page) .header-actions button:hover:not(:disabled) {
   background: var(--overlay-white-12, rgba(255, 255, 255, 0.12));
+  color: var(--color-white-inverse);
+}
+
+:root:has(.dashboard-page) .header-icon-btn:active,
+:root:has(.dashboard-page) .sync-badge-btn:active,
+:root:has(.dashboard-page) .sync-icon-btn:active,
+:root:has(.dashboard-page) .notif-bell:active,
+:root:has(.dashboard-page) .header-actions .btn:active:not(:disabled),
+:root:has(.dashboard-page) .header-actions .btn-ghost:active:not(:disabled),
+:root:has(.dashboard-page) .header-actions button:active:not(:disabled) {
+  background: var(--overlay-white-20, rgba(255, 255, 255, 0.2));
+  color: var(--color-white-inverse);
+}
+
+:root:has(.dashboard-page) .header-back:hover {
+  background: var(--overlay-white-12, rgba(255, 255, 255, 0.12));
+}
+
+:root:has(.dashboard-page) .header-back:active {
+  background: var(--overlay-white-20, rgba(255, 255, 255, 0.2));
+}
+
+:root:has(.dashboard-page) .header-brand:hover {
+  opacity: 0.88;
+  background: transparent;
+}
+
+:root:has(.dashboard-page) .header-brand:active {
+  opacity: 0.75;
+  background: transparent;
 }
 
 /* ─── Dashboard-specific tokens ───────────────────────────── */

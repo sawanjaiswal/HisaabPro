@@ -77,7 +77,7 @@ describe('usePartyForm — handleSubmit', () => {
     expect(mockToast.success).toHaveBeenCalledWith(
       'Raju Traders added successfully',
     )
-    expect(mockNavigate).toHaveBeenCalledWith('/parties')
+    expect(mockNavigate).toHaveBeenCalledWith('/parties/new-id', { replace: true, state: undefined })
   })
 
   it('inserts the created party into the list cache instantly (regression)', async () => {

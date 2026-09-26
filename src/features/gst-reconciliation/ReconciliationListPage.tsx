@@ -63,7 +63,20 @@ export default function ReconciliationListPage() {
 
   return (
     <AppShell>
-      <Header title={t.gstr1Reconciliation} backTo={ROUTES.REPORTS} />
+      <Header
+        title={t.gstr1Reconciliation}
+        backTo={ROUTES.REPORTS}
+        actions={
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowForm((v) => !v)}
+            aria-label={t.startNewReconciliation}
+          >
+            <Plus size={20} aria-hidden="true" />
+          </Button>
+        }
+      />
       <PageContainer variant="list" className="space-y-6">
 
         {showForm && (
@@ -132,14 +145,6 @@ export default function ReconciliationListPage() {
           </Button>
         )}
 
-        <Button variant="none"
-          type="button"
-          className="recon-fab"
-          aria-label={t.startNewReconciliation}
-          onClick={() => setShowForm((v) => !v)}
-        >
-          <Plus size={22} aria-hidden="true" />
-        </Button>
       </PageContainer>
     </AppShell>
   )

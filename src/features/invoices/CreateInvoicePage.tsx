@@ -123,7 +123,7 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
         }
       />
 
-      <PageContainer variant="form" className="invoice-details-section stagger-enter py-4 pb-32 space-y-4 max-w-lg mx-auto">
+      <PageContainer variant="form" className="stagger-enter py-0 pb-32 space-y-6 max-w-lg mx-auto">
         {stockShortageItems.length > 0 && (
           <StockShortageBanner items={stockShortageItems} onDismiss={clearStockShortage} />
         )}

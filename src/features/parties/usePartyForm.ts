@@ -1,10 +1,10 @@
 /** Create/Edit Party — Form state hook */
 
 import { useState, useCallback, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
+import { useFlowEngine } from '@/lib/navigation'
 import { createParty, updateParty } from './party.service'
 import { reconcilePartyCreated, reconcilePartyUpdated } from './party-cache'
 import { queuedSuffix } from '@/lib/offline.feedback'
@@ -17,7 +17,7 @@ import { toCreatePartyPayload, toUpdatePartyPayload } from './party.payload'
 import { useGstinVerify } from './useGstinVerify'
 import type { UseGstinVerifyReturn } from './useGstinVerify'
 import { useConflictReconcile } from '@/features/collaboration/useConflictReconcile'
-import type { PartyFormData, PartyType, CreditLimitMode, BalanceType } from './party.types'
+import type { PartyFormData, PartyType, CreditLimitMode, BalanceType, PartyDetail } from './party.types'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -38,6 +38,8 @@ export interface UsePartyFormOptions {
   initialData?: PartyFormData
   /** #150 — the party's optimistic-lock version at load time (edit mode). */
   version?: number
+  /** Callback for sub-flows (e.g., Quick Add Sheet within Invoice/Payment) */
+  onSuccess?: (party: PartyDetail | null) => void
 }
 
 export interface UsePartyFormReturn {
@@ -55,10 +57,10 @@ export interface UsePartyFormReturn {
 }
 
 export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormReturn {
-  const { editId, initialData, version } = options
+  const { editId, initialData, version, onSuccess } = options
   const isEditMode = Boolean(editId)
 
-  const navigate = useNavigate()
+  const { completeFlow } = useFlowEngine()
   const toast = useToast()
   const queryClient = useQueryClient()
   const conflictReconcile = useConflictReconcile()
@@ -175,13 +177,21 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
           // yet, and the drain refetches when the connection returns.
           if (updated) reconcilePartyUpdated(queryClient, updated)
           toast.success(queuedSuffix(`${form.name} updated`))
-          navigate(`/parties/${editId}`)
+          if (onSuccess) {
+            onSuccess(updated)
+          } else {
+            completeFlow({ terminalPath: `/parties/${editId}` })
+          }
         })
       } else {
         const created = await createParty(toCreatePartyPayload(form))
         if (created) reconcilePartyCreated(queryClient, created)
         toast.success(queuedSuffix(`${form.name} added successfully`))
-        navigate(ROUTES.PARTIES)
+        if (onSuccess) {
+          onSuccess(created)
+        } else {
+          completeFlow({ terminalPath: created?.id ? `/parties/${created.id}` : ROUTES.PARTIES })
+        }
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -194,7 +204,7 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
     } finally {
       setIsSubmitting(false)
     }
-  }, [form, isSubmitting, validate, toast, navigate, queryClient, isEditMode, editId, version, conflictReconcile])
+  }, [form, isSubmitting, validate, toast, completeFlow, queryClient, isEditMode, editId, version, conflictReconcile, onSuccess])
 
   const reset = useCallback(() => {
     setForm(initialData ?? INITIAL_FORM)

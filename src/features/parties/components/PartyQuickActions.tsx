@@ -1,9 +1,9 @@
 /** Party Detail — Quick action buttons row */
 
 import { FileText, Wallet, MessageSquare, Share2, UserPlus } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
+import { useFlowEngine } from '@/lib/navigation'
 
 interface PartyQuickActionsProps {
   partyId:        string
@@ -15,14 +15,14 @@ interface PartyQuickActionsProps {
 }
 
 export function PartyQuickActions({ partyId, onStatement, onShare, onInvite, showInvite }: PartyQuickActionsProps) {
-  const navigate = useNavigate()
+  const { navigateWithContext } = useFlowEngine()
   const { t } = useLanguage()
 
   return (
     <div className="party-quick-actions" role="group" aria-label={t.quickActions}>
       <Button variant="none"
         className="party-quick-action-btn"
-        onClick={() => navigate(`/invoices/new?partyId=${partyId}`)}
+        onClick={() => navigateWithContext(`/invoices/new?partyId=${partyId}`)}
         aria-label={t.createInvoiceLabel}
       >
         <FileText size={18} aria-hidden="true" />
@@ -30,7 +30,7 @@ export function PartyQuickActions({ partyId, onStatement, onShare, onInvite, sho
       </Button>
       <Button variant="none"
         className="party-quick-action-btn"
-        onClick={() => navigate(`/payments/new?partyId=${partyId}`)}
+        onClick={() => navigateWithContext(`/payments/new?partyId=${partyId}`)}
         aria-label={t.recordPaymentLabel}
       >
         <Wallet size={18} aria-hidden="true" />

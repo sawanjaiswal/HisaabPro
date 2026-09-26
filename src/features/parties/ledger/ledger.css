@@ -497,9 +497,9 @@
   justify-content: space-between;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-primary-bg-subtle);
-  border: 1px solid var(--color-primary-100);
-  border-radius: var(--radius-md);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-xl);
 }
 
 .ledger-opening-bar__icon {
@@ -509,21 +509,21 @@
   width: 28px;
   height: 28px;
   border-radius: var(--radius-full);
-  background: var(--color-primary-100);
-  color: var(--color-primary-600);
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
   flex-shrink: 0;
 }
 
 .ledger-opening-bar__label {
   margin-right: auto;
   font-size: var(--fs-sm);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-secondary);
 }
 
 .ledger-opening-bar__value {
   font-size: var(--fs-df);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -534,9 +534,9 @@
   justify-content: space-between;
   gap: var(--space-2);
   padding: var(--space-4);
-  background: var(--color-primary-50);
-  border: 1px solid var(--color-primary-100);
-  border-radius: var(--radius-md);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-xl);
 }
 
 /* Wallet square — mirrors the opening-balance bar so the two ends of the
@@ -549,8 +549,8 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-md);
-  background: var(--color-primary-100);
-  color: var(--color-primary-500);
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
 }
 
 .ledger-total__meta {
@@ -623,14 +623,44 @@
 
 /* ─── Empty / Error ───────────────────────────────────────────── */
 
+.party-ledger-tab {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 100%;
+  width: 100%;
+}
+
+.party-ledger-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 100%;
+  width: 100%;
+}
+
+.ledger-empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  margin: auto 0;
+  min-height: 320px;
+  width: 100%;
+}
+
 .ledger-empty,
 .ledger-error {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
   padding: var(--space-8) var(--space-4);
   gap: var(--space-3);
+  margin: auto 0;
+  flex: 1 1 auto;
 }
 
 .ledger-empty__icon,
