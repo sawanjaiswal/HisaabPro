@@ -1,4 +1,5 @@
 import { HisaabDatabase, SyncQueueItem } from '../db/schema';
+import { CrossTabSyncBus } from './CrossTabSyncBus';
 
 export type CanonicalEntityType = 'PARTY' | 'PRODUCT' | 'DOCUMENT' | 'PAYMENT';
 export type CanonicalOperation = 'CREATE' | 'UPDATE' | 'DELETE';
@@ -72,7 +73,7 @@ export class OutboxEngine {
     const safePayload = options.payload ? JSON.parse(JSON.stringify(options.payload)) : {};
 
     const queueItem: SyncQueueItem = {
-      id: crypto.randomUUID(),
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `temp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
       businessId: options.businessId,
       idempotencyKey,
       entityType: cleanType,
@@ -88,6 +89,26 @@ export class OutboxEngine {
     };
 
     await database.syncQueue.put(queueItem);
+
+    try {
+      CrossTabSyncBus.publish({
+        type: 'MUTATION_ENQUEUED',
+        businessId: options.businessId,
+        entityType: cleanType,
+        entityId: options.entityId,
+      });
+    } catch {}
+
     return queueItem;
+  }
+
+  /**
+   * Enqueues within an active Dexie transaction
+   */
+  public static async enqueueInTx(
+    database: HisaabDatabase,
+    options: EnqueueOptions
+  ): Promise<SyncQueueItem> {
+    return this.enqueue(database, options);
   }
 }

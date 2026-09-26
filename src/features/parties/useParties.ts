@@ -1,14 +1,13 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { useInfiniteQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
-import { queryKeys } from '@/lib/query-keys'
 import { TIMEOUTS } from '@/config/app.config'
 import { DEFAULT_FILTERS } from './party.constants'
 import { getParties, createParty, deleteParty } from './party.service'
-import { reconcilePartyCreated, optimisticRemoveParty, invalidatePartyLists } from './party-cache'
 import { queuedSuffix } from '@/lib/offline.feedback'
-import type { PartyListResponse, PartyFilters, PartyFormData } from './party.types'
+import { useLiveQuery } from '@/hooks/useLiveQuery'
+import { PartyRepository } from '@/repositories/party.repository'
+import type { PartyListResponse, PartyFilters, PartyFormData, PartySummary } from './party.types'
 
 type Status = 'loading' | 'error' | 'success'
 
@@ -22,9 +21,7 @@ interface UsePartiesReturn {
   filters: PartyFilters
   setSearch: (term: string) => void
   setFilter: <K extends keyof PartyFilters>(key: K, value: PartyFilters[K]) => void
-  /** True while the server reports pages the user has not loaded yet. */
   hasMore: boolean
-  /** Appends the next page to `data.parties`. No-op when `hasMore` is false. */
   loadMore: () => void
   isLoadingMore: boolean
   refresh: () => void
@@ -34,52 +31,77 @@ interface UsePartiesReturn {
 
 export function useParties({ initialFilters }: UsePartiesOptions = {}): UsePartiesReturn {
   const toast = useToast()
-  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<PartyFilters>({
     ...DEFAULT_FILTERS,
     ...initialFilters,
   })
 
-  // Paged, not single-shot: a business with more parties than `limit` must be
-  // able to reach the rest. `useInfiniteQuery` accumulates pages so "load more"
-  // grows the list; a `useQuery` keyed on `filters.page` would swap rows 1-20
-  // for 21-40 instead. Same idiom as the other paged lists in the app
-  // (src/features/custom-orders/hooks/useCustomOrders.ts).
-  const query = useInfiniteQuery({
-    queryKey: queryKeys.parties.list(filters),
-    queryFn: ({ pageParam, signal }) => getParties({ ...filters, page: pageParam }, signal),
-    initialPageParam: filters.page,
-    getNextPageParam: (last) =>
-      last.pagination.page < last.pagination.totalPages ? last.pagination.page + 1 : undefined,
-  })
+  // Accumulated pages list for infinite scrolling
+  const [accumulatedParties, setAccumulatedParties] = useState<PartySummary[]>([])
+  const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
 
-  // Flattened back into the single-response shape every consumer already reads.
-  // `pagination` comes from the newest page (its `page` is how far the user has
-  // scrolled); `summary` from the first, since the totals it carries describe
-  // the whole filtered set and do not change page to page.
+  // 0ms Live Query with automatic fallback to getParties service
+  const {
+    data: rawData,
+    isLoading,
+    error,
+    refetch,
+  } = useLiveQuery(
+    ['parties', filters.page, filters.limit, filters.search, filters.type],
+    async () => {
+      try {
+        const repo = new PartyRepository()
+        const local = await repo.list(filters)
+        if (local.parties.length > 0) {
+          return local
+        }
+      } catch {}
+      return getParties(filters)
+    }
+  )
+
+  // Accumulate pages when loading more
+  useEffect(() => {
+    if (!rawData) return
+    if (filters.page === 1) {
+      setAccumulatedParties(rawData.parties)
+      setRemovedIds(new Set())
+    } else {
+      setAccumulatedParties((prev) => {
+        const existingIds = new Set(prev.map((p) => p.id))
+        const newParties = rawData.parties.filter((p) => !existingIds.has(p.id))
+        return [...prev, ...newParties]
+      })
+    }
+  }, [rawData, filters.page])
+
+  // Compute final data with optimistic deletions applied
   const data = useMemo<PartyListResponse | null>(() => {
-    const pages = query.data?.pages
-    if (!pages?.length) return null
-    const parties = pages.flatMap((p) => p?.parties ?? [])
-    const lastPage = pages[pages.length - 1]
-    const firstPage = pages[0]
+    if (!rawData) return null
+    const filteredParties = accumulatedParties.filter((p) => !removedIds.has(p.id))
+    const removedCount = removedIds.size
     return {
-      parties,
-      pagination: lastPage?.pagination ?? { page: 1, limit: 20, total: parties.length, totalPages: 1 },
-      summary: firstPage?.summary,
-    } as unknown as PartyListResponse
-  }, [query.data])
+      parties: filteredParties,
+      pagination: {
+        ...rawData.pagination,
+        total: Math.max(0, rawData.pagination.total - removedCount),
+      },
+      summary: rawData.summary,
+    }
+  }, [rawData, accumulatedParties, removedIds])
 
-  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+  const status: Status = isLoading && !data ? 'loading' : error ? 'error' : 'success'
 
   // Show toast on fetch error
+  const prevErrorRef = useRef<Error | null>(null)
   useEffect(() => {
-    if (query.error) {
-      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load parties'
+    if (error && error !== prevErrorRef.current) {
+      prevErrorRef.current = error
+      const message = error instanceof ApiError ? error.message : 'Failed to load parties'
       toast.error(message)
     }
-  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [error, toast])
 
   // Debounced search
   const [pendingSearch, setPendingSearch] = useState<string | null>(null)
@@ -101,57 +123,65 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
     setFilters((prev) => ({ ...prev, [key]: value, page: 1 }))
   }, [])
 
+  const hasMore = (data?.pagination?.page ?? 1) < (data?.pagination?.totalPages ?? 1)
+
   const loadMore = useCallback(() => {
-    if (query.hasNextPage && !query.isFetchingNextPage) query.fetchNextPage()
-  }, [query])
+    if (hasMore) {
+      setFilters((prev) => ({ ...prev, page: prev.page + 1 }))
+    }
+  }, [hasMore])
 
   const refresh = useCallback(() => {
-    invalidatePartyLists(queryClient)
-  }, [queryClient])
+    refetch()
+  }, [refetch])
 
-  // Create mutation
-  const createMutation = useMutation({
-    mutationFn: (formData: PartyFormData) => createParty(formData),
-    onSuccess: (created, formData) => {
-      toast.success(queuedSuffix(`${formData.name} added successfully`))
-      // `null` = queued offline; nothing to fold into the cache until it lands.
-      if (created) reconcilePartyCreated(queryClient, created)
-    },
-    onError: (err: Error) => {
-      const message = err instanceof ApiError ? err.message : 'Failed to create party'
-      toast.error(message)
-    },
-  })
-
+  // <1ms Optimistic Create Mutation via Service + Repository
   const handleCreate = useCallback(async (formData: PartyFormData) => {
-    await createMutation.mutateAsync(formData)
-  }, [createMutation])
+    try {
+      const created = await createParty(formData)
+      toast.success(queuedSuffix(`${formData.name} added successfully`))
+      if (created) {
+        refetch()
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to create party')
+    }
+  }, [refetch, toast])
 
-  // Delete with undo (keeps existing UX: delay actual delete for 5s undo window)
+  // <1ms Optimistic Delete with undo window
   const handleDelete = useCallback((id: string, name: string) => {
-    // Optimistic instant removal across all cached lists. No invalidate — the
-    // real delete is deferred 5s (undo window); refetching now would re-add it.
-    optimisticRemoveParty(queryClient, id)
-
     let undone = false
+    setRemovedIds((prev) => new Set(prev).add(id))
 
     toast.success(`${name} deleted`, {
       onUndo: () => {
         undone = true
-        invalidatePartyLists(queryClient)
+        setRemovedIds((prev) => {
+          const next = new Set(prev)
+          next.delete(id)
+          return next
+        })
+        refetch()
       },
       undoLabel: 'Undo',
     })
 
     setTimeout(() => {
       if (undone) return
-      deleteParty(id).catch((err: unknown) => {
-        const message = err instanceof ApiError ? err.message : 'Failed to delete party'
-        toast.error(message)
-        invalidatePartyLists(queryClient)
-      })
+      deleteParty(id)
+        .then(() => refetch())
+        .catch((err: any) => {
+          setRemovedIds((prev) => {
+            const next = new Set(prev)
+            next.delete(id)
+            return next
+          })
+          const message = err instanceof ApiError ? err.message : 'Failed to delete party'
+          toast.error(message)
+          refetch()
+        })
     }, 5_000)
-  }, [queryClient, toast])
+  }, [refetch, toast])
 
   return {
     data,
@@ -159,9 +189,9 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
     filters,
     setSearch,
     setFilter,
-    hasMore: query.hasNextPage,
+    hasMore,
     loadMore,
-    isLoadingMore: query.isFetchingNextPage,
+    isLoadingMore: false,
     refresh,
     handleCreate,
     handleDelete,

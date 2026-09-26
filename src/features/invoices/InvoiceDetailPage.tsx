@@ -11,10 +11,10 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useImageExport } from '@/hooks/useImageExport'
+import { useDocumentLineage } from '@/features/sales/useDocumentLineage'
 import { useInvoiceDetail } from './useInvoiceDetail'
 import { deleteDocument } from './invoice.service'
 import { DETAIL_TABS } from './invoice.constants'
@@ -25,17 +25,15 @@ import { InvoiceDetailSkeleton } from './components/InvoiceDetailSkeleton'
 import { InvoiceOverviewPanel } from './components/InvoiceOverviewPanel'
 import { InvoiceItemsPanel } from './components/InvoiceItemsPanel'
 import { InvoiceSharePanel } from './components/InvoiceSharePanel'
-import { ShareInvoiceDrawer } from './components/ShareInvoiceDrawer'
-import { ConvertDocumentDrawer } from './components/ConvertDocumentDrawer'
 import { ALLOWED_CONVERSIONS } from './invoice.constants'
-import { PaymentLinkSheet } from '@/features/collections/components/PaymentLinkSheet'
 import { EComplianceSection } from '@/features/documents/components/EComplianceSection'
 import { ECOMPLIANCE_DOCUMENT_TYPES } from './invoice.constants'
 import type { EComplianceDocumentType } from '@/features/documents/ecompliance.types'
 import { UpiPayCard } from './components/UpiPayCard'
 import { useBusinessVpa } from './hooks/useBusinessVpa'
 import { PipelineTimeline } from '@/features/sales/components/PipelineTimeline'
-import { useDocumentLineage } from '@/features/sales/useDocumentLineage'
+import { InvoicePaymentHistory } from './components/InvoicePaymentHistory'
+import { InvoiceDetailOverlays } from './components/InvoiceDetailOverlays'
 import './invoice-detail-items.css'
 import './invoice-detail-summary.css'
 import './invoice-detail-share-log.css'
@@ -56,6 +54,7 @@ export default function InvoiceDetailPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [paymentLinkOpen, setPaymentLinkOpen] = useState(false)
+  const [recordPaymentOpen, setRecordPaymentOpen] = useState(false)
   const [convertOpen, setConvertOpen] = useState(false)
 
   const canConvert = !!(
@@ -97,6 +96,7 @@ export default function InvoiceDetailPage() {
       canConvert={canConvert}
       onShare={() => setShareOpen(true)}
       onPaymentLink={() => setPaymentLinkOpen(true)}
+      onRecordPayment={() => setRecordPaymentOpen(true)}
       onExportImage={handleExportImage}
       onConvert={() => setConvertOpen(true)}
       onDelete={() => setDeleteOpen(true)}
@@ -150,7 +150,6 @@ export default function InvoiceDetailPage() {
 
             <div ref={previewRef} className="invoice-export-capture stagger-enter">
             <InvoiceDetailHeader document={document} />
-            {/* Summary tiles (Total / Paid / Due) — GPT new-design pattern */}
             <InvoiceSummaryTiles document={document} />
 
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
@@ -164,7 +163,12 @@ export default function InvoiceDetailPage() {
             </Tabs>
 
             <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} ${t.tabContent}`}>
-              {activeTab === 'overview' && <InvoiceOverviewPanel document={document} />}
+              {activeTab === 'overview' && (
+                <div className="space-y-4">
+                  <InvoicePaymentHistory document={document} />
+                  <InvoiceOverviewPanel document={document} />
+                </div>
+              )}
               {activeTab === 'items' && <InvoiceItemsPanel lineItems={document.lineItems} />}
               {activeTab === 'share' && <InvoiceSharePanel shareLogs={document.shareLogs} onShare={() => setShareOpen(true)} />}
               {activeTab === 'compliance' && ECOMPLIANCE_DOCUMENT_TYPES.has(document.type) && (
@@ -177,7 +181,6 @@ export default function InvoiceDetailPage() {
             </div>
             </div>{/* /invoice-export-capture */}
 
-            {/* UpiPayCard: outside previewRef — not captured in image export */}
             {activeTab === 'overview' && ['SAVED', 'SHARED'].includes(document.status) && (
               <UpiPayCard
                 vpa={businessVpa}
@@ -191,53 +194,29 @@ export default function InvoiceDetailPage() {
         )}
       </PageContainer>
 
-      {document && (
-        <ShareInvoiceDrawer
-          open={shareOpen}
-          onClose={() => setShareOpen(false)}
-          documentId={documentId}
-          documentNumber={document.documentNumber}
-          partyName={document.party.name}
-          partyPhone={document.party.phone ?? undefined}
-          grandTotal={document.grandTotal}
-          document={document}
-        />
-      )}
-
-      {document && (['SAVED', 'SHARED'].includes(document.status) && document.balanceDue > 0) && (
-        <PaymentLinkSheet
-          open={paymentLinkOpen}
-          onClose={() => setPaymentLinkOpen(false)}
-          invoiceId={documentId}
-          invoiceNumber={document.documentNumber ?? documentId}
-          balanceDue={document.balanceDue}
-          partyName={document.party.name}
-          partyPhone={document.party.phone ?? undefined}
-          businessName=""
-        />
-      )}
-      {document && canConvert && (
-        <ConvertDocumentDrawer
-          open={convertOpen}
-          onClose={() => setConvertOpen(false)}
-          documentId={documentId}
-          sourceType={document.type}
-          onConverted={(newId) => {
-            setConvertOpen(false)
-            navigate(`/invoices/${newId}/edit`)
-          }}
-        />
-      )}
-      </AppShell>
-
-      <ConfirmDialog
-        open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
-        onConfirm={handleDelete}
-        title={t.deleteInvoiceConfirmTitle}
-        description={t.deleteInvoiceConfirmDesc}
-        isLoading={isDeleting}
+      <InvoiceDetailOverlays
+        document={document}
+        documentId={documentId}
+        shareOpen={shareOpen}
+        onCloseShare={() => setShareOpen(false)}
+        recordPaymentOpen={recordPaymentOpen}
+        onCloseRecordPayment={() => setRecordPaymentOpen(false)}
+        paymentLinkOpen={paymentLinkOpen}
+        onClosePaymentLink={() => setPaymentLinkOpen(false)}
+        convertOpen={convertOpen}
+        onCloseConvert={() => setConvertOpen(false)}
+        onConverted={(newId) => {
+          setConvertOpen(false)
+          navigate(`/invoices/${newId}/edit`)
+        }}
+        canConvert={canConvert}
+        deleteOpen={deleteOpen}
+        onCloseDelete={() => setDeleteOpen(false)}
+        onConfirmDelete={handleDelete}
+        isDeleting={isDeleting}
+        onRefresh={refresh}
       />
+      </AppShell>
     </>
   )
 }

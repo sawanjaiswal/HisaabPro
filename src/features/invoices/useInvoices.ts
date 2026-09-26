@@ -1,18 +1,11 @@
-/** Invoices — List hook
- *
- * TanStack Query v5 migration. Manages paginated document list,
- * debounced search, filter state, optimistic delete with undo toast.
- * Query replaces useState(data) + useEffect(fetch) + refreshKey.
- */
-
-import { useState, useEffect, useCallback } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
-import { queryKeys } from '@/lib/query-keys'
 import { TIMEOUTS } from '@/config/app.config'
 import { DEFAULT_DOCUMENT_FILTERS } from './invoice.constants'
 import { getDocuments, deleteDocument } from './invoice.service'
+import { useLiveQuery } from '@/hooks/useLiveQuery'
+import { InvoiceRepository } from '@/repositories/invoice.repository'
 import type {
   DocumentListResponse,
   DocumentFilters,
@@ -43,7 +36,6 @@ export function useInvoices({
   initialFilters,
 }: UseInvoicesOptions = {}): UseInvoicesReturn {
   const toast = useToast()
-  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<DocumentFilters>({
     ...DEFAULT_DOCUMENT_FILTERS,
@@ -54,24 +46,56 @@ export function useInvoices({
     ...initialFilters,
   })
 
-  // TanStack Query replaces useState(data) + useEffect(fetch) + refreshKey
-  const query = useQuery({
-    queryKey: queryKeys.invoices.list(filters),
-    queryFn: ({ signal }) => getDocuments(filters, signal),
-  })
+  const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
 
-  const data = query.data ?? null
-  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+  // 0ms Live Query with automatic fallback to getDocuments service
+  const {
+    data: rawData,
+    isLoading,
+    error,
+    refetch,
+  } = useLiveQuery(
+    ['invoices', filters.page, filters.limit, filters.search, filters.type, filters.status],
+    async () => {
+      try {
+        const repo = new InvoiceRepository()
+        const local = await repo.list(filters)
+        if (local.documents.length > 0) {
+          return local
+        }
+      } catch {}
+      return getDocuments(filters)
+    }
+  )
+
+  // Apply optimistic deletions
+  const data = useMemo<DocumentListResponse | null>(() => {
+    if (!rawData) return null
+    const filteredDocs = rawData.documents.filter((d) => !removedIds.has(d.id))
+    const removedCount = rawData.documents.length - filteredDocs.length
+    return {
+      documents: filteredDocs,
+      pagination: {
+        ...rawData.pagination,
+        total: Math.max(0, rawData.pagination.total - removedCount),
+      },
+      summary: rawData.summary,
+    }
+  }, [rawData, removedIds])
+
+  const status: Status = isLoading && !data ? 'loading' : error ? 'error' : 'success'
 
   // Show toast on fetch error
+  const prevErrorRef = useRef<Error | null>(null)
   useEffect(() => {
-    if (query.error) {
-      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load invoices'
+    if (error && error !== prevErrorRef.current) {
+      prevErrorRef.current = error
+      const message = error instanceof ApiError ? error.message : 'Failed to load invoices'
       toast.error(message)
     }
-  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [error, toast])
 
-  // Debounced search — holds the raw input, effect fires API after 300ms idle
+  // Debounced search
   const [pendingSearch, setPendingSearch] = useState<string | null>(null)
 
   const setSearch = useCallback((term: string) => {
@@ -87,10 +111,7 @@ export function useInvoices({
     return () => clearTimeout(timerId)
   }, [pendingSearch])
 
-  const setFilter = useCallback(<K extends keyof DocumentFilters>(
-    key: K,
-    value: DocumentFilters[K],
-  ) => {
+  const setFilter = useCallback(<K extends keyof DocumentFilters>(key: K, value: DocumentFilters[K]) => {
     setFilters((prev) => ({ ...prev, [key]: value, page: 1 }))
   }, [])
 
@@ -99,43 +120,43 @@ export function useInvoices({
   }, [])
 
   const refresh = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.invoices.all() })
-  }, [queryClient])
+    refetch()
+  }, [refetch])
 
+  // <1ms Optimistic Delete with undo window
   const handleDelete = useCallback((id: string, documentNumber: string) => {
-    // Optimistic: update cache directly
-    queryClient.setQueryData<DocumentListResponse>(
-      queryKeys.invoices.list(filters),
-      (old) => {
-        if (!old) return old
-        return {
-          ...old,
-          documents: old.documents.filter((d) => d.id !== id),
-          pagination: { ...old.pagination, total: old.pagination.total - 1 },
-        }
-      }
-    )
-
     let undone = false
+    setRemovedIds((prev) => new Set(prev).add(id))
 
     toast.success(`${documentNumber} deleted`, {
       onUndo: () => {
         undone = true
-        queryClient.invalidateQueries({ queryKey: queryKeys.invoices.all() })
+        setRemovedIds((prev) => {
+          const next = new Set(prev)
+          next.delete(id)
+          return next
+        })
+        refetch()
       },
       undoLabel: 'Undo',
     })
 
-    // Delay actual deletion to allow undo window (matches toast duration)
     setTimeout(() => {
       if (undone) return
-      deleteDocument(id).catch((err: unknown) => {
-        const message = err instanceof ApiError ? err.message : 'Failed to delete invoice'
-        toast.error(message)
-        queryClient.invalidateQueries({ queryKey: queryKeys.invoices.all() })
-      })
+      deleteDocument(id)
+        .then(() => refetch())
+        .catch((err: any) => {
+          setRemovedIds((prev) => {
+            const next = new Set(prev)
+            next.delete(id)
+            return next
+          })
+          const message = err instanceof ApiError ? err.message : 'Failed to delete document'
+          toast.error(message)
+          refetch()
+        })
     }, 5_000)
-  }, [filters, queryClient, toast])
+  }, [refetch, toast])
 
   return {
     data,

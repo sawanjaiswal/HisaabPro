@@ -84,15 +84,21 @@ function LineItemsTable({ items }: { items: DocumentDetail['lineItems'] }) {
         <Text style={[s.colRate, s.bold]}>Rate</Text>
         <Text style={[s.colTotal, s.bold]}>Amount</Text>
       </View>
-      {items.map((item, idx) => (
-        <View key={item.id} style={[s.tableRow, idx % 2 === 1 ? { backgroundColor: '#FAFAFA' } : {}]}>
-          <Text style={s.colNo}>{idx + 1}</Text>
-          <Text style={s.colItem}>{item.product.name}</Text>
-          <Text style={s.colQty}>{item.quantity} {item.product.unit}</Text>
-          <Text style={s.colRate}>{fmtPaise(item.rate)}</Text>
-          <Text style={s.colTotal}>{fmtPaise(item.lineTotal)}</Text>
-        </View>
-      ))}
+      {items.map((item, idx) => {
+        const unit =
+          (typeof item.product.unit === 'object'
+            ? (item.product.unit as any)?.symbol
+            : item.product.unit) ?? ''
+        return (
+          <View key={item.id} style={[s.tableRow, idx % 2 === 1 ? { backgroundColor: '#FAFAFA' } : {}]}>
+            <Text style={s.colNo}>{idx + 1}</Text>
+            <Text style={s.colItem}>{item.product.name}</Text>
+            <Text style={s.colQty}>{item.quantity} {unit}</Text>
+            <Text style={s.colRate}>{fmtPaise(item.rate)}</Text>
+            <Text style={s.colTotal}>{fmtPaise(item.lineTotal)}</Text>
+          </View>
+        )
+      })}
     </View>
   )
 }

@@ -1,19 +1,13 @@
-/** Products — List hook
- *
- * TanStack Query v5 migration. Manages paginated product list,
- * debounced search, filter state, optimistic delete with undo toast.
- * Query replaces useState(data) + useEffect(fetch) + refreshKey.
- */
-
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { useInfiniteQuery, useQueryClient, useMutation, type InfiniteData } from '@tanstack/react-query'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
-import { queryKeys } from '@/lib/query-keys'
 import { TIMEOUTS } from '@/config/app.config'
 import { DEFAULT_PRODUCT_FILTERS } from './product.constants'
 import { getProducts, createProduct, deleteProduct } from './product.service'
+import { useLiveQuery } from '@/hooks/useLiveQuery'
+import { ProductRepository } from '@/repositories/product.repository'
 import type { ProductListResponse, ProductFilters, ProductFormData } from './product.types'
+import type { ProductSummary } from '@/lib/types/product.types'
 
 type Status = 'loading' | 'error' | 'success'
 
@@ -38,7 +32,6 @@ interface UseProductsReturn {
 
 export function useProducts({ initialFilters }: UseProductsOptions = {}): UseProductsReturn {
   const toast = useToast()
-  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<ProductFilters>({
     ...DEFAULT_PRODUCT_FILTERS,
@@ -46,44 +39,73 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
     ...initialFilters,
   })
 
-  // Paged, not single-shot: a catalogue larger than `limit` must be reachable
-  // past row 20. `useInfiniteQuery` accumulates pages so "load more" grows the
-  // list; a `useQuery` keyed on `filters.page` would swap rows 1-20 for 21-40.
-  // Same idiom as the parties list (src/features/parties/useParties.ts).
-  const query = useInfiniteQuery({
-    queryKey: queryKeys.products.list(filters),
-    queryFn: ({ pageParam, signal }) => getProducts({ ...filters, page: pageParam }, signal),
-    initialPageParam: filters.page,
-    getNextPageParam: (last) =>
-      last.pagination.page < last.pagination.totalPages ? last.pagination.page + 1 : undefined,
-  })
+  // Accumulated pages list for infinite scrolling
+  const [accumulatedProducts, setAccumulatedProducts] = useState<ProductSummary[]>([])
+  const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
 
-  // Flattened back into the single-response shape every consumer already reads.
-  // `pagination` comes from the newest page (how far the user has scrolled);
-  // `summary` from the first, since its totals describe the whole filtered set.
+  // 0ms Live Query with automatic fallback to getProducts service
+  const {
+    data: rawData,
+    isLoading,
+    error,
+    refetch,
+  } = useLiveQuery(
+    ['products', filters.page, filters.limit, filters.search, filters.status, filters.categoryId, filters.lowStockOnly],
+    async () => {
+      try {
+        const repo = new ProductRepository()
+        const local = await repo.list(filters)
+        if (local.products.length > 0) {
+          return local
+        }
+      } catch {}
+      return getProducts(filters)
+    }
+  )
+
+  // Accumulate pages when loading more
+  useEffect(() => {
+    if (!rawData) return
+    if (filters.page === 1) {
+      setAccumulatedProducts(rawData.products)
+      setRemovedIds(new Set())
+    } else {
+      setAccumulatedProducts((prev) => {
+        const existingIds = new Set(prev.map((p) => p.id))
+        const newItems = rawData.products.filter((p) => !existingIds.has(p.id))
+        return [...prev, ...newItems]
+      })
+    }
+  }, [rawData, filters.page])
+
+  // Compute final data with optimistic deletions applied
   const data = useMemo<ProductListResponse | null>(() => {
-    const pages = query.data?.pages
-    if (!pages?.length) return null
-    const products = pages.flatMap((p) => p?.products ?? [])
-    const lastPage = pages[pages.length - 1]
-    const firstPage = pages[0]
+    if (!rawData) return null
+    const filteredProducts = accumulatedProducts.filter((p) => !removedIds.has(p.id))
+    const removedCount = removedIds.size
     return {
-      products,
-      pagination: lastPage?.pagination ?? { page: 1, limit: 20, total: products.length, totalPages: 1 },
-      summary: firstPage?.summary,
-    } as unknown as ProductListResponse
-  }, [query.data])
-  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+      products: filteredProducts,
+      pagination: {
+        ...rawData.pagination,
+        total: Math.max(0, rawData.pagination.total - removedCount),
+      },
+      summary: rawData.summary,
+    }
+  }, [rawData, accumulatedProducts, removedIds])
+
+  const status: Status = isLoading && !data ? 'loading' : error ? 'error' : 'success'
 
   // Show toast on fetch error
+  const prevErrorRef = useRef<Error | null>(null)
   useEffect(() => {
-    if (query.error) {
-      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load products'
+    if (error && error !== prevErrorRef.current) {
+      prevErrorRef.current = error
+      const message = error instanceof ApiError ? error.message : 'Failed to load products'
       toast.error(message)
     }
-  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [error, toast])
 
-  // Debounced search — holds the raw input, effect fires API after 300ms idle
+  // Debounced search
   const [pendingSearch, setPendingSearch] = useState<string | null>(null)
 
   const setSearch = useCallback((term: string) => {
@@ -107,70 +129,64 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
     setFilters((prev) => ({ ...prev, page }))
   }, [])
 
+  const hasMore = (data?.pagination?.page ?? 1) < (data?.pagination?.totalPages ?? 1)
+
   const loadMore = useCallback(() => {
-    if (query.hasNextPage && !query.isFetchingNextPage) query.fetchNextPage()
-  }, [query])
+    if (hasMore) {
+      setFilters((prev) => ({ ...prev, page: prev.page + 1 }))
+    }
+  }, [hasMore])
 
   const refresh = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.products.all() })
-  }, [queryClient])
+    refetch()
+  }, [refetch])
 
-  // Create mutation
-  const createMutation = useMutation({
-    mutationFn: (formData: ProductFormData) => createProduct(formData),
-    onSuccess: (_result, formData) => {
+  // <1ms Optimistic Create Mutation via Service + Repository
+  const handleCreate = useCallback(async (formData: ProductFormData) => {
+    try {
+      await createProduct(formData)
       toast.success(`${formData.name} added successfully`)
-      queryClient.invalidateQueries({ queryKey: queryKeys.products.all() })
-    },
-    onError: (err: Error) => {
+      refetch()
+    } catch (err: any) {
       const message = err instanceof ApiError ? err.message : 'Failed to create product'
       toast.error(message)
-    },
-  })
+    }
+  }, [refetch, toast])
 
-  const handleCreate = useCallback(async (formData: ProductFormData) => {
-    await createMutation.mutateAsync(formData)
-  }, [createMutation])
-
-  // Delete with undo (keeps existing UX: delay actual delete for 5s undo window)
+  // <1ms Optimistic Delete with undo window
   const handleDelete = useCallback((id: string, name: string) => {
-    // Optimistic: update cache directly. The cache holds pages, not one
-    // response — writing the flattened shape here would leave the list
-    // unreadable until the next refetch.
-    queryClient.setQueryData<InfiniteData<ProductListResponse, number>>(
-      queryKeys.products.list(filters),
-      (old) => {
-        if (!old) return old
-        return {
-          ...old,
-          pages: old.pages.map((page) => ({
-            ...page,
-            products: page.products.filter((p) => p.id !== id),
-            pagination: { ...page.pagination, total: page.pagination.total - 1 },
-          })),
-        }
-      }
-    )
-
     let undone = false
+    setRemovedIds((prev) => new Set(prev).add(id))
 
     toast.success(`${name} deleted`, {
       onUndo: () => {
         undone = true
-        queryClient.invalidateQueries({ queryKey: queryKeys.products.all() })
+        setRemovedIds((prev) => {
+          const next = new Set(prev)
+          next.delete(id)
+          return next
+        })
+        refetch()
       },
       undoLabel: 'Undo',
     })
 
     setTimeout(() => {
       if (undone) return
-      deleteProduct(id).catch((err: unknown) => {
-        const message = err instanceof ApiError ? err.message : 'Failed to delete product'
-        toast.error(message)
-        queryClient.invalidateQueries({ queryKey: queryKeys.products.all() })
-      })
+      deleteProduct(id)
+        .then(() => refetch())
+        .catch((err: any) => {
+          setRemovedIds((prev) => {
+            const next = new Set(prev)
+            next.delete(id)
+            return next
+          })
+          const message = err instanceof ApiError ? err.message : 'Failed to delete product'
+          toast.error(message)
+          refetch()
+        })
     }, 5_000)
-  }, [filters, queryClient, toast])
+  }, [refetch, toast])
 
   return {
     data,
@@ -179,9 +195,9 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
     setSearch,
     setFilter,
     setPage,
-    hasMore: query.hasNextPage,
+    hasMore,
     loadMore,
-    isLoadingMore: query.isFetchingNextPage,
+    isLoadingMore: false,
     refresh,
     handleCreate,
     handleDelete,

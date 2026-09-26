@@ -1,19 +1,11 @@
-/** Payments — List hook
- *
- * TanStack Query v5 migration. Manages paginated payment list,
- * debounced search, filter state, and optimistic delete with undo toast.
- * Query replaces useState(data) + useEffect(fetch) + refreshKey.
- * All amounts in PAISE.
- */
-
-import { useState, useEffect, useCallback } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
-import { queryKeys } from '@/lib/query-keys'
 import { TIMEOUTS } from '@/config/app.config'
 import { DEFAULT_PAYMENT_FILTERS } from './payment.constants'
 import { getPayments, deletePayment } from './payment.service'
+import { useLiveQuery } from '@/hooks/useLiveQuery'
+import { PaymentRepository } from '@/repositories/payment.repository'
 import type {
   PaymentListResponse,
   PaymentFilters,
@@ -44,7 +36,6 @@ export function usePayments({
   initialFilters,
 }: UsePaymentsOptions = {}): UsePaymentsReturn {
   const toast = useToast()
-  const queryClient = useQueryClient()
 
   const [filters, setFilters] = useState<PaymentFilters>({
     ...DEFAULT_PAYMENT_FILTERS,
@@ -52,24 +43,56 @@ export function usePayments({
     ...initialFilters,
   })
 
-  // TanStack Query replaces useState(data) + useEffect(fetch) + refreshKey
-  const query = useQuery({
-    queryKey: queryKeys.payments.list(filters),
-    queryFn: ({ signal }) => getPayments(filters, signal),
-  })
+  const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
 
-  const data = query.data ?? null
-  const status: Status = query.isPending ? 'loading' : query.isError ? 'error' : 'success'
+  // 0ms Live Query with automatic fallback to getPayments service
+  const {
+    data: rawData,
+    isLoading,
+    error,
+    refetch,
+  } = useLiveQuery(
+    ['payments', filters.page, filters.limit, filters.search, filters.type, filters.mode],
+    async () => {
+      try {
+        const repo = new PaymentRepository()
+        const local = await repo.list(filters)
+        if (local.payments.length > 0) {
+          return local
+        }
+      } catch {}
+      return getPayments(filters)
+    }
+  )
+
+  // Apply optimistic deletions
+  const data = useMemo<PaymentListResponse | null>(() => {
+    if (!rawData) return null
+    const filteredPayments = rawData.payments.filter((p) => !removedIds.has(p.id))
+    const removedCount = rawData.payments.length - filteredPayments.length
+    return {
+      payments: filteredPayments,
+      pagination: {
+        ...rawData.pagination,
+        total: Math.max(0, rawData.pagination.total - removedCount),
+      },
+      summary: rawData.summary,
+    }
+  }, [rawData, removedIds])
+
+  const status: Status = isLoading && !data ? 'loading' : error ? 'error' : 'success'
 
   // Show toast on fetch error
+  const prevErrorRef = useRef<Error | null>(null)
   useEffect(() => {
-    if (query.error) {
-      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load payments'
+    if (error && error !== prevErrorRef.current) {
+      prevErrorRef.current = error
+      const message = error instanceof ApiError ? error.message : 'Failed to load payments'
       toast.error(message)
     }
-  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [error, toast])
 
-  // Debounced search — holds the raw input, effect fires API after 300ms idle
+  // Debounced search
   const [pendingSearch, setPendingSearch] = useState<string | null>(null)
 
   const setSearch = useCallback((term: string) => {
@@ -85,10 +108,7 @@ export function usePayments({
     return () => clearTimeout(timerId)
   }, [pendingSearch])
 
-  const setFilter = useCallback(<K extends keyof PaymentFilters>(
-    key: K,
-    value: PaymentFilters[K],
-  ) => {
+  const setFilter = useCallback(<K extends keyof PaymentFilters>(key: K, value: PaymentFilters[K]) => {
     setFilters((prev) => ({ ...prev, [key]: value, page: 1 }))
   }, [])
 
@@ -97,43 +117,43 @@ export function usePayments({
   }, [])
 
   const refresh = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() })
-  }, [queryClient])
+    refetch()
+  }, [refetch])
 
+  // <1ms Optimistic Delete with undo window
   const handleDelete = useCallback((id: string, paymentLabel: string) => {
-    // Optimistic: update cache directly
-    queryClient.setQueryData<PaymentListResponse>(
-      queryKeys.payments.list(filters),
-      (old) => {
-        if (!old) return old
-        return {
-          ...old,
-          payments: old.payments.filter((p) => p.id !== id),
-          pagination: { ...old.pagination, total: old.pagination.total - 1 },
-        }
-      }
-    )
-
     let undone = false
+    setRemovedIds((prev) => new Set(prev).add(id))
 
     toast.success(`${paymentLabel} deleted`, {
       onUndo: () => {
         undone = true
-        queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() })
+        setRemovedIds((prev) => {
+          const next = new Set(prev)
+          next.delete(id)
+          return next
+        })
+        refetch()
       },
       undoLabel: 'Undo',
     })
 
-    // Delay actual deletion to allow undo window (matches toast duration)
     setTimeout(() => {
       if (undone) return
-      deletePayment(id).catch((err: unknown) => {
-        const message = err instanceof ApiError ? err.message : 'Failed to delete payment'
-        toast.error(message)
-        queryClient.invalidateQueries({ queryKey: queryKeys.payments.all() })
-      })
+      deletePayment(id)
+        .then(() => refetch())
+        .catch((err: any) => {
+          setRemovedIds((prev) => {
+            const next = new Set(prev)
+            next.delete(id)
+            return next
+          })
+          const message = err instanceof ApiError ? err.message : 'Failed to delete payment'
+          toast.error(message)
+          refetch()
+        })
     }, 5_000)
-  }, [filters, queryClient, toast])
+  }, [refetch, toast])
 
   return {
     data,

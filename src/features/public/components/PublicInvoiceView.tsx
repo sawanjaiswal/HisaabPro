@@ -149,19 +149,25 @@ export function PublicInvoiceView({ invoice, lang }: PublicInvoiceViewProps) {
           </tr>
         </thead>
         <tbody>
-          {invoice.lineItems.map((item) => (
-            <tr key={item.id}>
-              <td>
-                <span className="pub-invoice__item-name">{item.product.name}</span>
-                {item.product.unit && (
-                  <span className="pub-invoice__item-unit"> / {item.product.unit}</span>
-                )}
-              </td>
-              <td>{item.quantity}</td>
-              <td>{fmtAmount(item.rate)}</td>
-              <td>{fmtAmount(item.lineTotal)}</td>
-            </tr>
-          ))}
+          {invoice.lineItems.map((item) => {
+            const unit =
+              (typeof item.product.unit === 'object'
+                ? (item.product.unit as any)?.symbol
+                : item.product.unit) ?? ''
+            return (
+              <tr key={item.id}>
+                <td>
+                  <span className="pub-invoice__item-name">{item.product.name}</span>
+                  {unit && (
+                    <span className="pub-invoice__item-unit"> / {unit}</span>
+                  )}
+                </td>
+                <td>{item.quantity}</td>
+                <td>{fmtAmount(item.rate)}</td>
+                <td>{fmtAmount(item.lineTotal)}</td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
 

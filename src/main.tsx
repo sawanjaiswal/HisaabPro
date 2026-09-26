@@ -12,14 +12,17 @@ import { App } from './App'
 import { initServiceWorker } from './lib/sw-register'
 import { recoverStuckItems, startOfflineAutoSync } from './lib/offline'
 import { initStorageSentinel } from './db/storage-sentinel'
+import { db } from './db/schema'
+import { sanitizeAndMigrateLocalDB } from './db/db-sanitizer'
 import { initSentry } from './lib/sentry'
 import './styles/globals.css'
 
 // Initialize error tracking before anything else
 initSentry()
 
-// Register storage protection + service worker + recover any stuck sync items
+// Register storage protection + service worker + database sanitizer
 initStorageSentinel()
+void sanitizeAndMigrateLocalDB(db)
 initServiceWorker()
 recoverStuckItems()
 // Owns queue draining for the whole app lifetime — never a component's job.

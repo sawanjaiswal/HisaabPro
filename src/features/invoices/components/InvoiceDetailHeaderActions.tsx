@@ -2,7 +2,7 @@
 
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
-import { Pencil, Trash2, Share2, ImageDown, Link, RefreshCw, ArrowRightLeft } from 'lucide-react'
+import { Pencil, Trash2, Share2, ImageDown, Link, RefreshCw, ArrowRightLeft, Banknote } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { DocumentDetail } from '../invoice.types'
 
@@ -14,6 +14,7 @@ interface Props {
   canConvert: boolean
   onShare: () => void
   onPaymentLink: () => void
+  onRecordPayment?: () => void
   onExportImage: () => void
   onConvert: () => void
   onDelete: () => void
@@ -27,6 +28,7 @@ export function InvoiceDetailHeaderActions({
   canConvert,
   onShare,
   onPaymentLink,
+  onRecordPayment,
   onExportImage,
   onConvert,
   onDelete,
@@ -41,6 +43,11 @@ export function InvoiceDetailHeaderActions({
       <Button variant="ghost" size="sm" onClick={() => navigate(`/invoices/${documentId}/edit`)} aria-label={t.editInvoice}>
         <Pencil size={18} aria-hidden="true" />
       </Button>
+      {isActive && document!.balanceDue > 0 && onRecordPayment && (
+        <Button variant="ghost" size="sm" aria-label="Record Payment" onClick={onRecordPayment} title="Record Payment">
+          <Banknote size={18} aria-hidden="true" />
+        </Button>
+      )}
       <Button variant="ghost" size="sm" aria-label={t.shareInvoice} onClick={onShare} disabled={disabled}>
         <Share2 size={18} aria-hidden="true" />
       </Button>
