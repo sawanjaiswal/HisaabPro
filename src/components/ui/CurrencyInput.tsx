@@ -153,24 +153,24 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-xs font-bold uppercase tracking-wider text-text-secondary select-none"
+            className="block text-[var(--fs-xs)] font-bold uppercase tracking-wider text-[var(--color-text-secondary)] select-none"
           >
             {label}
-            {required && <span className="text-red-500 ml-1 font-bold">*</span>}
+            {required && <span className="text-[var(--color-error-500)] ml-1 font-bold">*</span>}
           </label>
         )}
 
         <div
           className={cn(
-            'flex items-center gap-2.5 px-3.5 py-2 rounded-md border transition-all focus-within:ring-2 focus-within:ring-primary-100 focus-within:border-primary-500',
+            'flex items-center gap-2.5 px-3.5 py-2 rounded-[var(--radius-md)] border transition-all focus-within:ring-2 focus-within:ring-[var(--color-primary-100)] focus-within:border-[var(--color-primary-500)]',
             variant === 'filled'
-              ? 'bg-gray-50 border-gray-200'
-              : 'bg-surface border-border',
-            error && 'border-red-500 focus-within:border-red-500'
+              ? 'bg-[var(--color-gray-50)] border-[var(--color-border)]'
+              : 'bg-[var(--color-surface)] border-[var(--color-border)]',
+            error && 'border-[var(--color-error-500)] focus-within:border-[var(--color-error-500)]'
           )}
         >
           <div
-            className="flex items-center justify-center w-6 h-6 rounded-sm flex-shrink-0 select-none text-primary-600"
+            className="flex items-center justify-center w-6 h-6 rounded-sm flex-shrink-0 select-none text-[var(--color-primary-600)]"
             aria-hidden="true"
           >
             <IndianRupee size={16} strokeWidth={2.5} />

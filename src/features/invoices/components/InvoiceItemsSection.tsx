@@ -99,11 +99,11 @@ export function InvoiceItemsSection({
   return (
     <div className="line-items-section py-0 space-y-4">
       {/* ── 1. Customer Card ── */}
-      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs space-y-3">
+      <div className="bg-white rounded-3xl p-5 shadow-xs border-0 space-y-3">
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text-primary)]">
-            <User size={15} className="text-emerald-700" />
-            <span>{t.customer || 'Customer'}</span>
+          <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-slate-500">
+            <User size={14} className="text-[#026F39]" />
+            <span>{t.customer || 'CUSTOMER'}</span>
             <span className="text-red-500">*</span>
           </label>
         </div>
@@ -125,16 +125,16 @@ export function InvoiceItemsSection({
       </div>
 
       {/* ── 2. Items Card ── */}
-      <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs space-y-4">
+      <div className="bg-white rounded-3xl p-5 shadow-xs border-0 space-y-4">
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-1.5 text-sm font-semibold text-[var(--text-primary)]">
-            <Package size={15} className="text-emerald-700" />
-            <span>{t.sectionItems || 'Items'}</span>
+          <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-slate-500">
+            <Package size={14} className="text-[#026F39]" />
+            <span>{t.sectionItems || 'ITEMS'}</span>
           </label>
           <Button
             variant="none"
             type="button"
-            className="text-emerald-700 hover:text-emerald-800 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+            className="text-[#026F39] hover:text-emerald-800 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
             onClick={onToggleProductSearch}
             aria-label={showProductSearch ? t.hideProductSearch : t.addLineItemLabel}
             aria-expanded={showProductSearch}
@@ -151,15 +151,15 @@ export function InvoiceItemsSection({
         )}
 
         {lineItems.length === 0 && !showProductSearch && (
-          <div className="bg-[var(--color-gray-50)]/40 border-2 border-dashed border-[var(--color-border)] rounded-2xl p-6 text-center flex flex-col items-center justify-center space-y-2">
-            <div className="relative inline-flex items-center justify-center p-3.5 bg-emerald-50 rounded-2xl text-emerald-700 mb-1">
+          <div className="bg-[#F8F9FA] rounded-2xl p-6 text-center flex flex-col items-center justify-center space-y-2 border-0">
+            <div className="relative inline-flex items-center justify-center p-3.5 bg-emerald-50 rounded-2xl text-[#026F39] mb-1">
               <Package size={34} strokeWidth={1.5} />
               <Sparkles size={16} className="absolute -top-1 -right-1 text-emerald-500" />
             </div>
-            <h4 className="text-sm font-bold text-[var(--text-primary)]">
+            <h4 className="text-sm font-bold text-slate-900">
               {t.noItemsAdded || 'No items added yet'}
             </h4>
-            <p className="text-xs text-[var(--text-secondary)] max-w-xs">
+            <p className="text-xs text-slate-500 max-w-xs">
               Add products or services to this invoice
             </p>
             <div className="flex items-center gap-2.5 pt-3">
@@ -172,7 +172,7 @@ export function InvoiceItemsSection({
                 <Plus size={14} />
                 <span>+ {t.addItem || 'Add Item'}</span>
               </Button>
-              <div className="[&>button]:bg-emerald-50 [&>button]:text-emerald-800 [&>button]:border [&>button]:border-emerald-200/80 [&>button]:hover:bg-emerald-100 [&>button]:font-bold [&>button]:text-xs [&>button]:px-4 [&>button]:py-2.5 [&>button]:rounded-xl">
+              <div className="[&>button]:bg-emerald-50 [&>button]:text-[#026F39] [&>button]:hover:bg-emerald-100 [&>button]:font-bold [&>button]:text-xs [&>button]:px-4 [&>button]:py-2.5 [&>button]:rounded-xl [&>button]:border-0">
                 <InvoiceScanButton onAdd={handleProductSelect} />
               </div>
             </div>

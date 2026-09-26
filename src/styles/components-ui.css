@@ -110,9 +110,9 @@
   padding: 0 var(--space-4);
   font-family: var(--font-primary);
   font-size: var(--fs-base);
-  color: var(--color-gray-800);
-  background: var(--color-gray-0);
-  border: 1.5px solid var(--color-gray-200);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   outline: none;
   transition: border-color var(--duration-fast) var(--ease-default);
@@ -308,9 +308,9 @@
 .pill-tab {
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-full);
-  border: 1.5px solid var(--color-gray-100);
-  background: var(--color-gray-0);
-  color: var(--color-gray-600);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
   font-size: var(--fs-sm);
   font-weight: 500;
   white-space: nowrap;

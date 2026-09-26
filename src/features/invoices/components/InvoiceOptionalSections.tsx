@@ -45,16 +45,16 @@ export const InvoiceOptionalSections: React.FC<InvoiceOptionalSectionsProps> = (
     >
       <AccordionItem
         value="details"
-        className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs transition-all"
+        className="bg-white rounded-3xl p-5 shadow-xs border-0 transition-all"
       >
         <AccordionTrigger className="flex items-center justify-between py-0 hover:no-underline cursor-pointer">
           <div className="flex items-center gap-2.5 text-left">
-            <FileText className="w-4 h-4 text-emerald-700 shrink-0" />
+            <FileText className="w-4 h-4 text-[#026F39] shrink-0" />
             <div className="flex flex-col">
-              <span className="font-semibold text-sm text-[var(--text-primary)]">
+              <span className="font-semibold text-sm text-slate-900">
                 {t.sectionDetails || 'Details'}
               </span>
-              <span className="text-[11px] text-[var(--text-secondary)] font-normal">
+              <span className="text-[11px] text-slate-500 font-normal">
                 Notes, reference, due date etc.
               </span>
             </div>
@@ -82,16 +82,16 @@ export const InvoiceOptionalSections: React.FC<InvoiceOptionalSectionsProps> = (
 
       <AccordionItem
         value="charges"
-        className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs transition-all"
+        className="bg-white rounded-3xl p-5 shadow-xs border-0 transition-all"
       >
         <AccordionTrigger className="flex items-center justify-between py-0 hover:no-underline cursor-pointer">
           <div className="flex items-center gap-2.5 text-left">
-            <Percent className="w-4 h-4 text-emerald-700 shrink-0" />
+            <Percent className="w-4 h-4 text-[#026F39] shrink-0" />
             <div className="flex flex-col">
-              <span className="font-semibold text-sm text-[var(--text-primary)]">
+              <span className="font-semibold text-sm text-slate-900">
                 {t.chargesLabel || 'Charges'}
               </span>
-              <span className="text-[11px] text-[var(--text-secondary)] font-normal">
+              <span className="text-[11px] text-slate-500 font-normal">
                 Discount, tax and other charges
               </span>
             </div>

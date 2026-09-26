@@ -114,19 +114,22 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
       isCreating={isCreating}
       error={error}
       renderSelected={({ title, onClear }) => (
-        <div className="entity-selected-card" role="status" aria-label={`Selected: ${title}`}>
-          <div className="entity-selected-card-info">
+        <div className="bg-[#F8F9FA] rounded-2xl p-3.5 flex items-center justify-between w-full" role="status" aria-label={`Selected: ${title}`}>
+          <div className="flex items-center gap-3 min-w-0">
             <PartyAvatar name={title} size="md" className="flex-shrink-0" />
-            <div className="entity-selected-card-details">
-              <div className="entity-selected-card-title">{title}</div>
-              <PartyBalanceChip partyId={value} />
+            <div className="flex flex-col min-w-0">
+              <span className="font-bold text-base text-slate-900 leading-tight truncate">{title}</span>
+              <div className="mt-1">
+                <PartyBalanceChip partyId={value} />
+              </div>
             </div>
           </div>
           <Button
-            variant="outline"
+            variant="none"
             size="sm"
             type="button"
             onClick={onClear}
+            className="border border-[#026F39] text-[#026F39] hover:bg-emerald-50 bg-white font-semibold text-xs px-3.5 py-1.5 rounded-lg shrink-0 ml-3 transition-colors cursor-pointer"
             aria-label={t.changeSelectedParty || 'Change'}
           >
             {t.changeLabel || 'Change'}

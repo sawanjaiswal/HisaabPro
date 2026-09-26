@@ -85,11 +85,11 @@ export function PaymentFormSections({
       >
         <AccordionItem
           value="invoices"
-          className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs transition-all"
+          className="bg-white rounded-3xl p-5 shadow-xs border-0 transition-all"
         >
-          <AccordionTrigger className="flex items-center justify-between font-semibold text-sm py-0 text-[var(--text-primary)] hover:no-underline cursor-pointer">
+          <AccordionTrigger className="flex items-center justify-between font-semibold text-sm py-0 text-slate-800 hover:no-underline cursor-pointer">
             <span className="flex items-center gap-2">
-              <Link2 className="w-4 h-4 text-emerald-700" />
+              <Link2 className="w-4 h-4 text-[#026F39]" />
               <span>{t.sectionLinkInvoices || 'Link Invoices'}</span>
             </span>
           </AccordionTrigger>
@@ -107,11 +107,11 @@ export function PaymentFormSections({
 
         <AccordionItem
           value="discount"
-          className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-4 shadow-xs transition-all"
+          className="bg-white rounded-3xl p-5 shadow-xs border-0 transition-all"
         >
-          <AccordionTrigger className="flex items-center justify-between font-semibold text-sm py-0 text-[var(--text-primary)] hover:no-underline cursor-pointer">
+          <AccordionTrigger className="flex items-center justify-between font-semibold text-sm py-0 text-slate-800 hover:no-underline cursor-pointer">
             <span className="flex items-center gap-2">
-              <Percent className="w-4 h-4 text-emerald-700" />
+              <Percent className="w-4 h-4 text-[#026F39]" />
               <span>{t.discount || 'Discount'}</span>
             </span>
           </AccordionTrigger>

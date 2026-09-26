@@ -48,16 +48,16 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[var(--z-sticky)] bg-[var(--color-surface)]/95 backdrop-blur-md border-t border-[var(--color-border)] px-4 py-3 shadow-lg"
+      className="fixed bottom-0 left-0 right-0 z-[var(--z-sticky)] bg-white/95 backdrop-blur-md border-t border-gray-100/80 px-4 py-3.5 shadow-lg"
       aria-label={t.invoiceTotalsAriaLabel}
     >
-      <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
+      <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
         {/* Left: Grand Total */}
         <div className="flex flex-col min-w-0">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
             {t.grandTotal || 'Grand Total'}
           </span>
-          <span className="text-xl font-black text-[var(--text-primary)] tabular-nums tracking-tight">
+          <span className="text-xl font-black text-slate-900 tabular-nums tracking-tight">
             {formatInvoiceAmount(grandTotal)}
           </span>
         </div>
@@ -70,7 +70,7 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
             onClick={onSaveDraft}
             disabled={isSubmitting}
             aria-label={t.saveDraftAriaLabel}
-            className="bg-emerald-50/80 hover:bg-emerald-100 text-emerald-800 font-bold text-xs px-3.5 py-2.5 rounded-xl border border-emerald-200/70 transition-all cursor-pointer shadow-2xs"
+            className="bg-emerald-50 hover:bg-emerald-100 text-[#026F39] font-bold text-xs px-4 py-2.5 rounded-xl border-0 transition-all cursor-pointer"
           >
             {t.saveDraft || 'Save Draft'}
           </Button>
@@ -83,7 +83,7 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
             aria-label={
               onPreview ? (t.previewInvoice || 'Preview Invoice') : isSubmitting ? t.savingInvoice : t.saveInvoice
             }
-            className="bg-[#026F39] hover:bg-[#025a2e] text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer active:scale-95"
+            className="bg-[#026F39] hover:bg-[#025a2e] text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 border-0"
           >
             <span>{onPreview ? (t.previewInvoice || 'Preview Invoice') : isSubmitting ? t.saving : t.save}</span>
             <ArrowRight size={14} aria-hidden="true" />
