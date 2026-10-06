@@ -8,6 +8,7 @@ import { ensureSystemRoles } from '../settings.service.js'
 import { seedDefaultAccounts } from '../accounting/chart-of-accounts.js'
 import { ensurePredefinedUnits } from '../unit/constants.js'
 import { getMe } from './me.js'
+import { alertNewUserOnboarded } from '../../lib/admin-telegram.js'
 
 const PASSWORD_BCRYPT_ROUNDS = 10
 
@@ -21,6 +22,7 @@ export async function createUserWithDefaultBusiness(params: {
   passwordHash?: string | null
   email?: string | null
   businessName?: string
+  method?: 'OTP' | 'PASSWORD' | 'SSO'
 }) {
   const { phone, name, passwordHash, email, businessName } = params
   const firmName = businessName?.trim() || `${name}'s Business`
@@ -94,6 +96,15 @@ export async function createUserWithDefaultBusiness(params: {
   const tokens = generateTokens(result.user.id, result.user.phone, result.business.id)
   const meData = await getMe(result.user.id, result.business.id)
 
+  // Super-admin alert — fire-and-forget, never blocks response
+  alertNewUserOnboarded({
+    name: result.user.name,
+    phone: result.user.phone,
+    businessName: result.business.name,
+    businessId: result.business.id,
+    method: params.method ?? 'PASSWORD',
+  })
+
   return {
     user: result.user,
     business: result.business,
@@ -140,6 +151,7 @@ export async function directRegister(data: RegisterInput) {
     email: email && email.trim() ? email.trim().toLowerCase() : undefined,
     passwordHash,
     businessName,
+    method: 'PASSWORD',
   })
 
   return {
@@ -320,6 +332,7 @@ export async function verifyRegistration(data: VerifyRegistrationInput) {
     email: email || undefined,
     passwordHash: ctx.passwordHash,
     businessName: ctx.businessName,
+    method: 'OTP',
   })
 
   return {

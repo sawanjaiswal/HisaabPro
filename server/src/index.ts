@@ -62,3 +62,37 @@ server.on('error', (err: NodeJS.ErrnoException) => {
   }
   process.exit(1)
 })
+
+// 11:59 PM IST Executive Daily Digest
+import { runDailyAdminDigest } from './services/admin-daily-digest/index.js'
+
+let lastDailyDigestDateRan = ''
+setInterval(() => {
+  try {
+    const now = new Date()
+    const istFormatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    })
+    const parts = istFormatter.formatToParts(now)
+    const getPart = (type: string) => parts.find((p) => p.type === type)?.value || ''
+    const todayIst = `${getPart('year')}-${getPart('month')}-${getPart('day')}`
+    const istHour = parseInt(getPart('hour'), 10)
+    const istMinute = parseInt(getPart('minute'), 10)
+
+    if (istHour === 23 && istMinute >= 59 && lastDailyDigestDateRan !== todayIst) {
+      lastDailyDigestDateRan = todayIst
+      void runDailyAdminDigest(todayIst).catch((err) => {
+        logger.error('Daily admin digest cron tick failed', { err })
+      })
+    }
+  } catch (err) {
+    logger.error('Error checking daily digest schedule', { err })
+  }
+}, 60 * 1000)
+

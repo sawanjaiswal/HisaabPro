@@ -26,6 +26,7 @@ import type {
   TokenWebhookPaymentEntity,
   TokenWebhookTokenEntity,
 } from './subscription/token-engine/token-engine.types.js'
+import { alertPaymentCaptured, alertOneTimeOrderPaid } from '../lib/admin-telegram.js'
 
 const MAX_EVENT_AGE_MS = 5 * 60 * 1000
 
@@ -138,6 +139,7 @@ export async function processWebhookEvent(payload: WebhookPayload): Promise<Webh
           const ctx = await resolveTokenPaymentContext(payment as TokenWebhookPaymentEntity)
           if (ctx) {
             await handleTokenPaymentCaptured(ctx, payment as TokenWebhookPaymentEntity)
+            alertOneTimeOrderPaid({ paymentId: payment.id, event: payload.event })
             return { handled: true }
           }
         }
@@ -163,6 +165,15 @@ export async function processWebhookEvent(payload: WebhookPayload): Promise<Webh
           planTier,
           payload: { razorpaySubId: sub.id, currentEnd: sub.current_end },
         })
+
+        alertPaymentCaptured({
+          businessId: resolved.businessId,
+          planTier,
+          razorpaySubId: sub.id,
+          event: payload.event,
+          amountPaise: payment?.amount,
+        })
+
         return { handled: true }
       }
 

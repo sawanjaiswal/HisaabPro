@@ -174,6 +174,7 @@ async function handleGoogleExchange(req: any, res: any) {
         email: email.toLowerCase(),
         passwordHash: null,
         businessName: `${name}'s Business`,
+        method: 'SSO',
       })
       currentUser = created.user
       businessId = created.business.id
@@ -209,6 +210,14 @@ async function handleGoogleExchange(req: any, res: any) {
         await ensureSystemRoles(business.id)
         await seedDefaultAccounts(business.id)
         await ensurePredefinedUnits(business.id)
+        const { alertNewUserOnboarded } = await import('../../lib/admin-telegram.js')
+        alertNewUserOnboarded({
+          name: user.name || 'User',
+          phone: user.phone,
+          businessName: business.name,
+          businessId: business.id,
+          method: 'SSO',
+        })
         businessId = business.id
       }
       tokens = generateTokens(user.id, user.phone, businessId)

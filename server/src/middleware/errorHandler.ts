@@ -6,6 +6,7 @@ import type { Request, Response, NextFunction } from 'express'
 import { AppError, handleError } from '../lib/errors.js'
 import type { ApiErrorResponse } from '../lib/errors.js'
 import logger from '../lib/logger.js'
+import { alertServerError } from '../lib/admin-telegram.js'
 
 export function errorHandler(
   error: Error | AppError,
@@ -32,6 +33,16 @@ export function errorHandler(
     method: req.method,
     ...(safeDetails && { details: safeDetails }),
   })
+
+  // Super-admin Telegram alert for 5xx server errors only (throttled per error code)
+  if (appError.statusCode >= 500) {
+    alertServerError({
+      code: appError.code,
+      message: appError.message,
+      method: req.method,
+      path: req.path,
+    })
+  }
 
   const response: ApiErrorResponse = appError.toResponse()
   res.status(appError.statusCode).json(response)
