@@ -182,8 +182,8 @@ test.describe('TC-AUTH — login and session', () => {
   }) => {
     await loginViaUi(page, SEEDED_OWNER_PHONE, VALID_PASSWORD)
 
-    // The real path a user takes: bottom nav "More" → Logout → confirm.
-    await page.getByRole('button', { name: /more|menu/i }).first().click()
+    // The real path a user takes: bottom nav "More/Menu" → Logout → confirm.
+    await page.locator('.bnav, .side-nav-rail').getByRole('button', { name: /more|menu/i }).first().click()
     await page.locator('.side-nav-item--logout').click()
     await page.getByRole('button', { name: /log ?out|sign ?out/i }).last().click()
 

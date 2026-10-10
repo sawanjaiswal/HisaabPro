@@ -16,7 +16,7 @@ export const LP_SECTIONS = {
 /** Internal app routes (pages that exist in the SPA) */
 export const LP_APP = {
   LOGIN: '/login',
-  REGISTER: '/login', // TODO: change to /register when built
+  REGISTER: '/register',
 } as const
 
 /** External links */
@@ -36,11 +36,11 @@ export const LP_SOCIAL = {
 
 /** Legal / info pages */
 export const LP_LEGAL = {
-  ABOUT: '/about',
+  ABOUT: '#features',
   PRIVACY: '/privacy',
   TERMS: '/terms',
-  HELP: '/help',
-  REFUND: '/refund',
+  HELP: 'https://wa.me/917000462319',
+  REFUND: '/terms#refund',
 } as const
 
 /** Helper: turn section ID into hash link */

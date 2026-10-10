@@ -49,7 +49,7 @@ export interface UsePartyFormReturn {
   isEditMode: boolean
   updateField: <K extends keyof PartyFormData>(key: K, value: PartyFormData[K]) => void
   validate: () => boolean
-  handleSubmit: () => Promise<void>
+  handleSubmit: () => Promise<boolean>
   reset: () => void
   gstinVerify: UseGstinVerifyReturn
   /** #150 — conflict reconcile state + actions; page renders <ConflictDialog>. */
@@ -157,9 +157,9 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
     return Object.keys(next).length === 0
   }, [form])
 
-  const handleSubmit = useCallback(async () => {
-    if (!validate()) return
-    if (isSubmitting) return
+  const handleSubmit = useCallback(async (): Promise<boolean> => {
+    if (!validate()) return false
+    if (isSubmitting) return false
 
     setIsSubmitting(true)
 
@@ -183,6 +183,7 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
             completeFlow({ terminalPath: `/parties/${editId}` })
           }
         })
+        return true
       } else {
         const created = await createParty(toCreatePartyPayload(form))
         if (created) reconcilePartyCreated(queryClient, created)
@@ -192,6 +193,7 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
         } else {
           completeFlow({ terminalPath: created?.id ? `/parties/${created.id}` : ROUTES.PARTIES })
         }
+        return true
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -201,6 +203,7 @@ export function usePartyForm(options: UsePartyFormOptions = {}): UsePartyFormRet
       } else {
         toast.error(err ?? (isEditMode ? 'Failed to update party.' : 'Failed to save party. Please try again.'))
       }
+      return false
     } finally {
       setIsSubmitting(false)
     }

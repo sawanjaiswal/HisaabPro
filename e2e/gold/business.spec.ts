@@ -145,7 +145,7 @@ test.describe('TC-BIZ — business & multi-business', () => {
       // (`BusinessAvatar`, the tap-to-switch header control, is currently
       // rendered by nothing — see the findings; the side nav is the shipped path.)
       await page.goto(ROUTES.DASHBOARD)
-      await page.getByRole('button', { name: /open menu/i }).click()
+      await page.locator('.bnav__tab').filter({ hasText: /menu|more/i }).click()
       await page.locator('.side-nav-business-accordion-trigger').click()
       for (const name of names) {
         await expect(
@@ -265,6 +265,7 @@ test.describe('TC-BIZ — business & multi-business', () => {
       await loginViaUi(staffPage, staffPhone, VALID_PASSWORD)
       await staffPage.goto(BIZ_ROUTES.join)
       await enterInviteCode(staffPage, code!.trim())
+      await expect(staffPage.locator('.join-business-success')).toBeVisible({ timeout: 20_000 })
 
       await expect
         .poll(

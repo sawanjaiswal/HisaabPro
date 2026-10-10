@@ -25,7 +25,16 @@ const NON_REFRESHABLE_AUTH_PATHS = [
   '/auth/csrf-token',
 ]
 
+function hasSessionHint(): boolean {
+  try {
+    return typeof sessionStorage !== 'undefined' && sessionStorage.getItem('cachedUser') !== null
+  } catch {
+    return false
+  }
+}
+
 export function isNonRefreshableAuthPath(path: string): boolean {
+  if (path === '/auth/me' && !hasSessionHint()) return true
   return NON_REFRESHABLE_AUTH_PATHS.some((p) => path.startsWith(p))
 }
 

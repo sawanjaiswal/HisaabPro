@@ -35,6 +35,7 @@ describe('401 refresh interceptor — /auth/me should refresh, not hard-log-out'
   })
 
   it('attempts a token refresh and retries on a 401 from /auth/me instead of throwing immediately', async () => {
+    sessionStorage.setItem('cachedUser', JSON.stringify({ id: '1' }))
     const fetchMock = globalThis.fetch as unknown as ReturnType<typeof vi.fn>
 
     fetchMock

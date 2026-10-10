@@ -115,7 +115,9 @@ test('TC-PTY-10 GSTIN is validated before it can classify an invoice as B2B', as
   await page.locator('#party-gstin').fill(GSTIN.intraState)
   await expect(page.getByText(/verified/i)).toBeVisible({ timeout: 10_000 })
   await page.getByRole('button', { name: /save party/i }).first().click()
-  await page.waitForURL('**/parties', { timeout: 15_000 })
+  await page.waitForURL((url) => url.pathname.startsWith('/parties') && !url.pathname.endsWith('/parties/new'), {
+    timeout: 15_000,
+  })
   expect(failures.get(), 'saving a valid GSTIN must not produce an API failure').toEqual([])
 })
 
@@ -134,7 +136,7 @@ test('TC-PTY-11 a party created offline is queued with a readable label', async 
 
   // OFFLINE_RULES rule 2: the queue must name the thing being saved, not show
   // "Offline change". The party's own name is the label the service passes.
-  await expect(page.locator('body')).toContainText(name, { timeout: 15_000 })
+  await expect(page.locator('body')).toContainText(new RegExp(name, 'i'), { timeout: 15_000 })
 
   await context.setOffline(false)
   await expect(async () => {

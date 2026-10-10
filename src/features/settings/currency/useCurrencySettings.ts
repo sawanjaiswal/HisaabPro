@@ -47,10 +47,13 @@ export function useCurrencySettings(): UseCurrencySettingsReturn {
       getSupportedCurrencies(controller.signal),
       listExchangeRates({ page, limit: CURRENCY_PAGE_SIZE }, controller.signal),
     ])
-      .then(([fetchedCurrencies, fetchedRates]) => {
-        setCurrencies(fetchedCurrencies)
-        setRates(fetchedRates)
-        setHasMore(fetchedRates.length === CURRENCY_PAGE_SIZE)
+      .then(([fetchedCurrencies, fetchedRatesResponse]) => {
+        const rateList = Array.isArray(fetchedRatesResponse)
+          ? fetchedRatesResponse
+          : (fetchedRatesResponse?.rates ?? [])
+        setCurrencies(Array.isArray(fetchedCurrencies) ? fetchedCurrencies : [])
+        setRates(rateList)
+        setHasMore(rateList.length === CURRENCY_PAGE_SIZE)
         setStatus('success')
       })
       .catch((err: unknown) => {

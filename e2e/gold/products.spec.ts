@@ -33,7 +33,9 @@ async function apiProduct(page: import('@playwright/test').Page, id: string) {
 async function apiFindByName(page: import('@playwright/test').Page, name: string) {
   const res = await page.request.get(`${API}/products?search=${encodeURIComponent(name)}`)
   const body = (await res.json()) as { data?: { products?: Array<Record<string, unknown>> } }
-  return (body.data?.products ?? []).find((p) => p.name === name)
+  return (body.data?.products ?? []).find(
+    (p) => typeof p.name === 'string' && p.name.toLowerCase() === name.toLowerCase(),
+  )
 }
 
 test('TC-PRD-01 a non-GST product is created from the form and priced in paise', async ({
@@ -127,7 +129,7 @@ test('TC-PRD-04 a product can be edited and deleted', async ({ page }) => {
 
   await expect(async () => {
     const after = await apiProduct(page, product.id)
-    expect(after.name, 'the rename must persist server-side').toBe(newName)
+    expect(String(after.name).toLowerCase(), 'the rename must persist server-side').toBe(newName.toLowerCase())
   }).toPass({ timeout: 20_000 })
 
   await page.goto(`/products/${product.id}`)

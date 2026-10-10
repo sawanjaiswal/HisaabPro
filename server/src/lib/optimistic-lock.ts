@@ -7,7 +7,7 @@
 // write share one transaction, so a concurrent writer either loses the row
 // lock and then matches 0 rows (-> 409), or wins and we 409. No TOCTOU window.
 import { prisma } from './prisma.js'
-import { AppError, ErrorCode } from './errors.js'
+import { AppError, ErrorCode, notFoundError } from './errors.js'
 
 export type LockModel = 'party' | 'product' | 'document' | 'payment'
 
@@ -59,10 +59,13 @@ export async function bumpVersionOrConflict(
   const delegate = (tx as any)[model]
 
   if (expectedVersion === undefined) {
-    await delegate.updateMany({
+    const res = await delegate.updateMany({
       where: { id, businessId },
       data: { version: { increment: 1 } },
     })
+    if (res.count === 0) {
+      throw notFoundError(model.charAt(0).toUpperCase() + model.slice(1))
+    }
     return
   }
 

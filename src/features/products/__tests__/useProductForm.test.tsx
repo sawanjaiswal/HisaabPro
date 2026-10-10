@@ -162,7 +162,7 @@ describe('useProductForm', () => {
         undefined,
       )
       expect(mockToast.success).toHaveBeenCalledWith('Old updated')
-      expect(mockNavigate).toHaveBeenCalledWith('/products/p-1')
+      expect(mockNavigate).toHaveBeenCalledWith('/products/p-1', { replace: true })
     })
     it('sets isSubmitting during submit', async () => {
       let resolveCreate: () => void

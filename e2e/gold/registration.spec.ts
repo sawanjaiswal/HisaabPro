@@ -36,7 +36,7 @@ test.describe('TC-REG — registration + OTP', () => {
     const failures = trackFailedRequests(page)
 
     await fillRegisterForm(page, phone)
-    await page.getByRole('button', { name: /continue/i }).click()
+    await page.getByRole('button', { name: /create account|continue/i }).click()
 
     await page.waitForURL(`**${ROUTES.VERIFY_OTP}`, { timeout: 20_000 })
 
@@ -61,7 +61,7 @@ test.describe('TC-REG — registration + OTP', () => {
     await fillRegisterForm(page, '')
     await page.locator('#phone').fill('98765') // 5 digits
 
-    const submit = page.getByRole('button', { name: /continue/i })
+    const submit = page.getByRole('button', { name: /create account|continue/i })
     if (await submit.isEnabled()) await submit.click()
 
     await expect(page).toHaveURL(new RegExp(`${ROUTES.REGISTER}$`))
@@ -72,7 +72,7 @@ test.describe('TC-REG — registration + OTP', () => {
     const phone = uniquePhone()
     await fillRegisterForm(page, phone, { password: '12345' })
 
-    const submit = page.getByRole('button', { name: /continue/i })
+    const submit = page.getByRole('button', { name: /create account|continue/i })
     if (await submit.isEnabled()) await submit.click()
 
     // Either blocked client-side or refused server-side — never accepted.
@@ -91,14 +91,14 @@ test.describe('TC-REG — registration + OTP', () => {
     expect(res.status()).toBeGreaterThanOrEqual(400)
 
     await fillRegisterForm(page, phone)
-    await page.getByRole('button', { name: /continue/i }).click()
+    await page.getByRole('button', { name: /create account|continue/i }).click()
     await expect(page).not.toHaveURL(new RegExp(`${ROUTES.VERIFY_OTP}$`), { timeout: 10_000 })
   })
 
   test('TC-REG-05 wrong OTP is rejected with a visible error', async ({ page, request }) => {
     const phone = uniquePhone()
     await fillRegisterForm(page, phone)
-    await page.getByRole('button', { name: /continue/i }).click()
+    await page.getByRole('button', { name: /create account|continue/i }).click()
     await page.waitForURL(`**${ROUTES.VERIFY_OTP}`, { timeout: 20_000 })
     await waitForOtp(request, phone)
 
@@ -138,7 +138,7 @@ test.describe('TC-REG — registration + OTP', () => {
   test('TC-REG-08 resend is rate-limited by a visible cooldown', async ({ page, request }) => {
     const phone = uniquePhone()
     await fillRegisterForm(page, phone)
-    await page.getByRole('button', { name: /continue/i }).click()
+    await page.getByRole('button', { name: /create account|continue/i }).click()
     await page.waitForURL(`**${ROUTES.VERIFY_OTP}`, { timeout: 20_000 })
     await waitForOtp(request, phone)
 
@@ -149,7 +149,7 @@ test.describe('TC-REG — registration + OTP', () => {
   test('TC-REG-09 pasting a 6-digit code fills every box', async ({ page, request }) => {
     const phone = uniquePhone()
     await fillRegisterForm(page, phone)
-    await page.getByRole('button', { name: /continue/i }).click()
+    await page.getByRole('button', { name: /create account|continue/i }).click()
     await page.waitForURL(`**${ROUTES.VERIFY_OTP}`, { timeout: 20_000 })
     const otp = await waitForOtp(request, phone)
 
@@ -197,7 +197,7 @@ test.describe('TC-REG — registration + OTP', () => {
   test('TC-REG-12 back from OTP screen returns to register without a session', async ({ page, request }) => {
     const phone = uniquePhone()
     await fillRegisterForm(page, phone)
-    await page.getByRole('button', { name: /continue/i }).click()
+    await page.getByRole('button', { name: /create account|continue/i }).click()
     await page.waitForURL(`**${ROUTES.VERIFY_OTP}`, { timeout: 20_000 })
     await waitForOtp(request, phone)
 

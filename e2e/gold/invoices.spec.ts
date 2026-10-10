@@ -62,12 +62,20 @@ test('TC-INV-01 an invoice created from the form saves with the total it display
   await expect(page.locator('.invoice-summary-row-total')).toContainText('750')
 
   await saveInvoice(page)
-  await page.waitForURL('**/invoices', { timeout: 20_000 })
+  await page.waitForURL((url) => !url.pathname.endsWith('/invoices/new') && url.pathname.includes('/invoices'), {
+    timeout: 20_000,
+  })
 
   // Filtered by this case's own party: the list is shared with every other
   // invoice the suite has ever created, so "the newest row" is not this one.
-  const [saved] = await apiListInvoices(page, `type=SALE_INVOICE&partyId=${party.id}&limit=10`)
-  expect(saved, 'the invoice must exist on the server').toBeTruthy()
+  let saved: import('./support/invoices').InvoiceDetail | undefined
+  await expect(async () => {
+    const list = await apiListInvoices(page, `type=SALE_INVOICE&partyId=${party.id}&limit=10`)
+    expect(list.length, 'the invoice must exist on the server').toBeGreaterThan(0)
+    saved = list[0]
+  }).toPass({ timeout: 15_000 })
+
+  expect(saved).toBeTruthy()
   const detail = await apiGetInvoice(page, saved!.id)
   expect(detail.grandTotal, 'Rs 750 must persist as 75000 paise').toBe(75000)
   expect(detail.subtotal).toBe(75000)

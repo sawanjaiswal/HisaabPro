@@ -1,8 +1,34 @@
 # Ideas Backlog: HisaabPro
 
-Last updated: 2026-04-14
+Last updated: 2026-10-09
 
 > Feature ideas and enhancements not yet in active development. Items graduate to FEATURE_MAP.md when prioritized for a phase.
+
+---
+
+## Bakery & Party Event Engine — Social Drops & Instant Advance Booking
+
+### #0 — Photo Gallery Ingestion, Multi-Select Social Drops & 50% Direct UPI Booking
+- **Priority:** P1 (High-Value Vertical SaaS & Storefront Driver)
+- **Status:** BACKLOG (Validated Concept)
+- **Monetization Model:** Pure SaaS Subscription (₹299/mo or ₹2,999/yr) — 0% commission on orders, zero escrow/PA compliance risk.
+- **Core Capabilities:**
+  1. **Batch Gallery Ingestion & Free WASM OCR**:
+     - Baker multi-selects 10–30 cake photos from camera roll.
+     - On-device Tesseract.js WASM + Vision parser auto-tags themes (e.g. *Jungle Safari*, *Floral*), weights ($0.5\text{kg}, 1\text{kg}, 2\text{kg}$), and base rates.
+     - Baker verifies draft cards in a 1-page visual review grid before publishing.
+  2. **Multi-Select Social Drops & WhatsApp Broadcast**:
+     - Baker checks 5 cake designs $\rightarrow$ taps **"Share (5)"**.
+     - Generates pre-formatted WhatsApp Status/Broadcast text with individual buy links (`hisaab.pro/p/baker/c/:id`) + optional mini-collection page link.
+  3. **Interactive Mobile Customizer (No App Install for Customer)**:
+     - Customer selects weight, flavor (Eggless/Vegan), custom inscription ("Happy 5th Birthday Aarav"), and delivery date/time slot.
+     - Dynamic real-time calculated total and 50% advance breakdown.
+  4. **Direct 50% UPI Intent & Zero Ghost Cancellations**:
+     - Customer taps "Pay 50% Advance via GPay/PhonePe" (`upi://pay?pa=baker@bank&am=1200.00`).
+     - Money settles 100% directly to baker's bank.
+     - Order enters HisaabPro with status `RECEIVED` + 50% advance credited to ledger.
+  5. **Composite Birthday Party Bundles**:
+     - Single order orchestrating 4 fulfillment tracks: Custom Cake (Perishable) + Rental Asset (Kids Electric Toy Car with deposit) + Props (Balloons/Caps) + Decorator Service.
 
 ---
 

@@ -56,3 +56,11 @@ export interface ExchangeRateListParams {
   page?: number
   limit?: number
 }
+
+export interface ListExchangeRatesResponse {
+  rates: ExchangeRateEntry[]
+  total: number
+  page: number
+  limit: number
+}
+

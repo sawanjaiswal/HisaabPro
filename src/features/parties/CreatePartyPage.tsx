@@ -25,8 +25,10 @@ export default function CreatePartyPage() {
   } = usePartyForm()
 
   const handleSaveAndAddAnother = async () => {
-    await handleSubmit()
-    reset()
+    const success = await handleSubmit()
+    if (success) {
+      reset()
+    }
   }
 
   return (
@@ -49,6 +51,7 @@ export default function CreatePartyPage() {
             {t.saveAndAddAnother}
           </Button>
           <Button
+            type="button"
             variant="primary"
             loading={isSubmitting}
             onClick={handleSubmit}

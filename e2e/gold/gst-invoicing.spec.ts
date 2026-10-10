@@ -262,9 +262,17 @@ test('TC-GST-08 the form shows the tax it is about to charge, and charges what i
 
   await page.getByRole('button', { name: /preview invoice/i }).click()
   await page.getByRole('button', { name: /save & send|saving/i }).click()
-  await page.waitForURL('**/invoices', { timeout: 20_000 })
+  await page.waitForURL((url) => !url.pathname.endsWith('/invoices/new') && url.pathname.includes('/invoices'), {
+    timeout: 20_000,
+  })
 
-  const [saved] = await apiListInvoices(page, `type=SALE_INVOICE&partyId=${party.id}&limit=10`)
+  let saved: import('./support/invoices').InvoiceDetail | undefined
+  await expect(async () => {
+    const list = await apiListInvoices(page, `type=SALE_INVOICE&partyId=${party.id}&limit=10`)
+    expect(list.length, 'the invoice must exist on the server').toBeGreaterThan(0)
+    saved = list[0]
+  }).toPass({ timeout: 15_000 })
+
   const detail = await apiGetInvoice(page, saved!.id)
   expect(taxOf(detail), 'the stored tax is the tax the seller was shown').toBe(36000)
   expect(detail.grandTotal - Number(detail.roundOff ?? 0)).toBe(236000)

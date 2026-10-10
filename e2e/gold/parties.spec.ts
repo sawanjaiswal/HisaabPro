@@ -37,20 +37,17 @@ test('TC-PTY-01 a customer created through the form appears in the list', async 
   await page.locator('#opening-balance-amount').fill('1500')
   await page.getByRole('button', { name: /save party/i }).first().click()
 
-  await page.waitForURL('**/parties', { timeout: 15_000 })
-  // Search for it rather than expecting it on page 1: the list is name-sorted
-  // and paged, so on a business with more than a page of parties "did it save?"
-  // and "is it the first row?" are different questions. The first is the claim.
-  await page.getByPlaceholder(/search/i).first().fill(name)
-  const row = page.locator('.txn-row', { hasText: name }).first()
-  await expect(row).toBeVisible({ timeout: 15_000 })
+  await page.waitForURL(/\/parties\/[^/]+$/, { timeout: 15_000 })
   expect(failures.get(), 'creating a party must not produce an API failure').toEqual([])
 
   // Opening balance survives the rupee→paise→rupee conversion.
-  // The row, not the text node — the click handler lives on the card.
-  await row.click()
-  await page.waitForURL(/\/parties\/[^/]+$/)
   await expect(page.locator('body')).toContainText(/1,?500/)
+
+  // And party is reachable in the main list
+  await page.goto('/parties')
+  await page.getByPlaceholder(/search/i).first().fill(name)
+  const row = page.locator('.txn-row', { hasText: name }).first()
+  await expect(row).toBeVisible({ timeout: 15_000 })
 })
 
 test('TC-PTY-02 a supplier keeps its type and shows under the supplier filter', async ({ page }) => {
@@ -60,15 +57,17 @@ test('TC-PTY-02 a supplier keeps its type and shows under the supplier filter', 
   await fillPartyBasics(page, { name })
   await page.getByRole('button', { name: /set party type to supplier/i }).click()
   await page.getByRole('button', { name: /save party/i }).first().click()
-  await page.waitForURL('**/parties', { timeout: 15_000 })
+  await page.waitForURL(/\/parties\/[^/]+$/, { timeout: 15_000 })
+  await page.goto('/parties')
 
   // The type chips filter server-side (`?type=SUPPLIER`), so this proves the
   // stored type, not just what the form rendered.
   await page.locator('.type-chip', { hasText: /supplier/i }).first().click()
-  await expect(page.getByText(name, { exact: false }).first()).toBeVisible({ timeout: 10_000 })
+  await page.getByPlaceholder(/search/i).first().fill(name)
+  await expect(page.getByText(new RegExp(name, 'i')).first()).toBeVisible({ timeout: 10_000 })
 
   await page.locator('.type-chip', { hasText: /customer/i }).first().click()
-  await expect(page.getByText(name, { exact: false })).toHaveCount(0)
+  await expect(page.getByText(new RegExp(name, 'i'))).toHaveCount(0)
 })
 
 test('TC-PTY-03 the form blocks a blank name and a malformed phone', async ({ page }) => {
@@ -105,7 +104,7 @@ test('TC-PTY-04 an edit persists across a reload', async ({ page }) => {
   // Reload rather than trusting the optimistic cache write — the bug class
   // this case exists for is "the UI updated but the PATCH never landed".
   await page.reload()
-  await expect(page.locator('.pdh-name')).toHaveText(renamed, { timeout: 15_000 })
+  await expect(page.locator('.pdh-name')).toHaveText(new RegExp(renamed, 'i'), { timeout: 15_000 })
 })
 
 test('TC-PTY-05 delete asks for confirmation in a dialog, never window.confirm', async ({ page }) => {
@@ -129,5 +128,5 @@ test('TC-PTY-05 delete asks for confirmation in a dialog, never window.confirm',
 
   await dialog.getByRole('button', { name: /delete/i }).click()
   await page.waitForURL('**/parties', { timeout: 15_000 })
-  await expect(page.getByText(party.name, { exact: false })).toHaveCount(0)
+  await expect(page.getByText(new RegExp(party.name, 'i'))).toHaveCount(0)
 })

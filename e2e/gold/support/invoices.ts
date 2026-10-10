@@ -159,7 +159,7 @@ export async function selectParty(page: Page, name: string): Promise<void> {
   // The result list is debounced and server-backed, so wait for the row that
   // matches rather than the first option — "Add new party" also sits in this
   // listbox and clicking it would silently create a duplicate party.
-  const option = page.locator('.party-search-result', { hasText: name }).first()
+  const option = page.locator('.party-search-result, .entity-search-item', { hasText: new RegExp(name, 'i') }).first()
   await option.click({ timeout: 20_000 })
 }
 
@@ -171,11 +171,11 @@ export async function selectParty(page: Page, name: string): Promise<void> {
 export async function addLine(page: Page, productName: string): Promise<void> {
   const search = page.locator('#product-search-input')
   if (!(await search.isVisible().catch(() => false))) {
-    await page.getByRole('button', { name: /add item/i }).first().click()
+    await page.getByRole('button', { name: /add line item|^\+?\s*add item/i }).first().click()
   }
   await search.fill(productName)
-  const result = page.locator('.product-search-result', { hasText: productName }).first()
-  await result.getByRole('button', { name: /add/i }).click({ timeout: 20_000 })
+  const result = page.locator('.product-search-result, .entity-search-item', { hasText: new RegExp(productName, 'i') }).first()
+  await result.click({ timeout: 20_000 })
 }
 
 /** Sets quantity / rate / discount on the nth line (0-based), as the form does. */

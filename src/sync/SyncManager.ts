@@ -2,6 +2,7 @@ import { db, SyncQueueItem } from '../db/schema';
 import { NetworkDetector } from './NetworkDetector';
 import { CrossTabSyncBus } from './CrossTabSyncBus';
 import { api } from '../lib/api';
+import { hasCachedSession } from '../lib/auth';
 
 export type SyncStatus = 'IDLE' | 'SYNCING' | 'ERROR' | 'OFFLINE';
 
@@ -27,7 +28,7 @@ class SyncManagerImpl {
       // Auto-trigger on network reconnect
       NetworkDetector.subscribe((isOnline) => {
         if (isOnline) {
-          this.triggerSync();
+          if (hasCachedSession()) this.triggerSync();
         } else {
           this.setStatus('OFFLINE');
         }
@@ -37,13 +38,13 @@ class SyncManagerImpl {
       CrossTabSyncBus.subscribe((event) => {
         if (event.type === 'MUTATION_ENQUEUED') {
           this.refreshPendingCount();
-          this.triggerSync();
+          if (hasCachedSession()) this.triggerSync();
         }
       });
 
       // Periodic sync attempt every 30 seconds
       setInterval(() => {
-        if (NetworkDetector.getStatus()) {
+        if (NetworkDetector.getStatus() && hasCachedSession()) {
           this.triggerSync();
         }
       }, 30000);
@@ -82,6 +83,7 @@ class SyncManagerImpl {
 
   public async triggerSync(): Promise<void> {
     if (this.isProcessing) return;
+    if (!hasCachedSession()) return;
     if (!NetworkDetector.getStatus()) {
       this.setStatus('OFFLINE');
       return;

@@ -56,9 +56,23 @@ export default function CustomOrderDetailPage() {
   if (status === 'error' || !order) {
     return (
       <AppShell>
-        <Header title={t.coOrderDetails} />
+        <Header title={t.coOrderDetails} backTo={ORDER_ROUTES.LIST} />
         <PageContainer>
-          <ErrorState title={t.coLoadErrorTitle} message={t.coConnectionRetry} onRetry={refetch} />
+          <ErrorState
+            title={t.coLoadErrorTitle}
+            message={t.coConnectionRetry}
+            onRetry={refetch}
+            action={
+              <div className="flex items-center gap-3">
+                <Button variant="primary" onClick={() => refetch()}>
+                  {t.retry ?? 'Try Again'}
+                </Button>
+                <Button variant="outline" onClick={() => navigate(ORDER_ROUTES.LIST)}>
+                  {t.back ?? 'Back to Orders'}
+                </Button>
+              </div>
+            }
+          />
         </PageContainer>
       </AppShell>
     )

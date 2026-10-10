@@ -150,6 +150,7 @@ export async function updateProduct(
   data: UpdateProductInput,
   expectedVersion?: number
 ) {
+  await requireProduct(businessId, productId)
   const categoryId = data.categoryId !== undefined ? (data.categoryId && data.categoryId.trim() !== '' ? data.categoryId : null) : undefined
   const taxCategoryId = data.taxCategoryId !== undefined ? (data.taxCategoryId && data.taxCategoryId.trim() !== '' ? data.taxCategoryId : null) : undefined
   const hsnCode = data.hsnCode !== undefined ? (data.hsnCode && data.hsnCode.trim() !== '' ? data.hsnCode : null) : undefined

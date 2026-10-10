@@ -19,26 +19,28 @@ try {
   // console fallback
 }
 
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || process.env.ADMIN_TELEGRAM_BOT_TOKEN || '8540690656:AAEBmKiJT6dYoiHjHkT1hVOvhFztzc6EALQ'
-const CHAT_ID   = process.env.TELEGRAM_CHAT_ID || process.env.ADMIN_TELEGRAM_CHAT_ID || '6115835268'
-const API_URL   = BOT_TOKEN
-  ? `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`
-  : null
+function getTelegramConfig() {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN || process.env.ADMIN_TELEGRAM_BOT_TOKEN
+  const chatId = process.env.TELEGRAM_CHAT_ID || process.env.ADMIN_TELEGRAM_CHAT_ID
+  const apiUrl = botToken ? `https://api.telegram.org/bot${botToken}/sendMessage` : null
+  return { botToken, chatId, apiUrl }
+}
 
 // ─── Core send ────────────────────────────────────────────────────────────────
 
 export async function sendSuperAdminAlert(text: string): Promise<void> {
-  if (!API_URL || !CHAT_ID) {
+  const { chatId, apiUrl } = getTelegramConfig()
+  if (!apiUrl || !chatId) {
     // Silent no-op when env vars absent (local dev, CI)
     return
   }
 
   try {
-    const res = await fetch(API_URL, {
+    const res = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat_id: CHAT_ID,
+        chat_id: chatId,
         text,
         parse_mode: 'HTML',
         disable_web_page_preview: true,

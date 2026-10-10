@@ -44,7 +44,6 @@ export function PartyFormBasic({ form, errors, onUpdate, isEditMode = false }: P
         }}
         error={errors.name}
         placeholder={t.partyNamePlaceholder}
-        required
         autoComplete="off"
         aria-required="true"
       />

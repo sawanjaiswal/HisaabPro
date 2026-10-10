@@ -268,9 +268,14 @@
   color: var(--color-gray-500);
 }
 
-/* === Inline product search panel === */
+.line-items-section {
+  position: relative;
+  z-index: 20;
+}
 
 .product-search-panel {
+  position: relative;
+  z-index: 30;
   border: none;
   border-radius: 0;
   padding: 0;

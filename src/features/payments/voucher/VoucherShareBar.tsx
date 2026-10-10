@@ -6,7 +6,7 @@
 
 import { useState } from 'react'
 import { Printer, Download, Loader2 } from 'lucide-react'
-import { PDFDownloadLink, pdf } from '@react-pdf/renderer'
+import { pdf } from '@react-pdf/renderer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
 import { useAuth } from '@/context/AuthContext'
@@ -24,6 +24,7 @@ export function VoucherShareBar({ payment }: { payment: PaymentDetail }) {
   const toast = useToast()
   const { activeBusiness } = useAuth()
   const [printing, setPrinting] = useState(false)
+  const [downloading, setDownloading] = useState(false)
 
   const kind = voucherKindFor(payment.type)
   const title = kind === 'RECEIPT' ? t.receiptVoucher : t.paymentVoucher
@@ -47,6 +48,23 @@ export function VoucherShareBar({ payment }: { payment: PaymentDetail }) {
   const doc = <PaymentVoucherDocument data={data} labels={labels} />
   const fileName = `${slug(title)}-${slug(payment.partyName)}-${payment.date}.pdf`
 
+  const handleDownload = async () => {
+    setDownloading(true)
+    try {
+      const blob = await pdf(doc).toBlob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = fileName
+      a.click()
+      setTimeout(() => URL.revokeObjectURL(url), 60_000)
+    } catch {
+      toast.error(t.voucherActionFailed)
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   const handlePrint = async () => {
     setPrinting(true)
     try {
@@ -64,33 +82,37 @@ export function VoucherShareBar({ payment }: { payment: PaymentDetail }) {
 
   return (
     <div className="flex gap-3" role="group" aria-label={title}>
-      <PDFDownloadLink
-        document={doc}
-        fileName={fileName}
-        className="btn btn-outline btn-sm flex-1"
+      <Button
+        variant="outline"
+        size="sm"
+        className="flex-1"
+        onClick={() => void handleDownload()}
+        disabled={downloading}
         aria-label={t.downloadVoucher}
+        aria-busy={downloading}
       >
-        {({ loading }) => (
-          <>
-            {loading
-              ? <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-              : <Download size={16} aria-hidden="true" />}
-            <span>{t.downloadVoucher}</span>
-          </>
+        {downloading ? (
+          <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+        ) : (
+          <Download size={16} aria-hidden="true" />
         )}
-      </PDFDownloadLink>
+        <span>{t.downloadVoucher}</span>
+      </Button>
 
-      <Button variant="none"
-        type="button"
-        className="btn btn-outline btn-sm flex-1"
+      <Button
+        variant="outline"
+        size="sm"
+        className="flex-1"
         onClick={() => void handlePrint()}
         disabled={printing}
         aria-label={t.printVoucher}
         aria-busy={printing}
       >
-        {printing
-          ? <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-          : <Printer size={16} aria-hidden="true" />}
+        {printing ? (
+          <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+        ) : (
+          <Printer size={16} aria-hidden="true" />
+        )}
         <span>{t.printVoucher}</span>
       </Button>
     </div>

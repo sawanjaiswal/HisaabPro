@@ -13,6 +13,7 @@ import type {
   ConvertAmountPayload,
   ConvertAmountResult,
   ExchangeRateListParams,
+  ListExchangeRatesResponse,
 } from './currency.types'
 
 // ─── Supported currencies ─────────────────────────────────────────────────────
@@ -40,11 +41,11 @@ export async function setExchangeRate(
 export async function listExchangeRates(
   params: ExchangeRateListParams = {},
   signal?: AbortSignal
-): Promise<ExchangeRateEntry[]> {
+): Promise<ListExchangeRatesResponse> {
   const { fromCurrency, page = 1, limit = 20 } = params
   const qs = new URLSearchParams({ page: String(page), limit: String(limit) })
   if (fromCurrency) qs.set('fromCurrency', fromCurrency)
-  return api<ExchangeRateEntry[]>(`/currency/exchange-rates?${qs}`, { signal })
+  return api<ListExchangeRatesResponse>(`/currency/exchange-rates?${qs}`, { signal })
 }
 
 export async function getLatestRate(

@@ -192,7 +192,12 @@ async function seedForeignTenant() {
 
   await prisma.party.upsert({
     where: { id: E2E_FOREIGN_PARTY_ID },
-    update: {},
+    update: {
+      name: 'Rival Secret Customer',
+      phone: '9111100003',
+      type: 'CUSTOMER',
+      stateCode: '29',
+    },
     create: {
       id: E2E_FOREIGN_PARTY_ID,
       businessId: business.id,
@@ -205,7 +210,14 @@ async function seedForeignTenant() {
 
   await prisma.product.upsert({
     where: { id: E2E_FOREIGN_PRODUCT_ID },
-    update: {},
+    update: {
+      name: 'Rival Secret Product',
+      sku: 'E2E-RIVAL-1',
+      salePrice: 99900,
+      purchasePrice: 80000,
+      currentStock: 50,
+      status: 'ACTIVE',
+    },
     create: {
       id: E2E_FOREIGN_PRODUCT_ID,
       businessId: business.id,

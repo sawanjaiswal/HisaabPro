@@ -57,7 +57,7 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
             {t.grandTotal || 'Grand Total'}
           </span>
-          <span className="text-xl font-black text-slate-900 tabular-nums tracking-tight">
+          <span className="text-xl font-black text-slate-900 tabular-nums tracking-tight invoice-summary-row-total">
             {formatInvoiceAmount(grandTotal)}
           </span>
         </div>

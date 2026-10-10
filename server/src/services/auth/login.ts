@@ -71,7 +71,7 @@ export async function login(data: LoginInput) {
   })
 
   if (!user) {
-    return { verified: false, message: 'No account found with this phone or email.' }
+    return { verified: false, message: 'Invalid phone/email or password.' }
   }
 
   if (!user.isActive) {
@@ -87,7 +87,7 @@ export async function login(data: LoginInput) {
   }
 
   if (!user.passwordHash) {
-    return { verified: false, message: 'No password set. Please register first.' }
+    return { verified: false, message: 'Invalid phone/email or password.' }
   }
 
   const passwordMatch = await bcrypt.compare(password, user.passwordHash)

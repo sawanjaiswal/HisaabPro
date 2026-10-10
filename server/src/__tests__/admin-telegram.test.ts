@@ -1,5 +1,4 @@
-import { describe, it } from 'node:test'
-import assert from 'node:assert/strict'
+import { describe, it, expect } from 'vitest'
 import {
   sendSuperAdminAlert,
   alertNewUserOnboarded,
@@ -19,14 +18,14 @@ describe('Super-Admin Telegram Alerter', () => {
 
     try {
       await sendSuperAdminAlert('Test alert')
-      assert.equal(called, false, 'Fetch must not be called when env vars are unset')
+      expect(called).toBe(false)
     } finally {
       globalThis.fetch = originalFetch
     }
   })
 
   it('formats new user onboarding alert without throwing', () => {
-    assert.doesNotThrow(() => {
+    expect(() => {
       alertNewUserOnboarded({
         name: 'Ramesh Patel',
         phone: '9876543210',
@@ -34,11 +33,11 @@ describe('Super-Admin Telegram Alerter', () => {
         businessId: 'biz_123',
         method: 'OTP',
       })
-    })
+    }).not.toThrow()
   })
 
   it('formats payment captured alert with rupee calculations without throwing', () => {
-    assert.doesNotThrow(() => {
+    expect(() => {
       alertPaymentCaptured({
         businessId: 'biz_456',
         planTier: 'PRO',
@@ -46,20 +45,20 @@ describe('Super-Admin Telegram Alerter', () => {
         event: 'subscription.charged',
         amountPaise: 79900,
       })
-    })
+    }).not.toThrow()
   })
 
   it('formats one-time order paid alert without throwing', () => {
-    assert.doesNotThrow(() => {
+    expect(() => {
       alertOneTimeOrderPaid({
         paymentId: 'pay_999',
         event: 'payment.captured',
       })
-    })
+    }).not.toThrow()
   })
 
   it('throttles duplicate server error alerts within cooldown window', () => {
-    assert.doesNotThrow(() => {
+    expect(() => {
       alertServerError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Database connection dropped',
@@ -72,6 +71,6 @@ describe('Super-Admin Telegram Alerter', () => {
         method: 'POST',
         path: '/api/parties',
       })
-    })
+    }).not.toThrow()
   })
 })

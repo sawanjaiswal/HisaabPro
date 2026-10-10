@@ -49,9 +49,11 @@ export function ProductFormBasic({ form, errors, onUpdate }: ProductFormBasicPro
     getUnits(undefined, controller.signal)
       .then((fetchedUnits) => {
         setUnits(fetchedUnits)
-        // Fix 4: Auto-select ONLY when exactly 1 unit exists (single-unit shops)
-        if (!form.unitId && fetchedUnits.length === 1) {
-          onUpdate('unitId', fetchedUnits[0].id)
+        if (!form.unitId && fetchedUnits.length > 0) {
+          const defaultUnit = fetchedUnits.find((u) => u.symbol?.toLowerCase() === 'pcs' || u.id === 'unit-pcs') ?? fetchedUnits[0]
+          if (defaultUnit) {
+            onUpdate('unitId', defaultUnit.id)
+          }
         }
       })
       .catch(() => {/* aborted or network error — silent, dropdown stays empty */})

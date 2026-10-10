@@ -108,7 +108,16 @@ const ROUTES = [
 
 const results = []
 
+async function ensureAuth() {
+  await ctx.request.post(`${BASE}/api/auth/dev-login`, {
+    data: { username: 'admin', password: 'admin123' },
+    headers: { 'Content-Type': 'application/json' },
+  }).catch(() => {})
+}
+
 for (const route of ROUTES) {
+  // Re-auth periodically to prevent JWT 15m expiry mid-sweep
+  await ensureAuth()
   const page = await ctx.newPage()
   const consoleErrs = []
   const pageErrs = []

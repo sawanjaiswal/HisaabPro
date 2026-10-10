@@ -28,20 +28,28 @@ interface TaxRowProps {
 
 const TaxRow: React.FC<TaxRowProps> = ({ label, totals }) => {
   const { t } = useLanguage()
+  const safeTotals: TaxTotals = totals ?? {
+    count: 0,
+    taxableValue: 0,
+    cgst: 0,
+    sgst: 0,
+    igst: 0,
+    total: 0,
+  }
   return (
-  <div className="gst-return__row">
-    <div className="gst-return__row-header">
-      <span className="gst-return__row-label">{label}</span>
-      <span className="gst-return__row-count">{totals.count} {t.invoices}</span>
+    <div className="gst-return__row">
+      <div className="gst-return__row-header">
+        <span className="gst-return__row-label">{label}</span>
+        <span className="gst-return__row-count">{safeTotals.count} {t.invoices}</span>
+      </div>
+      <div className="gst-return__row-amounts">
+        <span>{t.taxable}: {formatAmount(safeTotals.taxableValue)}</span>
+        {safeTotals.cgst > 0 && <span>CGST: {formatAmount(safeTotals.cgst)}</span>}
+        {safeTotals.sgst > 0 && <span>SGST: {formatAmount(safeTotals.sgst)}</span>}
+        {safeTotals.igst > 0 && <span>IGST: {formatAmount(safeTotals.igst)}</span>}
+        <span className="gst-return__row-total">{t.tax}: {formatAmount(safeTotals.total)}</span>
+      </div>
     </div>
-    <div className="gst-return__row-amounts">
-      <span>{t.taxable}: {formatAmount(totals.taxableValue)}</span>
-      {totals.cgst > 0 && <span>CGST: {formatAmount(totals.cgst)}</span>}
-      {totals.sgst > 0 && <span>SGST: {formatAmount(totals.sgst)}</span>}
-      {totals.igst > 0 && <span>IGST: {formatAmount(totals.igst)}</span>}
-      <span className="gst-return__row-total">{t.tax}: {formatAmount(totals.total)}</span>
-    </div>
-  </div>
   )
 }
 

@@ -12,7 +12,7 @@ import { ChevronLeft } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { APP_NAME, APP_NAME_MARK } from '@/config/app.config'
 import { ROUTES } from '@/config/routes.config'
-import { SyncStatusPill } from '@/components/ui/sync-center'
+import { SyncStatusIcon } from '@/components/feedback/SyncStatusIcon'
 import { NotificationBell } from '@/features/notifications/components/NotificationBell'
 import { BrandLogo } from '@/components/brand/BrandLogo'
 import { Heading } from '@/components/ui/Heading'
@@ -144,7 +144,7 @@ export function Header({
 
       <div className="header-actions">
         {actions}
-        {shouldShowSync && <SyncStatusPill />}
+        {shouldShowSync && <SyncStatusIcon />}
         {shouldShowNotifications && <NotificationBell />}
       </div>
     </header>

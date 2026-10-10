@@ -24,6 +24,11 @@
 >    - Add PostgreSQL `pg_trgm` GIN index for instant fuzzy search.
 > 5. ⬜ **Production Credentials Activation**:
 >    - Set Render environment variables: Razorpay Webhook Secret, FCM server key, Resend API key, Aisensy credentials.
+> 6. ⬜ **Bakery & Party Event Engine — Social Drops & Direct 50% UPI Booking (SaaS ₹299/mo)**:
+>    - Multi-select product checkboxes + bulk WhatsApp Status/Broadcast link generation.
+>    - Public mobile cake customizer (`/p/:slug/c/:id`) with dynamic weight/flavor math.
+>    - Direct 50% advance UPI intent (`upi://pay`) directly to baker's bank account + real-time in-app order sync.
+>    - Multi-track party package bundles (Cake + Kids Ride-On Electric Toy Car rental + Decor props).
 >
 > ---
 >

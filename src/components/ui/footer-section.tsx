@@ -9,7 +9,7 @@ const footerLinks = [
     links: [
       { title: 'Features', href: hash(LP_SECTIONS.FEATURES) },
       { title: 'Pricing', href: hash(LP_SECTIONS.PRICING) },
-      { title: 'Download', href: hash(LP_SECTIONS.DOWNLOAD) },
+      { title: 'Download App', href: hash(LP_SECTIONS.DOWNLOAD) },
     ],
   },
   {
@@ -23,18 +23,17 @@ const footerLinks = [
   {
     label: 'Support',
     links: [
-      { title: 'Help Center', href: LP_LEGAL.HELP },
       { title: 'WhatsApp Support', href: LP_EXTERNAL.WHATSAPP_SUPPORT },
       { title: 'FAQs', href: hash(LP_SECTIONS.FAQ) },
+      { title: 'Help & Guides', href: LP_LEGAL.HELP },
     ],
   },
   {
-    label: 'Resources',
+    label: 'Get Started',
     links: [
-      { title: 'Blog', href: '/blog' },
-      { title: 'Invoice Templates', href: '/templates' },
-      { title: 'GST Calculator', href: '/gst-calculator' },
-      { title: 'Business Ideas', href: '/ideas' },
+      { title: 'Sign In', href: '/login' },
+      { title: 'Create Account', href: '/register' },
+      { title: 'Contact Sales', href: LP_EXTERNAL.WHATSAPP_SUPPORT },
     ],
   },
 ];

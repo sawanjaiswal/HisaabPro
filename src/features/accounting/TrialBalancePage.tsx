@@ -52,7 +52,10 @@ export default function TrialBalancePage() {
     )
   }
 
-  if (!data || data.rows.length === 0) {
+  const rows = data?.rows ?? []
+  const totals = data?.totals ?? { debit: 0, credit: 0 }
+
+  if (!data || rows.length === 0) {
     return (
       <AppShell>
         <Header title={t.trialBalance ?? "Trial Balance"} backTo={ROUTES.REPORTS} actions={dateInput} />
@@ -67,7 +70,7 @@ export default function TrialBalancePage() {
     )
   }
 
-  const balanced = isBalanced(data.totals.debit, data.totals.credit)
+  const balanced = isBalanced(totals.debit, totals.credit)
 
   return (
     <AppShell>
@@ -77,12 +80,12 @@ export default function TrialBalancePage() {
         <div className={`tb-balance-chip fade-up ${balanced ? 'balanced' : 'unbalanced'}`} role="status">
           <span className="tb-balance-dot" aria-hidden="true" />
           {balanced
-            ? `${t.balanced} — ${formatPaise(data.totals.debit)} ${t.eachSide}`
-            : `${t.outOfBalanceBy} ${formatPaise(Math.abs(data.totals.debit - data.totals.credit))}`
+            ? `${t.balanced} — ${formatPaise(totals.debit)} ${t.eachSide}`
+            : `${t.outOfBalanceBy} ${formatPaise(Math.abs(totals.debit - totals.credit))}`
           }
         </div>
 
-        <TrialBalanceTable rows={data.rows} totals={data.totals} />
+        <TrialBalanceTable rows={rows} totals={totals} />
       </PageContainer>
     </AppShell>
   )

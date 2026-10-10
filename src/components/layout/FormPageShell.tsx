@@ -70,7 +70,7 @@ export function FormPageShell({
         ) : error ? (
           <ErrorState message={error} onRetry={onRetry} />
         ) : (
-          <form id="page-form" onSubmit={onSubmit} className="space-y-6">
+          <form id="page-form" noValidate onSubmit={onSubmit} className="space-y-6">
             {children}
           </form>
         )}

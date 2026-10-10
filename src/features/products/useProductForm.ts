@@ -191,10 +191,10 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
 
       if (result.mode === 'edit') {
         toast.success(`${form.name} updated`)
-        navigate(`/products/${result.editId}`)
+        navigate(`/products/${result.editId}`, { replace: true })
       } else {
         toast.success(`${form.name} added`)
-        navigate(ROUTES.PRODUCTS)
+        navigate(ROUTES.PRODUCTS, { replace: true })
       }
     },
     onError: (err) => {

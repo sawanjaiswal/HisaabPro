@@ -112,40 +112,44 @@ export default function ProfitabilityReportPage() {
           ))}
         </div>
 
-        {(!data || data.rows.length === 0) && (
-          <EmptyState
-            icon={<BarChart3 size={22} aria-hidden="true" />}
-            title={t.noDataForThisPeriod}
-            description={t.tryDifferentGrouping}
-          />
-        )}
-
-        {data && data.rows.length > 0 && (
-          <div className="profit-table stagger-list">
-            <table aria-label={t.profitabilityBreakdown}>
-              <thead>
-                <tr>
-                  <th scope="col">{GROUP_OPTIONS_BASE.find((g) => g.value === groupBy)?.labelKey ? t[GROUP_OPTIONS_BASE.find((g) => g.value === groupBy)!.labelKey] : t.group ?? 'Group'}</th>
-                  <th scope="col">{t.revenue}</th>
-                  <th scope="col">{t.cogs}</th>
-                  <th scope="col">{t.grossProfit}</th>
-                  <th scope="col">{t.margin}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.rows.map((row) => (
-                  <tr key={row.groupId}>
-                    <td>{row.groupLabel}</td>
-                    <td>{formatPaise(row.revenue)}</td>
-                    <td>{formatPaise(row.costOfGoods)}</td>
-                    <td>{formatPaise(row.grossProfit)}</td>
-                    <td className={marginClass(row.grossMargin)}>{row.grossMargin.toFixed(1)}%</td>
+        {(() => {
+          const rows = data?.rows ?? []
+          if (!data || rows.length === 0) {
+            return (
+              <EmptyState
+                icon={<BarChart3 size={22} aria-hidden="true" />}
+                title={t.noDataForThisPeriod}
+                description={t.tryDifferentGrouping}
+              />
+            )
+          }
+          return (
+            <div className="profit-table stagger-list">
+              <table aria-label={t.profitabilityBreakdown}>
+                <thead>
+                  <tr>
+                    <th scope="col">{GROUP_OPTIONS_BASE.find((g) => g.value === groupBy)?.labelKey ? t[GROUP_OPTIONS_BASE.find((g) => g.value === groupBy)!.labelKey] : t.group ?? 'Group'}</th>
+                    <th scope="col">{t.revenue}</th>
+                    <th scope="col">{t.cogs}</th>
+                    <th scope="col">{t.grossProfit}</th>
+                    <th scope="col">{t.margin}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr key={row.groupId}>
+                      <td>{row.groupLabel}</td>
+                      <td>{formatPaise(row.revenue ?? 0)}</td>
+                      <td>{formatPaise(row.costOfGoods ?? 0)}</td>
+                      <td>{formatPaise(row.grossProfit ?? 0)}</td>
+                      <td className={marginClass(row.grossMargin)}>{(row.grossMargin ?? 0).toFixed(1)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        })()}
       </PageContainer>
     </AppShell>
   )

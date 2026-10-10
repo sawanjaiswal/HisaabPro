@@ -23,19 +23,21 @@ import { toLocalISODate } from '../../lib/format'
 import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 
-function SectionCard({ section }: { section: BalanceSheetSection }) {
+function SectionCard({ section }: { section?: BalanceSheetSection | null }) {
+  if (!section) return null
+  const items = section.items ?? []
   return (
     <div className="finance-section py-0">
       <div className="finance-section__header py-0">
-        <span className="finance-section__title py-0">{section.label}</span>
-        <span className="finance-section__total py-0">{formatPaise(section.total)}</span>
+        <span className="finance-section__title py-0">{section.label ?? ''}</span>
+        <span className="finance-section__total py-0">{formatPaise(section.total ?? 0)}</span>
       </div>
-      {section.items.length > 0 && (
+      {items.length > 0 && (
         <div className="finance-section__rows py-0">
-          {section.items.map((item) => (
-            <div key={item.label} className="finance-section__row py-0">
+          {items.map((item, idx) => (
+            <div key={`${item.label}-${idx}`} className="finance-section__row py-0">
               <span className="finance-section__row-label py-0">{item.label}</span>
-              <span className="finance-section__row-amount py-0">{formatPaise(item.amount)}</span>
+              <span className="finance-section__row-amount py-0">{formatPaise(item.amount ?? 0)}</span>
             </div>
           ))}
         </div>
@@ -118,7 +120,7 @@ export default function BalanceSheetPage() {
             <SectionCard section={data.equity} />
             <div className="finance-net-row">
               <span className="finance-net-row__label">{t.totalAssets}</span>
-              <span className="finance-net-row__amount">{formatPaise(data.assets.total)}</span>
+              <span className="finance-net-row__amount">{formatPaise(data.assets?.total ?? 0)}</span>
             </div>
           </>
         )}

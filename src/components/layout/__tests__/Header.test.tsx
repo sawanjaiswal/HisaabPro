@@ -16,6 +16,14 @@ vi.mock('@/features/notifications/useNotifications', () => ({
   useUnreadCount: () => ({ data: { unreadCount: 2 } }),
 }))
 
+vi.mock('@/components/feedback/SyncStatusIcon', () => ({
+  SyncStatusIcon: () => (
+    <button type="button" aria-label="Synced with cloud">
+      <span>sync</span>
+    </button>
+  ),
+}))
+
 vi.mock('@/sync/SyncManager', () => ({
   SyncManager: {
     getState: () => ({ status: 'SYNCED', pendingCount: 0 }),

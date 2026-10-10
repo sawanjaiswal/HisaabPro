@@ -100,7 +100,7 @@ export const listLedgerAccountsSchema = z.object({
   subType: z.string().max(50).optional(),
   isActive: z.coerce.boolean().optional(),
   page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(50),
+  limit: z.coerce.number().int().min(1).max(250).default(50),
 }).strict()
 
 // ─── Trial Balance Query ───────────────────────────────────────────────────────

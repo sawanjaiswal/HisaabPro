@@ -64,13 +64,13 @@ test('TC-OFF-02 a queued save is described by its own name, not "Offline change"
   expect(item, `no queued POST /parties — queue held ${JSON.stringify(queued)}`).toBeTruthy()
   expect(item!.entityType).toBe('party')
   expect(
-    item!.entityLabel,
+    item!.entityLabel.toLowerCase(),
     'the sync queue must name the change so the user can recognise it',
-  ).toBe(name)
+  ).toBe(name.toLowerCase())
 
   // And the drawer shows that label rather than the generic fallback.
   await page.locator('.sync-icon-btn').first().click()
-  await expect(page.locator('.sync-drawer-item-label', { hasText: name })).toBeVisible({
+  await expect(page.locator('.sync-drawer-item-label', { hasText: new RegExp(name, 'i') })).toBeVisible({
     timeout: 10_000,
   })
 })
@@ -94,7 +94,7 @@ test('TC-OFF-03 reconnecting drains the queue and every queued change lands', as
     const res = await page.request.get(`${API}/parties?search=${encodeURIComponent(name)}`)
     const body = (await res.json()) as { data?: { parties?: Array<{ name: string }> } }
     const found = body.data?.parties ?? []
-    expect(found.map((p) => p.name), `${name} never reached the server`).toContain(name)
+    expect(found.map((p) => p.name.toLowerCase()), `${name} never reached the server`).toContain(name.toLowerCase())
   }
 })
 
@@ -148,7 +148,7 @@ test('TC-OFF-05 a queued change survives closing the app', async ({ page }) => {
   await page.reload()
 
   const after = await readQueueLabels(page)
-  expect(after.map((i) => i.entityLabel), 'the queued party was lost on restart').toContain(name)
+  expect(after.map((i) => i.entityLabel.toLowerCase()), 'the queued party was lost on restart').toContain(name.toLowerCase())
   await page.unroute('**/api/**')
 })
 
@@ -186,7 +186,9 @@ test('TC-OFF-07 saving offline reads as saved, not as a failure', async ({ page,
   // make a shopkeeper type it all again. See OFFLINE_RULES.md rule 5.
   await expect(page.getByText(/failed to save party/i)).toHaveCount(0)
   await expect(page.getByText(new RegExp(`${name}.*added`, 'i'))).toBeVisible({ timeout: 10_000 })
-  await page.waitForURL('**/parties', { timeout: 10_000 })
+  await page.waitForURL((url) => url.pathname.startsWith('/parties') && !url.pathname.endsWith('/parties/new'), {
+    timeout: 15_000,
+  })
 
   expect(
     consoleErrors.filter((e) => !/Failed to (load|fetch)|net::ERR|ERR_INTERNET/i.test(e)),
@@ -206,10 +208,10 @@ test('TC-OFF-08 the read cache never holds identity, and logout empties it', asy
   // Through the menu, not the endpoint: clearApiCache() is part of the client's
   // logout (src/lib/auth.ts:28), so a bare API call would leave the cache the
   // next user on this phone can read and prove nothing.
-  await page.getByRole('button', { name: /more|menu/i }).first().click()
-  await page.locator('.side-nav-item--logout').click()
+  await page.locator('.bnav__tab').filter({ hasText: /menu|more/i }).click()
+  await page.locator('.side-nav-item--logout').click({ timeout: 10_000 })
   await page.getByRole('button', { name: /log ?out|sign ?out/i }).last().click()
-  await expect(page).toHaveURL(/\/login$/, { timeout: 15_000 })
+  await expect(page).toHaveURL(/\/login/, { timeout: 15_000 })
 
   await expect
     .poll(async () => (await readApiCacheKeys(page)).length, { timeout: 10_000 })

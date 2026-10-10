@@ -326,23 +326,47 @@ export async function verifyRegistration(data: VerifyRegistrationInput) {
     return { verified: false, message: 'An account with this email or phone is already registered. Please log in.' }
   }
 
-  const created = await createUserWithDefaultBusiness({
-    phone,
-    name: ctx.name,
-    email: email || undefined,
-    passwordHash: ctx.passwordHash,
-    businessName: ctx.businessName,
-    method: 'OTP',
+  if (ctx.businessName) {
+    const created = await createUserWithDefaultBusiness({
+      phone,
+      name: ctx.name,
+      email: email || undefined,
+      passwordHash: ctx.passwordHash,
+      businessName: ctx.businessName,
+      method: 'OTP',
+    })
+
+    return {
+      verified: true,
+      message: 'Registration successful',
+      isNewUser: true,
+      user: created.user,
+      businesses: created.businesses,
+      activeBusiness: created.activeBusiness,
+      tokens: created.tokens,
+    }
+  }
+
+  const user = await prisma.user.create({
+    data: {
+      phone,
+      name: ctx.name,
+      email: email ? email.trim().toLowerCase() : null,
+      passwordHash: ctx.passwordHash,
+    },
+    select: { id: true, phone: true, name: true, email: true },
   })
+
+  const tokens = generateTokens(user.id, user.phone, undefined)
 
   return {
     verified: true,
     message: 'Registration successful',
     isNewUser: true,
-    user: created.user,
-    businesses: created.businesses,
-    activeBusiness: created.activeBusiness,
-    tokens: created.tokens,
+    user,
+    businesses: [],
+    activeBusiness: null,
+    tokens,
   }
 }
 
