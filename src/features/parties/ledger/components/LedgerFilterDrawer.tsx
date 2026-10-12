@@ -84,66 +84,63 @@ export function LedgerFilterDrawer({
       }
     >
       <div className="ledger-filter-body">
-        <div>
-          <span className="ledger-filter-heading">{t.dateRange}</span>
-          <div className="ledger-presets-grid mb-3" role="group" aria-label={t.dateRange ?? 'Date Range'}>
-            {[
-              {
-                label: t.last90Days || 'Last 90 Days',
-                from: new Date(Date.now() - 90 * 86400000).toISOString().slice(0, 10),
-                to: new Date().toISOString().slice(0, 10),
-              },
-              {
-                label: t.last30Days || 'Last 30 Days',
-                from: new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10),
-                to: new Date().toISOString().slice(0, 10),
-              },
-              {
-                label: t.thisMonth || 'This Month',
-                from: new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)).toISOString().slice(0, 10),
-                to: new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 0)).toISOString().slice(0, 10),
-              },
-              {
-                label: t.viewAll || t.all || 'All Time',
-                from: '2020-01-01',
-                to: new Date().toISOString().slice(0, 10),
-              },
-            ].map((p) => {
-              const active = draftFrom === p.from && draftTo === p.to
-              return (
-                <Button
-                  variant={active ? 'primary' : 'outline'}
-                  size="sm"
-                  key={p.label}
-                  className={`ledger-preset-chip${active ? ' active' : ''}`}
-                  onClick={() => {
-                    setDraftFrom(p.from)
-                    setDraftTo(p.to)
-                  }}
-                >
-                  <span>{p.label}</span>
-                </Button>
-              )
-            })}
-          </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              {t.dateRange}
+            </span>
+            <div className="grid grid-cols-2 gap-2" role="group" aria-label={t.dateRange ?? 'Date Range'}>
+              {[
+                {
+                  label: t.last90Days || 'Last 90 Days',
+                  from: new Date(Date.now() - 90 * 86400000).toISOString().slice(0, 10),
+                  to: new Date().toISOString().slice(0, 10),
+                },
+                {
+                  label: t.last30Days || 'Last 30 Days',
+                  from: new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10),
+                  to: new Date().toISOString().slice(0, 10),
+                },
+                {
+                  label: t.thisMonth || 'This Month',
+                  from: new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)).toISOString().slice(0, 10),
+                  to: new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 0)).toISOString().slice(0, 10),
+                },
+                {
+                  label: t.viewAll || t.all || 'All Time',
+                  from: '2020-01-01',
+                  to: new Date().toISOString().slice(0, 10),
+                },
+              ].map((p) => {
+                const active = draftFrom === p.from && draftTo === p.to
+                return (
+                  <Button
+                    variant={active ? 'primary' : 'outline'}
+                    size="sm"
+                    key={p.label}
+                    onClick={() => {
+                      setDraftFrom(p.from)
+                      setDraftTo(p.to)
+                    }}
+                  >
+                    <span>{p.label}</span>
+                  </Button>
+                )
+              })}
+            </div>
 
-          <div className="ledger-date-row">
-            <div className="ledger-date-group">
-              <label htmlFor="lf-from" className="ledger-date-label">{t.fromDate}</label>
+            <div className="grid grid-cols-2 gap-3 pt-2">
               <DateField
                 id="lf-from"
-                className="ledger-date-input"
+                label={t.fromDate}
                 value={draftFrom}
                 max={draftTo}
                 onChange={(e) => setDraftFrom(e.target.value)}
                 aria-label={t.ledgerFromDate}
               />
-            </div>
-            <div className="ledger-date-group">
-              <label htmlFor="lf-to" className="ledger-date-label">{t.toDate}</label>
               <DateField
                 id="lf-to"
-                className="ledger-date-input"
+                label={t.toDate}
                 value={draftTo}
                 min={draftFrom}
                 onChange={(e) => setDraftTo(e.target.value)}
@@ -151,47 +148,52 @@ export function LedgerFilterDrawer({
               />
             </div>
           </div>
-        </div>
 
-        <div>
-          <span className="ledger-filter-heading">{t.voucherTypesLabel}</span>
-          <div className="ledger-type-chips" role="group" aria-label={t.filterByVoucherType}>
-            {ALL_TYPES.map(({ label, value }) => {
-              const active = draftTypes.includes(value)
-              return (
-                <Button
-                  variant="none"
-                  key={value}
-                  type="button"
-                  className={`ledger-type-chip${active ? ' active' : ''}`}
-                  onClick={() => toggleType(value)}
-                  aria-pressed={active}
-                  aria-label={`${active ? t.remove : t.add} ${label} ${t.filter}`}
-                >
-                  {label}
-                </Button>
-              )
-            })}
+          <div className="space-y-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              {t.voucherTypesLabel}
+            </span>
+            <div className="flex flex-wrap gap-2" role="group" aria-label={t.filterByVoucherType}>
+              {ALL_TYPES.map(({ label, value }) => {
+                const active = draftTypes.includes(value)
+                return (
+                  <Button
+                    variant={active ? 'primary' : 'outline'}
+                    size="sm"
+                    key={value}
+                    type="button"
+                    className="!rounded-full"
+                    onClick={() => toggleType(value)}
+                    aria-pressed={active}
+                    aria-label={`${active ? t.remove : t.add} ${label} ${t.filter}`}
+                  >
+                    {label}
+                  </Button>
+                )
+              })}
+            </div>
           </div>
-        </div>
 
-        {onExport && (
-          <div>
-            <span className="ledger-filter-heading">{t.export}</span>
-            <Button
-              variant="outline"
-              size="md"
-              className="ledger-export-btn"
-              onClick={onExport}
-              disabled={isExporting}
-              loading={isExporting}
-              aria-label={t.downloadLedgerPDF}
-            >
-              <FileDown size={16} aria-hidden="true" />
-              <span>{t.downloadLedgerPDF}</span>
-            </Button>
-          </div>
-        )}
+          {onExport && (
+            <div className="space-y-2 pt-2 border-t border-[var(--color-gray-200)]">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                {t.export}
+              </span>
+              <Button
+                variant="outline"
+                size="md"
+                fullWidth
+                onClick={onExport}
+                disabled={isExporting}
+                loading={isExporting}
+                aria-label={t.downloadLedgerPDF}
+              >
+                <FileDown size={16} aria-hidden="true" className="mr-2" />
+                <span>{t.downloadLedgerPDF}</span>
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </Drawer>
   )

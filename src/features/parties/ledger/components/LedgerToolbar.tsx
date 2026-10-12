@@ -49,15 +49,20 @@ export function LedgerToolbar({
 
       <div className="ledger-toolbar__actions">
         <Button
-          variant="none"
+          variant={filterCount > 0 ? 'primary' : 'outline'}
+          size="md"
           type="button"
-          className={`ledger-filter-btn${filterCount > 0 ? ' ledger-filter-btn--active' : ''}`}
+          className="relative !w-11 !h-11 !p-0 flex items-center justify-center flex-shrink-0"
           onClick={onOpenFilter}
           aria-label={t.filter}
           title={t.filter}
         >
           <ListFilter size={20} strokeWidth={2.2} aria-hidden="true" />
-          {filterCount > 0 && <span className="ledger-filter-badge">{filterCount}</span>}
+          {filterCount > 0 && (
+            <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--color-primary-600)] px-1 text-[10px] font-bold text-white shadow-sm">
+              {filterCount}
+            </span>
+          )}
         </Button>
       </div>
     </div>
