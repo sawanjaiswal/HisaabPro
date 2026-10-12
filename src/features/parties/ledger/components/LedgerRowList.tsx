@@ -120,28 +120,6 @@ export function LedgerRowList({ rows, openingBalance, closingBalance, asOn }: Le
           </div>
         </section>
       ))}
-
-      {/* Running-balance footer */}
-      <footer className="ledger-total">
-        <span className="ledger-total__icon" aria-hidden="true">
-          <Wallet className="w-4 h-4" />
-        </span>
-        <div className="ledger-total__meta">
-          <span className="ledger-total__label">{t.runningBalance}</span>
-          {asOn && (
-            <span className="ledger-total__ason">{t.asOn} {formatShortDate(asOn)}</span>
-          )}
-        </div>
-        <div className="ledger-total__amt">
-          <span className="ledger-total__value tabular-nums">
-            {formatPaise(Math.abs(closingBalance))}
-            {closingTag && <span className="ledger-total__tag">{closingTag}</span>}
-          </span>
-          {closingBalance > 0 && (
-            <span className="ledger-total__overdue">{t.overdue}</span>
-          )}
-        </div>
-      </footer>
     </div>
   )
 }

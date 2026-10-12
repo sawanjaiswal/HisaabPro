@@ -10,20 +10,19 @@
  * not fit at 320px, and export is a once-in-a-while action, not a per-view one.
  */
 
-import { Filter, Search, Calendar, X } from 'lucide-react'
+import { ListFilter } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { LedgerMonthPicker } from './LedgerMonthPicker'
+import { SearchInput } from '@/components/ui/SearchInput'
 
 interface LedgerToolbarProps {
   query: string
   onQueryChange: (next: string) => void
-  from: string
-  to: string
-  onMonthChange: (from: string, to: string) => void
+  from?: string
+  to?: string
+  onMonthChange?: (from: string, to: string) => void
   /** Hidden on the Invoices/Payments tabs, where the type filter is fixed. */
-  showFilter: boolean
+  showFilter?: boolean
   filterCount: number
   onOpenFilter: () => void
 }
@@ -31,10 +30,6 @@ interface LedgerToolbarProps {
 export function LedgerToolbar({
   query,
   onQueryChange,
-  from,
-  to,
-  onMonthChange,
-  showFilter,
   filterCount,
   onOpenFilter,
 }: LedgerToolbarProps) {
@@ -43,46 +38,27 @@ export function LedgerToolbar({
   return (
     <div className="ledger-toolbar">
       <div className="ledger-search-wrap">
-        <Input
-          type="search"
-          className="ledger-search"
-          icon={<Search size={16} />}
+        <SearchInput
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
+          onClear={() => onQueryChange('')}
           placeholder={t.searchTransactions}
-          aria-label={t.searchTransactions}
+          ariaLabel={t.searchTransactions}
         />
-        {query && (
-          <Button
-            variant="none"
-            type="button"
-            className="ledger-search-clear"
-            onClick={() => onQueryChange('')}
-            aria-label={t.clear}
-          >
-            <X size={14} aria-hidden="true" />
-          </Button>
-        )}
       </div>
 
       <div className="ledger-toolbar__actions">
-        {showFilter && (
-          <Button
-            variant="none"
-            type="button"
-            className="ledger-filter-btn"
-            onClick={onOpenFilter}
-            aria-label={t.filter}
-          >
-            <Filter size={16} aria-hidden="true" />
-            {filterCount > 0 && <span className="ledger-filter-badge">{filterCount}</span>}
-          </Button>
-        )}
-
-        <div className="ledger-toolbar__month">
-          <Calendar size={16} className="ledger-toolbar__month-icon" aria-hidden="true" />
-          <LedgerMonthPicker from={from} to={to} onChange={onMonthChange} />
-        </div>
+        <Button
+          variant="none"
+          type="button"
+          className={`ledger-filter-btn${filterCount > 0 ? ' ledger-filter-btn--active' : ''}`}
+          onClick={onOpenFilter}
+          aria-label={t.filter}
+          title={t.filter}
+        >
+          <ListFilter size={18} strokeWidth={2.2} aria-hidden="true" />
+          {filterCount > 0 && <span className="ledger-filter-badge">{filterCount}</span>}
+        </Button>
       </div>
     </div>
   )

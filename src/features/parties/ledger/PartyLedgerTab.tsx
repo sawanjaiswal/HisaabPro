@@ -116,18 +116,16 @@ export function PartyLedgerTab({ partyId, partyName, businessName, lockTypes }: 
         onOpenFilter={() => setFilterOpen(true)}
       />
 
-      {!lockTypes && (
-        <LedgerFilterDrawer
-          open={filterOpen}
-          onClose={() => setFilterOpen(false)}
-          from={from}
-          to={to}
-          selectedTypes={selectedTypes}
-          onApply={handleApplyFilters}
-          onExport={rows.length > 0 ? handleExportPDF : undefined}
-          isExporting={isExporting}
-        />
-      )}
+      <LedgerFilterDrawer
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        from={from}
+        to={to}
+        selectedTypes={selectedTypes}
+        onApply={handleApplyFilters}
+        onExport={rows.length > 0 ? handleExportPDF : undefined}
+        isExporting={isExporting}
+      />
 
       {/* Loading */}
       {status === 'loading' && <LedgerLoading />}

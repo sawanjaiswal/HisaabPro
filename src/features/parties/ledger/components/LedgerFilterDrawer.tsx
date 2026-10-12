@@ -86,6 +86,47 @@ export function LedgerFilterDrawer({
       <div className="ledger-filter-body">
         <div>
           <span className="ledger-filter-heading">{t.dateRange}</span>
+          <div className="ledger-presets-grid mb-3" role="group" aria-label={t.dateRange ?? 'Date Range'}>
+            {[
+              {
+                label: t.last90Days || 'Last 90 Days',
+                from: new Date(Date.now() - 90 * 86400000).toISOString().slice(0, 10),
+                to: new Date().toISOString().slice(0, 10),
+              },
+              {
+                label: t.last30Days || 'Last 30 Days',
+                from: new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10),
+                to: new Date().toISOString().slice(0, 10),
+              },
+              {
+                label: t.thisMonth || 'This Month',
+                from: new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)).toISOString().slice(0, 10),
+                to: new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 0)).toISOString().slice(0, 10),
+              },
+              {
+                label: t.viewAll || t.all || 'All Time',
+                from: '2020-01-01',
+                to: new Date().toISOString().slice(0, 10),
+              },
+            ].map((p) => {
+              const active = draftFrom === p.from && draftTo === p.to
+              return (
+                <Button
+                  variant={active ? 'primary' : 'outline'}
+                  size="sm"
+                  key={p.label}
+                  className={`ledger-preset-chip${active ? ' active' : ''}`}
+                  onClick={() => {
+                    setDraftFrom(p.from)
+                    setDraftTo(p.to)
+                  }}
+                >
+                  <span>{p.label}</span>
+                </Button>
+              )
+            })}
+          </div>
+
           <div className="ledger-date-row">
             <div className="ledger-date-group">
               <label htmlFor="lf-from" className="ledger-date-label">{t.fromDate}</label>
