@@ -69,19 +69,21 @@ export function TransactionRow({
       </div>
 
       <div className="txn-row__main">
-        <div className="txn-row__title-row flex items-center gap-1.5 min-w-0">
-          <Arrow
-            className={`w-3.5 h-3.5 flex-shrink-0 ${
-              isCredit ? 'text-[var(--color-success-600)]' : 'text-[var(--color-error-500)]'
-            }`}
-            strokeWidth={2.5}
-            aria-hidden="true"
-          />
-          <p className="txn-row__title">{title}</p>
-        </div>
+        <p className="txn-row__title">{title}</p>
         {(reference || status) && (
           <div className="txn-row__meta">
-            {reference && <span className="txn-row__ref">{reference}</span>}
+            {reference && (
+              <span className="txn-row__ref inline-flex items-center gap-1">
+                <span>{reference}</span>
+                <Arrow
+                  className={`w-3 h-3 flex-shrink-0 ${
+                    isCredit ? 'text-[var(--color-success-600)]' : 'text-[var(--color-error-500)]'
+                  }`}
+                  strokeWidth={2.5}
+                  aria-hidden="true"
+                />
+              </span>
+            )}
             {status && (
               <Badge variant={status.variant} className="txn-row__status">
                 {status.label}
