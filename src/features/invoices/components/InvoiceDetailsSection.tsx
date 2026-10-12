@@ -9,6 +9,7 @@ import type { DocumentFormData, PaymentTerms } from '../invoice.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
 import { DateField } from '@/components/ui/DateField'
+import { Checkbox } from '@/components/ui/Checkbox'
 
 interface InvoiceDetailsSectionProps {
   documentDate: string
@@ -112,19 +113,17 @@ export function InvoiceDetailsSection({
         />
       </div>
 
-      <label className="flex items-center gap-3 p-3 bg-[#F8F9FA] rounded-xl border border-gray-200/80 cursor-pointer hover:bg-gray-100/60 transition-colors select-none">
-        <input
-          type="checkbox"
+      <label className="flex items-center gap-3 p-3 bg-[var(--color-surface-subtle)] rounded-xl border border-[var(--color-border)] cursor-pointer hover:bg-[var(--color-surface)] transition-colors select-none">
+        <Checkbox
           checked={includeSignature}
-          onChange={(e) => onUpdateField('includeSignature', e.target.checked)}
-          className="w-4 h-4 rounded text-[#026F39] focus:ring-[#026F39] accent-[#026F39] cursor-pointer shrink-0"
+          onCheckedChange={(checked) => onUpdateField('includeSignature', Boolean(checked))}
           aria-label={t.includeDigitalSignatureAriaLabel}
         />
         <div className="flex flex-col min-w-0">
-          <span className="text-sm font-semibold text-slate-900 leading-tight">
+          <span className="text-sm font-semibold text-[var(--color-text-primary)] leading-tight">
             {t.includeDigitalSignature || 'Digital Signature'}
           </span>
-          <span className="text-[11px] text-slate-500 font-normal leading-tight mt-0.5">
+          <span className="text-[11px] text-[var(--color-text-muted)] font-normal leading-tight mt-0.5">
             Attach business stamp & authorized signature on invoice
           </span>
         </div>

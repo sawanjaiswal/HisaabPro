@@ -137,7 +137,7 @@ export const enExt10 = {
   onboardingBusinessNamePh: 'e.g. Raju General Store',
   onboardingBusinessType:   'Business Type',
   onboardingPhone:          'Business Phone (optional)',
-  onboardingPhonePh:        '10-digit mobile number',
+  onboardingPhonePh:        'Enter your phone number',
   onboardingSubmit:         'Get Started',
   onboardingSubmitting:     'Setting up\u2026',
   onboardingSubmitAria:     'Create your business and get started',

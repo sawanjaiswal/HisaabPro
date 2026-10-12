@@ -18,18 +18,38 @@ import com.getcapacitor.WebViewListener;
 
 public class MainActivity extends BridgeActivity {
 
+    private final long splashStartTime = android.os.SystemClock.uptimeMillis();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SplashScreen.installSplashScreen(this);
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+        splashScreen.setKeepOnScreenCondition(() -> android.os.SystemClock.uptimeMillis() - splashStartTime < 1000);
         // Edge-to-edge layout: must be called before super.onCreate() so Capacitor's
         // setContentView inherits the flag. EdgeToEdge.enable() is the SDK-35+ SSOT.
         EdgeToEdge.enable(this);
         registerPlugin(PhoneNumberHintPlugin.class);
         super.onCreate(savedInstanceState);
         enableThirdPartyCookies();
+        setupNativeBridge();
         applySystemBarStyles();
         setupSafeAreaInsets();
         setupWebViewPageLoadedListener();
+    }
+
+    private Boolean appDarkTheme = null;
+
+    private void setupNativeBridge() {
+        WebView wv = getBridge() != null ? getBridge().getWebView() : null;
+        if (wv == null) return;
+        wv.addJavascriptInterface(new Object() {
+            @android.webkit.JavascriptInterface
+            public void setSystemBarsAppearance(boolean isDarkTheme) {
+                runOnUiThread(() -> {
+                    appDarkTheme = isDarkTheme;
+                    applySystemBarStyles();
+                });
+            }
+        }, "HisaabNativeBridge");
     }
 
     /**
@@ -46,7 +66,10 @@ public class MainActivity extends BridgeActivity {
         getBridge().addWebViewListener(new WebViewListener() {
             @Override
             public void onPageLoaded(WebView webView) {
-                runOnUiThread(() -> reinjectSafeAreaInsets());
+                runOnUiThread(() -> {
+                    reinjectSafeAreaInsets();
+                    applySystemBarStyles();
+                });
             }
         });
     }
@@ -81,13 +104,22 @@ public class MainActivity extends BridgeActivity {
     private void applySystemBarStyles() {
         WindowInsetsControllerCompat controller =
             WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (controller == null) return;
+
         boolean isNight = (getResources().getConfiguration().uiMode
             & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
             == android.content.res.Configuration.UI_MODE_NIGHT_YES;
-        controller.setAppearanceLightStatusBars(!isNight);
-        controller.setAppearanceLightNavigationBars(!isNight);
+        boolean isDark = appDarkTheme != null ? appDarkTheme : isNight;
 
-        int windowBg = isNight ? 0xFF0E0E0F : 0xFFF8F7F4;
+        // Top bar: deep emerald (#003121) hero surface -> always light/white status bar icons
+        controller.setAppearanceLightStatusBars(false);
+
+        // 3-button navigation bar:
+        // Light theme: bottom nav is white -> dark icons (setAppearanceLightNavigationBars(true))
+        // Dark theme: bottom nav is dark (#0B0F15) -> light white icons (setAppearanceLightNavigationBars(false))
+        controller.setAppearanceLightNavigationBars(!isDark);
+
+        int windowBg = isDark ? 0xFF0E0E0F : 0xFFF8F7F4;
         getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(windowBg));
         getWindow().getDecorView().setBackgroundColor(windowBg);
 

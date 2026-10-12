@@ -86,12 +86,12 @@ export default function DashboardPage() {
         {status === 'success' && data && (
           <>
             {/* Dark hero area */}
-            <div className="dashboard-top-section dashboard-top-section--dark py-0">
+            <div className="dashboard-top-section dashboard-top-section--dark">
               <DashboardSalesHero trend={data.trend} />
             </div>
 
             {/* White drawer section */}
-            <div className="dashboard-white-section py-0">
+            <div className="dashboard-white-section">
               {/* A shopkeeper with nothing overdue has no priorities — showing
                   invented ones ("Raj Traders payment due") sends them chasing a
                   customer who does not exist. */}

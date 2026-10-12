@@ -40,22 +40,30 @@ export function StartPathStep({ value, onChange, loading, onNext, onBack }: Prop
         ))}
       </div>
 
-      <Button
-        type="button"
-        variant="primary"
-        size="lg"
-        loading={loading}
-        disabled={!value || loading}
-        className="onboarding-submit"
-        onClick={onNext}
-      >
-        {loading ? t.onboardingSubmitting : t.onboardingContinue}
-      </Button>
-
-      <Button variant="none" type="button" className="onboarding-back-btn" onClick={onBack} disabled={loading}>
-        <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-        {t.onboardingBack}
-      </Button>
+      <div className="onboarding-actions">
+        <Button
+          type="button"
+          variant="secondary"
+          size="lg"
+          className="onboarding-back-icon-btn"
+          onClick={onBack}
+          disabled={loading}
+          aria-label={t.onboardingBack}
+        >
+          <ArrowLeft className="w-5 h-5" aria-hidden="true" />
+        </Button>
+        <Button
+          type="button"
+          variant="primary"
+          size="lg"
+          loading={loading}
+          disabled={!value || loading}
+          className="onboarding-submit"
+          onClick={onNext}
+        >
+          {loading ? t.onboardingSubmitting : t.onboardingContinue}
+        </Button>
+      </div>
     </div>
   )
 }

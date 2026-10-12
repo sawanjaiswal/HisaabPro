@@ -38,21 +38,28 @@ export function DataSourceStep({ value, onChange, onNext, onBack }: Props) {
         ))}
       </div>
 
-      <Button
-        type="button"
-        variant="primary"
-        size="lg"
-        disabled={!value}
-        className="onboarding-submit"
-        onClick={onNext}
-      >
-        {t.onboardingContinue}
-      </Button>
-
-      <Button variant="none" type="button" className="onboarding-back-btn" onClick={onBack}>
-        <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-        {t.onboardingBack}
-      </Button>
+      <div className="onboarding-actions">
+        <Button
+          type="button"
+          variant="secondary"
+          size="lg"
+          className="onboarding-back-icon-btn"
+          onClick={onBack}
+          aria-label={t.onboardingBack}
+        >
+          <ArrowLeft className="w-5 h-5" aria-hidden="true" />
+        </Button>
+        <Button
+          type="button"
+          variant="primary"
+          size="lg"
+          disabled={!value}
+          className="onboarding-submit"
+          onClick={onNext}
+        >
+          {t.onboardingContinue}
+        </Button>
+      </div>
     </div>
   )
 }

@@ -35,7 +35,7 @@ export const BusinessOverviewCarousel: React.FC<BusinessOverviewCarouselProps> =
   }
 
   return (
-    <section className="dashboard-overview py-0">
+    <section className="dashboard-overview">
       <div className="dashboard-overview__header">
         <Heading level={2} className="dashboard-section-title">{t.businessOverview}</Heading>
         <span className="dashboard-overview__period">{t.last30Days}</span>

@@ -47,6 +47,14 @@ function applyTheme(theme: Theme) {
   if (meta) {
     meta.setAttribute('content', THEME_META_COLORS[theme])
   }
+  // Notify native Android bridge for 3-button nav bar & status bar icon color adaptation
+  if (typeof window !== 'undefined' && (window as any).HisaabNativeBridge?.setSystemBarsAppearance) {
+    try {
+      (window as any).HisaabNativeBridge.setSystemBarsAppearance(theme === 'dark')
+    } catch {
+      // ignore
+    }
+  }
 }
 
 function applyVariant(variant: ThemeVariant) {

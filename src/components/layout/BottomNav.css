@@ -239,3 +239,35 @@ body:has(.bnav-root--hidden) {
     transition: none;
   }
 }
+
+/* ─── Dark theme support ────────────────────────────────────── */
+[data-theme="dark"] .bnav {
+  background: var(--color-gray-0, #0B0F15);
+  border-top: 1px solid var(--color-gray-200, #232B3A);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .bnav__tab {
+  color: var(--color-gray-500, #959BA6);
+}
+
+[data-theme="dark"] .bnav__tab:hover {
+  color: var(--color-gray-800, #E0E2E7);
+}
+
+[data-theme="dark"] .bnav__tab--active {
+  color: var(--color-primary-400, #5DD89B);
+}
+
+[data-theme="dark"] .bnav__tab--active::after {
+  background: var(--color-primary-400, #5DD89B);
+}
+
+[data-theme="dark"] .bnav__tab--active .bnav__icon {
+  color: var(--color-primary-400, #5DD89B);
+}
+
+[data-theme="dark"] .bnav__icon--create {
+  box-shadow: 0 10px 24px -4px rgba(2, 111, 57, 0.44), 0 0 0 4px var(--color-gray-0, #0B0F15), inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);
+}
+

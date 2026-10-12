@@ -106,7 +106,7 @@
   --dash-avatar-shadow: var(--shadow-md);
   /* Spacing — use global tokens directly */
   --dash-side-padding: var(--side-padding);
-  --dash-section-gap: var(--space-8);
+  --dash-section-gap: var(--space-6);
   --dash-stagger-base: 80ms;
 }
 
@@ -217,7 +217,9 @@
 /* ─── Dark hero variant (Home 2 redesign) ─────────────────────── */
 .dashboard-top-section--dark {
   background: var(--color-hero-surface-deep);
-  padding-bottom: var(--space-8);
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-6);
+  padding-inline: var(--dash-side-padding);
 }
 
 .dashboard-top-section--dark .dashboard-greeting-title {
@@ -232,13 +234,6 @@
   color: var(--color-white-inverse);
   background: var(--overlay-white-12, rgba(255, 255, 255, 0.12));
   border-color: var(--overlay-white-15, rgba(255, 255, 255, 0.15));
-}
-
-/* White drawer overlaps up into the dark hero with rounded corners */
-.dashboard-top-section--dark + .dashboard-white-section {
-  margin-top: calc(-1 * var(--space-4)) !important;
-  position: relative;
-  z-index: 2;
 }
 
 /* Cap inner content width at desktop so cards don't stretch infinitely.
@@ -264,8 +259,7 @@
 
 .dashboard-white-section {
   background: var(--color-gray-0);
-  margin-top: var(--space-2) !important;
-  padding: var(--dash-section-gap) var(--dash-side-padding) calc(var(--bottom-nav-height) + 2rem);
+  padding: var(--space-6) var(--dash-side-padding) calc(var(--bottom-nav-height) + var(--space-6));
   display: flex;
   flex-direction: column;
   gap: var(--dash-section-gap);

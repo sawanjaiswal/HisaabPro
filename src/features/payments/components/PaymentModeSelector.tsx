@@ -63,19 +63,21 @@ export function PaymentModeSelector({
             const isSelected = mode === item.mode
             const Icon = item.icon
             return (
-              <button
+              <Button
                 key={item.mode}
                 type="button"
+                variant="secondary"
+                size="md"
                 onClick={() => onSelectMode(item.mode)}
-                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border transition-all cursor-pointer ${
+                className={`flex flex-col items-center justify-center p-2.5 h-auto min-h-[56px] rounded-xl border transition-all cursor-pointer ${
                   isSelected
-                    ? 'border-[#026F39] bg-[#026F39]/10 text-[#026F39] font-bold shadow-sm'
+                    ? 'border-[var(--color-primary-600)] bg-[var(--color-primary-50)] text-[var(--color-primary-700)] font-bold shadow-xs'
                     : 'border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)] text-[var(--color-text-secondary)]'
                 }`}
               >
                 <Icon size={20} />
                 <span className="text-xs mt-1">{item.label}</span>
-              </button>
+              </Button>
             )
           })}
         </div>

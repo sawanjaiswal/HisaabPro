@@ -1,6 +1,7 @@
 /** Payment terms pill selector */
 
 import React from 'react'
+import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentTerms } from '../invoice.types'
 import { PAYMENT_TERMS_LABELS } from '../invoice.constants'
@@ -45,20 +46,20 @@ export const PaymentTermsSelector: React.FC<PaymentTermsSelectorProps> = ({
       {PAYMENT_TERMS_OPTIONS.map((terms) => {
         const active = value === terms
         return (
-          <button
+          <Button
             key={terms}
             type="button"
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border ${
-              active
-                ? 'bg-[#026F39] text-white border-[#026F39] shadow-xs'
-                : 'bg-[#F8F9FA] text-slate-700 border-gray-200/80 hover:bg-gray-100'
+            variant={active ? 'primary' : 'secondary'}
+            size="sm"
+            className={`rounded-full text-xs font-semibold whitespace-nowrap min-h-8 h-8 px-3 py-1 ${
+              active ? 'shadow-xs' : ''
             }`}
             onClick={() => onChange(terms)}
             aria-pressed={active}
             aria-label={`${t.selectPaymentTerms}: ${PAYMENT_TERMS_LABELS[terms]}`}
           >
             {PAYMENT_TERMS_SHORT_LABELS[terms]}
-          </button>
+          </Button>
         )
       })}
     </div>

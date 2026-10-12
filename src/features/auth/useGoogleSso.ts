@@ -231,7 +231,6 @@ export function useGoogleSso(): UseGoogleSsoReturn {
         authLib.setCachedBusinesses(response.businesses)
 
         if (isMountedRef.current) setState('success')
-        toast.success((t as any).signInSuccess ?? 'Signed in successfully')
 
         if (response.businesses.length === 0) {
           navigate(ROUTES.ONBOARDING, { replace: true })
@@ -302,7 +301,6 @@ export function useGoogleSso(): UseGoogleSsoReturn {
             authLib.setCachedBusinesses(response.businesses)
 
             if (isMountedRef.current) setState('success')
-            toast.success((t as any).signInSuccess ?? 'Signed in with Google')
 
             if (response.businesses.length === 0) {
               navigate(ROUTES.ONBOARDING, { replace: true })

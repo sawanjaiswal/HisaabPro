@@ -137,7 +137,7 @@ export const hiExt10 = {
   onboardingBusinessNamePh: 'जैसे राजू जनरल स्टोर',
   onboardingBusinessType:   'व्यापार का प्रकार',
   onboardingPhone:          'व्यापार फ़ोन (वैकल्पिक)',
-  onboardingPhonePh:        '10 अंकों का मोबाइल नंबर',
+  onboardingPhonePh:        'अपना फ़ोन नंबर दर्ज करें',
   onboardingSubmit:         'शुरू करें',
   onboardingSubmitting:     'सेट हो रहा है\u2026',
   onboardingSubmitAria:     'अपना व्यापार बनाएं और शुरू करें',

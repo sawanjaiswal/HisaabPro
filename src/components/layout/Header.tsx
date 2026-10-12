@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useState, type ReactNode } from 'react'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, Compass } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { APP_NAME, APP_NAME_MARK } from '@/config/app.config'
 import { ROUTES } from '@/config/routes.config'
@@ -144,6 +144,17 @@ export function Header({
 
       <div className="header-actions">
         {actions}
+        {isHomePage && (
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm p-1.5 rounded-lg text-current opacity-85 hover:opacity-100"
+            onClick={() => navigate(ROUTES.ONBOARDING)}
+            title="View Onboarding"
+            aria-label="View Onboarding"
+          >
+            <Compass size={20} aria-hidden="true" />
+          </button>
+        )}
         {shouldShowSync && <SyncStatusIcon />}
         {shouldShowNotifications && <NotificationBell />}
       </div>

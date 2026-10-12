@@ -30,10 +30,10 @@ export const inputVariants = cva(
           'bg-transparent border-0 shadow-none p-0 focus-visible:ring-0 focus-visible:outline-none',
       },
       inputSize: {
-        sm: 'min-h-9 px-3 py-1.5 text-xs',
-        default: 'min-h-11 px-3.5 py-2 text-sm',
-        lg: 'min-h-[50px] px-4 py-2.5 text-sm',
-        hero: 'min-h-[56px] px-0 py-1 text-[var(--fs-3xl)] font-bold tabular-nums',
+        sm: 'h-9 min-h-9 px-3 py-1.5 text-xs',
+        default: 'h-[52px] min-h-[52px] px-4 py-3 text-base',
+        lg: 'h-[56px] min-h-[56px] px-4 py-3.5 text-base',
+        hero: 'h-[64px] min-h-[64px] px-0 py-1 text-[var(--fs-3xl)] font-bold tabular-nums',
       },
       hasError: {
         true: 'border-[var(--color-error-500)] focus-visible:border-[var(--color-error-500)] focus-visible:ring-[var(--color-error-100)]',

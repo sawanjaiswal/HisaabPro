@@ -30,14 +30,14 @@ function resumeStep(saved: OnboardingDraft['step'] | undefined): ResumableStep {
 }
 
 export function useOnboarding() {
-  const { user, refreshActiveBusiness } = useAuth()
+  const { refreshActiveBusiness } = useAuth()
   const saved = draft.load()
 
   const [step, setStep] = useState<OnboardingStep>(() => resumeStep(saved.step))
   const [businessName, setBusinessName] = useState(saved.businessName ?? '')
   const [businessType, setBusinessType] = useState(saved.businessType ?? 'general')
   const [hasPickedType, setHasPickedType] = useState(saved.hasPickedType ?? false)
-  const [phone, setPhone] = useState(saved.phone ?? user?.phone ?? '')
+  const [phone, setPhone] = useState('')
   const [businessLocation, setBusinessLocation] = useState(saved.businessLocation ?? '')
   const [dataSource, setDataSource] = useState<DataSource | undefined>(saved.dataSource)
   const [startPath, setStartPath] = useState<StartPath | undefined>(saved.startPath)

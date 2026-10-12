@@ -50,11 +50,11 @@ export function BusinessDetailsStep({
         id="phone"
         label={t.onboardingPhone}
         type="tel"
-        placeholder={t.onboardingPhonePh}
+        placeholder={t.onboardingPhonePh || 'Enter your phone number'}
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
         disabled={disabled}
-        autoComplete="tel"
+        autoComplete="off"
         maxLength={10}
         inputMode="numeric"
       />
@@ -71,20 +71,27 @@ export function BusinessDetailsStep({
         maxLength={100}
       />
 
-      <Button
-        type="submit"
-        variant="primary"
-        size="lg"
-        disabled={!businessName.trim()}
-        className="onboarding-submit"
-      >
-        {t.onboardingContinue}
-      </Button>
-
-      <Button variant="none" type="button" className="onboarding-back-btn" onClick={onBack}>
-        <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-        {t.onboardingBack}
-      </Button>
+      <div className="onboarding-actions">
+        <Button
+          type="button"
+          variant="secondary"
+          size="lg"
+          className="onboarding-back-icon-btn"
+          onClick={onBack}
+          aria-label={t.onboardingBack}
+        >
+          <ArrowLeft className="w-5 h-5" aria-hidden="true" />
+        </Button>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          disabled={!businessName.trim()}
+          className="onboarding-submit"
+        >
+          {t.onboardingContinue}
+        </Button>
+      </div>
     </form>
   )
 }

@@ -12,7 +12,7 @@ export const DashboardSkeleton: React.FC = () => {
   return (
     <>
       {/* Top gradient section */}
-      <div className="dashboard-top-section py-0" aria-busy="true" aria-label={t.loadingDashboard}>
+      <div className="dashboard-top-section" aria-busy="true" aria-label={t.loadingDashboard}>
         {/* Greeting skeleton */}
         <div className="dashboard-greeting-row" aria-hidden="true">
           <div className="flex flex-col gap-2">
@@ -66,7 +66,7 @@ export const DashboardSkeleton: React.FC = () => {
       </div>
 
       {/* White section skeleton */}
-      <div className="dashboard-white-section dashboard-white-section--no-alerts py-0" aria-hidden="true">
+      <div className="dashboard-white-section dashboard-white-section--no-alerts" aria-hidden="true">
         {/* Starred skeleton */}
         <div className="flex flex-col gap-4">
           <div className="flex justify-between">

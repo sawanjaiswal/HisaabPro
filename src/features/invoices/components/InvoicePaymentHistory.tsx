@@ -122,14 +122,16 @@ export function InvoicePaymentHistory({ document }: Props) {
                 <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                   {formatPaise(p.allocatedAmount)}
                 </span>
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => navigate(`/payments/${p.id}`)}
-                  className="p-1 text-text-muted hover:text-text-primary rounded"
+                  className="p-1 h-auto min-h-0 text-text-muted hover:text-text-primary rounded"
                   title="View Payment"
                 >
                   <ArrowUpRight size={14} />
-                </button>
+                </Button>
               </div>
             </div>
           ))}
