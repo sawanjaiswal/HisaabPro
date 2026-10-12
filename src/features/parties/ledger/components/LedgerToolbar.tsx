@@ -56,7 +56,7 @@ export function LedgerToolbar({
           aria-label={t.filter}
           title={t.filter}
         >
-          <ListFilter size={18} strokeWidth={2.2} aria-hidden="true" />
+          <ListFilter size={20} strokeWidth={2.2} aria-hidden="true" />
           {filterCount > 0 && <span className="ledger-filter-badge">{filterCount}</span>}
         </Button>
       </div>

@@ -228,20 +228,29 @@
 .ledger-filter-btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-2) var(--space-2);
-  min-height: 36px;
-  border: 1.5px solid var(--color-gray-200);
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-md);
   background: var(--color-gray-0);
   color: var(--text-secondary);
-  font-size: var(--fs-sm);
-  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--duration-fast) ease;
 }
 
 .ledger-filter-btn:hover {
-  border-color: var(--color-primary-300);
-  color: var(--color-primary-500);
+  border-color: var(--color-primary-400);
+  color: var(--color-primary-600);
+  background: var(--color-primary-bg-subtle, rgba(2, 111, 57, 0.04));
+}
+
+.ledger-filter-btn--active {
+  border-color: var(--color-primary-500);
+  color: var(--color-primary-600);
 }
 
 .ledger-filter-badge {
