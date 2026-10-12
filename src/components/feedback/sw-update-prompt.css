@@ -98,8 +98,8 @@
 /* ─── Typography & Highlights ────────────────────────────────── */
 
 .sw-update-title {
-  font-size: var(--fs-lg);
-  font-weight: 700;
+  font-size: var(--fs-2xl); /* 18px */
+  font-weight: 600; /* semi-bold */
   color: var(--color-gray-900);
   margin-bottom: var(--space-2);
 }
@@ -141,20 +141,15 @@
   color: var(--color-gray-300);
 }
 
-/* ─── Footer Action Buttons ──────────────────────────────────── */
+/* ─── Footer Action Button ───────────────────────────────────── */
 
 .sw-update-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
   width: 100%;
 }
 
-.sw-update-dismiss-btn {
-  flex: 1;
-}
-
 .sw-update-confirm-btn {
-  flex: 1.6;
+  width: 100%;
   gap: var(--space-2);
 }

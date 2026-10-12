@@ -35,7 +35,15 @@
   text-overflow: ellipsis;
 }
 
-/* Titleless header — hide the border if no content */
+/* When header has no title (empty/sr-only title), push close button to the right and drop border */
+.drawer-header:has(.sr-only:first-child) {
+  justify-content: flex-end;
+  border-bottom: none;
+  min-height: auto;
+  padding-bottom: 0;
+}
+
+/* Titleless header — hide if completely empty */
 .drawer-header:empty {
   display: none;
 }
@@ -56,7 +64,7 @@
   color: var(--color-gray-600);
   cursor: pointer;
   flex-shrink: 0;
-  margin-left: var(--space-3);
+  margin-left: auto;
   -webkit-tap-highlight-color: transparent;
   transition:
     background var(--duration-fast) var(--ease-default),
@@ -71,6 +79,16 @@
 .drawer-close:active {
   background: var(--color-gray-200);
   transform: scale(0.93);
+}
+
+[data-theme="dark"] .drawer-close {
+  background: var(--color-gray-800);
+  color: var(--color-gray-300);
+}
+
+[data-theme="dark"] .drawer-close:hover {
+  background: var(--color-gray-700);
+  color: var(--color-gray-100);
 }
 
 /* ── Body (scrollable) ─────────────────────────────────────── */

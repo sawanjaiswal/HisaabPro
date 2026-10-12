@@ -52,24 +52,15 @@ export function SWUpdatePrompt() {
         <div className="sw-update-actions">
           <Button
             type="button"
-            variant="ghost"
-            size="lg"
-            onClick={handleDismiss}
-            disabled={updating}
-            className="sw-update-dismiss-btn"
-          >
-            {t.cancel || 'Later'}
-          </Button>
-          <Button
-            type="button"
             variant="primary"
             size="lg"
+            fullWidth
             onClick={handleUpdate}
             loading={updating}
             className="sw-update-confirm-btn"
           >
-            <RefreshCw size={16} aria-hidden="true" className={updating ? 'animate-spin' : ''} />
-            {updating ? (t.loading || 'Updating...') : (t.update || 'Update Now')}
+            <RefreshCw size={18} aria-hidden="true" className={updating ? 'animate-spin' : ''} />
+            {updating ? (t.loading || 'Updating...') : (t.continueWith || 'Continue')}
           </Button>
         </div>
       }
