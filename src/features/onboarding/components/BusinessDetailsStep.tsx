@@ -1,7 +1,5 @@
 /** BusinessDetailsStep — Name, Phone, Location fields. */
 
-import { ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Heading } from '@/components/ui/Heading'
 import { Text } from '@/components/ui/Text'
@@ -17,8 +15,6 @@ interface Props {
   setBusinessLocation: (v: string) => void
   disabled?: boolean
   onNext?: () => void
-  onBack?: () => void
-  showActions?: boolean
 }
 
 export function BusinessDetailsStep({
@@ -26,8 +22,7 @@ export function BusinessDetailsStep({
   phone, setPhone,
   businessLocation, setBusinessLocation,
   disabled,
-  onNext, onBack,
-  showActions = false,
+  onNext,
 }: Props) {
   const { t } = useLanguage()
 
@@ -83,34 +78,6 @@ export function BusinessDetailsStep({
         autoComplete="address-level2"
         maxLength={100}
       />
-
-      {showActions && (
-        <div className="onboarding-actions">
-          {onBack && (
-            <Button
-              type="button"
-              variant="secondary"
-              size="lg"
-              className="onboarding-back-icon-btn"
-              onClick={onBack}
-              aria-label={t.onboardingBack}
-            >
-              <ArrowLeft className="w-5 h-5" aria-hidden="true" />
-            </Button>
-          )}
-          {onNext && (
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              disabled={!businessName.trim()}
-              className="onboarding-submit"
-            >
-              {t.onboardingContinue}
-            </Button>
-          )}
-        </div>
-      )}
     </form>
   )
 }

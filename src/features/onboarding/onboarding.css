@@ -1,18 +1,17 @@
-/* Onboarding Page — mobile-first top-aligned card layout.
-   Top-aligned so the soft keyboard never covers form fields. */
+/* Onboarding Page — mobile-first layout within AppShell and Header */
 .onboarding-page {
-  min-height: 100dvh;
+  min-height: calc(100dvh - var(--header-height));
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: var(--space-6) 16px var(--space-8);
+  padding: var(--space-4) 16px calc(var(--space-8) + 88px);
   background: transparent;
   overflow-y: auto;
 }
 
 .onboarding-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 480px;
   padding: 0;
   background: transparent;
   box-shadow: none;
@@ -85,28 +84,43 @@
 }
 
 /* ─── Inline action row (Back icon btn + Continue) ──────────────────────── */
-/* Replaces the old vertical stack of .onboarding-back-btn + .onboarding-submit */
 .onboarding-actions {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin-top: var(--space-2);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
+.bottom-action-bar .onboarding-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.bottom-action-bar .btn.onboarding-back-icon-btn,
 .onboarding-back-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  width: 56px;
-  height: 56px;
-  padding: 0;
+  flex: 0 0 52px !important;
+  width: 52px !important;
+  min-width: 52px !important;
+  height: 48px !important;
+  padding: 0 !important;
   border-radius: var(--radius-lg);
 }
 
 /* Continue btn fills remaining space in the row */
+.bottom-action-bar .btn.onboarding-submit,
 .onboarding-submit {
-  flex: 1;
+  flex: 1 1 auto !important;
+  width: auto !important;
+  height: 48px;
 }
 
 /* ─── Scrollable card (businessType step: grid scrolls, CTA stays sticky) ── */

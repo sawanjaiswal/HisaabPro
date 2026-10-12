@@ -25,11 +25,11 @@ export function ReadyStep({ onGoHome, onExploreDemo }: Props) {
         <Text className="onboarding-subtitle">{t.onboardingReadyDesc}</Text>
       </div>
 
-      <Button type="button" variant="primary" size="lg" className="onboarding-submit" onClick={onGoHome}>
+      <Button type="button" variant="primary" size="lg" fullWidth className="onboarding-submit w-full" onClick={onGoHome}>
         {t.onboardingGoHome}
       </Button>
 
-      <Button type="button" variant="outline" size="lg" className="onboarding-submit" onClick={onExploreDemo}>
+      <Button type="button" variant="outline" size="lg" fullWidth className="onboarding-submit w-full" onClick={onExploreDemo}>
         {t.onboardingExploreDemo}
       </Button>
 

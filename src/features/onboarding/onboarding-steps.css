@@ -99,10 +99,22 @@
 
 /* ─── Ready step ─────────────────────────────────────────────────────────── */
 .onboarding-ready {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
   align-items: center;
   text-align: center;
   /* Tighten button stack — standard 12px gap between back-to-back CTAs */
   gap: var(--space-3);
+}
+.onboarding-ready .btn,
+.onboarding-ready .onboarding-submit {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 48px !important;
 }
 .onboarding-ready-icon {
   background: var(--color-success-50);
@@ -115,6 +127,7 @@
 /* Ready step: header gap is 20px, not the default 32px — no void below subtitle */
 .onboarding-ready .onboarding-header {
   margin-bottom: var(--space-5);
+  width: 100%;
 }
 .onboarding-ready-note {
   /* Gap already handles the spacing — no extra margin needed */

@@ -25,8 +25,12 @@ export const buttonVariants = cva('btn', {
       md: 'btn-md',
       lg: 'btn-lg',
     },
+    fullWidth: {
+      true: 'btn-block w-full',
+      false: '',
+    },
   },
-  defaultVariants: { variant: 'primary', size: 'md' },
+  defaultVariants: { variant: 'primary', size: 'md', fullWidth: false },
 })
 
 interface ButtonProps
@@ -44,6 +48,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   {
     variant,
     size,
+    fullWidth,
     loading = false,
     asChild = false,
     disabled,
@@ -56,7 +61,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   const Comp = asChild ? Slot.Root : 'button'
   const classes = variant === 'none'
     ? className
-    : cn(buttonVariants({ variant, size }), className)
+    : cn(buttonVariants({ variant, size, fullWidth }), className)
   return (
     <Comp
       ref={ref}

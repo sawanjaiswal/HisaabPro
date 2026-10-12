@@ -1,8 +1,6 @@
 /** DataSourceStep — "How do you currently work?" single-column option cards. */
 
 import { Text } from '@/components/ui/Text'
-import { ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { DATA_SOURCE_OPTIONS } from '../onboarding.constants'
 import type { DataSource } from '../onboarding.types'
@@ -12,12 +10,9 @@ import { Heading } from '@/components/ui/Heading'
 interface Props {
   value: DataSource | undefined
   onChange: (v: DataSource) => void
-  onNext?: () => void
-  onBack?: () => void
-  showActions?: boolean
 }
 
-export function DataSourceStep({ value, onChange, onNext, onBack, showActions = false }: Props) {
+export function DataSourceStep({ value, onChange }: Props) {
   const { t } = useLanguage()
 
   return (
@@ -38,35 +33,6 @@ export function DataSourceStep({ value, onChange, onNext, onBack, showActions = 
           />
         ))}
       </div>
-
-      {showActions && (
-        <div className="onboarding-actions">
-          {onBack && (
-            <Button
-              type="button"
-              variant="secondary"
-              size="lg"
-              className="onboarding-back-icon-btn"
-              onClick={onBack}
-              aria-label={t.onboardingBack}
-            >
-              <ArrowLeft className="w-5 h-5" aria-hidden="true" />
-            </Button>
-          )}
-          {onNext && (
-            <Button
-              type="button"
-              variant="primary"
-              size="lg"
-              disabled={!value}
-              className="onboarding-submit"
-              onClick={onNext}
-            >
-              {t.onboardingContinue}
-            </Button>
-          )}
-        </div>
-      )}
     </div>
   )
 }

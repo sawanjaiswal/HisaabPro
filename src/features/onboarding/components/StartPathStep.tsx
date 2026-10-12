@@ -1,8 +1,6 @@
 /** StartPathStep — "Choose your path" (Import [recommended] / Start Fresh). */
 
 import { Text } from '@/components/ui/Text'
-import { ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { START_PATH_OPTIONS } from '../onboarding.constants'
 import type { StartPath } from '../onboarding.types'
@@ -12,12 +10,9 @@ import { Heading } from '@/components/ui/Heading'
 interface Props {
   value: StartPath | undefined
   onChange: (v: StartPath) => void
-  loading?: boolean
-  onNext: () => void
-  onBack: () => void
 }
 
-export function StartPathStep({ value, onChange, loading, onNext, onBack }: Props) {
+export function StartPathStep({ value, onChange }: Props) {
   const { t } = useLanguage()
 
   return (
@@ -38,31 +33,6 @@ export function StartPathStep({ value, onChange, loading, onNext, onBack }: Prop
             onSelect={() => onChange(opt.value)}
           />
         ))}
-      </div>
-
-      <div className="onboarding-actions">
-        <Button
-          type="button"
-          variant="secondary"
-          size="lg"
-          className="onboarding-back-icon-btn"
-          onClick={onBack}
-          disabled={loading}
-          aria-label={t.onboardingBack}
-        >
-          <ArrowLeft className="w-5 h-5" aria-hidden="true" />
-        </Button>
-        <Button
-          type="button"
-          variant="primary"
-          size="lg"
-          loading={loading}
-          disabled={!value || loading}
-          className="onboarding-submit"
-          onClick={onNext}
-        >
-          {loading ? t.onboardingSubmitting : t.onboardingContinue}
-        </Button>
       </div>
     </div>
   )

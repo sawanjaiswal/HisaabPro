@@ -25,6 +25,8 @@ interface HeaderProps {
   subtitle?: string
   /** Show a back arrow on the left — string = fallback parent path; true = auto topology */
   backTo?: string | true
+  /** Custom onBack handler — when provided, clicking back calls this callback */
+  onBack?: () => void
   /** Page-specific action icons (Scan, Filter, Import, etc.). Render LEFT of sync + notification. */
   actions?: ReactNode
   /** Apply a frosted-glass background only after the user scrolls 16px+. Default: false. */
@@ -47,6 +49,7 @@ export function Header({
   title,
   subtitle,
   backTo,
+  onBack,
   actions,
   scrollCondense = false,
   variant,
@@ -67,6 +70,10 @@ export function Header({
   }, [scrollCondense])
 
   const handleBack = () => {
+    if (onBack) {
+      onBack()
+      return
+    }
     goBack({ fallbackRoute: typeof backTo === 'string' ? backTo : undefined })
   }
 
@@ -79,11 +86,13 @@ export function Header({
   const shouldShowSync = showSync ?? isHomePage
   const shouldShowNotifications = showNotifications ?? isHomePage
 
+  const hasBack = backTo !== undefined || onBack !== undefined
+
   // Back-button sub-pages get the emerald hero bar by default; brand/root and
   // scroll-condense hero pages (which bleed transparent) stay on the cream
   // treatment. An explicit `variant` prop always wins.
   const effectiveVariant =
-    variant ?? (backTo !== undefined && !scrollCondense ? 'emerald' : 'default')
+    variant ?? (hasBack && !scrollCondense ? 'emerald' : 'default')
 
   const className = [
     'header',
@@ -95,7 +104,7 @@ export function Header({
   return (
     <header className={className}>
       <div className="header-leading">
-        {backTo !== undefined ? (
+        {hasBack ? (
           <>
             <button
               type="button"
