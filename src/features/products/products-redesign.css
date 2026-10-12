@@ -133,9 +133,6 @@ button.product-stat-tile:active { transform: scale(0.97); }
   gap: var(--space-3);
 }
 
-/* Compact 48px search pill on the products list (Parties keeps its 56px). */
-.product-filter-bar .search-bar--pill { height: 48px; }
-.product-filter-bar .search-bar__action { width: 36px; height: 36px; }
 
 
 /* ─── Filter chips ──────────────────────────────────────────── */

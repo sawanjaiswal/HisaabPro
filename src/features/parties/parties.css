@@ -23,7 +23,7 @@
   gap: var(--space-2);
 }
 
-.party-search-row .search-bar {
+.party-search-row .search-input {
   flex: 1 1 auto;
   min-width: 0;
 }
@@ -47,22 +47,6 @@
 .party-filter-icon-btn:active {
   background: var(--color-gray-100);
   border-color: var(--color-gray-300);
-}
-
-/* Rounded-rectangle search (mockup: soft-corner field, not a full pill) */
-.search-bar--pill {
-  height: 56px;
-  border-radius: var(--radius-lg);
-}
-
-.search-bar--pill > svg {
-  color: var(--text-secondary);
-  flex-shrink: 0;
-}
-
-/* Mockup: placeholder is a readable medium gray, not the near-invisible light one */
-.search-bar--pill input::placeholder {
-  color: var(--color-gray-400);
 }
 
 /* ─── Type filter chips (All / Customers / Suppliers / Both) ── */

@@ -11,13 +11,13 @@
 
 import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Search } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { FilterChips, type FilterChipOption } from '@/components/ui/FilterChips'
 import { ListTotalsFooter } from '@/components/ui/ListTotalsFooter'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -113,16 +113,13 @@ export const DocumentListPage: React.FC<DocumentListPageProps> = ({
       )}
 
       <PageContainer variant="list" className="space-y-6">
-        <div className="search-bar">
-          <Search size={18} aria-hidden="true" />
-          <Input
-            type="search"
-            value={filterState.search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t.searchEstimatesPlaceholder}
-            aria-label={pageTitle}
-          />
-        </div>
+        <SearchInput
+          variant="pill"
+          value={filterState.search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t.searchEstimatesPlaceholder}
+          aria-label={pageTitle}
+        />
 
         <FilterChips options={chips} value={view} onChange={handleViewChange} label={pageTitle} />
 

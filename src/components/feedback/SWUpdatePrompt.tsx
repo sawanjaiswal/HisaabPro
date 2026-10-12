@@ -1,17 +1,26 @@
 /**
  * Service Worker Update Prompt
  *
- * Shows a toast-like prompt when a new app version is available.
- * User can tap "Update" to reload with the new SW.
+ * Shows an update prompt when a new app version is available:
+ * - Mobile (<768px): Smooth bottom drawer
+ * - Desktop (>=768px): Centered popup modal
+ *
+ * Employs HisaabPro's design system Drawer primitive, emerald tones,
+ * pulse illustration icon, and clear "Update Now" and "Later" actions.
  */
 
-import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
-import { RefreshCw } from 'lucide-react'
+import { Sparkles, RefreshCw, Zap, ShieldCheck } from 'lucide-react'
+import { Drawer } from '@/components/ui/Drawer'
+import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
+import { Text } from '@/components/ui/Text'
+import { useLanguage } from '@/hooks/useLanguage'
 import { subscribeToSWUpdates, acceptUpdate } from '@/lib/sw-register'
 import './sw-update-prompt.css'
 
 export function SWUpdatePrompt() {
+  const { t } = useLanguage()
   const [show, setShow] = useState(false)
   const [updating, setUpdating] = useState(false)
 
@@ -28,18 +37,72 @@ export function SWUpdatePrompt() {
     await acceptUpdate()
   }
 
+  const handleDismiss = () => {
+    setShow(false)
+  }
+
   return (
-    <div className="sw-update-prompt" role="alert">
-      <Text className="sw-update-text">A new version is available</Text>
-      <button
-        className="sw-update-btn"
-        onClick={handleUpdate}
-        disabled={updating}
-        aria-busy={updating}
-      >
-        <RefreshCw size={14} aria-hidden="true" />
-        {updating ? 'Updating...' : 'Update'}
-      </button>
-    </div>
+    <Drawer
+      open={show}
+      onClose={handleDismiss}
+      size="sm"
+      showClose={true}
+      persistent={updating}
+      footer={
+        <div className="sw-update-actions">
+          <Button
+            type="button"
+            variant="ghost"
+            size="lg"
+            onClick={handleDismiss}
+            disabled={updating}
+            className="sw-update-dismiss-btn"
+          >
+            {t.cancel || 'Later'}
+          </Button>
+          <Button
+            type="button"
+            variant="primary"
+            size="lg"
+            onClick={handleUpdate}
+            loading={updating}
+            className="sw-update-confirm-btn"
+          >
+            <RefreshCw size={16} aria-hidden="true" className={updating ? 'animate-spin' : ''} />
+            {updating ? (t.loading || 'Updating...') : (t.update || 'Update Now')}
+          </Button>
+        </div>
+      }
+    >
+      <div className="sw-update-content">
+        <div className="sw-update-illustration-wrapper">
+          <div className="sw-update-illustration-ring" aria-hidden="true" />
+          <div className="sw-update-illustration-core">
+            <Sparkles className="sw-update-icon-sparkle" size={32} aria-hidden="true" />
+          </div>
+          <div className="sw-update-badge-pill" aria-hidden="true">
+            <Zap size={12} />
+            <span>New</span>
+          </div>
+        </div>
+
+        <Heading level={3} className="sw-update-title">
+          {t.update ? `${t.update} Available` : 'Update Available'}
+        </Heading>
+
+        <Text className="sw-update-description">
+          A new and improved version of HisaabPro is ready. Update now to enjoy the latest features, performance improvements, and bug fixes.
+        </Text>
+
+        <div className="sw-update-highlights">
+          <div className="sw-update-highlight-item">
+            <ShieldCheck size={16} className="text-emerald-600 flex-shrink-0" aria-hidden="true" />
+            <Text className="sw-update-highlight-text">
+              Instant offline sync & data safety
+            </Text>
+          </div>
+        </div>
+      </div>
+    </Drawer>
   )
 }

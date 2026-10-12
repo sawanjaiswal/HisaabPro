@@ -1,72 +1,160 @@
-/* SW Update Prompt — Service worker update toast
- *
- * Fixed-position toast at the bottom of the screen.
- * Slides up when a new app version is available.
- * CSS-only animations. Mobile-first.
- */
+/* ═══════════════════════════════════════════════════════════════
+   SW Update Prompt — Drawer / Modal Content & Illustration Styles
+   ═══════════════════════════════════════════════════════════════ */
 
-/* ─── SW Update Prompt ──────────────────────────────────────────────────── */
+.sw-update-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-4) var(--space-2) var(--space-2);
+}
 
-.sw-update-prompt {
-  position: fixed;
-  /* Sit above the BottomNav using the --bottom-nav-height SSOT (which already
-   * includes --safe-area-inset-bottom). Hardcoded 72px previously assumed a
-   * fixed bnav height and ignored the safe-area inset, so on edge-to-edge
-   * Android the toast rendered partially behind the BottomNav. */
-  bottom: calc(var(--bottom-nav-height) + var(--space-3));
-  left: var(--space-4);
-  right: var(--space-4);
+/* ─── Illustration with glowing rings & badge ────────────────── */
+
+.sw-update-illustration-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-gray-900);
-  color: var(--color-white-inverse);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-overlay-toast);
-  z-index: var(--z-toast);
-  animation: sw-update-slide-up var(--duration-normal) var(--ease-default);
+  justify-content: center;
+  margin-bottom: var(--space-4);
 }
 
-.sw-update-text {
-  font-size: var(--fs-md);
-  font-weight: 500;
+.sw-update-illustration-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-full);
+  border: 2px dashed var(--color-primary-200);
+  animation: sw-ring-spin 18s linear infinite;
 }
 
-.sw-update-btn {
+[data-theme="dark"] .sw-update-illustration-ring {
+  border-color: var(--color-primary-800);
+}
+
+@keyframes sw-ring-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.sw-update-illustration-core {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-50);
+  border: 1.5px solid var(--color-primary-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px -2px var(--color-primary-100);
+}
+
+[data-theme="dark"] .sw-update-illustration-core {
+  background: var(--color-primary-950);
+  border-color: var(--color-primary-800);
+  box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.4);
+}
+
+.sw-update-icon-sparkle {
+  color: var(--color-primary-600);
+  animation: sw-pulse-glow 2.5s ease-in-out infinite;
+}
+
+[data-theme="dark"] .sw-update-icon-sparkle {
+  color: var(--color-primary-400);
+}
+
+@keyframes sw-pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+.sw-update-badge-pill {
+  position: absolute;
+  bottom: -2px;
+  right: -4px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: var(--color-primary-500);
-  color: var(--color-white-inverse);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  font-family: var(--font-primary);
-  cursor: pointer;
-  min-height: 36px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  -webkit-tap-highlight-color: transparent;
-  transition: opacity var(--duration-fast) var(--ease-default);
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-600);
+  color: var(--color-gray-0);
+  font-size: var(--fs-2xs, 10px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 6px rgba(2, 111, 57, 0.35);
 }
 
-.sw-update-btn:active { opacity: 0.85; }
-.sw-update-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+/* ─── Typography & Highlights ────────────────────────────────── */
 
-/* ─── Keyframe animations ────────────────────────────────────────────────── */
-
-@keyframes sw-update-slide-up {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ─── Dark theme overrides ───────────────────────────────────────────────── */
-
-[data-theme="dark"] .sw-update-prompt {
-  background: var(--color-gray-100);
+.sw-update-title {
+  font-size: var(--fs-lg);
+  font-weight: 700;
   color: var(--color-gray-900);
+  margin-bottom: var(--space-2);
+}
+
+.sw-update-description {
+  font-size: var(--fs-sm);
+  color: var(--color-gray-600);
+  line-height: 1.5;
+  max-width: 320px;
+  margin-bottom: var(--space-4);
+}
+
+.sw-update-highlights {
+  width: 100%;
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+}
+
+[data-theme="dark"] .sw-update-highlights {
+  background: var(--color-gray-800);
+  border-color: var(--color-gray-700);
+}
+
+.sw-update-highlight-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.sw-update-highlight-text {
+  font-size: var(--fs-xs);
+  color: var(--color-gray-600);
+}
+
+[data-theme="dark"] .sw-update-highlight-text {
+  color: var(--color-gray-300);
+}
+
+/* ─── Footer Action Buttons ──────────────────────────────────── */
+
+.sw-update-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.sw-update-dismiss-btn {
+  flex: 1;
+}
+
+.sw-update-confirm-btn {
+  flex: 1.6;
+  gap: var(--space-2);
 }

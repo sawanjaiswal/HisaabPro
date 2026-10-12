@@ -10,14 +10,14 @@
 
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FileText, Plus, Search, Trash2 } from 'lucide-react'
+import { FileText, Plus, Trash2 } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { ListTotalsFooter } from '@/components/ui/ListTotalsFooter'
 import { ROUTES } from '@/config/routes.config'
@@ -71,16 +71,13 @@ export default function DraftInvoicesPage() {
         />
 
         <PageContainer variant="list" className="space-y-6">
-          <div className="search-bar">
-            <Search size={18} aria-hidden="true" />
-            <Input
-              type="search"
-              value={filters.search ?? ''}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t.searchDraftInvoices}
-              aria-label={t.draftInvoicesTitle}
-            />
-          </div>
+          <SearchInput
+            variant="pill"
+            value={filters.search ?? ''}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t.searchDraftInvoices}
+            aria-label={t.draftInvoicesTitle}
+          />
 
           {/* Loading */}
           {status === 'loading' && <InvoiceListSkeleton />}

@@ -96,6 +96,7 @@
   }
 
   /* Search input fills remaining space */
+  .payment-filter-bar .search-input,
   .payment-filter-bar .search-bar {
     flex: 1;
   }

@@ -8,14 +8,14 @@
 
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Search, ShoppingCart } from 'lucide-react'
+import { Plus, ShoppingCart } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { FilterChips, type FilterChipOption } from '@/components/ui/FilterChips'
 import { PeriodGroup } from '@/components/ui/PeriodGroup'
 import { ListTotalsFooter } from '@/components/ui/ListTotalsFooter'
@@ -70,16 +70,13 @@ export default function PurchasesPage() {
       />
 
       <PageContainer variant="list" className="space-y-6">
-        <div className="search-bar">
-          <Search size={18} aria-hidden="true" />
-          <Input
-            type="search"
-            value={filters.search ?? ''}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t.searchByPartyOrNumber}
-            aria-label={t.purchasesTitle}
-          />
-        </div>
+        <SearchInput
+          variant="pill"
+          value={filters.search ?? ''}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t.searchByPartyOrNumber}
+          aria-label={t.purchasesTitle}
+        />
 
         <FilterChips options={chips} value={segment} onChange={setSegment} label={t.purchasesTitle} />
 
