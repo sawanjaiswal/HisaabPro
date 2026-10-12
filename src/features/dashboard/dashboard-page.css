@@ -284,6 +284,11 @@
       calc((100% - var(--content-max-dashboard)) / 2)
     );
   }
+
+  .dashboard-white-section > .dashboard-staff-section,
+  .dashboard-white-section > .dashboard-overview-carousel {
+    grid-column: 1 / -1;
+  }
 }
 
 /* ─── Section headers ──────────────────────────────────────── */

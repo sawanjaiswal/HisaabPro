@@ -347,16 +347,29 @@
 .dashboard-staff-section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
+  gap: var(--space-3);
+  width: 100%;
 }
 
 .dashboard-staff-section__heading {
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--dash-text-primary, var(--color-gray-900));
+  letter-spacing: -0.025em;
+  position: relative;
+  padding-bottom: var(--space-1);
+}
+
+.dashboard-staff-section__heading::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 24px;
+  height: 2px;
+  background: var(--dash-teal-start, var(--gradient-teal-start));
+  border-radius: var(--radius-full);
+  opacity: 0.5;
 }
 
 .commission-widget {
