@@ -66,3 +66,15 @@
 .search-input-trailing--static {
   pointer-events: none;
 }
+
+.search-input--pill .search-input-field,
+.search-input--pill .search-input-field:focus {
+  border-radius: var(--radius-full);
+  height: 48px;
+  padding-left: 44px !important;
+  padding-right: 44px !important;
+}
+
+.search-input--pill .search-input-icon {
+  left: 16px;
+}

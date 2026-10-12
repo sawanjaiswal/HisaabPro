@@ -1,12 +1,10 @@
-/** Outstanding — search + type pills + overdue toggle + sort dropdown */
-
 import React from 'react'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { SlidersHorizontal } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { OutstandingType, OutstandingSortBy } from '../payment.types'
 import { OUTSTANDING_TYPE_LABELS, OUTSTANDING_SORT_LABELS } from '../payment.constants'
 import { Select, SelectItem } from '@/components/ui/Select'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { Button } from '@/components/ui/Button'
 
 interface OutstandingFilterBarProps {
@@ -36,16 +34,14 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
   const { t } = useLanguage()
   return (
     <div className="outstanding-filter-bar">
-      <div className="search-bar">
-        <Search size={18} aria-hidden="true" />
-        <Input
-          type="search"
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={t.searchByPartyName}
-          aria-label={t.searchOutstandingParty}
-        />
-      </div>
+      <SearchInput
+        variant="pill"
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        onClear={() => onSearchChange('')}
+        placeholder={t.searchByPartyName}
+        aria-label={t.searchOutstandingParty}
+      />
 
       <div
         className="outstanding-filter-pills"

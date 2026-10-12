@@ -5,7 +5,7 @@
  * the stock list. 4 UI states, 320px minimum.
  */
 
-import { Search, Package } from 'lucide-react'
+import { Package } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -13,7 +13,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { Button } from '@/components/ui/Button'
 import { FilterChips, type FilterChipOption } from '@/components/ui/FilterChips'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -47,16 +47,13 @@ export default function StockAlertsPage() {
       <Header title={t.lowStockTitle} backTo={ROUTES.PRODUCTS} />
 
       <PageContainer variant="list" className="space-y-6">
-        <div className="search-bar">
-          <Search size={18} aria-hidden="true" />
-          <Input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t.searchProductsShort}
-            aria-label={t.searchProducts}
-          />
-        </div>
+        <SearchInput
+          variant="pill"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t.searchProductsShort}
+          aria-label={t.searchProducts}
+        />
 
         <FilterChips
           options={chips}

@@ -6,9 +6,9 @@
  */
 
 import React from 'react'
-import { Search, Camera, Filter } from 'lucide-react'
+import { Camera, Filter } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { Button } from '@/components/ui/Button'
 
 interface ProductFilterBarProps {
@@ -46,24 +46,25 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
   return (
     <div className="party-filter-bar product-filter-bar">
       <div className="party-search-row product-search-row">
-        <div className="search-bar search-bar--pill search-bar--action">
-          <Search size={20} aria-hidden="true" />
-          <Input
-            type="search"
-            value={search}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder={t.searchProductsPlaceholder ?? 'Search by name or SKU...'}
-            aria-label={t.searchProducts}
-          />
-          <Button
-            variant="none"
-            className="search-bar__action"
-            onClick={onScan}
-            aria-label={t.scanBarcode}
-          >
-            <Camera size={20} aria-hidden="true" />
-          </Button>
-        </div>
+        <SearchInput
+          variant="pill"
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
+          onClear={() => onSearchChange('')}
+          placeholder={t.searchProductsPlaceholder ?? 'Search by name or SKU...'}
+          aria-label={t.searchProducts}
+          trailing={
+            <Button
+              variant="none"
+              type="button"
+              className="search-input-btn"
+              onClick={onScan}
+              aria-label={t.scanBarcode}
+            >
+              <Camera size={20} aria-hidden="true" />
+            </Button>
+          }
+        />
         <Button
           variant="none"
           className={`party-filter-icon-btn${filtersActive ? ' party-filter-icon-btn--active' : ''}`}

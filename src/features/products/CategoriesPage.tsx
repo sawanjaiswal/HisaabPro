@@ -4,7 +4,7 @@
  * list filtered to that category. Header "+" creates one. 4 UI states.
  */
 
-import { Search, Plus, Tag } from 'lucide-react'
+import { Plus, Tag } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -12,7 +12,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
@@ -47,16 +47,13 @@ export default function CategoriesPage() {
       />
 
       <PageContainer variant="list" className="space-y-6">
-        <div className="search-bar">
-          <Search size={18} aria-hidden="true" />
-          <Input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t.searchCategories}
-            aria-label={t.searchCategories}
-          />
-        </div>
+        <SearchInput
+          variant="pill"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t.searchCategories}
+          aria-label={t.searchCategories}
+        />
 
         {/* Loading */}
         {status === 'pending' && (

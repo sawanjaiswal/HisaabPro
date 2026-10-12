@@ -1,11 +1,8 @@
-/** Payment list — search + type pills + mode pills filter bar */
-
 import React from 'react'
-import { Search } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentType, PaymentMode } from '../payment.types'
 import { PAYMENT_TYPE_LABELS, PAYMENT_MODE_LABELS } from '../payment.constants'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { Button } from '@/components/ui/Button'
 
 interface PaymentFilterBarProps {
@@ -40,16 +37,14 @@ export const PaymentFilterBar: React.FC<PaymentFilterBarProps> = ({
   const { t } = useLanguage()
   return (
     <div className="payment-filter-bar">
-      <div className="search-bar">
-        <Search size={18} aria-hidden="true" />
-        <Input
-          type="search"
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={t.searchByPartyOrRef}
-          aria-label={t.searchPayments}
-        />
-      </div>
+      <SearchInput
+        variant="pill"
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        onClear={() => onSearchChange('')}
+        placeholder={t.searchByPartyOrRef}
+        aria-label={t.searchPayments}
+      />
 
       <div
         className="pill-tabs"

@@ -7,14 +7,14 @@
 
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Search } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { usePriceLists, usePriceListMutations } from './price-list-queries'
@@ -66,16 +66,13 @@ export default function PriceListsPage() {
       />
 
       <PageContainer variant="list" className="space-y-6">
-        <div className="search-bar">
-          <Search size={18} aria-hidden="true" />
-          <Input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t.plSearch}
-            aria-label={t.plSearch}
-          />
-        </div>
+        <SearchInput
+          variant="pill"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t.plSearch}
+          aria-label={t.plSearch}
+        />
 
         {/* Loading */}
         {status === 'loading' && <PriceListSkeleton />}

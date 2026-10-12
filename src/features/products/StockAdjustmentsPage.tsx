@@ -5,7 +5,7 @@
  * product, so the "+" sends you to the product list to pick one.
  */
 
-import { Search, Plus, SlidersHorizontal } from 'lucide-react'
+import { Plus, SlidersHorizontal } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
@@ -13,7 +13,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { Button } from '@/components/ui/Button'
 import { FilterChips, type FilterChipOption } from '@/components/ui/FilterChips'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -56,16 +56,13 @@ export default function StockAdjustmentsPage() {
       />
 
       <PageContainer variant="list" className="space-y-6">
-        <div className="search-bar">
-          <Search size={18} aria-hidden="true" />
-          <Input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t.searchAdjustments}
-            aria-label={t.searchAdjustments}
-          />
-        </div>
+        <SearchInput
+          variant="pill"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t.searchAdjustments}
+          aria-label={t.searchAdjustments}
+        />
 
         <FilterChips
           options={chips}

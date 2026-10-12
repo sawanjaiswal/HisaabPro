@@ -8,11 +8,11 @@
 
 import { Text } from '@/components/ui/Text'
 import React, { useState } from 'react'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { SlidersHorizontal } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { DocumentType, DocumentStatus } from '../invoice.types'
 import { DOCUMENT_TYPE_LABELS, DOCUMENT_STATUS_LABELS } from '../invoice.constants'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Drawer } from '@/components/ui/Drawer'
@@ -86,16 +86,14 @@ export const InvoiceFilterBar: React.FC<InvoiceFilterBarProps> = ({
 
   return (
     <div className="invoice-filter-bar">
-      <div className="search-bar">
-        <Search size={18} aria-hidden="true" />
-        <Input
-          type="search"
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={t.searchByPartyOrNumber}
-          aria-label={t.searchInvoices}
-        />
-      </div>
+      <SearchInput
+        variant="pill"
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        onClear={() => onSearchChange('')}
+        placeholder={t.searchByPartyOrNumber}
+        aria-label={t.searchInvoices}
+      />
 
       {/* Mobile: primary types + Filters drawer trigger */}
       <div className="flex md:hidden items-center gap-2">

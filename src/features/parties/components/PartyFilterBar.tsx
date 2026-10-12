@@ -1,9 +1,9 @@
 import React from 'react'
-import { Search, Filter } from 'lucide-react'
+import { Filter } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PARTY_TYPE_FILTER_OPTIONS } from '../party.constants'
 import type { PartyType, PartyListResponse } from '../party.types'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { Button } from '@/components/ui/Button'
 
 interface PartyFilterBarProps {
@@ -33,16 +33,14 @@ export const PartyFilterBar: React.FC<PartyFilterBarProps> = ({
   return (
     <div className="party-filter-bar">
       <div className="party-search-row">
-        <div className="search-bar search-bar--pill">
-          <Search size={20} aria-hidden="true" />
-          <Input
-            type="search"
-            value={search}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder={t.searchByNamePhoneGstin}
-            aria-label={t.searchParties}
-          />
-        </div>
+        <SearchInput
+          variant="pill"
+          value={search}
+          onChange={(e) => onSearchChange(e.target.value)}
+          onClear={() => onSearchChange('')}
+          placeholder={t.searchByNamePhoneGstin}
+          aria-label={t.searchParties}
+        />
         <Button
           variant="none"
           className={`party-filter-icon-btn${hasActiveFilter ? ' party-filter-icon-btn--active' : ''}`}

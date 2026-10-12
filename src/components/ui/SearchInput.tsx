@@ -34,10 +34,14 @@ interface SearchInputProps {
   onClear?: () => void
   /** Element rendered on the right while the field is empty (e.g. a chevron). */
   trailingWhenEmpty?: React.ReactNode
+  /** Custom element rendered on the right (e.g. barcode scan button). When present and value has text, can sit alongside clear button. */
+  trailing?: React.ReactNode
   ariaLabel?: string
   ariaExpanded?: boolean
   ariaHasPopup?: 'listbox' | 'menu' | 'dialog' | 'grid' | 'tree'
   ariaAutocomplete?: 'none' | 'inline' | 'list' | 'both'
+  /** Visual variant: 'default' (44px, radius-md) or 'pill' (48px, radius-full) */
+  variant?: 'default' | 'pill'
   className?: string
 }
 
@@ -50,7 +54,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   onFocus,
   onKeyDown,
   onClear,
+  variant = 'default',
   trailingWhenEmpty,
+  trailing,
   ariaLabel,
   ariaExpanded,
   ariaHasPopup,
@@ -61,7 +67,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   const hasText = value.length > 0
 
   return (
-    <div className={cn('search-input', className)}>
+    <div className={cn('search-input', variant === 'pill' && 'search-input--pill', className)}>
       <Search className="search-input-icon" size={16} aria-hidden="true" />
       <Input
         id={id}
@@ -79,7 +85,11 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         aria-haspopup={ariaHasPopup}
         aria-autocomplete={ariaAutocomplete}
       />
-      {hasText && onClear ? (
+      {trailing ? (
+        <span className="search-input-trailing" aria-hidden="true">
+          {trailing}
+        </span>
+      ) : hasText && onClear ? (
         <Button
           variant="none"
           type="button"

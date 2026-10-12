@@ -9,7 +9,7 @@
  */
 
 import { useMemo, useState } from 'react'
-import { Plus, Receipt, Search } from 'lucide-react'
+import { Plus, Receipt } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { AppShell } from '@/components/layout/AppShell'
@@ -18,7 +18,7 @@ import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { PeriodGroup } from '@/components/ui/PeriodGroup'
 import { ListTotalsFooter } from '@/components/ui/ListTotalsFooter'
 import { ROUTES } from '@/config/routes.config'
@@ -80,16 +80,13 @@ export default function ExpensesPage() {
       <PageContainer variant="list" className="space-y-6">
         <ExpensesOverview month={NOW_MONTH} onPendingResolved={refreshAll} />
 
-        <div className="search-bar">
-          <Search size={18} aria-hidden="true" />
-          <Input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t.searchExpenses}
-            aria-label={t.expenses}
-          />
-        </div>
+        <SearchInput
+          variant="pill"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t.searchExpenses}
+          aria-label={t.expenses}
+        />
 
         <ExpenseFilterBar
           categories={categories}
