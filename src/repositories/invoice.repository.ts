@@ -5,10 +5,12 @@ import { SyncManager } from '../sync/SyncManager';
 import type { DocumentListResponse, DocumentFilters } from '../features/invoices/invoice.types';
 import type { DocumentSummary } from '../features/invoices/invoice-document.types';
 
+import { resolveCurrentBusinessId } from './repository.utils';
+
 export class InvoiceRepository {
   constructor(
     private db: HisaabDatabase = defaultDb,
-    private businessId: string = 'default'
+    private businessId: string = resolveCurrentBusinessId()
   ) {}
 
   /**

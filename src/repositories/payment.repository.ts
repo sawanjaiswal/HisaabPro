@@ -5,10 +5,12 @@ import { SyncManager } from '../sync/SyncManager';
 import type { PaymentListResponse, PaymentFilters, PaymentFormData } from '../features/payments/payment.types';
 import type { PaymentSummary } from '../features/payments/payment-models.types';
 
+import { resolveCurrentBusinessId } from './repository.utils';
+
 export class PaymentRepository {
   constructor(
     private db: HisaabDatabase = defaultDb,
-    private businessId: string = 'default'
+    private businessId: string = resolveCurrentBusinessId()
   ) {}
 
   /**

@@ -4,6 +4,8 @@ import { liveQueryBus } from '../domain/live-query-bus';
 import { SyncManager } from '../sync/SyncManager';
 import type { PartyListResponse, PartySummary, PartyDetail, PartyFormData, PartyFilters } from '../features/parties/party.types';
 
+import { resolveCurrentBusinessId } from './repository.utils';
+
 function mapLocalPartyToDetail(p: LocalParty): PartyDetail {
   return {
     id: p.id,
@@ -30,7 +32,7 @@ function mapLocalPartyToDetail(p: LocalParty): PartyDetail {
 export class PartyRepository {
   constructor(
     private db: HisaabDatabase = defaultDb,
-    private businessId: string = 'default'
+    private businessId: string = resolveCurrentBusinessId()
   ) {}
 
   /** 0ms Local-First Read: Returns filtered & paginated party list instantly from Dexie. */

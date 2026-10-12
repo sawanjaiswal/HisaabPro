@@ -5,10 +5,12 @@ import { SyncManager } from '../sync/SyncManager';
 import type { ProductListResponse, ProductFilters, ProductFormData } from '../features/products/product.types';
 import type { ProductSummary } from '@/lib/types/product.types';
 
+import { resolveCurrentBusinessId } from './repository.utils';
+
 export class ProductRepository {
   constructor(
     private db: HisaabDatabase = defaultDb,
-    private businessId: string = 'default'
+    private businessId: string = resolveCurrentBusinessId()
   ) {}
 
   /**

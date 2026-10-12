@@ -84,11 +84,53 @@ export async function getDocuments(
   )
 }
 
+import { InvoiceRepository } from '@/repositories/invoice.repository'
+
+function mapLocalDocToDetail(d: any): DocumentDetail {
+  return {
+    id: d.id,
+    type: d.type as any,
+    status: d.status as any,
+    documentNumber: d.documentNumber,
+    documentDate: d.documentDate,
+    dueDate: d.dueDate || null,
+    party: {
+      id: d.partyId,
+      name: d.partyName || 'Customer',
+      phone: null,
+      outstandingBalance: 0,
+    },
+    subtotal: d.grandTotal || 0,
+    totalDiscount: 0,
+    totalAdditionalCharges: 0,
+    roundOff: 0,
+    grandTotal: d.grandTotal || 0,
+    totalProfit: 0,
+    paidAmount: d.paidAmount || 0,
+    balanceDue: d.balanceAmount || 0,
+    lineItemCount: (d.lineItems || []).length,
+    createdAt: d.createdAt,
+    updatedAt: d.updatedAt,
+    paymentTerms: null,
+    notes: d.notes || null,
+    lineItems: d.lineItems || [],
+    additionalCharges: [],
+    customFields: [],
+    payments: [],
+    returns: [],
+  } as any
+}
+
 /** Fetch full detail for a single document by ID. */
 export async function getDocument(
   id: string,
   signal?: AbortSignal
 ): Promise<DocumentDetail> {
+  try {
+    const repo = new InvoiceRepository()
+    const local = await repo.getById(id)
+    if (local) return mapLocalDocToDetail(local)
+  } catch {}
   return api<DocumentDetail>(`/documents/${id}`, { signal })
 }
 
@@ -97,12 +139,38 @@ export async function getDocument(
 export async function createDocument(
   data: DocumentWirePayload
 ): Promise<DocumentDetail> {
-  return api<DocumentDetail>('/documents', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    entityType: docTypeToEntity(data.type),
-    entityLabel: `New ${docTypeToEntity(data.type)}`,
-  })
+  try {
+    const rawData = data as any
+    const repo = new InvoiceRepository()
+    const lineItems = (data.lineItems || []) as any[]
+    const totalPaise = lineItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.rate || 0), 0)
+    const local = await repo.create({
+      partyId: data.partyId,
+      partyName: undefined,
+      type: data.type,
+      documentNumber: rawData.documentNumber,
+      documentDate: data.documentDate,
+      dueDate: data.dueDate,
+      grandTotal: rawData.grandTotal || totalPaise,
+      paidAmount: data.payment?.amountReceived || 0,
+      lineItems: data.lineItems,
+      notes: data.notes,
+    })
+    void api<DocumentDetail>('/documents', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      entityType: docTypeToEntity(data.type),
+      entityLabel: `New ${docTypeToEntity(data.type)}`,
+    }).catch(() => {})
+    return mapLocalDocToDetail(local)
+  } catch {
+    return api<DocumentDetail>('/documents', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      entityType: docTypeToEntity(data.type),
+      entityLabel: `New ${docTypeToEntity(data.type)}`,
+    })
+  }
 }
 
 /** Update an existing document (blocked once CONVERTED or DELETED). */

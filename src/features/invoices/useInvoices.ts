@@ -48,7 +48,7 @@ export function useInvoices({
 
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
 
-  // 0ms Live Query with automatic fallback to getDocuments service
+  // 0ms Live Query: Returns local Dexie data immediately, syncs from server in background
   const {
     data: rawData,
     isLoading,
@@ -57,13 +57,18 @@ export function useInvoices({
   } = useLiveQuery(
     ['invoices', filters.page, filters.limit, filters.search, filters.type, filters.status],
     async () => {
+      let local: DocumentListResponse | null = null
       try {
         const repo = new InvoiceRepository()
-        const local = await repo.list(filters)
-        if (local.documents.length > 0) {
-          return local
-        }
+        local = await repo.list(filters)
       } catch {}
+
+      // Background SWR update (non-blocking)
+      void getDocuments(filters).catch(() => {})
+
+      if (local && local.documents.length > 0) {
+        return local
+      }
       return getDocuments(filters)
     }
   )

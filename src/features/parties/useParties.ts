@@ -41,7 +41,7 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
   const [accumulatedParties, setAccumulatedParties] = useState<PartySummary[]>([])
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
 
-  // 0ms Live Query with automatic fallback to getParties service
+  // 0ms Live Query: Returns local Dexie data immediately, syncs from server in background
   const {
     data: rawData,
     isLoading,
@@ -50,13 +50,18 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
   } = useLiveQuery(
     ['parties', filters.page, filters.limit, filters.search, filters.type],
     async () => {
+      let local: PartyListResponse | null = null
       try {
         const repo = new PartyRepository()
-        const local = await repo.list(filters)
-        if (local.parties.length > 0) {
-          return local
-        }
+        local = await repo.list(filters)
       } catch {}
+
+      // Background SWR update (non-blocking)
+      void getParties(filters).catch(() => {})
+
+      if (local && local.parties.length > 0) {
+        return local
+      }
       return getParties(filters)
     }
   )

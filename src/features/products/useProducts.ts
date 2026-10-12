@@ -43,7 +43,7 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
   const [accumulatedProducts, setAccumulatedProducts] = useState<ProductSummary[]>([])
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
 
-  // 0ms Live Query with automatic fallback to getProducts service
+  // 0ms Live Query: Returns local Dexie data immediately, syncs from server in background
   const {
     data: rawData,
     isLoading,
@@ -52,13 +52,18 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
   } = useLiveQuery(
     ['products', filters.page, filters.limit, filters.search, filters.status, filters.categoryId, filters.lowStockOnly],
     async () => {
+      let local: ProductListResponse | null = null
       try {
         const repo = new ProductRepository()
-        const local = await repo.list(filters)
-        if (local.products.length > 0) {
-          return local
-        }
+        local = await repo.list(filters)
       } catch {}
+
+      // Background SWR update (non-blocking)
+      void getProducts(filters).catch(() => {})
+
+      if (local && local.products.length > 0) {
+        return local
+      }
       return getProducts(filters)
     }
   )

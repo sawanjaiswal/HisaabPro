@@ -45,7 +45,7 @@ export function usePayments({
 
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
 
-  // 0ms Live Query with automatic fallback to getPayments service
+  // 0ms Live Query: Returns local Dexie data immediately, syncs from server in background
   const {
     data: rawData,
     isLoading,
@@ -54,13 +54,18 @@ export function usePayments({
   } = useLiveQuery(
     ['payments', filters.page, filters.limit, filters.search, filters.type, filters.mode],
     async () => {
+      let local: PaymentListResponse | null = null
       try {
         const repo = new PaymentRepository()
-        const local = await repo.list(filters)
-        if (local.payments.length > 0) {
-          return local
-        }
+        local = await repo.list(filters)
       } catch {}
+
+      // Background SWR update (non-blocking)
+      void getPayments(filters).catch(() => {})
+
+      if (local && local.payments.length > 0) {
+        return local
+      }
       return getPayments(filters)
     }
   )

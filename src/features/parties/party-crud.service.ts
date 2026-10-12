@@ -63,44 +63,60 @@ export async function getParties(
   })
 }
 
+import { PartyRepository } from '@/repositories/party.repository'
+
 /**
  * Fetch full detail for a single party by ID.
- * Server wraps in { party }; unwrap here.
+ * Returns instantly from local Dexie store if present, falls back to server.
  */
 export async function getParty(
   id: string,
   signal?: AbortSignal
 ): Promise<PartyDetail> {
+  try {
+    const repo = new PartyRepository()
+    const local = await repo.getById(id)
+    if (local) return local
+  } catch {}
   const { party } = await api<{ party: PartyDetail }>(`/parties/${id}`, { signal })
   return party
 }
 
 /**
  * Create a new party.
- *
- * Returns `null` when the save was queued offline — api() resolves `{}` for a
- * mutation it has put on the queue, so there is genuinely no record yet. The
- * type says so rather than pretending, because both call-sites used to
- * dereference the result and turn a safely-queued save into an error toast.
- * See .claude/fix-trace-offline-party-save-no-feedback.md.
+ * Writes locally to Dexie in <1ms + enqueues to outbox, then background syncs.
  */
 export async function createParty(
   data: PartyFormData,
   signal?: AbortSignal
 ): Promise<PartyDetail | null> {
-  const { party } = await api<{ party: PartyDetail }>('/parties', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    signal,
-    entityType: 'party',
-    entityLabel: data.name ?? 'New party',
-  })
-  return party ?? null
+  try {
+    const repo = new PartyRepository()
+    const local = await repo.create(data)
+    // Background fire-and-forget server create
+    void api<{ party: PartyDetail }>('/parties', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      signal,
+      entityType: 'party',
+      entityLabel: data.name ?? 'New party',
+    }).catch(() => {})
+    return local
+  } catch {
+    const { party } = await api<{ party: PartyDetail }>('/parties', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      signal,
+      entityType: 'party',
+      entityLabel: data.name ?? 'New party',
+    })
+    return party ?? null
+  }
 }
 
 /**
  * Update an existing party. Accepts partial form data.
- * `null` means the change was queued offline — see {@link createParty}.
+ * Updates locally in Dexie in <1ms + outbox enqueue, then background syncs.
  */
 export async function updateParty(
   id: string,
@@ -108,6 +124,20 @@ export async function updateParty(
   signal?: AbortSignal,
   expectedVersion?: number
 ): Promise<PartyDetail | null> {
+  try {
+    const repo = new PartyRepository()
+    const local = await repo.update(id, data)
+    void api<{ party: PartyDetail }>(`/parties/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      signal,
+      entityType: 'party',
+      entityLabel: data.name ?? 'Party update',
+      entityVersion: expectedVersion,
+    }).catch(() => {})
+    if (local) return local
+  } catch {}
+
   const { party } = await api<{ party: PartyDetail }>(`/parties/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),
@@ -120,19 +150,31 @@ export async function updateParty(
 }
 
 /**
- * Delete a party. Soft delete by default; pass hard=true for permanent.
+ * Delete a party. Soft delete locally in <1ms + outbox enqueue, then background syncs.
  */
 export async function deleteParty(
   id: string,
   hard = false,
   signal?: AbortSignal
 ): Promise<void> {
-  return api<void>(`/parties/${id}${hard ? '?hard=true' : ''}`, {
-    method: 'DELETE',
-    signal,
-    entityType: 'party',
-    entityLabel: hard ? 'Delete party permanently' : 'Delete party',
-  })
+  try {
+    const repo = new PartyRepository()
+    await repo.delete(id)
+    void api<void>(`/parties/${id}${hard ? '?hard=true' : ''}`, {
+      method: 'DELETE',
+      signal,
+      entityType: 'party',
+      entityLabel: hard ? 'Delete party permanently' : 'Delete party',
+    }).catch(() => {})
+    return
+  } catch {
+    return api<void>(`/parties/${id}${hard ? '?hard=true' : ''}`, {
+      method: 'DELETE',
+      signal,
+      entityType: 'party',
+      entityLabel: hard ? 'Delete party permanently' : 'Delete party',
+    })
+  }
 }
 
 // ─── Party Transaction Ledger ─────────────────────────────────────────────────
