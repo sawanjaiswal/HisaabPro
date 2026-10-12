@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { isNativeGoogleAvailable, nativeGoogleSignIn } from './native-google-signin'
+import { DEFAULT_GOOGLE_CLIENT_ID } from './auth.constants'
 import { startNativeSso, exchangeNativeSso, getSsoConfig } from './sso.api'
 import type { SsoErrorCode, SsoState } from './sso.types'
 import * as authLib from '@/lib/auth'
@@ -86,7 +87,8 @@ async function fetchGoogleClientId(): Promise<string | null> {
   } catch {
     // Non-fatal
   }
-  return null
+  cachedClientId = DEFAULT_GOOGLE_CLIENT_ID
+  return DEFAULT_GOOGLE_CLIENT_ID
 }
 
 // Kick off eager preload in background immediately
@@ -182,12 +184,12 @@ export function useGoogleSso(): UseGoogleSsoReturn {
 
         try {
           const startRes = await startNativeSso('google')
-          clientId = startRes.clientId
+          clientId = startRes.clientId || cachedClientId || (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID
           nonce = startRes.nonce
           sealedTx = startRes.sealedTx
         } catch {
-          // Fall back to cached clientId
-          clientId = cachedClientId || undefined
+          // Fall back to cached clientId or default
+          clientId = cachedClientId || (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID
         }
 
         const outcome = await nativeGoogleSignIn({ clientId, nonce })
@@ -320,14 +322,15 @@ export function useGoogleSso(): UseGoogleSsoReturn {
 
       // Trigger Google popup
       tokenClient.requestAccessToken({ prompt: 'select_account' })
-    } catch {
+    } catch (err: any) {
       clearTimers()
+      console.error('[useGoogleSso] Sign in error:', err)
       if (isMountedRef.current) {
         setErrorCode('SSO_EXCHANGE_FAILED')
         setState('error')
         setTimeout(() => { if (isMountedRef.current) setState('idle') }, 3000)
       }
-      toast.error((t as any).loginFailed ?? 'Failed to sign in with Google')
+      toast.error(err?.message || (t as any).loginFailed || 'Failed to sign in with Google')
     }
   }, [clearTimers, setUser, setBusinesses, navigate, toast, t, state])
 

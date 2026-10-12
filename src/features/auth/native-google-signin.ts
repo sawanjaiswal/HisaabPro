@@ -3,6 +3,7 @@
 // Uses Android Credential Manager to open the OS Google Account picker
 // bottom sheet directly INSIDE the app (no external browser / Custom Tab).
 import { Capacitor } from '@capacitor/core'
+import { DEFAULT_GOOGLE_CLIENT_ID } from './auth.constants'
 
 /** True only on Android native platform where Credential Manager is available */
 export function isNativeGoogleAvailable(): boolean {
@@ -19,7 +20,11 @@ function classify(code: unknown, message: unknown): NativeGoogleOutcome {
   const c = String(code ?? '')
   const m = String(message ?? '')
   if (c === 'SIGN_IN_CANCELED' || /cancell?ed/i.test(m)) return { kind: 'cancelled' }
-  if (c === 'NO_CREDENTIAL' || /no credential|NoCredentialException/i.test(m)) {
+  if (
+    c === 'NO_CREDENTIAL' ||
+    c === 'NO_CREDENTIAL_AVAILABLE' ||
+    /no credential|NoCredentialException/i.test(m)
+  ) {
     return { kind: 'unavailable' }
   }
   return { kind: 'failed' }
@@ -34,16 +39,20 @@ export async function nativeGoogleSignIn(args: {
 }): Promise<NativeGoogleOutcome> {
   try {
     const { GoogleSignIn } = await import('@capawesome/capacitor-google-sign-in')
-    if (args.clientId) {
-      await GoogleSignIn.initialize({ clientId: args.clientId })
-    }
-    const result = await GoogleSignIn.signIn({ nonce: args.nonce })
+    const effectiveClientId =
+      args.clientId?.trim() ||
+      (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID ||
+      DEFAULT_GOOGLE_CLIENT_ID
+
+    await GoogleSignIn.initialize({ clientId: effectiveClientId })
+    const result = await GoogleSignIn.signIn(args.nonce ? { nonce: args.nonce } : undefined)
     if (typeof result.idToken !== 'string' || result.idToken.length === 0) {
       return { kind: 'failed' }
     }
     return { kind: 'ok', idToken: result.idToken }
   } catch (err) {
     const e = err as { code?: unknown; message?: unknown }
+    console.warn('[nativeGoogleSignIn] Credential Manager returned:', e?.code, e?.message)
     return classify(e?.code, e?.message)
   }
 }

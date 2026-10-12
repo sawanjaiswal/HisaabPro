@@ -20,6 +20,8 @@ const googleExchangeSchema = z
     message: 'Valid Google token is required',
   })
 
+const DEFAULT_GOOGLE_CLIENT_ID = '524171176361-osp3ragj5thpsjqj2im3tp5vk5kl505p.apps.googleusercontent.com'
+
 const router = Router()
 
 /**
@@ -30,7 +32,7 @@ router.get(
   '/sso/google/config',
   asyncHandler(async (_req, res) => {
     sendSuccess(res, {
-      clientId: process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID || null,
+      clientId: process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID,
     })
   })
 )
@@ -47,7 +49,7 @@ router.post(
     sendSuccess(res, {
       sealedTx,
       nonce,
-      clientId: process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID || null,
+      clientId: process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID,
     })
   })
 )
