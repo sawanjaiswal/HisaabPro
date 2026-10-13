@@ -271,9 +271,14 @@ export function Select({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-label={ariaLabel || label || placeholder}
-        className={cn('rx-select-trigger', triggerClassName, error && 'border-red-500')}
+        className={cn(
+          'rx-select-trigger transition-all',
+          isOpen && 'border-[var(--primary)] ring-1 ring-[var(--primary)]',
+          triggerClassName,
+          error && 'border-rose-500'
+        )}
       >
-        <span className={cn('truncate', !selectedOpt && 'text-gray-400')}>
+        <span className={cn('truncate', !selectedOpt && 'text-[var(--text-muted)]')}>
           {selectedOpt ? selectedOpt.label : placeholder}
         </span>
         <ChevronDown size={18} className="rx-select-icon" aria-hidden="true" />

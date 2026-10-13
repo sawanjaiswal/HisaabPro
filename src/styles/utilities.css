@@ -16,6 +16,14 @@
 .gap-5 { gap: var(--space-5); }
 .gap-6 { gap: var(--space-6); }
 
+/* Semantic gap utilities */
+.gap-micro { gap: var(--gap-micro); }
+.gap-inline { gap: var(--gap-inline); }
+.gap-group { gap: var(--gap-group); }
+.gap-item { gap: var(--gap-item); }
+.gap-section { gap: var(--gap-section); }
+.gap-page-hero { gap: var(--gap-page-hero); }
+
 /* ── Spacing Utilities ── */
 .mt-2 { margin-top: var(--space-2); }
 .mt-3 { margin-top: var(--space-3); }
@@ -54,3 +62,31 @@
   flex-direction: column;
   gap: var(--gap-field);
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Level 6 Spacing SSOT: Normalize Tailwind space-y-* to Semantic Tokens
+   Ensures any legacy or new space-y-* utility strictly resolves to our
+   4-tier semantic gap contract across every component, drawer, and card.
+───────────────────────────────────────────────────────────── */
+.space-y-1 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: var(--gap-micro) !important;
+}
+.space-y-1\.5 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 6px !important;
+}
+.space-y-2 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: var(--gap-inline) !important;
+}
+.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: var(--gap-group) !important;
+}
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: var(--gap-item) !important;
+}
+.space-y-5 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 20px !important;
+}
+.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: var(--gap-section) !important;
+}
+

@@ -46,14 +46,14 @@
 .summary-hero-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+  gap: var(--gap-group);
 }
 
 /* Individual card */
 .summary-hero-card {
   border: none;
   border-radius: var(--radius-xl);
-  padding: var(--space-4);
+  padding: var(--pad-card);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -70,6 +70,12 @@
 .summary-hero-card:focus-visible {
   outline: 2px solid var(--color-primary-400);
   outline-offset: 2px;
+}
+
+.summary-hero-card--active {
+  box-shadow: 0 0 0 2px var(--color-surface, #ffffff), 0 0 0 4.5px var(--color-primary-600, #026F39);
+  position: relative;
+  z-index: 1;
 }
 
 /* Card variants */

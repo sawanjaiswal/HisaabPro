@@ -22,12 +22,16 @@ interface PartySummaryBarProps {
   }
   onCollectClick?: () => void
   onPayClick?: () => void
+  isCollectActive?: boolean
+  isPayActive?: boolean
 }
 
 export const PartySummaryBar: React.FC<PartySummaryBarProps> = ({
   summary,
   onCollectClick,
   onPayClick,
+  isCollectActive = false,
+  isPayActive = false,
 }) => {
   const { t } = useLanguage()
   const { totalReceivable, totalPayable, customersCount, suppliersCount } = summary
@@ -37,9 +41,10 @@ export const PartySummaryBar: React.FC<PartySummaryBarProps> = ({
       <div className="summary-hero-cards">
         {/* To Collect — emerald gradient */}
         <Button variant="none"
-          className="summary-hero-card summary-hero-card--teal summary-hero-card--v2"
+          className={`summary-hero-card summary-hero-card--teal summary-hero-card--v2${isCollectActive ? ' summary-hero-card--active' : ''}`}
           role="listitem"
           onClick={onCollectClick}
+          aria-pressed={isCollectActive}
           aria-label={`${t.toCollect}: ₹${paisaToRupees(totalReceivable)}`}
         >
           <span className="summary-hero-icon-ring" aria-hidden="true">
@@ -62,9 +67,10 @@ export const PartySummaryBar: React.FC<PartySummaryBarProps> = ({
 
         {/* To Pay — lime */}
         <Button variant="none"
-          className="summary-hero-card summary-hero-card--lime summary-hero-card--v2"
+          className={`summary-hero-card summary-hero-card--lime summary-hero-card--v2${isPayActive ? ' summary-hero-card--active' : ''}`}
           role="listitem"
           onClick={onPayClick}
+          aria-pressed={isPayActive}
           aria-label={`${t.toPay}: ₹${paisaToRupees(totalPayable)}`}
         >
           <span className="summary-hero-icon-ring summary-hero-icon-ring--dark" aria-hidden="true">

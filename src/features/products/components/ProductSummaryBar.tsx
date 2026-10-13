@@ -16,12 +16,14 @@ interface ProductSummaryBarProps {
   summary: ProductListResponse['summary']
   onStockValueClick?: () => void
   onLowStockClick?: () => void
+  isLowStockActive?: boolean
 }
 
 export const ProductSummaryBar: React.FC<ProductSummaryBarProps> = ({
   summary,
   onStockValueClick,
   onLowStockClick,
+  isLowStockActive = false,
 }) => {
   const { t } = useLanguage()
   const { totalProducts, lowStockCount, totalStockValue, outOfStockCount } = summary
@@ -55,9 +57,10 @@ export const ProductSummaryBar: React.FC<ProductSummaryBarProps> = ({
         {/* Low Stock — lime */}
         <Button
           variant="none"
-          className="summary-hero-card summary-hero-card--lime summary-hero-card--v2"
+          className={`summary-hero-card summary-hero-card--lime summary-hero-card--v2${isLowStockActive ? ' summary-hero-card--active' : ''}`}
           role="listitem"
           onClick={onLowStockClick}
+          aria-pressed={isLowStockActive}
           aria-label={`${t.lowStock}: ${lowStockCount}`}
         >
           <span className="summary-hero-icon-ring summary-hero-icon-ring--dark" aria-hidden="true">

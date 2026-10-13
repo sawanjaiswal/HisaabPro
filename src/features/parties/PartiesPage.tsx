@@ -136,11 +136,17 @@ export default function PartiesPage() {
 
       <HeroPage>
         {!bulk.isActive && status === 'success' && data && (
-          <PartySummaryBar summary={data.summary} />
+          <PartySummaryBar
+            summary={data.summary}
+            onCollectClick={() => setFilter('type', filters.type === 'CUSTOMER' ? 'ALL' : 'CUSTOMER')}
+            onPayClick={() => setFilter('type', filters.type === 'SUPPLIER' ? 'ALL' : 'SUPPLIER')}
+            isCollectActive={filters.type === 'CUSTOMER'}
+            isPayActive={filters.type === 'SUPPLIER'}
+          />
         )}
 
         {!bulk.isActive && (
-          <>
+          <div className="flex flex-col gap-2">
             <PartyFilterBar
               search={filters.search}
               onSearchChange={setSearch}
@@ -154,7 +160,7 @@ export default function PartiesPage() {
               activeTag={filters.tag ?? ''}
               onTagChange={(value) => setFilter('tag', value || undefined)}
             />
-          </>
+          </div>
         )}
 
         {status === 'loading' && <PartyListSkeleton />}

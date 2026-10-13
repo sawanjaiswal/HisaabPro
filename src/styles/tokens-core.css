@@ -44,11 +44,15 @@
   --space-12: 3rem;      /* 48px */
 
   /* Spacing — semantic layer (USE THESE, not raw --space-* in feature CSS) */
-  --gap-section:   var(--space-8);  /* 32px between page sections */
-  --gap-field:     var(--space-6);  /* 24px between form fields */
-  --gap-inline:    var(--space-2);  /* 8px chip / inline / label-value */
-  --pad-page-x:    var(--space-4);  /* 16px page horizontal padding */
-  --pad-card:      var(--space-5);  /* 20px standard card interior */
+  --gap-micro:     var(--space-1);  /* 4px micro indicator, badge interior, chevron nudge */
+  --gap-inline:    var(--space-2);  /* 8px icon + label, inline chips, status badge */
+  --gap-group:     var(--space-3);  /* 12px search input to chip row, card header to body */
+  --gap-item:      var(--space-4);  /* 16px between list cards, between form fields */
+  --gap-section:   var(--space-6);  /* 24px between major page sections */
+  --gap-page-hero: var(--space-8);  /* 32px hero header to main content sheet */
+  --gap-field:     var(--space-4);  /* 16px form field standard gap */
+  --pad-page-x:    var(--space-4);  /* 16px page horizontal padding floor */
+  --pad-card:      var(--space-4);  /* 16px standard card interior padding */
   --pad-card-hero: var(--space-6);  /* 24px hero/feature card interior */
 
   /* Form control heights — touch-safe minimums for inputs/textareas/buttons */

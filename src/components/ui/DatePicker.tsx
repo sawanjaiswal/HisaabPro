@@ -794,16 +794,16 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const containerStyles = cn(
     'relative flex items-center transition-all',
     isTableCell
-      ? 'w-full rounded-lg border border-transparent hover:border-slate-200 focus-within:border-emerald-500 focus-within:bg-white bg-transparent'
+      ? 'w-full rounded-lg border border-transparent hover:border-[var(--border-default)] focus-within:border-[var(--primary)] focus-within:bg-[var(--bg-surface)] bg-transparent'
       : cn(
-          'w-full bg-white border border-slate-200 rounded-xl shadow-2xs hover:border-slate-300 focus-within:ring-2 focus-within:ring-slate-900/10 focus-within:border-slate-900',
+          'w-full bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl shadow-2xs hover:border-[var(--border-strong)] focus-within:ring-1 focus-within:ring-[var(--primary)] focus-within:border-[var(--primary)]',
           size === 'compact' && 'h-7',
           size === 'sm' && 'h-8',
           size === 'default' && 'h-11 min-h-[44px]'
         ),
-    isOpen && (isTableCell ? 'border-emerald-600 bg-white ring-1 ring-emerald-500/30' : 'border-slate-900 ring-2 ring-slate-900/10'),
+    isOpen && (isTableCell ? 'border-[var(--primary)] bg-[var(--bg-surface)] ring-1 ring-[var(--primary)]' : 'border-[var(--primary)] ring-1 ring-[var(--primary)]'),
     displayError && 'border-rose-500 focus-within:border-rose-500 focus-within:ring-rose-500/10',
-    disabled && 'opacity-60 cursor-not-allowed bg-slate-50',
+    disabled && 'opacity-60 cursor-not-allowed bg-[var(--bg-surface-subtle)]',
     className
   );
 

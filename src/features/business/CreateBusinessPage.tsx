@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
+import { formatName } from '@/lib/format'
 import { BUSINESS_TYPE_OPTIONS, BUSINESS_NAME_MAX } from './business.constants'
 import { useCreateBusiness } from './useCreateBusiness'
 import './create-business.css'
@@ -55,6 +56,14 @@ export default function CreateBusinessPage() {
             label={t.createBusinessNameReq}
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onBlur={() => {
+              if (name?.trim()) {
+                const formatted = formatName(name)
+                if (formatted && formatted !== '—') {
+                  setName(formatted)
+                }
+              }
+            }}
             placeholder={t.createBusinessNamePh}
             maxLength={BUSINESS_NAME_MAX}
             autoFocus

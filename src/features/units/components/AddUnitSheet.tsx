@@ -6,6 +6,7 @@ import type { Unit } from '../unit.types'
 import type { UnitInput } from '../../products/unit.service'
 import { validateUnitName, validateUnitSymbol } from '../unit.utils'
 import { UNIT_NAME_MAX, UNIT_SYMBOL_MAX } from '../unit.constants'
+import { formatName } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -50,7 +51,10 @@ export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddU
     if (!validate() || isSaving) return
     setIsSaving(true)
 
-    const data: UnitInput = { name: name.trim(), symbol: symbol.trim() }
+    const cleanName = formatName(name.trim())
+    const finalName = cleanName !== '—' ? cleanName : name.trim()
+    const finalSymbol = symbol.trim().toUpperCase()
+    const data: UnitInput = { name: finalName, symbol: finalSymbol }
 
     if (isEdit && editUnit && onUpdate) {
       const ok = await onUpdate(editUnit.id, data)
@@ -93,6 +97,10 @@ export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddU
             value={name}
             onChange={(e) => setName(e.target.value)}
             onBlur={() => {
+              if (name?.trim()) {
+                const formatted = formatName(name)
+                if (formatted && formatted !== '—') setName(formatted)
+              }
               const err = validateUnitName(name)
               setErrors((prev) => ({ ...prev, name: err ?? undefined }))
             }}
@@ -112,6 +120,9 @@ export function AddUnitSheet({ open, onClose, onSave, onUpdate, editUnit }: AddU
             value={symbol}
             onChange={(e) => setSymbol(e.target.value)}
             onBlur={() => {
+              if (symbol?.trim()) {
+                setSymbol(symbol.trim().toUpperCase())
+              }
               const err = validateUnitSymbol(symbol)
               setErrors((prev) => ({ ...prev, symbol: err ?? undefined }))
             }}

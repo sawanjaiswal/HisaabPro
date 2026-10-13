@@ -1,42 +1,31 @@
-/** Input — Canonical Shadcn CVA Input Primitive
- *
- * Variants:
- * - default: standard bordered input with focus-visible ring
- * - filled: soft gray background with border
- * - seamless: borderless transparent input (for cards / hero fields)
- *
- * Sizes:
- * - sm (36px min-h)
- * - default (44px touch target)
- * - lg (50px touch target)
- * - hero (large typography for amounts / prominent codes)
- */
+/** Input — Level 6 Canonical SSOT Input Primitive */
 
 import { forwardRef } from 'react'
-import type { InputHTMLAttributes, ReactNode } from 'react'
+import type { InputHTMLAttributes, ReactNode, MouseEvent } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export const inputVariants = cva(
-  'flex w-full rounded-[var(--radius-md)] text-[var(--fs-sm)] font-medium text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+  'flex w-full rounded-xl text-sm font-medium text-[var(--text-primary)] bg-[var(--bg-surface)] placeholder:text-[var(--text-muted)] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
   {
     variants: {
       variant: {
         default:
-          'bg-[var(--color-surface)] border border-[var(--color-border)] focus-visible:border-[var(--color-primary-500)] focus-visible:ring-2 focus-visible:ring-[var(--color-primary-100)]',
+          'border border-[var(--border-default)] focus-visible:border-[var(--primary)] focus-visible:ring-1 focus-visible:ring-[var(--primary)]',
         filled:
-          'bg-[var(--color-gray-50)] border border-[var(--color-gray-200)] focus-visible:bg-[var(--color-surface)] focus-visible:border-[var(--color-primary-500)] focus-visible:ring-2 focus-visible:ring-[var(--color-primary-100)]',
+          'bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] focus-visible:bg-[var(--bg-surface)] focus-visible:border-[var(--primary)] focus-visible:ring-1 focus-visible:ring-[var(--primary)]',
         seamless:
           'bg-transparent border-0 shadow-none p-0 focus-visible:ring-0 focus-visible:outline-none',
       },
       inputSize: {
-        sm: 'h-9 min-h-9 px-3 py-1.5 text-xs',
-        default: 'h-[52px] min-h-[52px] px-4 py-3 text-base',
-        lg: 'h-[56px] min-h-[56px] px-4 py-3.5 text-base',
-        hero: 'h-[64px] min-h-[64px] px-0 py-1 text-[var(--fs-3xl)] font-bold tabular-nums',
+        sm: 'h-8 min-h-[32px] px-2.5 py-1 text-xs',
+        default: 'h-11 min-h-[44px] px-3.5 py-2 text-sm',
+        lg: 'h-12 min-h-[48px] px-4 py-2.5 text-base',
+        hero: 'h-14 min-h-[56px] px-4 py-2 text-2xl font-bold tabular-nums',
       },
       hasError: {
-        true: 'border-[var(--color-error-500)] focus-visible:border-[var(--color-error-500)] focus-visible:ring-[var(--color-error-100)]',
+        true: 'border-rose-500 focus-visible:border-rose-500 focus-visible:ring-2 focus-visible:ring-rose-100',
         false: '',
       },
     },
@@ -53,10 +42,18 @@ export interface InputProps
     VariantProps<typeof inputVariants> {
   label?: string
   error?: string
-  icon?: ReactNode
-  iconRight?: ReactNode
-  required?: boolean
   hint?: string
+  helperText?: string
+  icon?: ReactNode
+  leftIcon?: ReactNode
+  iconRight?: ReactNode
+  rightIcon?: ReactNode
+  prefixText?: string
+  suffixText?: string
+  clearable?: boolean
+  onClear?: () => void
+  required?: boolean
+  size?: 'sm' | 'default' | 'lg' | 'hero'
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -64,28 +61,58 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     {
       label,
       error,
-      icon,
-      iconRight,
-      required,
       hint,
+      helperText,
+      icon,
+      leftIcon,
+      iconRight,
+      rightIcon,
+      prefixText,
+      suffixText,
+      clearable = false,
+      onClear,
+      required,
       id,
       className,
       variant,
       inputSize,
+      size,
+      value,
+      onChange,
       ...props
     },
     ref
   ) => {
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined)
+    const activeLeftIcon = leftIcon || icon
+    const activeRightIcon = rightIcon || iconRight
+    const effectiveSize = (size as any) || inputSize || 'default'
+    const hasValue = value !== undefined && String(value).length > 0
+    const displayedHint = hint || helperText
 
-    // Naked mode: no label, error, hint, or icons
-    if (!label && !error && !hint && !icon && !iconRight) {
+    const handleClear = (e: MouseEvent) => {
+      e.stopPropagation()
+      onClear?.()
+      if (onChange) {
+        const syntheticEvent = {
+          target: { value: '', name: props.name || inputId },
+          currentTarget: { value: '', name: props.name || inputId },
+          persist: () => {},
+        } as any
+        onChange(syntheticEvent)
+      }
+    }
+
+    // Naked mode: no label, error, hint, or icons/prefixes
+    if (!label && !error && !displayedHint && !activeLeftIcon && !activeRightIcon && !prefixText && !suffixText && !clearable) {
       return (
         <input
           ref={ref}
           id={inputId}
+          value={value}
+          onChange={onChange}
           className={cn(
-            inputVariants({ variant, inputSize, hasError: Boolean(error) }),
+            inputVariants({ variant, inputSize: effectiveSize, hasError: Boolean(error) }),
             className
           )}
           aria-invalid={Boolean(error)}
@@ -101,39 +128,50 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             <div className="flex items-center">
               <label
                 htmlFor={inputId}
-                className="block text-sm font-medium text-[var(--text-primary)] select-none"
+                className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] select-none"
               >
                 {label}
               </label>
               {required && (
-                <span className="text-[var(--color-error-500)] ml-1 font-bold" aria-hidden="true">
+                <span className="text-rose-500 ml-1 font-bold" aria-hidden="true">
                   *
                 </span>
               )}
             </div>
-            {hint && !error && (
-              <span className="text-xs text-[var(--text-muted)]">{hint}</span>
+            {displayedHint && !error && (
+              <span className="text-[11px] text-[var(--text-muted)]">{displayedHint}</span>
             )}
           </div>
         )}
 
         <div className="relative flex items-center w-full">
-          {icon && (
+          {prefixText && (
             <span
-              className="absolute left-3 flex items-center justify-center text-[var(--color-text-muted)] pointer-events-none"
+              className="absolute left-3 text-xs font-bold text-[var(--text-secondary)] pointer-events-none select-none"
               aria-hidden="true"
             >
-              {icon}
+              {prefixText}
+            </span>
+          )}
+
+          {activeLeftIcon && !prefixText && (
+            <span
+              className="absolute left-3 flex items-center justify-center text-[var(--text-muted)] pointer-events-none"
+              aria-hidden="true"
+            >
+              {activeLeftIcon}
             </span>
           )}
 
           <input
             ref={ref}
             id={inputId}
+            value={value}
+            onChange={onChange}
             className={cn(
-              inputVariants({ variant, inputSize, hasError: Boolean(error) }),
-              icon && 'pl-9',
-              iconRight && 'pr-9',
+              inputVariants({ variant, inputSize: effectiveSize, hasError: Boolean(error) }),
+              (activeLeftIcon || prefixText) && 'pl-8',
+              (activeRightIcon || suffixText || (clearable && hasValue)) && 'pr-8',
               className
             )}
             aria-invalid={Boolean(error)}
@@ -141,12 +179,32 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
 
-          {iconRight && (
+          {suffixText && (
             <span
-              className="absolute right-3 flex items-center justify-center text-[var(--color-text-muted)] pointer-events-none"
+              className="absolute right-3 text-xs font-semibold text-[var(--text-secondary)] pointer-events-none select-none"
               aria-hidden="true"
             >
-              {iconRight}
+              {suffixText}
+            </span>
+          )}
+
+          {clearable && hasValue && !suffixText && !activeRightIcon && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="absolute right-2.5 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-full transition-colors cursor-pointer"
+              aria-label="Clear input"
+            >
+              <X size={14} />
+            </button>
+          )}
+
+          {activeRightIcon && !suffixText && (
+            <span
+              className="absolute right-3 flex items-center justify-center text-[var(--text-muted)] pointer-events-none"
+              aria-hidden="true"
+            >
+              {activeRightIcon}
             </span>
           )}
         </div>
@@ -154,7 +212,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {error && (
           <p
             id={`${inputId}-error`}
-            className="text-xs font-medium text-[var(--color-error-600)]"
+            className="text-xs font-medium text-rose-600"
             role="alert"
           >
             {error}

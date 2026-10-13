@@ -21,7 +21,7 @@ export const InvoiceHeaderMeta: React.FC<InvoiceHeaderMetaProps> = ({
   const { t } = useLanguage()
 
   return (
-    <div className="grid grid-cols-2 gap-3.5 p-3.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-xs">
+    <div className="grid grid-cols-2 gap-3.5">
       {/* Invoice No. Field */}
       <div className="space-y-1.5">
         <label

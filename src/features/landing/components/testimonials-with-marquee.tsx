@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 import {
   TestimonialCard,
   type TestimonialAuthor,
-} from "@/components/ui/testimonial-card"
+} from "./testimonial-card"
 
 interface TestimonialsSectionProps {
   title?: string

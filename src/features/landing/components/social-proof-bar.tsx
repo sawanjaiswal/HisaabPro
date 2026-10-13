@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useReducedMotion } from "motion/react";
+import { formatNumber } from "@/lib/format";
 
 const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1];
 
@@ -45,7 +46,7 @@ function useCountUp(target: number, active: boolean, duration = 1500) {
 
 function StatItem({ stat, active, index }: { stat: Stat; active: boolean; index: number }) {
   const count = useCountUp(stat.value, active);
-  const display = stat.value === 4.8 ? count.toFixed(1) : count.toLocaleString("en-IN");
+  const display = stat.value === 4.8 ? count.toFixed(1) : formatNumber(count);
   const reducedMotion = useReducedMotion();
 
   return (

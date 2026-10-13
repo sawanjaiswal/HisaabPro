@@ -5,6 +5,7 @@ import { useState, useCallback } from 'react'
 import { User, Phone } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { Input } from '@/components/ui/Input'
+import { formatName } from '@/lib/format'
 
 interface WalkInFormProps {
   name?:      string
@@ -41,6 +42,15 @@ export function WalkInForm({ name = '', phone = '', onChange }: WalkInFormProps)
             placeholder={t.posWalkInName ?? 'Customer name'}
             value={localName}
             onChange={handleName}
+            onBlur={() => {
+              if (localName?.trim()) {
+                const formatted = formatName(localName)
+                if (formatted && formatted !== '—') {
+                  setLocalName(formatted)
+                  onChange(formatted, localPhone)
+                }
+              }
+            }}
             aria-label={t.posWalkInName ?? 'Customer name'}
             maxLength={60}
           />

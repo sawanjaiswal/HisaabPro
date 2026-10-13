@@ -29,24 +29,32 @@ export class ProductRepository {
 
     items = items.filter((p) => !p.isDeleted);
 
+    if (filters.status && filters.status !== 'ALL') {
+      const wantActive = filters.status === 'ACTIVE';
+      items = items.filter((p) => (p.isActive ?? true) === wantActive);
+    }
+
+    const totalActiveCount = items.filter((p) => (p.isActive ?? true)).length;
+
     let lowStockCount = 0;
     let outOfStockCount = 0;
     let totalStockValue = 0;
 
     for (const p of items) {
-      if (p.currentStock <= p.minStockLevel) {
+      if ((p.minStockLevel || 0) > 0 && p.currentStock < p.minStockLevel) {
         lowStockCount++;
       }
       if (p.currentStock <= 0) {
         outOfStockCount++;
       }
-      if (p.purchasePrice && p.currentStock > 0) {
-        totalStockValue += p.currentStock * p.purchasePrice;
+      if (p.currentStock > 0) {
+        const unitVal = p.purchasePrice ?? p.salePrice ?? 0;
+        totalStockValue += Math.round(p.currentStock * unitVal);
       }
     }
 
     if (lowStockOnly) {
-      items = items.filter((p) => p.currentStock <= p.minStockLevel);
+      items = items.filter((p) => (p.minStockLevel || 0) > 0 && p.currentStock < p.minStockLevel);
     }
 
     if (search) {
@@ -87,7 +95,7 @@ export class ProductRepository {
         totalPages,
       },
       summary: {
-        totalProducts: total,
+        totalProducts: totalActiveCount,
         lowStockCount,
         totalStockValue,
         outOfStockCount,

@@ -29,10 +29,14 @@ interface HeroPageProps {
 }
 
 export function HeroPage({ hero, children, className }: HeroPageProps) {
+  // Level 6 Spacing SSOT: strip any space-y-* classes so hp-hero-sheet's
+  // --gap-section controls vertical rhythm without doubled margin leaks.
+  const cleanClass = className ? className.replace(/\bspace-y-\S+/g, '').trim() : ''
+
   return (
     <div className="hp-hero-page">
       {hero !== undefined && <div className="hp-hero-top">{hero}</div>}
-      <div className={`hp-hero-sheet${className ? ` ${className}` : ''}`}>
+      <div className={`hp-hero-sheet${cleanClass ? ` ${cleanClass}` : ''}`}>
         {children}
       </div>
     </div>

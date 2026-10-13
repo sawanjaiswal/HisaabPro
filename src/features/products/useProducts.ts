@@ -61,10 +61,15 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
       // Background SWR update (non-blocking)
       void getProducts(filters).catch(() => {})
 
-      if (local && local.products.length > 0) {
+      if (local && (local.summary.totalProducts > 0 || local.products.length > 0)) {
         return local
       }
-      return getProducts(filters)
+      try {
+        return await getProducts(filters)
+      } catch (err) {
+        if (local) return local
+        throw err
+      }
     }
   )
 
@@ -98,17 +103,17 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
     }
   }, [rawData, accumulatedProducts, removedIds])
 
-  const status: Status = isLoading && !data ? 'loading' : error ? 'error' : 'success'
+  const status: Status = isLoading && !data ? 'loading' : error && !data ? 'error' : 'success'
 
-  // Show toast on fetch error
+  // Show toast on fetch error only when no local data is available
   const prevErrorRef = useRef<Error | null>(null)
   useEffect(() => {
-    if (error && error !== prevErrorRef.current) {
+    if (error && !data && error !== prevErrorRef.current) {
       prevErrorRef.current = error
       const message = error instanceof ApiError ? error.message : 'Failed to load products'
       toast.error(message)
     }
-  }, [error, toast])
+  }, [error, data, toast])
 
   // Debounced search
   const [pendingSearch, setPendingSearch] = useState<string | null>(null)

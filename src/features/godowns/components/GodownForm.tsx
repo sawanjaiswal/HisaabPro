@@ -4,6 +4,7 @@ import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { GODOWN_NAME_MAX, ADDRESS_MAX } from '../godown.constants'
 import type { CreateGodownData } from '../godown.types'
+import { formatName } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
@@ -35,7 +36,16 @@ export function GodownForm({ form, errors, isSubmitting, onUpdate, onSubmit, sub
           className={`godown-form__input${errors.name ? ' godown-form__input--error' : ''}`}
           value={form.name}
           onChange={(e) => onUpdate('name', e.target.value)}
-          onBlur={() => onUpdate('name', form.name)}
+          onBlur={() => {
+            if (form.name?.trim()) {
+              const formatted = formatName(form.name)
+              if (formatted && formatted !== '—') {
+                onUpdate('name', formatted)
+                return
+              }
+            }
+            onUpdate('name', form.name)
+          }}
           placeholder={t.godownNamePlaceholder}
           maxLength={GODOWN_NAME_MAX}
           autoFocus

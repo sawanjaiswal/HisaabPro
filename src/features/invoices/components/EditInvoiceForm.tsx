@@ -103,7 +103,7 @@ export function EditInvoiceForm({
     <AppShell>
       <Header title={t.editInvoice} backTo={`/invoices/${invoiceId}`} actions={<PresenceAvatars peers={peers} />} />
 
-      <PageContainer variant="form" className="invoice-details-section stagger-enter py-0 pb-32 space-y-6 max-w-lg mx-auto">
+      <PageContainer variant="form" className="invoice-details-form stagger-enter py-0 pb-32 space-y-6 max-w-lg mx-auto">
         {stockShortageItems.length > 0 && (
           <StockShortageBanner items={stockShortageItems} onDismiss={clearStockShortage} />
         )}

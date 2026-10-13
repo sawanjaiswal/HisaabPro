@@ -5,6 +5,7 @@ import { FileText, X } from 'lucide-react'
 import { APP_NAME } from '@/config/app.config'
 import type { TemplateData } from './invoice-templates-section.data'
 import { EASE_OUT } from './invoice-templates-section.data'
+import { formatNumber } from '@/lib/format'
 
 /* Document-rendering color constants (not design tokens — only used in this file) */
 const DOC_COLORS = {
@@ -199,8 +200,8 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
                   <td className="py-2 px-1.5">{item.name}</td>
                   {t.hasGst && <td className="py-2 px-1.5" style={{ color: DOC_COLORS.TEXT_LIGHT }}>{item.hsn}</td>}
                   <td className="py-2 px-1.5 text-right">{item.qty} {item.unit}</td>
-                  <td className="py-2 px-1.5 text-right">₹{item.rate.toLocaleString('en-IN')}</td>
-                  <td className="py-2 px-1.5 text-right font-medium">₹{item.amount.toLocaleString('en-IN')}</td>
+                  <td className="py-2 px-1.5 text-right">₹{formatNumber(item.rate)}</td>
+                  <td className="py-2 px-1.5 text-right font-medium">₹{formatNumber(item.amount)}</td>
                 </tr>
               ))}
             </tbody>
@@ -211,23 +212,23 @@ export function TemplatePreviewModal({ template: t, onClose }: { template: Templ
           <div className="flex flex-col items-end gap-1" style={{ fontSize: 'var(--fs-xs)' }}>
             <div className="flex justify-between w-40 sm:w-48">
               <span style={{ color: DOC_COLORS.TEXT_LIGHT }}>Subtotal</span>
-              <span style={{ fontWeight: 500 }}>₹{subtotal.toLocaleString('en-IN')}</span>
+              <span style={{ fontWeight: 500 }}>₹{formatNumber(subtotal)}</span>
             </div>
             {t.hasGst && (
               <>
                 <div className="flex justify-between w-40 sm:w-48">
                   <span style={{ color: DOC_COLORS.TEXT_LIGHT }}>CGST (9%)</span>
-                  <span style={{ fontWeight: 500 }}>₹{Math.round(taxAmount / 2).toLocaleString('en-IN')}</span>
+                  <span style={{ fontWeight: 500 }}>₹{formatNumber(Math.round(taxAmount / 2))}</span>
                 </div>
                 <div className="flex justify-between w-40 sm:w-48">
                   <span style={{ color: DOC_COLORS.TEXT_LIGHT }}>SGST (9%)</span>
-                  <span style={{ fontWeight: 500 }}>₹{Math.round(taxAmount / 2).toLocaleString('en-IN')}</span>
+                  <span style={{ fontWeight: 500 }}>₹{formatNumber(Math.round(taxAmount / 2))}</span>
                 </div>
               </>
             )}
             <div className="flex justify-between w-48 pt-1.5 mt-1" style={{ borderTop: `2px solid ${t.accent}` }}>
               <span style={{ fontWeight: 700 }}>Total</span>
-              <span style={{ color: t.accent, fontWeight: 700, fontSize: 'var(--fs-base)' }}>₹{total.toLocaleString('en-IN')}</span>
+              <span style={{ color: t.accent, fontWeight: 700, fontSize: 'var(--fs-base)' }}>₹{formatNumber(total)}</span>
             </div>
           </div>
         </div>

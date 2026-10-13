@@ -3,9 +3,9 @@ import { Sun, Moon } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { LP_SECTIONS, LP_APP, hash } from "@/config/landing-links.config";
 import { APP_NAME } from "@/config/app.config";
-import { HeroDashboardMockup } from "@/components/ui/hero-dashboard-mockup";
-import { HeroPhoneMockup } from "@/components/ui/hero-phone-mockup";
-import { ScaledMockup } from "@/components/ui/scaled-mockup";
+import { HeroDashboardMockup } from "./hero-dashboard-mockup";
+import { HeroPhoneMockup } from "./hero-phone-mockup";
+import { ScaledMockup } from "./scaled-mockup";
 
 interface ThemeProps {
   isDark: boolean;

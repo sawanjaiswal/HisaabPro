@@ -1,0 +1,147 @@
+:root {
+  /* Surfaces & Backgrounds */
+  --bg-app: #f4f7f5;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #ffffff;
+  --bg-surface-subtle: #f8fafc;
+  --bg-surface-hover: #f1f5f9;
+  --bg-surface-accent: #d2ecdc;
+
+  /* Typography */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-inverse: #ffffff;
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(15, 23, 42, 0.05);
+  --border-default: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-focus: #026f39;
+
+  /* Brand Colors (HisaabPro Deep Emerald Green #026F39) */
+  --primary: #026f39;
+  --primary-hover: #024e29;
+  --primary-active: #013d20;
+  --primary-subtle: #d2ecdc;
+  --primary-text: #026f39;
+
+  --dark-btn: #0f172a;
+  --dark-btn-hover: #000000;
+
+  /* Status Tokens */
+  --status-active-bg: #ecfdf5;
+  --status-active-border: #bbf7d0;
+  --status-active-text: #026f39;
+  --status-active-dot: #22c55e;
+
+  --status-expiring-bg: #fffbeb;
+  --status-expiring-border: #fde68a;
+  --status-expiring-text: #b45309;
+  --status-expiring-dot: #f59e0b;
+
+  --status-urgent-bg: #fff7ed;
+  --status-urgent-border: #fed7aa;
+  --status-urgent-text: #c2410c;
+  --status-urgent-dot: #ea580c;
+
+  --status-expired-bg: #fef2f2;
+  --status-expired-border: #fecaca;
+  --status-expired-text: #b91c1c;
+  --status-expired-dot: #ef4444;
+
+  /* Elevation Shadows */
+  --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.06);
+  --shadow-modal: 0 24px 48px -12px rgba(15, 23, 42, 0.15);
+
+  /* Radius */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Minimum Accessible Touch Target */
+  --touch-target-min: 44px;
+
+  /* Standard Z-Index Stacking Architecture */
+  --z-base: 0;
+  --z-sticky-bar: 10;
+  --z-sidebar: 20;
+  --z-dropdown-active: 30;
+  --z-backdrop-dismiss: 40;
+  --z-fixed-ui: 50;
+  --z-modal-overlay: 9999;
+  --z-popover-top: 10001;
+
+  /* Backward Compatibility Aliases for Legacy Code */
+  --color-surface: var(--bg-surface);
+  --color-background: var(--bg-app);
+  --color-border: var(--border-default);
+  --color-border-subtle: var(--border-subtle);
+  --color-primary-500: var(--primary);
+  --color-primary-600: var(--primary-hover);
+  --color-primary-700: var(--primary-active);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+}
+
+.dark, [data-theme="dark"], html.dark, body.dark {
+  /* Surfaces & Backgrounds */
+  --bg-app: #090d16;
+  --bg-surface: #0f172a;
+  --bg-surface-elevated: #1e293b;
+  --bg-surface-subtle: #131d31;
+  --bg-surface-hover: #1e293b;
+  --bg-surface-accent: #064e3b;
+
+  /* Typography */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #0f172a;
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: #1e293b;
+  --border-strong: #334155;
+  --border-focus: #35c176;
+
+  /* Brand Colors */
+  --primary: #35c176;
+  --primary-hover: #5fd293;
+  --primary-active: #88e0af;
+  --primary-subtle: #0d3624;
+  --primary-text: #5fd293;
+
+  --dark-btn: #ffffff;
+  --dark-btn-hover: #f1f5f9;
+
+  /* Status Tokens */
+  --status-active-bg: rgba(6, 78, 59, 0.4);
+  --status-active-border: #065f46;
+  --status-active-text: #6ee7b7;
+  --status-active-dot: #34d399;
+
+  --status-expiring-bg: rgba(120, 53, 15, 0.4);
+  --status-expiring-border: #92400e;
+  --status-expiring-text: #fde68a;
+  --status-expiring-dot: #fbbf24;
+
+  --status-urgent-bg: rgba(124, 45, 18, 0.4);
+  --status-urgent-border: #9a3412;
+  --status-urgent-text: #fed7aa;
+  --status-urgent-dot: #fb923c;
+
+  --status-expired-bg: rgba(127, 29, 29, 0.4);
+  --status-expired-border: #991b1b;
+  --status-expired-text: #fecaca;
+  --status-expired-dot: #f87171;
+}

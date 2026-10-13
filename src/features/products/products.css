@@ -11,8 +11,7 @@
 .product-filter-bar {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
+  gap: var(--gap-group);
   animation: fadeUp 400ms var(--ease-premium) 60ms both;
 }
 

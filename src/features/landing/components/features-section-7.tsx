@@ -1,7 +1,7 @@
 import { Cpu, Lock, MessageCircle, Zap } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
-import { InvoicesMockup } from '@/components/ui/invoices-mockup'
-import { ScaledMockup } from '@/components/ui/scaled-mockup'
+import { InvoicesMockup } from './invoices-mockup'
+import { ScaledMockup } from './scaled-mockup'
 
 const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1]
 

@@ -17,9 +17,9 @@ export const textareaVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-[var(--color-surface)] border border-[var(--color-border)] p-3 focus-visible:border-[var(--color-primary-500)] focus-visible:ring-2 focus-visible:ring-[var(--color-primary-100)]',
+          'bg-[var(--bg-surface)] border border-[var(--border-default)] p-3 focus-visible:border-[var(--primary)] focus-visible:ring-1 focus-visible:ring-[var(--primary)]',
         filled:
-          'bg-[var(--color-gray-50)] border border-[var(--color-gray-200)] p-3 focus-visible:bg-[var(--color-surface)] focus-visible:border-[var(--color-primary-500)] focus-visible:ring-2 focus-visible:ring-[var(--color-primary-100)]',
+          'bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] p-3 focus-visible:bg-[var(--bg-surface)] focus-visible:border-[var(--primary)] focus-visible:ring-1 focus-visible:ring-[var(--primary)]',
         seamless:
           'bg-transparent border-0 p-0 shadow-none focus-visible:ring-0 focus-visible:outline-none resize-none',
       },

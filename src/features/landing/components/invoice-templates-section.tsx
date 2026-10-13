@@ -9,6 +9,7 @@ import {
 import type { TemplateData } from './invoice-templates-section.data'
 import { TemplatePreviewModal } from './invoice-templates-section-modal'
 import { revealProps, REVEAL_VIEWPORT } from './motion-reveal'
+import { formatNumber } from '@/lib/format'
 
 /* ─── Main Section ─── */
 export function InvoiceTemplatesSection() {
@@ -161,7 +162,7 @@ export function InvoiceTemplatesSection() {
                       }}
                     >
                       <span style={{ color: 'var(--color-gray-700)' }}>{item.name.length > 22 ? item.name.slice(0, 22) + '...' : item.name}</span>
-                      <span style={{ fontWeight: 500 }}>₹{item.amount.toLocaleString('en-IN')}</span>
+                      <span style={{ fontWeight: 500 }}>₹{formatNumber(item.amount)}</span>
                     </div>
                   ))}
                 </div>
@@ -170,7 +171,7 @@ export function InvoiceTemplatesSection() {
                 <div className="flex justify-between items-center pt-1" style={{ borderTop: `1.5px solid ${tpl.accent}` }}>
                   <span style={{ fontSize: '0.3125rem', fontWeight: 600, color: 'var(--color-gray-500)' }}>Total</span>
                   <span style={{ fontSize: '0.4375rem', fontWeight: 700, color: tpl.accent }}>
-                    ₹{tpl.items.reduce((s, item) => s + item.amount, 0).toLocaleString('en-IN')}
+                    ₹{formatNumber(tpl.items.reduce((s, item) => s + item.amount, 0))}
                   </span>
                 </div>
 

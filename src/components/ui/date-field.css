@@ -6,17 +6,18 @@
 
 .date-field {
   width: 100%;
-  min-height: var(--input-min-height);
+  min-height: 44px;
+  height: 44px;
   padding: 0 var(--space-4);
   font-family: var(--font-primary);
   font-size: var(--fs-base);
-  color: var(--color-text-primary);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
   outline: none;
   color-scheme: light;
-  transition: border-color var(--duration-fast) var(--ease-default);
+  transition: border-color var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
 }
 
 [data-theme='dark'] .date-field {
@@ -24,8 +25,8 @@
 }
 
 .date-field:focus {
-  border: 2px solid var(--color-primary-400);
-  padding: 0 calc(var(--space-4) - 0.5px);
+  border: 1px solid var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
 }
 
 .date-field[aria-invalid='true'],

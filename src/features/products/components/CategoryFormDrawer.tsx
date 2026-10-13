@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { formatName } from '@/lib/format'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { Category } from '../product.types'
 
@@ -42,7 +43,8 @@ export const CategoryFormDrawer: React.FC<CategoryFormDrawerProps> = ({
       setError(t.categoryNameRequired)
       return
     }
-    await onSave(trimmed)
+    const formatted = formatName(trimmed)
+    await onSave(formatted !== '—' ? formatted : trimmed)
   }
 
   return (
@@ -66,6 +68,12 @@ export const CategoryFormDrawer: React.FC<CategoryFormDrawerProps> = ({
         label={t.categoryName}
         value={name}
         onChange={(e) => { setName(e.target.value); setError(null) }}
+        onBlur={() => {
+          if (name?.trim()) {
+            const formatted = formatName(name)
+            if (formatted && formatted !== '—') setName(formatted)
+          }
+        }}
         placeholder={t.categoryNamePlaceholder}
         error={error ?? undefined}
         autoFocus

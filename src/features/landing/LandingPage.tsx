@@ -5,21 +5,21 @@ import { LandingSEO } from './components/LandingSEO'
 import { LP_SECTIONS } from '@/config/landing-links.config'
 
 /* Above-the-fold — eagerly loaded */
-import SaaSHero from '@/components/ui/saa-s-template'
-import { SocialProofBar } from '@/components/ui/social-proof-bar'
+import SaaSHero from './components/saa-s-template'
+import { SocialProofBar } from './components/social-proof-bar'
 
 /* Below-the-fold — lazy loaded */
-const LazyFeaturesSection7 = lazy(() => import('@/components/ui/features-section-7').then(m => ({ default: m.FeaturesSection7 })))
-const LazyBentoGrid = lazy(() => import('@/components/ui/feature-bento-grid').then(m => ({ default: m.FeaturesSectionWithBentoGrid })))
-const LazyHoverEffects = lazy(() => import('@/components/ui/feature-hover-effects').then(m => ({ default: m.FeaturesSectionWithHoverEffects })))
-const LazyInvoiceTemplates = lazy(() => import('@/components/ui/invoice-templates-section').then(m => ({ default: m.InvoiceTemplatesSection })))
-const LazyBeforeAfter = lazy(() => import('@/components/ui/before-after-section').then(m => ({ default: m.BeforeAfterSection })))
-const LazyPricing = lazy(() => import('@/components/ui/pricing-section').then(m => ({ default: m.PricingSection })))
-const LazyTestimonials = lazy(() => import('@/components/ui/testimonial-v2').then(m => ({ default: m.TestimonialV2 })))
-const LazyFAQ = lazy(() => import('@/components/ui/accordion-feature-section').then(m => ({ default: m.Feature197 })))
-const LazyCTA = lazy(() => import('@/components/ui/cta-section').then(m => ({ default: m.CallToAction })))
-const LazyFooter = lazy(() => import('@/components/ui/footer-section').then(m => ({ default: m.Footer })))
-const LazyStickyMobileCTA = lazy(() => import('@/components/ui/sticky-mobile-cta').then(m => ({ default: m.StickyMobileCTA })))
+const LazyFeaturesSection7 = lazy(() => import('./components/features-section-7').then(m => ({ default: m.FeaturesSection7 })))
+const LazyBentoGrid = lazy(() => import('./components/feature-bento-grid').then(m => ({ default: m.FeaturesSectionWithBentoGrid })))
+const LazyHoverEffects = lazy(() => import('./components/feature-hover-effects').then(m => ({ default: m.FeaturesSectionWithHoverEffects })))
+const LazyInvoiceTemplates = lazy(() => import('./components/invoice-templates-section').then(m => ({ default: m.InvoiceTemplatesSection })))
+const LazyBeforeAfter = lazy(() => import('./components/before-after-section').then(m => ({ default: m.BeforeAfterSection })))
+const LazyPricing = lazy(() => import('./components/pricing-section').then(m => ({ default: m.PricingSection })))
+const LazyTestimonials = lazy(() => import('./components/testimonial-v2').then(m => ({ default: m.TestimonialV2 })))
+const LazyFAQ = lazy(() => import('./components/accordion-feature-section').then(m => ({ default: m.Feature197 })))
+const LazyCTA = lazy(() => import('./components/cta-section').then(m => ({ default: m.CallToAction })))
+const LazyFooter = lazy(() => import('./components/footer-section').then(m => ({ default: m.Footer })))
+const LazyStickyMobileCTA = lazy(() => import('./components/sticky-mobile-cta').then(m => ({ default: m.StickyMobileCTA })))
 
 import { useTheme } from '@/context/ThemeContext'
 import './landing.css'

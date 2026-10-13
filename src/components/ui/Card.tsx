@@ -1,50 +1,126 @@
-import type { ReactNode, HTMLAttributes } from 'react'
+import React from 'react'
+import type { HTMLAttributes } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
-// Variants map to the existing `card*` classes in components-ui.css — visual
-// identity unchanged. `elevated`/`compact` only apply to variant="default"
-// (accent/primary cards carry their own surface treatment).
-export const cardVariants = cva('', {
-  variants: {
-    variant: { default: 'card', accent: 'card-accent', primary: 'card-primary' },
-    elevated: { true: 'card-elevated', false: '' },
-    compact: { true: 'card-compact', false: '' },
-  },
-  defaultVariants: { variant: 'default', elevated: false, compact: false },
-})
+export type CardVariant = 'default' | 'accent' | 'primary' | 'flat' | 'glass' | 'elevated' | 'bordered'
 
-interface CardProps
+export const cardVariants = cva(
+  'rounded-2xl border text-[var(--text-primary)] transition-all duration-150',
+  {
+    variants: {
+      variant: {
+        default: 'border-[var(--border-default)] bg-[var(--bg-surface)] shadow-2xs',
+        flat: 'border-[var(--border-subtle)] bg-[var(--bg-surface-subtle)] shadow-none',
+        glass: 'border-white/40 bg-white/70 backdrop-blur-md shadow-2xs',
+        elevated: 'border-[var(--border-default)] bg-[var(--bg-surface)] shadow-md',
+        bordered: 'border-[var(--border-strong)] bg-[var(--bg-surface)] shadow-none',
+        accent: 'card-accent',
+        primary: 'card-primary',
+      },
+      elevated: {
+        true: 'shadow-md',
+        false: '',
+      },
+      compact: {
+        true: 'p-3',
+        false: '',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      elevated: false,
+      compact: false,
+    },
+  }
+)
+
+export interface CardProps
   extends HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof cardVariants> {
-  children: ReactNode
+  hover?: boolean
+  clickable?: boolean
 }
 
-export function Card({
-  variant = 'default',
-  elevated = false,
-  compact = false,
-  children,
-  className,
-  ...props
-}: CardProps) {
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    variant !== 'default' &&
-    (elevated || compact)
-  ) {
-    console.warn(
-      `Card: "elevated" and "compact" props only apply to variant="default", got variant="${variant}"`,
+export const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  (
+    {
+      className,
+      variant = 'default',
+      elevated = false,
+      compact = false,
+      hover = false,
+      clickable = false,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          cardVariants({ variant, elevated, compact }),
+          hover && 'hover:border-[var(--border-strong)] hover:shadow-xs hover:bg-[var(--bg-surface-hover)]',
+          clickable && 'cursor-pointer active:scale-[0.99] select-none',
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </div>
     )
   }
+)
+Card.displayName = 'Card'
 
-  // elevated/compact are no-ops for non-default variants.
-  const e = variant === 'default' ? elevated : false
-  const c = variant === 'default' ? compact : false
-
-  return (
-    <div className={cn(cardVariants({ variant, elevated: e, compact: c }), className)} {...props}>
-      {children}
-    </div>
+export const CardHeader = React.forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn('flex flex-col space-y-1.5 p-5', className)}
+      {...props}
+    />
   )
-}
+)
+CardHeader.displayName = 'CardHeader'
+
+export const CardTitle = React.forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
+  ({ className, ...props }, ref) => (
+    <h3
+      ref={ref}
+      className={cn('font-bold leading-tight tracking-tight text-[var(--text-primary)] text-base sm:text-lg', className)}
+      {...props}
+    />
+  )
+)
+CardTitle.displayName = 'CardTitle'
+
+export const CardDescription = React.forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLParagraphElement>>(
+  ({ className, ...props }, ref) => (
+    <p
+      ref={ref}
+      className={cn('text-xs text-[var(--text-secondary)] font-normal leading-relaxed', className)}
+      {...props}
+    />
+  )
+)
+CardDescription.displayName = 'CardDescription'
+
+export const CardContent = React.forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn('p-5 pt-0', className)} {...props} />
+  )
+)
+CardContent.displayName = 'CardContent'
+
+export const CardFooter = React.forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn('flex items-center p-5 pt-0', className)}
+      {...props}
+    />
+  )
+)
+CardFooter.displayName = 'CardFooter'

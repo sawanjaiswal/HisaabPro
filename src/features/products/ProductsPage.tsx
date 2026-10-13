@@ -123,8 +123,9 @@ export default function ProductsPage() {
         {!bulk.isActive && status === 'success' && data && (
           <ProductSummaryBar
             summary={data.summary}
-            onLowStockClick={enableLowStock}
-            onStockValueClick={() => toast.info(t.comingSoon)}
+            onLowStockClick={toggleLowStock}
+            onStockValueClick={() => navigate(ROUTES.STOCK_VALUE_REPORT)}
+            isLowStockActive={filters.lowStockOnly}
           />
         )}
 
@@ -158,12 +159,35 @@ export default function ProductsPage() {
         {status === 'success' && data && productsList.length === 0 && (
           <EmptyState
             icon={<Package size={40} aria-hidden="true" />}
-            title={t.noProductsYet}
-            description={t.addFirstProductDesc}
+            title={
+              filters.lowStockOnly
+                ? t.noLowStockProducts
+                : (filters.search || filters.categoryId || filtersActive)
+                ? t.noProductsMatchFilters
+                : t.noProductsYet
+            }
+            description={
+              filters.lowStockOnly
+                ? t.noLowStockDesc
+                : (filters.search || filters.categoryId || filtersActive)
+                ? (t.noProductsFound ?? t.checkConnectionRetry)
+                : t.addFirstProductDesc
+            }
             action={
-              <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.addFirstProduct}>
-                {t.addProduct}
-              </Button>
+              filters.lowStockOnly || filters.search || filters.categoryId || filtersActive ? (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={showAll}
+                  aria-label={filters.lowStockOnly ? t.viewAllProducts : t.clearFilters}
+                >
+                  {filters.lowStockOnly ? t.viewAllProducts : t.clearFilters}
+                </Button>
+              ) : (
+                <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.addFirstProduct}>
+                  {t.addProduct}
+                </Button>
+              )
             }
           />
         )}

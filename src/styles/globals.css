@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './tokens.css';
 
 /* === DESIGN SYSTEM — Token & Component imports === */
 /* globals.css is the single entry point. All tokens and base styles are split
@@ -19,3 +20,51 @@
 @import './components-feedback.css';
 @import './summary-hero.css';
 @import './magicui-animations.css';
+
+/* ─────────────────────────────────────────────────────────────
+   Level 6 Indic & Multilingual Typography SSOT Engine
+   Expands word-spacing and normalizes letter-spacing across all
+   Indic (Hindi, Marathi, Gujarati, Punjabi, Bengali, Tamil, etc.)
+   and Arabic scripts to prevent word crowding and glyph collisions.
+───────────────────────────────────────────────────────────── */
+:lang(hi), :lang(mr), :lang(gu), :lang(pa), :lang(bn), :lang(ta), :lang(te), :lang(kn), :lang(ml), :lang(ar),
+html[lang="hi"], html[lang="mr"], html[lang="gu"], html[lang="pa"], html[lang="bn"], html[lang="ta"], html[lang="te"], html[lang="kn"], html[lang="ml"], html[lang="ar"],
+html[data-script="indic"], html[data-script="arabic"] {
+  letter-spacing: 0.01em !important;
+  word-spacing: 0.16em !important;
+}
+
+html[lang="hi"] body,
+html[lang="mr"] body,
+html[lang="gu"] body,
+html[lang="pa"] body,
+html[lang="bn"] body,
+html[lang="ta"] body,
+html[lang="te"] body,
+html[lang="kn"] body,
+html[lang="ml"] body,
+html[lang="ar"] body,
+html[data-script="indic"] body,
+html[data-script="arabic"] body {
+  letter-spacing: 0.01em !important;
+  word-spacing: 0.16em !important;
+}
+
+/* Prevent Tailwind tracking utilities from squashing Indic words and glyphs */
+html:not([lang="en"]):not([lang="es"]) .tracking-tight,
+html:not([lang="en"]):not([lang="es"]) .tracking-tighter,
+html:not([lang="en"]):not([lang="es"]) .tracking-normal,
+html:not([lang="en"]):not([lang="es"]) h1,
+html:not([lang="en"]):not([lang="es"]) h2,
+html:not([lang="en"]):not([lang="es"]) h3,
+html:not([lang="en"]):not([lang="es"]) h4,
+html:not([lang="en"]):not([lang="es"]) p,
+html:not([lang="en"]):not([lang="es"]) span,
+html:not([lang="en"]):not([lang="es"]) button,
+html:not([lang="en"]):not([lang="es"]) a,
+html:not([lang="en"]):not([lang="es"]) label,
+html:not([lang="en"]):not([lang="es"]) input,
+html:not([lang="en"]):not([lang="es"]) select {
+  letter-spacing: 0.01em !important;
+}
+

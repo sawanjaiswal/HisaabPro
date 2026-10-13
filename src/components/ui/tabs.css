@@ -27,8 +27,8 @@
 
 /* Variant: Segmented (default shadcn look) */
 .ui-tabs-list--segmented {
-  background: var(--color-gray-100);
-  border: 1px solid var(--color-gray-200);
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-xl);
   padding: 4px;
   min-height: 44px;
@@ -68,13 +68,7 @@
   display: none;
 }
 
-/* Variant: Pills */
-.ui-tabs-list--pills {
-  background: transparent;
-  border: none;
-  padding: var(--space-1) 0;
-  gap: var(--space-1-5);
-}
+
 
 /* Full-width / Equal distribution */
 .ui-tabs-list--full-width {
@@ -146,14 +140,14 @@
 }
 
 .ui-tabs-list--segmented .ui-tabs-trigger[data-state='active'] {
-  background: var(--color-gray-0);
-  color: var(--color-primary-600);
+  background: var(--bg-surface);
+  color: var(--primary);
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 8px -2px rgba(0, 0, 0, 0.06);
 }
 
 .ui-tabs-list--segmented .ui-tabs-trigger[data-state='active'] .ui-tabs-icon {
-  color: var(--color-primary-600);
+  color: var(--primary);
   opacity: 1;
 }
 
@@ -213,18 +207,41 @@
 }
 
 /* Pills trigger */
+.ui-tabs-list--pills {
+  background: transparent;
+  border: none;
+  padding: 4px 0;
+  gap: 8px;
+  display: flex;
+  align-items: center;
+}
+
 .ui-tabs-list--pills .ui-tabs-trigger {
-  padding: var(--space-1-5) var(--space-3-5);
+  padding: 6px 16px;
   min-height: 36px;
   border-radius: var(--radius-full);
-  border: 1px solid var(--color-gray-200);
-  background: var(--color-gray-0);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.25;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.ui-tabs-list--pills .ui-tabs-trigger:hover:not(:disabled):not([data-state='active']) {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
 }
 
 .ui-tabs-list--pills .ui-tabs-trigger[data-state='active'] {
-  background: var(--color-primary-50);
-  border-color: var(--color-primary-300);
-  color: var(--color-primary-700);
+  background: var(--primary-subtle);
+  border-color: var(--primary);
+  color: var(--primary);
   font-weight: 600;
 }
 
@@ -281,12 +298,13 @@
 }
 
 [data-theme='dark'] .ui-tabs-list--pills .ui-tabs-trigger {
-  background: var(--color-gray-100);
-  border-color: var(--color-gray-200);
+  background: var(--bg-surface);
+  border-color: var(--border-default);
+  color: var(--text-secondary);
 }
 
 [data-theme='dark'] .ui-tabs-list--pills .ui-tabs-trigger[data-state='active'] {
-  background: var(--color-primary-bg-subtle);
-  border-color: var(--color-primary-700);
-  color: var(--color-primary-300);
+  background: var(--primary-subtle);
+  border-color: var(--primary);
+  color: var(--primary);
 }

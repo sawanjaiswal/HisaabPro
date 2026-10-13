@@ -46,7 +46,10 @@ export function PageContainer({
   className = '',
   asDiv = false,
 }: PageContainerProps) {
-  const cls = `page-container ${VARIANT_CLASS[variant]} ${className}`.trim()
+  // Level 6 Spacing SSOT: strip any space-y-* classes so page-container's
+  // --gap-section controls vertical rhythm without doubled margin leaks.
+  const cleanClass = className ? className.replace(/\bspace-y-\S+/g, '').trim() : ''
+  const cls = `page-container ${VARIANT_CLASS[variant]} ${cleanClass}`.trim()
   if (asDiv) return <div className={cls}>{children}</div>
   return <main className={cls}>{children}</main>
 }

@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/Checkbox'
 import { useLanguage } from '@/hooks/useLanguage'
 import { MapPin, Trash2 } from 'lucide-react'
 import { INDIAN_STATES } from '../party.constants'
+import { formatName } from '@/lib/format'
 import type { PartyAddress, AddressType } from '../party.types'
 
 interface AddressFormDrawerProps {
@@ -206,6 +207,12 @@ export function AddressFormDrawer({
               id="addr-label"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
+              onBlur={() => {
+                if (label?.trim()) {
+                  const formatted = formatName(label)
+                  if (formatted && formatted !== '—') setLabel(formatted)
+                }
+              }}
               placeholder="e.g. Main Office, Shop, Godown"
             />
           </FormField>
@@ -260,6 +267,12 @@ export function AddressFormDrawer({
                   onChange={(e) => {
                     setCity(e.target.value)
                     if (errors.city) setErrors((prev) => ({ ...prev, city: undefined }))
+                  }}
+                  onBlur={() => {
+                    if (city?.trim()) {
+                      const formatted = formatName(city)
+                      if (formatted && formatted !== '—') setCity(formatted)
+                    }
                   }}
                   placeholder="City"
                   aria-invalid={Boolean(errors.city)}
