@@ -49,10 +49,10 @@ export function LedgerToolbar({
 
       <div className="ledger-toolbar__actions">
         <Button
-          variant={filterCount > 0 ? 'primary' : 'outline'}
+          variant="none"
           size="md"
           type="button"
-          className="relative !w-11 !h-11 !p-0 flex items-center justify-center flex-shrink-0"
+          className={`ledger-filter-btn relative !w-11 !h-11 !p-0 flex items-center justify-center flex-shrink-0${filterCount > 0 ? ' ledger-filter-btn--active' : ''}`}
           onClick={onOpenFilter}
           aria-label={t.filter}
           title={t.filter}
