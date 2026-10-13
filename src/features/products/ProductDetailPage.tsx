@@ -16,7 +16,8 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { Skeleton } from '@/components/feedback/Skeleton'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Button } from '@/components/ui/Button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useProductDetail } from './useProductDetail'
@@ -126,7 +127,7 @@ export default function ProductDetailPage() {
           )}
 
           {status === 'success' && product && (
-            <div className="stagger-enter space-y-6">
+            <div className="stagger-enter flex flex-col gap-[var(--gap-section)]">
               <div role="status" aria-live="polite" className="sr-only">
                 {product.name} {t.detailsLoaded}
               </div>
@@ -147,7 +148,11 @@ export default function ProductDetailPage() {
                 onMore={soon}
               />
 
-              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as DetailTab)}>
+              <Tabs
+                value={activeTab}
+                onValueChange={(v) => setActiveTab(v as DetailTab)}
+                className="w-full flex flex-col"
+              >
                 <TabsList variant="line" aria-label={t.productDetailSections}>
                   {TABS.map((tab) => (
                     <TabsTrigger key={tab.id} value={tab.id}>
@@ -155,10 +160,8 @@ export default function ProductDetailPage() {
                     </TabsTrigger>
                   ))}
                 </TabsList>
-              </Tabs>
 
-              <div id={`panel-${activeTab}`} role="tabpanel" aria-label={`${activeTab} ${t.tabContent}`}>
-                {activeTab === 'overview' && (
+                <TabsContent value="overview">
                   <ProductOverviewTab
                     product={product}
                     analytics={analytics}
@@ -169,19 +172,29 @@ export default function ProductDetailPage() {
                     onViewStock={() => setActiveTab('stock')}
                     onViewActivity={() => setActiveTab('history')}
                   />
-                )}
+                </TabsContent>
 
-                {(activeTab === 'stock' || activeTab === 'history') && (
+                <TabsContent value="stock">
                   <ProductStockTab
                     movements={product.recentMovements}
                     unitSymbol={product.unit.symbol}
                     onAdjust={() => setAdjustModalOpen(true)}
                   />
-                )}
+                </TabsContent>
 
-                {activeTab === 'pricing' && <ProductPricingTab product={product} />}
+                <TabsContent value="history">
+                  <ProductStockTab
+                    movements={product.recentMovements}
+                    unitSymbol={product.unit.symbol}
+                    onAdjust={() => setAdjustModalOpen(true)}
+                  />
+                </TabsContent>
 
-                {activeTab === 'info' && (
+                <TabsContent value="pricing">
+                  <ProductPricingTab product={product} />
+                </TabsContent>
+
+                <TabsContent value="info">
                   <ProductInfoTab
                     description={product.description}
                     hsnCode={product.hsnCode}
@@ -192,19 +205,8 @@ export default function ProductDetailPage() {
                     status={product.status}
                     stockValidation={product.stockValidation}
                   />
-                )}
-              </div>
-
-              <div className="pd-footer">
-                <Button variant="outline" className="pd-footer__btn pd-footer__btn--danger" onClick={() => setDeleteOpen(true)}>
-                  <Trash2 size={18} aria-hidden="true" />
-                  {t.deleteProduct}
-                </Button>
-                <Button variant="primary" className="pd-footer__btn" onClick={goEdit}>
-                  <Pencil size={18} aria-hidden="true" />
-                  {t.editProduct}
-                </Button>
-              </div>
+                </TabsContent>
+              </Tabs>
 
               <StockAdjustModal
                 isOpen={adjustModalOpen}
@@ -219,6 +221,31 @@ export default function ProductDetailPage() {
             </div>
           )}
         </PageContainer>
+
+        {status === 'success' && product && (
+          <BottomActionBar className="pd-footer" role="group" aria-label={t.quickActions ?? 'Product actions'}>
+            <Button
+              variant="outline-destructive"
+              size="lg"
+              className="pd-footer__btn pd-footer__btn--danger rounded-full"
+              onClick={() => setDeleteOpen(true)}
+              aria-label={t.deleteProduct}
+            >
+              <Trash2 size={18} aria-hidden="true" />
+              <span>{t.deleteProduct}</span>
+            </Button>
+            <Button
+              variant="primary"
+              size="lg"
+              className="pd-footer__btn rounded-full"
+              onClick={goEdit}
+              aria-label={t.editProduct}
+            >
+              <Pencil size={18} aria-hidden="true" />
+              <span>{t.editProduct}</span>
+            </Button>
+          </BottomActionBar>
+        )}
       </AppShell>
 
       <ConfirmDialog

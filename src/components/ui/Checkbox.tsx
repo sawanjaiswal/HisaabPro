@@ -1,11 +1,3 @@
-/** Checkbox — Canonical Radix UI Checkbox Primitive
- *
- * Design System SSOT:
- * - Active: Emerald background (var(--color-primary-500)) with white check
- * - 44px touch target alignment
- * - Accessible focus-visible ring
- */
-
 import * as React from 'react'
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
 import { Check } from 'lucide-react'
@@ -21,22 +13,21 @@ export const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
   CheckboxProps
 >(({ className, label, description, id, ...props }, ref) => {
-  const checkboxId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined)
+  const generatedId = React.useId()
+  const checkboxId = id || generatedId
 
   const checkboxNode = (
     <CheckboxPrimitive.Root
       ref={ref}
       id={checkboxId}
       className={cn(
-        'peer h-5 w-5 shrink-0 rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[var(--primary)] data-[state=checked]:border-[var(--primary)] data-[state=checked]:text-white transition-all',
+        'peer h-4 w-4 shrink-0 rounded-[4px] border border-[var(--border-control)] bg-[var(--bg-surface)] ring-offset-background hover:border-[var(--primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[var(--primary)] data-[state=checked]:border-[var(--primary)] data-[state=checked]:text-white transition-colors',
         className
       )}
       {...props}
     >
-      <CheckboxPrimitive.Indicator
-        className={cn('flex items-center justify-center text-white')}
-      >
-        <Check className="h-3.5 w-3.5 stroke-[3] text-white" />
+      <CheckboxPrimitive.Indicator className="flex items-center justify-center text-white">
+        <Check className="h-3 w-3 stroke-[3] text-white" />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   )
@@ -46,14 +37,23 @@ export const Checkbox = React.forwardRef<
   }
 
   return (
-    <div className="flex items-start gap-2.5 cursor-pointer select-none">
-      <div className="pt-0.5">{checkboxNode}</div>
-      <label htmlFor={checkboxId} className="cursor-pointer space-y-0.5">
-        <span className="block text-sm font-semibold text-text-primary">
-          {label}
-        </span>
+    <div
+      className={cn(
+        'inline-flex cursor-pointer select-none gap-2',
+        description ? 'items-start' : 'items-center'
+      )}
+    >
+      <div className={cn('shrink-0', description && 'pt-0.5')}>{checkboxNode}</div>
+      <label
+        htmlFor={checkboxId}
+        className={cn(
+          'cursor-pointer text-sm font-medium text-[var(--text-primary)]',
+          !description && 'leading-none'
+        )}
+      >
+        <span>{label}</span>
         {description && (
-          <span className="block text-xs text-text-secondary">
+          <span className="block text-xs text-[var(--text-secondary)] mt-1">
             {description}
           </span>
         )}
@@ -61,5 +61,4 @@ export const Checkbox = React.forwardRef<
     </div>
   )
 })
-
 Checkbox.displayName = CheckboxPrimitive.Root.displayName

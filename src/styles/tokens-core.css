@@ -221,15 +221,15 @@
    * so any drawer, dialog, or toast always wins the stack over the nav —
    * a drawer that opens from a page must never render underneath the bar
    * that triggered it. */
-  --z-fab: 10;
-  --z-sticky: 20;
-  --z-dropdown: 30;
+  --z-fab: 40;
+  --z-sticky: 10;
+  --z-dropdown: 80;
   --z-bnav: 35;
   --z-bnav-fab: 36;
-  --z-overlay: 40;
-  --z-modal-backdrop: 45;
-  --z-modal: 50;
-  --z-toast: 70;
+  --z-overlay: 60;
+  --z-modal-backdrop: 70;
+  --z-modal: 70;
+  --z-toast: 110;
 
   /* Layout */
   --side-padding: var(--space-4);

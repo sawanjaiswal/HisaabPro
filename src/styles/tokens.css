@@ -10,13 +10,14 @@
   /* Typography */
   --text-primary: #0f172a;
   --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-muted: #64748b;
   --text-inverse: #ffffff;
 
   /* Borders & Dividers */
   --border-subtle: rgba(15, 23, 42, 0.05);
   --border-default: #e2e8f0;
   --border-strong: #cbd5e1;
+  --border-control: #64748b;
   --border-focus: #026f39;
 
   /* Brand Colors (HisaabPro Deep Emerald Green #026F39) */
@@ -28,6 +29,14 @@
 
   --dark-btn: #0f172a;
   --dark-btn-hover: #000000;
+
+  /* Semantic Feedback Tokens */
+  --color-error: #b91c1c;
+  --color-error-bg: #fef2f2;
+  --color-error-border: #fecaca;
+  --color-info: #0369a1;
+  --color-info-bg: #f0f9ff;
+  --color-info-border: #bae6fd;
 
   /* Status Tokens */
   --status-active-bg: #ecfdf5;
@@ -70,15 +79,26 @@
   /* Minimum Accessible Touch Target */
   --touch-target-min: 44px;
 
-  /* Standard Z-Index Stacking Architecture */
+  /* Standard Z-Index Stacking Architecture (Matches Z constant) */
   --z-base: 0;
-  --z-sticky-bar: 10;
-  --z-sidebar: 20;
-  --z-dropdown-active: 30;
-  --z-backdrop-dismiss: 40;
-  --z-fixed-ui: 50;
-  --z-modal-overlay: 9999;
-  --z-popover-top: 10001;
+  --z-sticky: 10;
+  --z-sticky-bar: 20;
+  --z-sidebar: 30;
+  --z-fixed-ui: 30;
+  --z-floating-action: 40;
+  --z-overlay: 60;
+  --z-drawer: 60;
+  --z-modal: 70;
+  --z-backdrop-dismiss: 70;
+  --z-modal-overlay: 70;
+  --z-modal-content: 71;
+  --z-dropdown: 80;
+  --z-dropdown-active: 80;
+  --z-popover: 90;
+  --z-popover-top: 90;
+  --z-tooltip: 100;
+  --z-toast: 110;
+  --z-fullscreen: 120;
 
   /* Backward Compatibility Aliases for Legacy Code */
   --color-surface: var(--bg-surface);
@@ -105,13 +125,14 @@
   /* Typography */
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text-muted: #94a3b8;
   --text-inverse: #0f172a;
 
   /* Borders & Dividers */
   --border-subtle: rgba(255, 255, 255, 0.06);
   --border-default: #1e293b;
   --border-strong: #334155;
+  --border-control: #94a3b8;
   --border-focus: #35c176;
 
   /* Brand Colors */
@@ -123,6 +144,14 @@
 
   --dark-btn: #ffffff;
   --dark-btn-hover: #f1f5f9;
+
+  /* Semantic Feedback Tokens */
+  --color-error: #f87171;
+  --color-error-bg: rgba(127, 29, 29, 0.4);
+  --color-error-border: #991b1b;
+  --color-info: #38bdf8;
+  --color-info-bg: rgba(14, 116, 144, 0.4);
+  --color-info-border: #0369a1;
 
   /* Status Tokens */
   --status-active-bg: rgba(6, 78, 59, 0.4);

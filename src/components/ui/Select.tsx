@@ -139,7 +139,7 @@ export function Select({
     const triggerWidth = rect.width
     const minDropdownWidth = Math.max(triggerWidth, 220)
     const maxDropdownWidth = Math.min(Math.max(triggerWidth, 340), window.innerWidth - 24)
-    const dropdownHeight = Math.min(filteredOptions.length * 36 + (isSearchActive ? 52 : 0) + 20, 280)
+    const dropdownHeight = Math.min(filteredOptions.length * 42 + (isSearchActive ? 52 : 0) + 20, 320)
 
     const spaceBelow = window.innerHeight - rect.bottom
     const spaceAbove = rect.top
@@ -237,9 +237,9 @@ export function Select({
       return (
         <div className={cn('w-full space-y-1.5', className)}>
           <div className="flex items-center justify-between">
-            <label htmlFor={id} className="block text-sm font-medium text-[var(--text-primary)] select-none">
+            <label htmlFor={id} className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] select-none">
               {label}
-              {required && <span className="text-[var(--color-error-500)] ml-1 font-bold" aria-hidden="true">*</span>}
+              {required && <span className="text-rose-500 ml-1 font-bold" aria-hidden="true">*</span>}
             </label>
           </div>
           {radixSelect}
@@ -256,9 +256,9 @@ export function Select({
     <div className={cn('relative w-full space-y-1.5', className)}>
       {label && (
         <div className="flex items-center justify-between">
-          <label htmlFor={id} className="block text-sm font-medium text-[var(--text-primary)] select-none">
+          <label htmlFor={id} className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] select-none">
             {label}
-            {required && <span className="text-[var(--color-error-500)] ml-1 font-bold" aria-hidden="true">*</span>}
+            {required && <span className="text-rose-500 ml-1 font-bold" aria-hidden="true">*</span>}
           </label>
         </div>
       )}
@@ -273,7 +273,7 @@ export function Select({
         aria-label={ariaLabel || label || placeholder}
         className={cn(
           'rx-select-trigger transition-all',
-          isOpen && 'border-[var(--primary)] ring-1 ring-[var(--primary)]',
+          isOpen && 'border-[var(--primary)]',
           triggerClassName,
           error && 'border-rose-500'
         )}
@@ -293,24 +293,24 @@ export function Select({
               top: `${dropdownCoords.top}px`,
               left: `${dropdownCoords.left}px`,
               width: `${dropdownCoords.width}px`,
-              zIndex: 'var(--z-dropdown, 9999)',
+              zIndex: 'var(--z-dropdown, 80)',
             }}
-            className={cn('rx-surface p-1.5 shadow-xl border border-[var(--color-gray-200)] rounded-xl bg-[var(--color-surface)]', dropdownClassName)}
+            className={cn('rx-surface p-1.5 shadow-xl border border-[var(--border-default)] rounded-xl bg-[var(--bg-surface)]', dropdownClassName)}
           >
             {isSearchActive && (
-              <div className="p-1 border-b border-[var(--color-gray-100)] mb-1">
+              <div className="p-1 border-b border-[var(--border-subtle)] mb-1">
                 <div className="relative flex items-center">
-                  <Search className="w-3.5 h-3.5 text-[var(--color-gray-400)] absolute left-2.5 pointer-events-none" />
+                  <Search className="w-3.5 h-3.5 text-[var(--text-muted)] absolute left-2.5 pointer-events-none" />
                   <input
                     ref={searchInputRef}
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder={`Search ${parsedOptions.length} options...`}
-                    className="w-full pl-8 pr-7 py-1.5 text-xs bg-[var(--color-gray-50)] border border-[var(--color-gray-200)] rounded-md outline-none focus:border-[var(--color-primary-600)] text-[var(--text-primary)]"
+                    className="w-full pl-8 pr-7 py-1.5 text-xs bg-[var(--bg-surface-subtle)] border border-[var(--border-default)] rounded-md outline-none focus:border-[var(--primary)] text-[var(--text-primary)]"
                   />
                   {searchQuery && (
-                    <button type="button" onClick={() => setSearchQuery('')} className="absolute right-2 p-0.5 text-[var(--color-gray-400)] hover:text-[var(--text-primary)]">
+                    <button type="button" onClick={() => setSearchQuery('')} className="absolute right-2 p-0.5 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
                       <X className="w-3 h-3" />
                     </button>
                   )}
@@ -362,19 +362,19 @@ export function Select({
                         onClick={() => handleSelect(opt.value, opt.disabled)}
                         onMouseEnter={() => setHighlightedIndex(idx)}
                         className={cn(
-                          'w-full flex items-center justify-between px-3 py-2 rounded-md text-xs text-left cursor-pointer transition-colors',
+                          'w-full flex items-center justify-between px-3 py-2.5 min-h-[40px] rounded-lg text-sm font-medium text-left cursor-pointer transition-colors select-none',
                           isSelected
-                            ? 'bg-[var(--color-primary-600)] text-white font-bold'
+                            ? 'bg-[var(--primary)] text-white font-semibold'
                             : isHighlighted
-                            ? 'bg-[var(--color-primary-50)] text-[var(--color-primary-800)]'
-                            : 'text-[var(--text-primary)] hover:bg-[var(--color-gray-100)]',
+                            ? 'bg-[var(--primary-subtle)] text-[var(--primary)] font-medium'
+                            : 'text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)]',
                         )}
                       >
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
                           {opt.icon && <span className="shrink-0">{opt.icon}</span>}
                           <span className="truncate">{opt.label}</span>
                         </div>
-                        {isSelected && <Check className="w-3.5 h-3.5 text-white shrink-0 ml-2" />}
+                        {isSelected && <Check className="w-4 h-4 text-white shrink-0 ml-2 stroke-[2.5]" />}
                       </button>
                     )
                   })}

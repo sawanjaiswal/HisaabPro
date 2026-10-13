@@ -17,20 +17,24 @@ export const Z = {
   fixedNav: 30,
   /** Floating action buttons, sticky CTAs */
   floatingAction: 40,
-  /** Dropdowns, context menus, date pickers */
-  dropdown: 50,
   /** Drawers and bottom sheets */
   drawer: 60,
   /** Modals and dialogs */
   modal: 70,
+  /** Modal content surface */
+  modalContent: 71,
+  /** Dropdowns, context menus, select menus (must be above modal) */
+  dropdown: 80,
+  /** Popovers, date pickers */
+  popover: 90,
   /** Tooltips, coachmarks, help overlays */
-  tooltip: 80,
+  tooltip: 100,
   /** Toast notifications, undo ribbon */
-  toast: 90,
+  toast: 110,
   /** Feedback widget */
-  feedbackWidget: 100,
+  feedbackWidget: 115,
   /** Full-screen overlays (camera, file picker) */
-  fullscreen: 110,
+  fullscreen: 120,
 } as const;
 
 export type ZLayer = typeof Z[keyof typeof Z];

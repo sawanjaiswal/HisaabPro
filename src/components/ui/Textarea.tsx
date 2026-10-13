@@ -12,16 +12,16 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 export const textareaVariants = cva(
-  'flex w-full rounded-[var(--radius-md)] text-[var(--fs-sm)] font-medium text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-all focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+  'flex w-full rounded-xl text-sm font-normal text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-all outline-none focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 leading-relaxed',
   {
     variants: {
       variant: {
         default:
-          'bg-[var(--bg-surface)] border border-[var(--border-default)] p-3 focus-visible:border-[var(--primary)] focus-visible:ring-1 focus-visible:ring-[var(--primary)]',
+          'bg-[var(--bg-surface)] border border-[var(--border-default)] p-3 focus:border-[var(--primary)] focus:ring-0 focus-visible:border-[var(--primary)] focus-visible:ring-0',
         filled:
-          'bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] p-3 focus-visible:bg-[var(--bg-surface)] focus-visible:border-[var(--primary)] focus-visible:ring-1 focus-visible:ring-[var(--primary)]',
+          'bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] p-3 focus:bg-[var(--bg-surface)] focus:border-[var(--primary)] focus:ring-0 focus-visible:bg-[var(--bg-surface)] focus-visible:border-[var(--primary)] focus-visible:ring-0',
         seamless:
-          'bg-transparent border-0 p-0 shadow-none focus-visible:ring-0 focus-visible:outline-none resize-none',
+          'bg-transparent border-0 p-0 shadow-none focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none resize-none',
       },
       hasError: {
         true: 'border-[var(--color-error-500)] focus-visible:border-[var(--color-error-500)] focus-visible:ring-[var(--color-error-100)]',
@@ -93,12 +93,12 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           <div className="flex items-center justify-between">
             <label
               htmlFor={textareaId}
-              className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-primary)] select-none"
+              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] select-none"
             >
               {icon}
               {label}
               {required && (
-                <span className="text-[var(--color-error-500)] ml-1 font-bold" aria-hidden="true">
+                <span className="text-rose-500 ml-1 font-bold" aria-hidden="true">
                   *
                 </span>
               )}

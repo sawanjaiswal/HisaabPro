@@ -789,41 +789,43 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     return null;
   }, [mode, selectedDate]);
 
+  const [isFocused, setIsFocused] = useState(false);
+
   const isTableCell = variant === 'table-cell';
 
   const containerStyles = cn(
     'relative flex items-center transition-all',
     isTableCell
-      ? 'w-full rounded-lg border border-transparent hover:border-[var(--border-default)] focus-within:border-[var(--primary)] focus-within:bg-[var(--bg-surface)] bg-transparent'
+      ? 'w-full rounded-lg border border-transparent hover:border-[var(--border-default)] bg-transparent'
       : cn(
-          'w-full bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl shadow-2xs hover:border-[var(--border-strong)] focus-within:ring-1 focus-within:ring-[var(--primary)] focus-within:border-[var(--primary)]',
-          size === 'compact' && 'h-7',
-          size === 'sm' && 'h-8',
+          'w-full bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl shadow-2xs hover:border-[var(--border-strong)]',
+          size === 'compact' && 'h-7 min-h-[28px]',
+          size === 'sm' && 'h-8 min-h-[32px]',
           size === 'default' && 'h-11 min-h-[44px]'
         ),
-    isOpen && (isTableCell ? 'border-[var(--primary)] bg-[var(--bg-surface)] ring-1 ring-[var(--primary)]' : 'border-[var(--primary)] ring-1 ring-[var(--primary)]'),
-    displayError && 'border-rose-500 focus-within:border-rose-500 focus-within:ring-rose-500/10',
+    (isFocused || isOpen) && 'border-[var(--primary)] !border-[var(--primary)]',
+    displayError && 'border-rose-500 !border-rose-500',
     disabled && 'opacity-60 cursor-not-allowed bg-[var(--bg-surface-subtle)]',
     className
   );
 
   const inputStyles = cn(
-    'w-full bg-transparent font-mono text-slate-800 placeholder:text-slate-300 outline-none transition-all',
+    'w-full bg-transparent font-sans text-sm font-medium text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none transition-all',
     isTableCell
-      ? 'px-2 py-1.5 text-[11px] font-semibold text-slate-800'
+      ? 'px-2 py-1.5 text-[11px] font-semibold text-[var(--text-primary)]'
       : cn(
-          'px-3 text-xs font-semibold',
-          size === 'compact' && 'text-[11px] h-full',
-          size === 'sm' && 'text-xs h-full',
-          size === 'default' && 'text-xs h-full'
+          'px-3.5 text-sm h-full',
+          size === 'compact' && 'text-[11px]',
+          size === 'sm' && 'text-xs',
+          size === 'default' && 'text-sm'
         ),
     inputClassName
   );
 
   return (
-    <div className={cn('relative flex flex-col gap-1', !isTableCell && 'w-full')}>
+    <div className={cn('relative flex flex-col space-y-1.5', !isTableCell && 'w-full')}>
       {label && (
-        <label htmlFor={id} className="text-xs font-bold text-slate-700 tracking-tight select-none">
+        <label htmlFor={id} className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] select-none">
           {label}
         </label>
       )}
@@ -838,7 +840,11 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           type="text"
           value={typedText}
           onChange={handleInputChange}
-          onBlur={handleInputBlur}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => {
+            setIsFocused(false);
+            handleInputBlur();
+          }}
           placeholder={defaultPlaceholder}
           disabled={disabled}
           required={required}

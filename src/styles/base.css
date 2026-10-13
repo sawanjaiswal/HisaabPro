@@ -69,9 +69,7 @@
 /* === GLOBAL FOCUS STYLES — keyboard accessibility === */
 button:focus-visible,
 a:focus-visible,
-[role="button"]:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
+[role="button"]:focus-visible {
   outline: 2px solid var(--color-primary-400);
   outline-offset: 2px;
 }

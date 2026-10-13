@@ -124,7 +124,7 @@
   --color-text-secondary: var(--color-gray-600);
   --color-text-muted:     var(--color-gray-500);
   --color-primary:        var(--color-primary-500);
-  --color-error:          var(--color-error-500);
+  --color-error:          var(--color-error-700);
   --color-success:        var(--color-success-500);
   --color-warning:        var(--color-warning-500);
   --color-info:           var(--color-info-500);

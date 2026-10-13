@@ -57,6 +57,31 @@ export const ShowcaseTokensSection: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {/* Dynamic Radius & Geometry Tokens */}
+          <div className="pt-2 border-t border-[var(--border-subtle)]">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)] block mb-2">
+              Geometric Radius & Touch Tokens (Dynamic SSOT)
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-3 rounded-md border border-[var(--border-default)] bg-[var(--bg-surface-subtle)] space-y-1">
+                <span className="text-[10px] font-mono text-[var(--text-muted)]">--radius-md (12px)</span>
+                <div className="text-xs font-bold text-[var(--text-primary)]">Badges & Tags</div>
+              </div>
+              <div className="p-3 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface-subtle)] space-y-1">
+                <span className="text-[10px] font-mono text-[var(--text-muted)]">--radius-xl (20px)</span>
+                <div className="text-xs font-bold text-[var(--text-primary)]">Inputs, Cards, Modals</div>
+              </div>
+              <div className="p-3 rounded-full border border-[var(--border-default)] bg-[var(--bg-surface-subtle)] space-y-1 text-center">
+                <span className="text-[10px] font-mono text-[var(--text-muted)]">--radius-full</span>
+                <div className="text-xs font-bold text-[var(--text-primary)]">Pills & Avatars</div>
+              </div>
+              <div className="p-3 rounded-xl border border-[var(--primary)] bg-[var(--primary-subtle)] space-y-1">
+                <span className="text-[10px] font-mono text-[var(--primary)] font-bold">--touch-target (44px)</span>
+                <div className="text-xs font-bold text-[var(--primary)]">Min Hit Box Floor</div>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

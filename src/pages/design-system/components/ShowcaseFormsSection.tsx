@@ -1,16 +1,20 @@
 import React, { useState } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
+import { SearchInput } from '@/components/ui/SearchInput'
 import { Select } from '@/components/ui/Select'
 import { Checkbox } from '@/components/ui/Checkbox'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup'
 import { Switch } from '@/components/ui/Switch'
 import { Textarea } from '@/components/ui/Textarea'
 import { DateField } from '@/components/ui/DateField'
 
 export const ShowcaseFormsSection: React.FC = () => {
   const [text, setText] = useState('Acme Enterprises')
+  const [searchQuery, setSearchQuery] = useState('')
   const [rate, setRate] = useState('4500.00')
   const [category, setCategory] = useState('electronics')
+  const [paymentMethod, setPaymentMethod] = useState('upi')
   const [termsAccepted, setTermsAccepted] = useState(true)
   const [autoSms, setAutoSms] = useState(true)
   const [notes, setNotes] = useState('Goods once sold will not be taken back without original bill.')
@@ -28,12 +32,24 @@ export const ShowcaseFormsSection: React.FC = () => {
       <CardHeader>
         <CardTitle>Forms & Inputs: Full Primitive Suite</CardTitle>
         <p className="text-xs text-[var(--text-secondary)]">
-          Unified inputs, currency controls with zero glyph collision, Select, Checkbox, Switch, Textarea, and DateField.
+          Zero-patch inputs, Search SSOT, currency controls, Select, Checkbox, RadioGroup, Switch, Textarea, and DateField.
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Row 1: Text & Currency */}
+        {/* Row 1: Search & Text */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <span className="block text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] select-none">
+              Search Field (SSOT)
+            </span>
+            <SearchInput
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search customer, invoice, or phone..."
+              onClear={() => setSearchQuery('')}
+            />
+          </div>
+
           <Input
             label="Party Name"
             value={text}
@@ -42,6 +58,10 @@ export const ShowcaseFormsSection: React.FC = () => {
             onClear={() => setText('')}
             hint="Clearable input"
           />
+        </div>
+
+        {/* Row 2: Currency & Category */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
             label="Unit Rate (₹)"
             prefixText="₹"
@@ -49,25 +69,21 @@ export const ShowcaseFormsSection: React.FC = () => {
             onChange={(e) => setRate(e.target.value)}
             hint="Padded left to guarantee zero collision"
           />
-        </div>
-
-        {/* Row 2: Select & Date */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Select
             label="Category"
             value={category}
             onValueChange={setCategory}
             options={selectOptions}
           />
+        </div>
+
+        {/* Row 3: DateField & Textarea */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <DateField
             label="Invoice Date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
-        </div>
-
-        {/* Row 3: Textarea */}
-        <div>
           <Textarea
             label="Invoice Terms & Notes"
             value={notes}
@@ -76,34 +92,60 @@ export const ShowcaseFormsSection: React.FC = () => {
           />
         </div>
 
-        {/* Row 4: Checkboxes & Switches */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-          <div className="p-3.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface-subtle)] space-y-2">
+        {/* Row 4: Checkboxes, RadioGroup & Switches */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          {/* Checkbox */}
+          <div className="p-3.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface-subtle)] space-y-3">
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)] block">
-              Checkbox Primitive
+              Checkbox Primitive (Crisp Border)
             </span>
-            <Checkbox
-              id="terms-check"
-              checked={termsAccepted}
-              onCheckedChange={(c) => setTermsAccepted(Boolean(c))}
-              label="Generate E-Way Bill automatically"
-              description="Required for interstate supplies exceeding ₹50,000 threshold"
-            />
+            <div className="space-y-2.5">
+              <Checkbox
+                id="terms-check"
+                checked={termsAccepted}
+                onCheckedChange={(c) => setTermsAccepted(Boolean(c))}
+                label="E-Way Bill"
+                description="Required for supplies > ₹50k"
+              />
+              <Checkbox
+                id="sample-unchecked"
+                checked={false}
+                label="Unchecked Box (High Contrast)"
+              />
+            </div>
           </div>
 
-          <div className="p-3.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface-subtle)] space-y-2">
+          {/* Radio Group */}
+          <div className="p-3.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface-subtle)] space-y-3">
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)] block">
-              Switch Primitive
+              Radio Group (Horizontal SSOT)
             </span>
-            <div className="flex items-center justify-between">
+            <RadioGroup
+              value={paymentMethod}
+              onValueChange={setPaymentMethod}
+              orientation="horizontal"
+              className="gap-4 pt-1"
+            >
+              <RadioGroupItem value="upi" label="UPI" />
+              <RadioGroupItem value="bank" label="Bank" />
+              <RadioGroupItem value="cash" label="Cash" />
+            </RadioGroup>
+          </div>
+
+          {/* Switch */}
+          <div className="p-3.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-surface-subtle)] space-y-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)] block">
+              Switch (Compact SSOT)
+            </span>
+            <div className="flex items-center justify-between pt-1">
               <div>
-                <div className="text-xs font-bold text-[var(--text-primary)]">WhatsApp Payment Notification</div>
-                <div className="text-[11px] text-[var(--text-secondary)]">Instant receipt with payment link</div>
+                <div className="text-xs font-bold text-[var(--text-primary)]">WhatsApp Notification</div>
+                <div className="text-[11px] text-[var(--text-secondary)]">Instant receipt with link</div>
               </div>
               <Switch
                 checked={autoSms}
                 onCheckedChange={setAutoSms}
-                ariaLabel="Toggle WhatsApp Payment Notification"
+                ariaLabel="Toggle WhatsApp Notification"
               />
             </div>
           </div>

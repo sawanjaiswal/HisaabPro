@@ -621,11 +621,39 @@
 .pd-activity__delta--bad  { color: var(--color-error-600); }
 .pd-activity__delta--info { color: var(--color-info-500); }
 
-/* ── Dual-action footer ────────────────────────────────────────────────── */
-.pd-footer { display: flex; gap: 0.75rem; }
-.pd-footer__btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+/* ── Dual-action sticky bottom footer ──────────────────────────────────── */
+.bottom-action-bar.pd-footer {
+  display: flex;
+  gap: 0.75rem;
+  background: var(--color-surface, #ffffff);
+  border-top: 1px solid var(--color-border, #e2e8f0);
+}
+.pd-footer__btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+}
 .pd-footer__btn--danger {
   color: var(--color-error-600);
   border-color: color-mix(in srgb, var(--color-error-500) 45%, transparent);
 }
-.pd-footer__btn--danger:hover { background: color-mix(in srgb, var(--color-error-500) 8%, transparent); }
+.pd-footer__btn--danger:hover {
+  background: color-mix(in srgb, var(--color-error-500) 8%, transparent);
+}
+
+/* Clearance for scrollable content so sticky bar never covers the bottom */
+body:has(.pd-footer) .page-container {
+  padding-bottom: calc(var(--space-6) + 64px);
+}
+
+@media (min-width: 768px) {
+  .bottom-action-bar.pd-footer {
+    justify-content: center;
+  }
+  .bottom-action-bar.pd-footer > * {
+    max-width: 320px;
+  }
+}

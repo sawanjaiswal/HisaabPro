@@ -9,6 +9,7 @@ import { ShowcaseButtonsSection } from './components/ShowcaseButtonsSection'
 import { ShowcaseNavigationSection } from './components/ShowcaseNavigationSection'
 import { ShowcaseFormsSection } from './components/ShowcaseFormsSection'
 import { ShowcaseOverlaysSection } from './components/ShowcaseOverlaysSection'
+import { ShowcaseEnterpriseSection } from './components/ShowcaseEnterpriseSection'
 
 export const DesignSystemShowcasePage: React.FC = () => {
   const { theme, toggleTheme } = useTheme()
@@ -82,6 +83,9 @@ export const DesignSystemShowcasePage: React.FC = () => {
 
         {/* 5. Overlays & Primitives: Badges, Modals, Tooltips, Empty States */}
         <ShowcaseOverlaysSection />
+
+        {/* 6. Enterprise Data, Feedback & Navigation: Table, Skeleton, Alert, Progress, Breadcrumbs, Accordion, Avatar, Pagination */}
+        <ShowcaseEnterpriseSection />
       </div>
     </div>
   )

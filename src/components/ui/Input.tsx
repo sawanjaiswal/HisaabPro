@@ -1,7 +1,7 @@
 /** Input — Level 6 Canonical SSOT Input Primitive */
 
-import { forwardRef } from 'react'
-import type { InputHTMLAttributes, ReactNode, MouseEvent } from 'react'
+import { forwardRef, useId } from 'react'
+import type { InputHTMLAttributes, ReactNode, MouseEvent, ChangeEvent } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -12,11 +12,11 @@ export const inputVariants = cva(
     variants: {
       variant: {
         default:
-          'border border-[var(--border-default)] focus-visible:border-[var(--primary)] focus-visible:ring-1 focus-visible:ring-[var(--primary)]',
+          'border border-[var(--border-default)] focus:border-[var(--primary)] focus:ring-0 focus-visible:border-[var(--primary)] focus-visible:ring-0',
         filled:
-          'bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] focus-visible:bg-[var(--bg-surface)] focus-visible:border-[var(--primary)] focus-visible:ring-1 focus-visible:ring-[var(--primary)]',
+          'bg-[var(--bg-surface-subtle)] border border-[var(--border-subtle)] focus:bg-[var(--bg-surface)] focus:border-[var(--primary)] focus:ring-0 focus-visible:bg-[var(--bg-surface)] focus-visible:border-[var(--primary)] focus-visible:ring-0',
         seamless:
-          'bg-transparent border-0 shadow-none p-0 focus-visible:ring-0 focus-visible:outline-none',
+          'bg-transparent border-0 shadow-none p-0 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none',
       },
       inputSize: {
         sm: 'h-8 min-h-[32px] px-2.5 py-1 text-xs',
@@ -25,7 +25,7 @@ export const inputVariants = cva(
         hero: 'h-14 min-h-[56px] px-4 py-2 text-2xl font-bold tabular-nums',
       },
       hasError: {
-        true: 'border-rose-500 focus-visible:border-rose-500 focus-visible:ring-2 focus-visible:ring-rose-100',
+        true: 'border-[var(--color-error)] focus-visible:border-[var(--color-error)] focus-visible:ring-1 focus-visible:ring-[var(--color-error)]',
         false: '',
       },
     },
@@ -83,10 +83,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined)
+    const generatedId = useId()
+    const inputId = id || generatedId
     const activeLeftIcon = leftIcon || icon
     const activeRightIcon = rightIcon || iconRight
-    const effectiveSize = (size as any) || inputSize || 'default'
+    const effectiveSize = size || inputSize || 'default'
     const hasValue = value !== undefined && String(value).length > 0
     const displayedHint = hint || helperText
 
@@ -98,7 +99,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           target: { value: '', name: props.name || inputId },
           currentTarget: { value: '', name: props.name || inputId },
           persist: () => {},
-        } as any
+          preventDefault: () => {},
+          stopPropagation: () => {},
+          defaultPrevented: false,
+          nativeEvent: e.nativeEvent,
+        } as unknown as ChangeEvent<HTMLInputElement>
         onChange(syntheticEvent)
       }
     }
@@ -133,13 +138,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 {label}
               </label>
               {required && (
-                <span className="text-rose-500 ml-1 font-bold" aria-hidden="true">
+                <span className="text-[var(--color-error)] ml-1 font-bold" aria-hidden="true">
                   *
                 </span>
               )}
             </div>
             {displayedHint && !error && (
-              <span className="text-[11px] text-[var(--text-muted)]">{displayedHint}</span>
+              <span id={`${inputId}-hint`} className="text-xs text-[var(--text-muted)]">
+                {displayedHint}
+              </span>
             )}
           </div>
         )}
@@ -171,11 +178,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               inputVariants({ variant, inputSize: effectiveSize, hasError: Boolean(error) }),
               (activeLeftIcon || prefixText) && 'pl-8',
-              (activeRightIcon || suffixText || (clearable && hasValue)) && 'pr-8',
+              (activeRightIcon || suffixText || (clearable && hasValue)) && 'pr-9',
               className
             )}
             aria-invalid={Boolean(error)}
-            aria-describedby={error ? `${inputId}-error` : undefined}
+            aria-describedby={
+              error
+                ? `${inputId}-error`
+                : displayedHint
+                ? `${inputId}-hint`
+                : undefined
+            }
             {...props}
           />
 
@@ -192,7 +205,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             <button
               type="button"
               onClick={handleClear}
-              className="absolute right-2.5 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-full transition-colors cursor-pointer"
+              className="absolute right-2 p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded-full transition-colors cursor-pointer"
               aria-label="Clear input"
             >
               <X size={14} />
@@ -212,7 +225,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {error && (
           <p
             id={`${inputId}-error`}
-            className="text-xs font-medium text-rose-600"
+            className="text-xs font-medium text-[var(--color-error)]"
             role="alert"
           >
             {error}
