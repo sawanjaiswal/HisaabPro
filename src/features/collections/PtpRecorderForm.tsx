@@ -3,10 +3,10 @@
  * Reused for both create (no existingPtp) and edit (existingPtp present).
  */
 
-import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Drawer } from '@/components/ui/Drawer'
+import { FormField } from '@/components/ui/FormField'
 import { useLanguage } from '@/hooks/useLanguage'
 import { toLocalISODate } from '@/lib/format'
 import { useCreatePtp, useUpdatePtp } from './usePtp'
@@ -36,27 +36,31 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
     existingPtp ? existingPtp.promiseDate.slice(0, 10) : ''
   )
   const [notes, setNotes] = useState<string>(existingPtp?.notes ?? '')
-  const [validationErr, setValidationErr] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<{ amount?: string; date?: string; notes?: string }>({})
 
   const createMutation = useCreatePtp(partyId)
   const updateMutation = useUpdatePtp(partyId)
   const isPending = createMutation.isPending || updateMutation.isPending
 
-  function validate(): string | null {
+  function validate(): { amount?: string; date?: string; notes?: string } | null {
     const rupees = parseFloat(amountRs)
-    if (!amountRs || isNaN(rupees) || rupees <= 0) return t.ptpAmountRequired
-    if (!promiseDate) return t.ptpDateRequired
-    // F-10: align with server — today is allowed ("today or later", strictly >= today)
-    if (promiseDate < todayStr) return t.ptpDateMustBeFuture
-    if (notes.length > 500) return t.ptpNoteTooLong
-    return null
+    const errors: { amount?: string; date?: string; notes?: string } = {}
+    if (!amountRs || isNaN(rupees) || rupees <= 0) errors.amount = t.ptpAmountRequired
+    if (!promiseDate) errors.date = t.ptpDateRequired
+    else if (promiseDate < todayStr) errors.date = t.ptpDateMustBeFuture
+    if (notes.length > 500) errors.notes = t.ptpNoteTooLong
+
+    return Object.keys(errors).length > 0 ? errors : null
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const err = validate()
-    if (err) { setValidationErr(err); return }
-    setValidationErr(null)
+    const errs = validate()
+    if (errs) {
+      setFieldErrors(errs)
+      return
+    }
+    setFieldErrors({})
 
     const amountPaise = Math.round(parseFloat(amountRs) * 100)
 
@@ -85,7 +89,8 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
     <Button
       type="submit"
       form="ptp-form"
-      variant="primary" size="md"
+      variant="primary"
+      size="md"
       disabled={isPending}
       aria-busy={isPending}
     >
@@ -101,88 +106,86 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
       size="sm"
       footer={footer}
     >
-      <form id="ptp-form" onSubmit={handleSubmit} noValidate>
-        {validationErr && (
-          <Text className="form-error" role="alert" style={{ marginBottom: 'var(--space-3)' }}>
-            {validationErr}
-          </Text>
-        )}
-
+      <form id="ptp-form" onSubmit={handleSubmit} noValidate className="space-y-4 pt-1">
         {/* Amount */}
-        <div className="form-group">
-          <label className="form-label" htmlFor="ptp-amount">
-            {t.ptpAmountLabel} *
-          </label>
-          <div style={{ position: 'relative' }}>
-            <span
-              aria-hidden="true"
-              style={{
-                position: 'absolute',
-                left: 'var(--space-3)',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--color-text-secondary)',
-                fontWeight: 600,
-                pointerEvents: 'none',
-              }}
-            >
-              {t.currencyPrefix}
-            </span>
-            <Input
-              id="ptp-amount"
-              type="number"
-              inputMode="decimal"
-              min="1"
-              step="0.01"
-              className="form-input"
-              style={{ paddingLeft: 'var(--space-8)' }}
-              placeholder="0"
-              value={amountRs}
-              onChange={e => setAmountRs(e.target.value)}
-              required
-              aria-required="true"
-              disabled={isPending}
-            />
-          </div>
+        <div className="card p-3.5 rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-surface)] shadow-xs">
+          <FormField
+            label={t.ptpAmountLabel}
+            required
+            error={fieldErrors.amount}
+          >
+            <div className="input-prefix-wrap">
+              <span className="input-prefix" aria-hidden="true">
+                {t.currencyPrefix ?? '₹'}
+              </span>
+              <Input
+                id="ptp-amount"
+                type="number"
+                inputMode="decimal"
+                min="1"
+                step="0.01"
+                className={`input input-prefixed text-base font-semibold${fieldErrors.amount ? ' input-error-border' : ''}`}
+                placeholder="0.00"
+                value={amountRs}
+                onChange={e => {
+                  setAmountRs(e.target.value)
+                  if (fieldErrors.amount) setFieldErrors(prev => ({ ...prev, amount: undefined }))
+                }}
+                required
+                aria-required="true"
+                disabled={isPending}
+                autoFocus
+              />
+            </div>
+          </FormField>
         </div>
 
         {/* Promised Date */}
-        <div className="form-group">
-          <label className="form-label" htmlFor="ptp-date">
-            {t.ptpDateLabel} *
-          </label>
-          <DateField
-            id="ptp-date"
-            type="date"
-            className="form-input"
-            min={todayStr}
-            value={promiseDate}
-            onChange={e => setPromiseDate(e.target.value)}
+        <div className="card p-3.5 rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-surface)] shadow-xs">
+          <FormField
+            label={t.ptpDateLabel}
             required
-            aria-required="true"
-            disabled={isPending}
-          />
+            error={fieldErrors.date}
+          >
+            <DateField
+              id="ptp-date"
+              type="date"
+              min={todayStr}
+              value={promiseDate}
+              onChange={e => {
+                setPromiseDate(e.target.value)
+                if (fieldErrors.date) setFieldErrors(prev => ({ ...prev, date: undefined }))
+              }}
+              required
+              aria-required="true"
+              aria-invalid={Boolean(fieldErrors.date)}
+              className={fieldErrors.date ? 'input-error-border' : ''}
+              disabled={isPending}
+            />
+          </FormField>
         </div>
 
         {/* Note */}
-        <div className="form-group">
-          <label className="form-label" htmlFor="ptp-note">
-            {t.ptpNoteLabel}
-          </label>
-          <Textarea
-            id="ptp-note"
-            className="form-input"
-            rows={3}
-            maxLength={500}
-            placeholder={t.ptpNotePlaceholder}
-            value={notes}
-            onChange={e => setNotes(e.target.value)}
-            disabled={isPending}
-            style={{ resize: 'vertical', minHeight: 80 }}
-          />
-          <Text className="form-hint" style={{ textAlign: 'right' }}>
-            {notes.length}/500
-          </Text>
+        <div className="card p-3.5 rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-surface)] shadow-xs">
+          <FormField
+            label={t.ptpNoteLabel}
+            error={fieldErrors.notes}
+            hint={`${notes.length}/500`}
+          >
+            <Textarea
+              id="ptp-note"
+              rows={3}
+              maxLength={500}
+              placeholder={t.ptpNotePlaceholder}
+              value={notes}
+              onChange={e => {
+                setNotes(e.target.value)
+                if (fieldErrors.notes) setFieldErrors(prev => ({ ...prev, notes: undefined }))
+              }}
+              disabled={isPending}
+              style={{ resize: 'vertical', minHeight: 80 }}
+            />
+          </FormField>
         </div>
       </form>
     </Drawer>

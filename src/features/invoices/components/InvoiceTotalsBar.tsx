@@ -4,6 +4,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { formatInvoiceAmount } from '../invoice-format.utils'
 import { Button } from '@/components/ui/Button'
 import { Text } from '@/components/ui/Text'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
 
 interface InvoiceTotalsBarProps {
   subtotal: number
@@ -47,11 +48,11 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
     : 'invoice-summary-profit invoice-summary-profit-negative'
 
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-[var(--z-sticky)] bg-white/95 backdrop-blur-md rounded-t-2xl border-t border-gray-100/80 px-4 py-3.5 shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08),0_-3px_8px_-2px_rgba(0,0,0,0.04)]"
+    <BottomActionBar
+      className="!bg-white/95 !backdrop-blur-md !rounded-t-2xl !border-t !border-gray-100/80 !shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08),0_-3px_8px_-2px_rgba(0,0,0,0.04)] !px-4 !py-3.5 flex-col"
       aria-label={t.invoiceTotalsAriaLabel}
     >
-      <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
+      <div className="w-full max-w-lg mx-auto flex items-center justify-between gap-3">
         {/* Left: Grand Total */}
         <div className="flex flex-col min-w-0">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
@@ -70,7 +71,7 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
             onClick={onSaveDraft}
             disabled={isSubmitting}
             aria-label={t.saveDraftAriaLabel}
-            className="bg-emerald-50 hover:bg-emerald-100 text-[#026F39] font-bold text-xs px-4 py-2.5 rounded-xl border-0 transition-all cursor-pointer"
+            className="bg-emerald-50 hover:bg-emerald-100 text-[var(--color-primary-600)] font-bold text-xs px-4 py-2.5 rounded-xl border-0 transition-all cursor-pointer"
           >
             {t.saveDraft || 'Save Draft'}
           </Button>
@@ -83,7 +84,7 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
             aria-label={
               onPreview ? (t.previewInvoice || 'Preview Invoice') : isSubmitting ? t.savingInvoice : t.saveInvoice
             }
-            className="bg-[#026F39] hover:bg-[#025a2e] text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 border-0"
+            className="bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 border-0"
           >
             <span>{onPreview ? (t.previewInvoice || 'Preview Invoice') : isSubmitting ? t.saving : t.save}</span>
             <ArrowRight size={14} aria-hidden="true" />
@@ -97,6 +98,6 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
           {' '}({profitPercent.toFixed(1)}%)
         </Text>
       )}
-    </div>
+    </BottomActionBar>
   )
 }

@@ -31,6 +31,7 @@ export async function getAging(): Promise<AgingBucketResult> {
 export async function createPtp(input: CreatePtpInput): Promise<Ptp> {
   return api<Ptp>('/collections/ptp', {
     method: 'POST',
+    headers: { 'X-Idempotency-Key': crypto.randomUUID() },
     body: JSON.stringify(input),
     entityType: 'ptp',
     entityLabel: `PTP Rs ${(input.amountPaise / 100).toFixed(0)}`,
@@ -60,6 +61,7 @@ export async function getPtpList(
 export async function updatePtp(id: string, input: UpdatePtpInput): Promise<Ptp> {
   return api<Ptp>(`/collections/ptp/${id}`, {
     method: 'PATCH',
+    headers: { 'X-Idempotency-Key': crypto.randomUUID() },
     body: JSON.stringify(input),
     entityType: 'ptp',
     entityLabel: `PTP ${id}`,

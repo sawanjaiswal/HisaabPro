@@ -10,10 +10,16 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-3) var(--side-padding);
+  padding-bottom: calc(var(--space-3) + max(var(--safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)));
   min-height: 56px;
   background: var(--color-primary-600);
   color: var(--color-white-inverse);
   animation: bulk-bar-slide-up var(--duration-normal) var(--ease-default)-out;
+}
+
+body:has(.bnav) .bulk-bar {
+  bottom: var(--bottom-nav-height);
+  padding-bottom: var(--space-3);
 }
 
 @keyframes bulk-bar-slide-up {

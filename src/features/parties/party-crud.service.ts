@@ -84,97 +84,42 @@ export async function getParty(
 
 /**
  * Create a new party.
- * Writes locally to Dexie in <1ms + enqueues to outbox, then background syncs.
+ * Level 6 SSOT: Writes locally to Dexie in <1ms + enqueues to transactional outbox.
+ * SyncManager background syncs to /api/sync/push without redundant parallel REST calls.
  */
 export async function createParty(
   data: PartyFormData,
-  signal?: AbortSignal
+  _signal?: AbortSignal
 ): Promise<PartyDetail | null> {
-  try {
-    const repo = new PartyRepository()
-    const local = await repo.create(data)
-    // Background fire-and-forget server create
-    void api<{ party: PartyDetail }>('/parties', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      signal,
-      entityType: 'party',
-      entityLabel: data.name ?? 'New party',
-    }).catch(() => {})
-    return local
-  } catch {
-    const { party } = await api<{ party: PartyDetail }>('/parties', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      signal,
-      entityType: 'party',
-      entityLabel: data.name ?? 'New party',
-    })
-    return party ?? null
-  }
+  const repo = new PartyRepository()
+  return repo.create(data)
 }
 
 /**
  * Update an existing party. Accepts partial form data.
- * Updates locally in Dexie in <1ms + outbox enqueue, then background syncs.
+ * Level 6 SSOT: Updates locally in Dexie in <1ms + enqueues to transactional outbox.
  */
 export async function updateParty(
   id: string,
   data: Partial<PartyFormData>,
-  signal?: AbortSignal,
-  expectedVersion?: number
+  _signal?: AbortSignal,
+  _expectedVersion?: number
 ): Promise<PartyDetail | null> {
-  try {
-    const repo = new PartyRepository()
-    const local = await repo.update(id, data)
-    void api<{ party: PartyDetail }>(`/parties/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-      signal,
-      entityType: 'party',
-      entityLabel: data.name ?? 'Party update',
-      entityVersion: expectedVersion,
-    }).catch(() => {})
-    if (local) return local
-  } catch {}
-
-  const { party } = await api<{ party: PartyDetail }>(`/parties/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data),
-    signal,
-    entityType: 'party',
-    entityLabel: data.name ?? 'Party update',
-    entityVersion: expectedVersion, // #150 optimistic lock
-  })
-  return party ?? null
+  const repo = new PartyRepository()
+  return repo.update(id, data)
 }
 
 /**
- * Delete a party. Soft delete locally in <1ms + outbox enqueue, then background syncs.
+ * Delete a party.
+ * Level 6 SSOT: Soft deletes locally in Dexie in <1ms + enqueues to transactional outbox.
  */
 export async function deleteParty(
   id: string,
-  hard = false,
-  signal?: AbortSignal
+  _hard = false,
+  _signal?: AbortSignal
 ): Promise<void> {
-  try {
-    const repo = new PartyRepository()
-    await repo.delete(id)
-    void api<void>(`/parties/${id}${hard ? '?hard=true' : ''}`, {
-      method: 'DELETE',
-      signal,
-      entityType: 'party',
-      entityLabel: hard ? 'Delete party permanently' : 'Delete party',
-    }).catch(() => {})
-    return
-  } catch {
-    return api<void>(`/parties/${id}${hard ? '?hard=true' : ''}`, {
-      method: 'DELETE',
-      signal,
-      entityType: 'party',
-      entityLabel: hard ? 'Delete party permanently' : 'Delete party',
-    })
-  }
+  const repo = new PartyRepository()
+  await repo.delete(id)
 }
 
 // ─── Party Transaction Ledger ─────────────────────────────────────────────────

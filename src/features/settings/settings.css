@@ -24,6 +24,7 @@
   gap: var(--space-6);
   padding: var(--space-4) var(--space-4) var(--space-20);
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--color-gray-50);
   animation: fadeUp 400ms var(--ease-premium) both;
 }

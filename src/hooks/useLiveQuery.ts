@@ -23,6 +23,9 @@ export function useLiveQuery<T>(
   const { enabled = true, initialData, refetchOnFocus = true } = options;
 
   const [data, setData] = useState<T | undefined>(initialData);
+  const dataRef = useRef<T | undefined>(data);
+  dataRef.current = data;
+
   const [isLoading, setIsLoading] = useState<boolean>(initialData === undefined);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -30,22 +33,42 @@ export function useLiveQuery<T>(
   const queryFnRef = useRef(queryFn);
   queryFnRef.current = queryFn;
 
+  const sequenceRef = useRef(0);
+  const lastFocusExecutionTimeRef = useRef(0);
   const serializedKey = JSON.stringify(queryKey);
 
-  const executeQuery = useCallback(async (): Promise<T | undefined> => {
+  const executeQuery = useCallback(async (isFocusTrigger = false): Promise<T | undefined> => {
     if (!enabled) return undefined;
+
+    const now = Date.now();
+    // Throttle window focus re-validations to a 5000ms minimum cooldown
+    if (isFocusTrigger) {
+      if (now - lastFocusExecutionTimeRef.current < 5000) {
+        return dataRef.current;
+      }
+      lastFocusExecutionTimeRef.current = now;
+    }
+
+    const currentSeq = ++sequenceRef.current;
     setIsFetching(true);
     try {
       const result = await queryFnRef.current();
-      setData(result);
-      setError(null);
+      // Level 6 Sequence Guard: Discard result if a newer query was initiated
+      if (currentSeq === sequenceRef.current) {
+        setData(result);
+        setError(null);
+      }
       return result;
     } catch (err: any) {
-      setError(err instanceof Error ? err : new Error(String(err)));
+      if (currentSeq === sequenceRef.current) {
+        setError(err instanceof Error ? err : new Error(String(err)));
+      }
       return undefined;
     } finally {
-      setIsLoading(false);
-      setIsFetching(false);
+      if (currentSeq === sequenceRef.current) {
+        setIsLoading(false);
+        setIsFetching(false);
+      }
     }
   }, [enabled]);
 
@@ -63,11 +86,11 @@ export function useLiveQuery<T>(
     return unsubscribe;
   }, [serializedKey, enabled, executeQuery]);
 
-  // Refetch on window focus
+  // Refetch on window focus with 5s cooldown
   useEffect(() => {
     if (!enabled || !refetchOnFocus || typeof window === 'undefined') return;
     const handleFocus = () => {
-      executeQuery();
+      executeQuery(true);
     };
     window.addEventListener('focus', handleFocus);
     return () => {

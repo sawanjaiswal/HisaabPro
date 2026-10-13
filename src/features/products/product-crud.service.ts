@@ -139,29 +139,11 @@ export async function getProduct(
  */
 export async function createProduct(
   data: ProductFormData,
-  signal?: AbortSignal
+  _signal?: AbortSignal
 ): Promise<ProductDetail> {
-  try {
-    const repo = new ProductRepository()
-    const local = await repo.create(data)
-    void api<{ product: ProductDetail }>('/products', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      signal,
-      entityType: 'product',
-      entityLabel: data.name ?? 'New product',
-    }).catch(() => {})
-    return mapLocalProductToDetail(local)
-  } catch {
-    const { product } = await api<{ product: ProductDetail }>('/products', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      signal,
-      entityType: 'product',
-      entityLabel: data.name ?? 'New product',
-    })
-    return product
-  }
+  const repo = new ProductRepository()
+  const local = await repo.create(data)
+  return mapLocalProductToDetail(local)
 }
 
 /**
@@ -172,18 +154,15 @@ export async function createProduct(
 export async function updateProduct(
   id: string,
   data: Partial<Omit<ProductFormData, 'openingStock' | 'autoGenerateSku'>>,
-  signal?: AbortSignal,
-  expectedVersion?: number
+  _signal?: AbortSignal,
+  _expectedVersion?: number
 ): Promise<ProductDetail> {
-  const { product } = await api<{ product: ProductDetail }>(`/products/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data),
-    signal,
-    entityType: 'product',
-    entityLabel: data.name ?? 'Product update',
-    entityVersion: expectedVersion, // #150 optimistic lock
-  })
-  return product
+  const repo = new ProductRepository()
+  const local = await repo.update(id, data as any)
+  if (!local) {
+    throw new Error('Product not found in local store')
+  }
+  return mapLocalProductToDetail(local)
 }
 
 /**
@@ -191,26 +170,10 @@ export async function updateProduct(
  */
 export async function deleteProduct(
   id: string,
-  signal?: AbortSignal
+  _signal?: AbortSignal
 ): Promise<void> {
-  try {
-    const repo = new ProductRepository()
-    await repo.delete(id)
-    void api<void>(`/products/${id}`, {
-      method: 'DELETE',
-      signal,
-      entityType: 'product',
-      entityLabel: 'Delete product',
-    }).catch(() => {})
-    return
-  } catch {
-    return api<void>(`/products/${id}`, {
-      method: 'DELETE',
-      signal,
-      entityType: 'product',
-      entityLabel: 'Delete product',
-    })
-  }
+  const repo = new ProductRepository()
+  await repo.delete(id)
 }
 
 // ─── Stock ───────────────────────────────────────────────────────────────────

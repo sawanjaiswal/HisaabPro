@@ -69,7 +69,7 @@ export function ListDetailLayout({
   // Desktop ≥lg: side-by-side
   const railStyle = listWidth ? { width: listWidth } : undefined
   return (
-    <div className={`list-detail-layout list-detail-layout--desktop flex gap-0 min-h-[calc(100vh-var(--header-height))] ${className}`.trim()}>
+    <div className={`list-detail-layout list-detail-layout--desktop flex gap-0 min-h-[calc(100dvh-var(--header-height))] ${className}`.trim()}>
       <aside
         className="list-detail-layout__rail flex-shrink-0 border-r overflow-y-auto"
         style={{

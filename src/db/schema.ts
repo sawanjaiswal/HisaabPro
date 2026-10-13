@@ -10,6 +10,7 @@ export interface LocalParty {
   gstin?: string | null;
   pan?: string | null;
   outstandingBalance: number; // in paise
+  searchTokens?: string[];
   isActive: boolean;
   isDeleted: boolean;
   version: number;
@@ -22,11 +23,13 @@ export interface LocalProduct {
   businessId: string;
   name: string;
   sku?: string | null;
+  barcode?: string | null;
   unitId: string;
   currentStock: number;
   salePrice: number; // in paise
   purchasePrice?: number | null; // in paise
   minStockLevel: number;
+  searchTokens?: string[];
   isActive: boolean;
   isDeleted: boolean;
   version: number;
@@ -113,6 +116,16 @@ export class HisaabDatabase extends Dexie {
     this.version(1).stores({
       parties: 'id, businessId, name, phone, type, outstandingBalance, isActive, isDeleted, updatedAt',
       products: 'id, businessId, name, sku, unitId, currentStock, isActive, isDeleted, updatedAt',
+      documents: 'id, businessId, documentNumber, type, status, partyId, documentDate, isDeleted, updatedAt',
+      payments: 'id, businessId, type, partyId, amount, mode, date, isDeleted, updatedAt',
+      syncQueue: 'id, businessId, idempotencyKey, entityType, entityId, operation, status, hlcTimestamp, createdAt',
+      syncMeta: 'id, businessId, lastSyncTimestamp, schemaVersion',
+    });
+
+    // Version 2: MultiEntry token indexes for sub-1ms search on budget devices
+    this.version(2).stores({
+      parties: 'id, businessId, name, phone, type, outstandingBalance, isActive, isDeleted, updatedAt, *searchTokens',
+      products: 'id, businessId, name, sku, unitId, currentStock, isActive, isDeleted, updatedAt, *searchTokens',
       documents: 'id, businessId, documentNumber, type, status, partyId, documentDate, isDeleted, updatedAt',
       payments: 'id, businessId, type, partyId, amount, mode, date, isDeleted, updatedAt',
       syncQueue: 'id, businessId, idempotencyKey, entityType, entityId, operation, status, hlcTimestamp, createdAt',

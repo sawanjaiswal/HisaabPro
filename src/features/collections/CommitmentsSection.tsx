@@ -63,16 +63,18 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
             </span>
           )}
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={openCreate}
-          aria-label={t.ptpRecordPromise}
-          className="text-xs font-semibold text-[var(--color-primary-600)] hover:text-[var(--color-primary-700)] hover:bg-[var(--color-primary-50)] h-7 px-2"
-        >
-          <Plus size={14} className="mr-1" />
-          {t.ptpRecordPromise}
-        </Button>
+        {list.length > 0 && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={openCreate}
+            aria-label={t.ptpRecordPromise}
+            className="text-xs font-semibold text-[var(--color-primary-600)] hover:text-[var(--color-primary-700)] hover:bg-[var(--color-primary-50)] h-7 px-2"
+          >
+            <Plus size={14} className="mr-1" />
+            {t.ptpRecordPromise}
+          </Button>
+        )}
       </div>
 
       {/* Loading */}
@@ -84,10 +86,21 @@ export function CommitmentsSection({ partyId, partyName }: Props) {
       {isError && (
         <div
           role="alert"
-          className="p-3 rounded-lg border border-[var(--color-error-200)] bg-[var(--color-error-50)] text-xs text-[var(--color-error-700)] cursor-pointer"
-          onClick={() => refetch()}
+          className="p-3.5 rounded-xl border border-[var(--color-error-300)] bg-[var(--color-error-50)] text-xs text-[var(--color-error-800)] flex items-center justify-between gap-3 shadow-2xs"
         >
-          {t.ptpLoadError} — {t.agingRetry}
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[var(--color-error-600)] shrink-0" aria-hidden="true" />
+            <span className="font-semibold">{t.ptpLoadError}</span>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="h-7 text-xs font-semibold border-[var(--color-error-300)] text-[var(--color-error-700)] hover:bg-[var(--color-error-100)]"
+          >
+            {t.agingRetry}
+          </Button>
         </div>
       )}
 

@@ -8,6 +8,7 @@ import type { ProductPick } from '../invoice.types'
 import { EntitySearch } from '@/components/ui/EntitySearch'
 import { useInstantAddProduct } from './useInstantAddProduct'
 import { paiseToRupees } from '../invoice-format.utils'
+import { ProductRepository } from '@/repositories/product.repository'
 
 interface ProductSearchInputProps {
   onSelect: (pick: ProductPick) => void
@@ -29,7 +30,18 @@ export const ProductSearchInput: React.FC<ProductSearchInputProps> = ({
     onError: () => {},
   })
 
+  // 0ms Local-First Search: Read Dexie immediately (<5ms), merge server results in background
   const handleFetchResults = useCallback(async (query: string, signal: AbortSignal) => {
+    try {
+      const repo = new ProductRepository()
+      const localRes = await repo.list(query ? { search: query, limit: 10 } : { limit: 10 })
+      if (localRes.products.length > 0) {
+        // Background SWR update
+        void getProducts(query ? { search: query, limit: 10 } : { limit: 10 }, signal).catch(() => {})
+        return localRes.products as any[]
+      }
+    } catch {}
+
     const res = await getProducts(
       query ? { search: query, limit: 10 } : { limit: 10 },
       signal,

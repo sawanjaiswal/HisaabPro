@@ -4,6 +4,7 @@
   padding-bottom: calc(var(--bottom-nav-height, 80px) + var(--space-4));
   background-color: var(--color-gray-50);
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* --- View Switcher Banner --- */

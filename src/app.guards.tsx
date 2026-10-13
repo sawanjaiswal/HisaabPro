@@ -16,6 +16,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import { useEdgeSwipeBack } from '@/hooks/useEdgeSwipeBack'
 import { useHardwareBackButton } from '@/hooks/useHardwareBackButton'
+import { useKeyboardAutoScroll } from '@/hooks/useKeyboardAutoScroll'
 import { hasCachedSession } from '@/lib/auth'
 import { CalculatorOverlay, FeedbackWidget, WhatsAppFab, Login, Landing, AdminCoupons } from '@/app.routes'
 
@@ -80,11 +81,13 @@ const NAV_HIDDEN_PATTERNS = /\/(new|edit)(\/|$)|\/pos\b/
 const DETAIL_LEAF_PATTERN =
   /^\/(parties|products|invoices|payments|appointments|recurring|loans|godowns|jobs|batches|stock-verification)\/[^/]+$/
 
-// Always-mounted (returns null) so the left-edge back-swipe listener is live on
-// every authed screen without being tied to a route-conditional render.
+// Always-mounted (returns null) so the left-edge back-swipe listener and
+// keyboard auto-scroll lift listeners are live on every authed screen
+// without being tied to a route-conditional render.
 export function EdgeSwipeBack() {
   useEdgeSwipeBack()
   useHardwareBackButton()
+  useKeyboardAutoScroll()
   return null
 }
 
@@ -127,12 +130,20 @@ export function FloatingWidgets() {
   )
 }
 
-/** WhatsApp support FAB — visible on every authenticated screen */
+/** WhatsApp support FAB — visible on general browsable screens, hidden on active task forms */
 export function WhatsAppSupportFab() {
   const { isAuthenticated } = useAuth()
   const { pathname } = useLocation()
-  // Hide on /pos (fullscreen mode) and auth/onboarding pages
-  if (!isAuthenticated || pathname === ROUTES.ONBOARDING || pathname.startsWith('/login') || pathname.startsWith('/register') || pathname.includes('/pos')) return null
+  // Hide on /pos (fullscreen mode), auth/onboarding pages, and all create/edit forms
+  if (
+    !isAuthenticated ||
+    pathname === ROUTES.ONBOARDING ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register') ||
+    pathname.includes('/pos') ||
+    NAV_HIDDEN_PATTERNS.test(pathname)
+  )
+    return null
   return (
     <ErrorBoundary fallback={null}>
       <Suspense fallback={null}><WhatsAppFab /></Suspense>

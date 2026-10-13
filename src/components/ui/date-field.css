@@ -28,6 +28,17 @@
   padding: 0 calc(var(--space-4) - 0.5px);
 }
 
+.date-field[aria-invalid='true'],
+.date-field.input-error-border {
+  border: 1.5px solid var(--color-error-500) !important;
+}
+
+.date-field[aria-invalid='true']:focus,
+.date-field.input-error-border:focus {
+  border: 2px solid var(--color-error-600) !important;
+  outline: 2px solid var(--color-error-100) !important;
+}
+
 .date-field:disabled {
   background: var(--color-gray-50);
   color: var(--color-gray-400);

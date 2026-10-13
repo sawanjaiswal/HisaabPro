@@ -11,6 +11,8 @@ import { PartyBalanceChip } from './PartyBalanceChip'
 import { useInstantAddParty } from './useInstantAddParty'
 import { Button } from '@/components/ui/Button'
 
+import { PartyRepository } from '@/repositories/party.repository'
+
 interface PartySearchInputProps {
   value: string
   onChange: (id: string, name: string) => void
@@ -63,7 +65,18 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
     onError: () => {},
   })
 
+  // 0ms Local-First Search: Read Dexie immediately (<5ms), merge server results in background
   const handleFetchResults = useCallback(async (query: string, signal: AbortSignal) => {
+    try {
+      const repo = new PartyRepository()
+      const localRes = await repo.list(query ? { search: query, limit: 8 } : { limit: 8 })
+      if (localRes.parties.length > 0) {
+        // Kick off background server fetch non-blockingly
+        void getParties(query ? { search: query, limit: 8 } : { limit: 8 }, signal).catch(() => {})
+        return localRes.parties
+      }
+    } catch {}
+
     const res = await getParties(
       query ? { search: query, limit: 8 } : { limit: 8 },
       signal,

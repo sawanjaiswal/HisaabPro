@@ -14,6 +14,7 @@ export const SHARED_DIRS = [
   // Frontend shared layers
   "src/lib",
   "src/hooks",
+  "src/repositories",
   // Backend shared layers
   "server/src/lib",
   "server/src/services",
@@ -68,6 +69,7 @@ export const REGISTRY = [
       "optimisticRemoveParty",
       "reconcilePartyDeleted",
       "invalidatePartyLists",
+      "invalidatePartyDetail",
     ],
     // Every party create/update/delete must reconcile the cache HERE. Scattered
     // invalidateQueries/setQueriesData on queryKeys.parties.* is exactly the
@@ -79,6 +81,24 @@ export const REGISTRY = [
       "setQueriesData[^\\n]*queryKeys\\.parties\\.all",
     ],
     note: "Party list/detail cache reconciliation SSOT. Fixed the save-not-showing bug.",
+  },
+  {
+    capability: "mutate core offline entities (parties, products, invoices, payments)",
+    module: "src/repositories/index.ts",
+    exports: [
+      "PartyRepository",
+      "ProductRepository",
+      "InvoiceRepository",
+      "PaymentRepository",
+      "resolveCurrentBusinessId",
+    ],
+    // Core entity writes MUST route through their respective EntityRepository.
+    // Firing a parallel direct REST api() mutation creates duplicate ghost entities
+    // on the backend and duplicate outbox queues.
+    forbidden: [
+      "void\\s+api(?:<[^>]*>)?\\s*\\(\\s*['\"`](?:/parties|/products|/documents|/payments)",
+    ],
+    note: "Canonical offline entity repository SSOT. Forbids dual-write REST side-effects.",
   },
 
   // ── DISCOVERY (forbidden: [] → surfaced for reuse, not regex-guarded) ─────

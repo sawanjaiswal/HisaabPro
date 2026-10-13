@@ -81,7 +81,7 @@ export default function CreatePurchasePage() {
     <AppShell>
       <Header title={t.newPurchase} backTo={ROUTES.PURCHASES} />
 
-      <PageContainer className="invoice-details-section stagger-enter py-0 space-y-6">
+      <PageContainer variant="form" className="invoice-details-section stagger-enter py-0 pb-32 space-y-6 max-w-lg mx-auto">
         <div className="purchase-stock-hint" role="status" aria-live="polite">
           <Package size={16} aria-hidden="true" />
           <span>{t.stockWillBeAdded}</span>

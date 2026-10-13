@@ -1,0 +1,17 @@
+### ARCHITECTURAL REVIEW: ADDING SSOT GUARD & POLICY FOR ENTITY MUTATIONS & READS
+
+To enforce SSOT across HisaabPro and mechanically eliminate the "dual write" and "blocking read" bugs, we propose adding two new SSOT rules to `ssot.config.mjs`:
+
+1. **Rule 1: Canonical Entity Repositories SSOT for PARTY, PRODUCT, DOCUMENT, PAYMENT**
+   - Capability: "mutate core offline entities (PARTY, PRODUCT, DOCUMENT, PAYMENT)"
+   - Module: `src/repositories/index.ts`
+   - Description: Core entity CRUD must route exclusively through the canonical repository methods (`PartyRepository`, `ProductRepository`, `InvoiceRepository`, `PaymentRepository`).
+   - Anti-Pattern / Forbidden: Direct fire-and-forget `api('/parties', { method: 'POST' })` alongside repository writes (which caused ghost duplicate records and double outboxes).
+   - Forbidden regex: `void\\s+api(?:<[^>]*>)?\\s*\\(\\s*['"\`](?:/parties|/documents|/products|/payments)`
+
+2. **Rule 2: Non-Blocking Offline Read Contract**
+   - In hooks like `useParties`, `useInvoices`, `useProducts`:
+   - Never fall back to blocking network fetches when local repository returns an empty list (`if (local && local.items.length > 0) return local; return getItems()`).
+   - The repository list result must ALWAYS be returned directly to the UI, with background SWR and a distinct `isHydrating` state for first-time sync.
+
+Does this SSOT config extension and repository-first policy cleanly resolve the architectural drift without breaking the existing 40 modules that use System A?

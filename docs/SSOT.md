@@ -3,7 +3,7 @@
 > Generated from `ssot.config.mjs` by `scripts/ssot/doc.mjs`. Do not hand-edit.
 > Check here FIRST before writing any shared util/service/hook.
 
-Shared dirs scanned: `src/lib`, `src/hooks`, `server/src/lib`, `server/src/services`, `server/src/middleware`.
+Shared dirs scanned: `src/lib`, `src/hooks`, `src/repositories`, `server/src/lib`, `server/src/services`, `server/src/middleware`.
 Exhaustive symbol index (auto, never stale): `.claude/ssot-index.json`
 (`node scripts/ssot/index.mjs`).
 
@@ -16,8 +16,10 @@ Exhaustive symbol index (auto, never stale): `.claude/ssot-index.json`
 | show a transient toast notification | `src/hooks/useToast.ts` | `useToast` | ✅ guarded |
 | confirm a destructive action | `src/components/ui/ConfirmDialog.tsx` | `ConfirmDialog` | ✅ guarded |
 | reconcile party react-query cache after a mutation | `src/features/parties/party-cache.ts` | `reconcilePartyCreated`, `reconcilePartyUpdated`, `optimisticRemoveParty`, `reconcilePartyDeleted`, `invalidatePartyLists` | ✅ guarded |
+| mutate core offline entities (parties, products, invoices, payments) | `src/repositories/index.ts` | `PartyRepository`, `ProductRepository`, `InvoiceRepository`, `PaymentRepository`, `resolveCurrentBusinessId` | ✅ guarded |
 | build TanStack Query cache keys | `src/lib/query-keys.ts` | `queryKeys` | discovery-only |
 | merge Tailwind class names | `src/lib/utils.ts` | `cn` | discovery-only |
+| write an AuditLog entry | `server/src/services/settings/audit.ts` | `createAuditEntry`, `listAuditLog` | ✅ guarded |
 | persist a small local UI preference across app restarts | `src/lib/prefs-store.ts` | `getPref`, `setPref`, `removePref`, `clearPrefs` | discovery-only |
 | carry the active tenant (business) context | `server/src/lib/business-context.ts` | `runInBusinessContext`, `getBusinessContext`, `runUnscoped` | ✅ guarded |
 | inject tenant (businessId) scoping into Prisma queries | `server/src/lib/prisma-scoped.inject.ts` | `injectScope` | discovery-only |
@@ -79,6 +81,22 @@ Forbidden elsewhere (commit-blocked):
 - `/setQueriesData[^\n]*queryKeys\.parties\.all/`
 
 Party list/detail cache reconciliation SSOT. Fixed the save-not-showing bug.
+
+### mutate core offline entities (parties, products, invoices, payments)
+Canon: `src/repositories/index.ts`
+
+Forbidden elsewhere (commit-blocked):
+- `/void\s+api(?:<[^>]*>)?\s*\(\s*['"`](?:/parties|/products|/documents|/payments)/`
+
+Canonical offline entity repository SSOT. Forbids dual-write REST side-effects.
+
+### write an AuditLog entry
+Canon: `server/src/services/settings/audit.ts`
+
+Forbidden elsewhere (commit-blocked):
+- `/\.auditLog\.create(?:Many)?\s*\(/`
+
+Canonical AuditLog writer. tx-aware (pass a tx for atomic rollback) + system-actor-capable. enforce-audit-coverage.mjs counts a createAuditEntry() call as coverage.
 
 ### carry the active tenant (business) context
 Canon: `server/src/lib/business-context.ts`

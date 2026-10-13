@@ -1,7 +1,7 @@
 /** Party Detail — Overview tab: contact, business, credit, notes */
 
 import { Text } from '@/components/ui/Text'
-import React from 'react'
+import React, { useState } from 'react'
 import '../party-detail-header.css'
 import {
   Phone,
@@ -15,12 +15,20 @@ import {
   ListChecks,
 } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Button } from '@/components/ui/Button'
 import type { PartyDetail } from '../party.types'
 import { formatAmount } from '../party.utils'
 import { Heading } from '@/components/ui/Heading'
+import { EditCreditDrawer } from './EditCreditDrawer'
+import { updateParty } from '../party.service'
+import { invalidatePartyDetail, invalidatePartyLists } from '../party-cache'
+import { useToast } from '@/hooks/useToast'
+import { useQueryClient } from '@tanstack/react-query'
+import type { CreditLimitMode } from '../party.types'
 
 interface PartyOverviewTabProps {
   party: PartyDetail
+  onPatched?: () => void
 }
 
 interface InfoRowProps {
@@ -35,16 +43,37 @@ const InfoRow: React.FC<InfoRowProps> = ({ icon, label, value }) => (
       <span className="w-8 h-8 rounded-lg bg-[var(--color-primary-50)] text-[var(--color-primary-600)] flex items-center justify-center flex-shrink-0" aria-hidden="true">
         {icon}
       </span>
-      <span className="text-xs font-medium text-[var(--text-muted)] truncate">{label}</span>
+      <span className="text-xs font-semibold text-[var(--text-secondary)] truncate">{label}</span>
     </div>
-    <span className="text-sm font-semibold text-[var(--text-primary)] text-right truncate">
+    <span className="text-sm font-bold text-[var(--text-primary)] text-right truncate">
       {value || '—'}
     </span>
   </div>
 )
 
-export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => {
+export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party, onPatched }) => {
   const { t } = useLanguage()
+  const toast = useToast()
+  const queryClient = useQueryClient()
+  const [creditDrawerOpen, setCreditDrawerOpen] = useState(false)
+
+  const handleSaveCredit = async (limitPaise: number, mode: CreditLimitMode) => {
+    try {
+      await updateParty(party.id, {
+        creditLimit: limitPaise,
+        creditLimitMode: mode,
+      })
+      toast.success('Credit settings saved')
+      invalidatePartyDetail(queryClient, party.id)
+      invalidatePartyLists(queryClient)
+      onPatched?.()
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to update credit settings'
+      toast.error(message)
+      throw err
+    }
+  }
+
   const hasContactInfo = party.phone || party.email || party.companyName
   const hasBusinessInfo = party.gstin || party.pan
   const creditLimitLabel = party.creditLimitMode === 'WARN' ? t.warn : t.blockLabel
@@ -111,10 +140,21 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
       )}
 
       <div className="card p-4 rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-surface)] shadow-xs" aria-label={t.creditInfo}>
-        <Heading level={3} className="text-sm font-bold text-[var(--text-primary)] mb-3 pb-2 border-b border-[var(--color-gray-100)] flex items-center gap-2">
-          <CreditCard size={15} className="text-[var(--color-primary-600)]" />
-          {t.credit}
-        </Heading>
+        <div className="flex items-center justify-between pb-2 mb-3 border-b border-[var(--color-gray-100)]">
+          <Heading level={3} className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+            <CreditCard size={15} className="text-[var(--color-primary-600)]" />
+            {t.credit}
+          </Heading>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setCreditDrawerOpen(true)}
+            className="text-xs font-semibold text-[var(--color-primary-600)] hover:text-[var(--color-primary-700)] hover:bg-[var(--color-primary-50)] h-7 px-2"
+          >
+            {t.edit ?? 'Edit'}
+          </Button>
+        </div>
         <div className="divide-y divide-[var(--color-gray-100)]">
           <InfoRow
             icon={<CreditCard size={15} />}
@@ -135,6 +175,14 @@ export const PartyOverviewTab: React.FC<PartyOverviewTabProps> = ({ party }) => 
           )}
         </div>
       </div>
+
+      <EditCreditDrawer
+        open={creditDrawerOpen}
+        onClose={() => setCreditDrawerOpen(false)}
+        currentLimit={party.creditLimit}
+        currentMode={party.creditLimitMode}
+        onSave={handleSaveCredit}
+      />
 
       {priceListName && (
         <div className="card p-4 rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-surface)] shadow-xs" aria-label={t.partyPriceListChip}>

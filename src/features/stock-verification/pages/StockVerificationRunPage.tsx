@@ -19,6 +19,7 @@ import '../stock-verification.css'
 import './stock-verification-run.css'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -158,7 +159,7 @@ export default function StockVerificationRunPage() {
 
         {/* Sticky finalize footer */}
         {!isFinalized && (
-          <div className="sv-run__footer">
+          <BottomActionBar aria-label={t.finalizeCountBtn}>
             <Button variant="none"
               type="button"
               className="sv-run__finalize-btn"
@@ -169,7 +170,7 @@ export default function StockVerificationRunPage() {
               <CheckCircle2 size={20} aria-hidden="true" />
               {isProcessing ? t.finalizingCount : t.finalizeCountBtn}
             </Button>
-          </div>
+          </BottomActionBar>
         )}
 
         {isFinalized && (

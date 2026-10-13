@@ -5,7 +5,7 @@ import { SyncManager } from '../sync/SyncManager';
 import type { ProductListResponse, ProductFilters, ProductFormData } from '../features/products/product.types';
 import type { ProductSummary } from '@/lib/types/product.types';
 
-import { resolveCurrentBusinessId } from './repository.utils';
+import { resolveCurrentBusinessId, generateSearchTokens } from './repository.utils';
 
 export class ProductRepository {
   constructor(
@@ -149,6 +149,49 @@ export class ProductRepository {
     SyncManager.triggerSync();
 
     return newProd;
+  }
+
+  /**
+   * <1ms Optimistic Update: Update product locally + enqueue outbox
+   */
+  async update(id: string, data: Partial<LocalProduct>): Promise<LocalProduct | null> {
+    const existing = await this.db.products.get(id);
+    if (!existing || existing.businessId !== this.businessId) return null;
+
+    const nowIso = new Date().toISOString();
+    const updatedName = data.name ?? existing.name;
+    const updatedSku = data.sku !== undefined ? data.sku : existing.sku;
+
+    const updated: LocalProduct = {
+      ...existing,
+      ...data,
+      id: existing.id,
+      businessId: this.businessId,
+      searchTokens: generateSearchTokens([updatedName, updatedSku]),
+      version: existing.version + 1,
+      updatedAt: nowIso,
+    };
+
+    await this.db.transaction('rw', [this.db.products, this.db.syncQueue], async () => {
+      await this.db.products.put(updated);
+      await OutboxEngine.enqueueInTx(this.db, {
+        businessId: this.businessId,
+        entityType: 'PRODUCT',
+        entityId: id,
+        operation: 'UPDATE',
+        payload: {
+          ...data,
+          id,
+        },
+        baseVersion: existing.version,
+      });
+    });
+
+    liveQueryBus.invalidate(['products']);
+    liveQueryBus.invalidate(['products', id]);
+    SyncManager.triggerSync();
+
+    return updated;
   }
 
   /**

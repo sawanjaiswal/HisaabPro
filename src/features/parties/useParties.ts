@@ -59,7 +59,7 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
       // Background SWR update (non-blocking)
       void getParties(filters).catch(() => {})
 
-      if (local && local.parties.length > 0) {
+      if (local) {
         return local
       }
       return getParties(filters)
@@ -96,7 +96,25 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
     }
   }, [rawData, accumulatedParties, removedIds])
 
-  const status: Status = isLoading && !data ? 'loading' : error ? 'error' : 'success'
+  // Track if local store has completed at least one sync to prevent false empty state on fresh install
+  const [hasHydrated, setHasHydrated] = useState<boolean>(true)
+  useEffect(() => {
+    import('@/db/schema').then(({ db }) => {
+      db.syncMeta.toCollection().first().then((meta) => {
+        if (!meta?.lastSyncTimestamp && (!rawData || rawData.parties.length === 0)) {
+          setHasHydrated(false)
+        } else {
+          setHasHydrated(true)
+        }
+      }).catch(() => {})
+    })
+  }, [rawData])
+
+  const status: Status = (isLoading && !data) || (!hasHydrated && (!data || data.parties.length === 0))
+    ? 'loading'
+    : error
+      ? 'error'
+      : 'success'
 
   // Show toast on fetch error
   const prevErrorRef = useRef<Error | null>(null)

@@ -22,8 +22,8 @@ const config: CapacitorConfig = {
       showSpinner: false,
     },
     Keyboard: {
-      resize: 'native',
-      resizeOnFullScreen: false,
+      resize: 'body',
+      resizeOnFullScreen: true,
     },
   },
 };

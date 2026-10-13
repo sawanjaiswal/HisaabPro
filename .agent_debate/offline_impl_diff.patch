@@ -1,0 +1,721 @@
+diff --git a/server/src/routes/sync.routes.ts b/server/src/routes/sync.routes.ts
+index 3cf41b5d..94ed4cc7 100644
+--- a/server/src/routes/sync.routes.ts
++++ b/server/src/routes/sync.routes.ts
+@@ -57,7 +57,15 @@ router.post(
+     for (const mutation of sortedMutations) {
+       try {
+         await prisma.$transaction(async (tx) => {
+-          const { entityType, entityId, operation, payload } = mutation;
++          const { idempotencyKey, entityType, entityId, operation, payload, baseVersion } = mutation;
++
++          // Check idempotency log
++          if (idempotencyKey) {
++            const executed = await tx.idempotencyLog.findUnique({ where: { key: idempotencyKey } });
++            if (executed) {
++              return; // Already processed idempotently
++            }
++          }
+ 
+           if (entityType === 'PARTY') {
+             if (operation === 'CREATE') {
+@@ -77,11 +85,17 @@ router.post(
+                     businessId,
+                     name: payload.name || 'Unnamed Party',
+                     phone: payload.phone || null,
++                    email: payload.email || null,
+                     type: payload.type || 'CUSTOMER',
+                     companyName: payload.companyName || null,
+                     gstin: payload.gstin || null,
+                     pan: payload.pan || null,
++                    creditLimit: payload.creditLimit || 0,
++                    creditLimitMode: payload.creditLimitMode || 'WARN',
++                    notes: payload.notes || null,
++                    tags: Array.isArray(payload.tags) ? payload.tags : [],
+                     outstandingBalance: openingAmount,
++                    version: 1,
+                   },
+                 });
+               }
+@@ -91,15 +105,22 @@ router.post(
+                 data: {
+                   name: payload.name,
+                   phone: payload.phone,
++                  email: payload.email,
+                   type: payload.type,
++                  companyName: payload.companyName,
+                   gstin: payload.gstin,
+                   pan: payload.pan,
++                  creditLimit: payload.creditLimit,
++                  creditLimitMode: payload.creditLimitMode,
++                  notes: payload.notes,
++                  tags: Array.isArray(payload.tags) ? payload.tags : undefined,
++                  version: { increment: 1 },
+                 },
+               });
+             } else if (operation === 'DELETE') {
+               await tx.party.updateMany({
+                 where: { id: entityId, businessId },
+-                data: { isActive: false },
++                data: { isDeleted: true, deletedAt: new Date() },
+               });
+             }
+           } else if (entityType === 'PRODUCT') {
+@@ -137,6 +158,74 @@ router.post(
+                 data: { isDeleted: true },
+               });
+             }
++          } else if (entityType === 'DOCUMENT') {
++            if (operation === 'CREATE') {
++              const existing = await tx.document.findFirst({ where: { id: entityId, businessId } });
++              if (!existing) {
++                await tx.document.create({
++                  data: {
++                    id: entityId,
++                    businessId,
++                    type: payload.type || 'SALE_INVOICE',
++                    status: payload.status || 'SAVED',
++                    documentNumber: payload.documentNumber || null,
++                    partyId: payload.partyId,
++                    documentDate: payload.documentDate ? new Date(payload.documentDate) : new Date(),
++                    dueDate: payload.dueDate ? new Date(payload.dueDate) : null,
++                    grandTotal: payload.grandTotal || 0,
++                    subtotal: payload.grandTotal || 0,
++                    notes: payload.notes || null,
++                  },
++                });
++              }
++            } else if (operation === 'UPDATE') {
++              await tx.document.updateMany({
++                where: { id: entityId, businessId },
++                data: {
++                  status: payload.status,
++                  notes: payload.notes,
++                },
++              });
++            } else if (operation === 'DELETE') {
++              await tx.document.updateMany({
++                where: { id: entityId, businessId },
++                data: { status: 'DELETED' },
++              });
++            }
++          } else if (entityType === 'PAYMENT') {
++            if (operation === 'CREATE') {
++              const existing = await tx.payment.findFirst({ where: { id: entityId, businessId } });
++              if (!existing) {
++                await tx.payment.create({
++                  data: {
++                    id: entityId,
++                    businessId,
++                    type: payload.type || 'PAYMENT_IN',
++                    partyId: payload.partyId,
++                    amount: payload.amount || 0,
++                    date: payload.date ? new Date(payload.date) : new Date(),
++                    mode: payload.mode || 'CASH',
++                    referenceNumber: payload.referenceNumber || null,
++                    notes: payload.notes || null,
++                    createdBy: req.user!.id,
++                  },
++                });
++              }
++            } else if (operation === 'DELETE') {
++              await tx.payment.updateMany({
++                where: { id: entityId, businessId },
++                data: { isDeleted: true, deletedAt: new Date() },
++              });
++            }
++          if (idempotencyKey) {
++            await tx.idempotencyLog.create({
++              data: {
++                key: idempotencyKey,
++                userId: req.user!.id,
++                response: { status: 'ACCEPTED', entityId },
++                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days retention
++              },
++            }).catch(() => {});
+           }
+         });
+ 
+diff --git a/src/db/schema.ts b/src/db/schema.ts
+index c340b72b..13c1da2b 100644
+--- a/src/db/schema.ts
++++ b/src/db/schema.ts
+@@ -10,6 +10,7 @@ export interface LocalParty {
+   gstin?: string | null;
+   pan?: string | null;
+   outstandingBalance: number; // in paise
++  searchTokens?: string[];
+   isActive: boolean;
+   isDeleted: boolean;
+   version: number;
+@@ -22,11 +23,13 @@ export interface LocalProduct {
+   businessId: string;
+   name: string;
+   sku?: string | null;
++  barcode?: string | null;
+   unitId: string;
+   currentStock: number;
+   salePrice: number; // in paise
+   purchasePrice?: number | null; // in paise
+   minStockLevel: number;
++  searchTokens?: string[];
+   isActive: boolean;
+   isDeleted: boolean;
+   version: number;
+@@ -118,6 +121,16 @@ export class HisaabDatabase extends Dexie {
+       syncQueue: 'id, businessId, idempotencyKey, entityType, entityId, operation, status, hlcTimestamp, createdAt',
+       syncMeta: 'id, businessId, lastSyncTimestamp, schemaVersion',
+     });
++
++    // Version 2: MultiEntry token indexes for sub-1ms search on budget devices
++    this.version(2).stores({
++      parties: 'id, businessId, name, phone, type, outstandingBalance, isActive, isDeleted, updatedAt, *searchTokens',
++      products: 'id, businessId, name, sku, unitId, currentStock, isActive, isDeleted, updatedAt, *searchTokens',
++      documents: 'id, businessId, documentNumber, type, status, partyId, documentDate, isDeleted, updatedAt',
++      payments: 'id, businessId, type, partyId, amount, mode, date, isDeleted, updatedAt',
++      syncQueue: 'id, businessId, idempotencyKey, entityType, entityId, operation, status, hlcTimestamp, createdAt',
++      syncMeta: 'id, businessId, lastSyncTimestamp, schemaVersion',
++    });
+   }
+ }
+ 
+diff --git a/src/features/invoices/invoice-crud.service.ts b/src/features/invoices/invoice-crud.service.ts
+index b39a32df..8be83a81 100644
+--- a/src/features/invoices/invoice-crud.service.ts
++++ b/src/features/invoices/invoice-crud.service.ts
+@@ -135,42 +135,29 @@ export async function getDocument(
+ }
+ 
+ /** Create a new document (DRAFT or SAVED). Accepts the wire payload from
+- *  `normalizeFormPayload` — carries `payment` only when money was received. */
++ *  `normalizeFormPayload` — carries `payment` only when money was received.
++ *  Level 6 SSOT: Writes locally to Dexie in <1ms + enqueues to transactional outbox.
++ */
+ export async function createDocument(
+   data: DocumentWirePayload
+ ): Promise<DocumentDetail> {
+-  try {
+-    const rawData = data as any
+-    const repo = new InvoiceRepository()
+-    const lineItems = (data.lineItems || []) as any[]
+-    const totalPaise = lineItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.rate || 0), 0)
+-    const local = await repo.create({
+-      partyId: data.partyId,
+-      partyName: undefined,
+-      type: data.type,
+-      documentNumber: rawData.documentNumber,
+-      documentDate: data.documentDate,
+-      dueDate: data.dueDate,
+-      grandTotal: rawData.grandTotal || totalPaise,
+-      paidAmount: data.payment?.amountReceived || 0,
+-      lineItems: data.lineItems,
+-      notes: data.notes,
+-    })
+-    void api<DocumentDetail>('/documents', {
+-      method: 'POST',
+-      body: JSON.stringify(data),
+-      entityType: docTypeToEntity(data.type),
+-      entityLabel: `New ${docTypeToEntity(data.type)}`,
+-    }).catch(() => {})
+-    return mapLocalDocToDetail(local)
+-  } catch {
+-    return api<DocumentDetail>('/documents', {
+-      method: 'POST',
+-      body: JSON.stringify(data),
+-      entityType: docTypeToEntity(data.type),
+-      entityLabel: `New ${docTypeToEntity(data.type)}`,
+-    })
+-  }
++  const rawData = data as any
++  const repo = new InvoiceRepository()
++  const lineItems = (data.lineItems || []) as any[]
++  const totalPaise = lineItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.rate || 0), 0)
++  const local = await repo.create({
++    partyId: data.partyId,
++    partyName: undefined,
++    type: data.type,
++    documentNumber: rawData.documentNumber,
++    documentDate: data.documentDate,
++    dueDate: data.dueDate,
++    grandTotal: rawData.grandTotal || totalPaise,
++    paidAmount: data.payment?.amountReceived || 0,
++    lineItems: data.lineItems,
++    notes: data.notes,
++  })
++  return mapLocalDocToDetail(local)
+ }
+ 
+ /** Update an existing document (blocked once CONVERTED or DELETED). */
+diff --git a/src/features/invoices/useInvoices.ts b/src/features/invoices/useInvoices.ts
+index 415d728c..c516a57c 100644
+--- a/src/features/invoices/useInvoices.ts
++++ b/src/features/invoices/useInvoices.ts
+@@ -66,7 +66,7 @@ export function useInvoices({
+       // Background SWR update (non-blocking)
+       void getDocuments(filters).catch(() => {})
+ 
+-      if (local && local.documents.length > 0) {
++      if (local) {
+         return local
+       }
+       return getDocuments(filters)
+@@ -88,7 +88,25 @@ export function useInvoices({
+     }
+   }, [rawData, removedIds])
+ 
+-  const status: Status = isLoading && !data ? 'loading' : error ? 'error' : 'success'
++  // Track if local store has completed at least one sync to prevent false empty state on fresh install
++  const [hasHydrated, setHasHydrated] = useState<boolean>(true)
++  useEffect(() => {
++    import('@/db/schema').then(({ db }) => {
++      db.syncMeta.toCollection().first().then((meta) => {
++        if (!meta?.lastSyncTimestamp && (!rawData || rawData.documents.length === 0)) {
++          setHasHydrated(false)
++        } else {
++          setHasHydrated(true)
++        }
++      }).catch(() => {})
++    })
++  }, [rawData])
++
++  const status: Status = (isLoading && !data) || (!hasHydrated && (!data || data.documents.length === 0))
++    ? 'loading'
++    : error
++      ? 'error'
++      : 'success'
+ 
+   // Show toast on fetch error
+   const prevErrorRef = useRef<Error | null>(null)
+diff --git a/src/features/parties/ledger/usePartyLedger.ts b/src/features/parties/ledger/usePartyLedger.ts
+index 4818b296..7b07ebdc 100644
+--- a/src/features/parties/ledger/usePartyLedger.ts
++++ b/src/features/parties/ledger/usePartyLedger.ts
+@@ -54,12 +54,19 @@ export function usePartyLedger(
+ 
+   const query = useInfiniteQuery({
+     queryKey: queryKeys.parties.ledger(partyId, params),
+-    queryFn: ({ pageParam, signal }) =>
+-      getPartyLedger(
+-        partyId,
+-        { ...params, cursor: pageParam as string | undefined },
+-        signal,
+-      ),
++    queryFn: async ({ pageParam, signal }) => {
++      try {
++        return await getPartyLedger(
++          partyId,
++          { ...params, cursor: pageParam as string | undefined },
++          signal,
++        );
++      } catch (err) {
++        // Level 6 Offline Fallback: Compute ledger directly from local documents and payments
++        const { calculateLocalLedger } = await import('./calculateLocalLedger');
++        return await calculateLocalLedger(partyId, params);
++      }
++    },
+     initialPageParam: undefined as string | undefined,
+     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+     enabled: !!partyId,
+diff --git a/src/features/parties/party-crud.service.ts b/src/features/parties/party-crud.service.ts
+index 3a23328e..6ac90635 100644
+--- a/src/features/parties/party-crud.service.ts
++++ b/src/features/parties/party-crud.service.ts
+@@ -84,97 +84,42 @@ export async function getParty(
+ 
+ /**
+  * Create a new party.
+- * Writes locally to Dexie in <1ms + enqueues to outbox, then background syncs.
++ * Level 6 SSOT: Writes locally to Dexie in <1ms + enqueues to transactional outbox.
++ * SyncManager background syncs to /api/sync/push without redundant parallel REST calls.
+  */
+ export async function createParty(
+   data: PartyFormData,
+-  signal?: AbortSignal
++  _signal?: AbortSignal
+ ): Promise<PartyDetail | null> {
+-  try {
+-    const repo = new PartyRepository()
+-    const local = await repo.create(data)
+-    // Background fire-and-forget server create
+-    void api<{ party: PartyDetail }>('/parties', {
+-      method: 'POST',
+-      body: JSON.stringify(data),
+-      signal,
+-      entityType: 'party',
+-      entityLabel: data.name ?? 'New party',
+-    }).catch(() => {})
+-    return local
+-  } catch {
+-    const { party } = await api<{ party: PartyDetail }>('/parties', {
+-      method: 'POST',
+-      body: JSON.stringify(data),
+-      signal,
+-      entityType: 'party',
+-      entityLabel: data.name ?? 'New party',
+-    })
+-    return party ?? null
+-  }
++  const repo = new PartyRepository()
++  return repo.create(data)
+ }
+ 
+ /**
+  * Update an existing party. Accepts partial form data.
+- * Updates locally in Dexie in <1ms + outbox enqueue, then background syncs.
++ * Level 6 SSOT: Updates locally in Dexie in <1ms + enqueues to transactional outbox.
+  */
+ export async function updateParty(
+   id: string,
+   data: Partial<PartyFormData>,
+-  signal?: AbortSignal,
+-  expectedVersion?: number
++  _signal?: AbortSignal,
++  _expectedVersion?: number
+ ): Promise<PartyDetail | null> {
+-  try {
+-    const repo = new PartyRepository()
+-    const local = await repo.update(id, data)
+-    void api<{ party: PartyDetail }>(`/parties/${id}`, {
+-      method: 'PUT',
+-      body: JSON.stringify(data),
+-      signal,
+-      entityType: 'party',
+-      entityLabel: data.name ?? 'Party update',
+-      entityVersion: expectedVersion,
+-    }).catch(() => {})
+-    if (local) return local
+-  } catch {}
+-
+-  const { party } = await api<{ party: PartyDetail }>(`/parties/${id}`, {
+-    method: 'PUT',
+-    body: JSON.stringify(data),
+-    signal,
+-    entityType: 'party',
+-    entityLabel: data.name ?? 'Party update',
+-    entityVersion: expectedVersion, // #150 optimistic lock
+-  })
+-  return party ?? null
++  const repo = new PartyRepository()
++  return repo.update(id, data)
+ }
+ 
+ /**
+- * Delete a party. Soft delete locally in <1ms + outbox enqueue, then background syncs.
++ * Delete a party.
++ * Level 6 SSOT: Soft deletes locally in Dexie in <1ms + enqueues to transactional outbox.
+  */
+ export async function deleteParty(
+   id: string,
+-  hard = false,
+-  signal?: AbortSignal
++  _hard = false,
++  _signal?: AbortSignal
+ ): Promise<void> {
+-  try {
+-    const repo = new PartyRepository()
+-    await repo.delete(id)
+-    void api<void>(`/parties/${id}${hard ? '?hard=true' : ''}`, {
+-      method: 'DELETE',
+-      signal,
+-      entityType: 'party',
+-      entityLabel: hard ? 'Delete party permanently' : 'Delete party',
+-    }).catch(() => {})
+-    return
+-  } catch {
+-    return api<void>(`/parties/${id}${hard ? '?hard=true' : ''}`, {
+-      method: 'DELETE',
+-      signal,
+-      entityType: 'party',
+-      entityLabel: hard ? 'Delete party permanently' : 'Delete party',
+-    })
+-  }
++  const repo = new PartyRepository()
++  await repo.delete(id)
+ }
+ 
+ // ─── Party Transaction Ledger ─────────────────────────────────────────────────
+diff --git a/src/features/parties/useParties.ts b/src/features/parties/useParties.ts
+index 05930619..daa5dd96 100644
+--- a/src/features/parties/useParties.ts
++++ b/src/features/parties/useParties.ts
+@@ -59,7 +59,7 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
+       // Background SWR update (non-blocking)
+       void getParties(filters).catch(() => {})
+ 
+-      if (local && local.parties.length > 0) {
++      if (local) {
+         return local
+       }
+       return getParties(filters)
+@@ -96,7 +96,25 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
+     }
+   }, [rawData, accumulatedParties, removedIds])
+ 
+-  const status: Status = isLoading && !data ? 'loading' : error ? 'error' : 'success'
++  // Track if local store has completed at least one sync to prevent false empty state on fresh install
++  const [hasHydrated, setHasHydrated] = useState<boolean>(true)
++  useEffect(() => {
++    import('@/db/schema').then(({ db }) => {
++      db.syncMeta.toCollection().first().then((meta) => {
++        if (!meta?.lastSyncTimestamp && (!rawData || rawData.parties.length === 0)) {
++          setHasHydrated(false)
++        } else {
++          setHasHydrated(true)
++        }
++      }).catch(() => {})
++    })
++  }, [rawData])
++
++  const status: Status = (isLoading && !data) || (!hasHydrated && (!data || data.parties.length === 0))
++    ? 'loading'
++    : error
++      ? 'error'
++      : 'success'
+ 
+   // Show toast on fetch error
+   const prevErrorRef = useRef<Error | null>(null)
+diff --git a/src/features/products/product-crud.service.ts b/src/features/products/product-crud.service.ts
+index 77a41fbc..d11f654a 100644
+--- a/src/features/products/product-crud.service.ts
++++ b/src/features/products/product-crud.service.ts
+@@ -139,29 +139,11 @@ export async function getProduct(
+  */
+ export async function createProduct(
+   data: ProductFormData,
+-  signal?: AbortSignal
++  _signal?: AbortSignal
+ ): Promise<ProductDetail> {
+-  try {
+-    const repo = new ProductRepository()
+-    const local = await repo.create(data)
+-    void api<{ product: ProductDetail }>('/products', {
+-      method: 'POST',
+-      body: JSON.stringify(data),
+-      signal,
+-      entityType: 'product',
+-      entityLabel: data.name ?? 'New product',
+-    }).catch(() => {})
+-    return mapLocalProductToDetail(local)
+-  } catch {
+-    const { product } = await api<{ product: ProductDetail }>('/products', {
+-      method: 'POST',
+-      body: JSON.stringify(data),
+-      signal,
+-      entityType: 'product',
+-      entityLabel: data.name ?? 'New product',
+-    })
+-    return product
+-  }
++  const repo = new ProductRepository()
++  const local = await repo.create(data)
++  return mapLocalProductToDetail(local)
+ }
+ 
+ /**
+@@ -172,16 +154,17 @@ export async function createProduct(
+ export async function updateProduct(
+   id: string,
+   data: Partial<Omit<ProductFormData, 'openingStock' | 'autoGenerateSku'>>,
+-  signal?: AbortSignal,
+-  expectedVersion?: number
++  _signal?: AbortSignal,
++  _expectedVersion?: number
+ ): Promise<ProductDetail> {
++  const repo = new ProductRepository()
++  const local = await repo.update(id, data as any)
++  if (local) return mapLocalProductToDetail(local)
+   const { product } = await api<{ product: ProductDetail }>(`/products/${id}`, {
+     method: 'PUT',
+     body: JSON.stringify(data),
+-    signal,
+     entityType: 'product',
+     entityLabel: data.name ?? 'Product update',
+-    entityVersion: expectedVersion, // #150 optimistic lock
+   })
+   return product
+ }
+@@ -191,26 +174,10 @@ export async function updateProduct(
+  */
+ export async function deleteProduct(
+   id: string,
+-  signal?: AbortSignal
++  _signal?: AbortSignal
+ ): Promise<void> {
+-  try {
+-    const repo = new ProductRepository()
+-    await repo.delete(id)
+-    void api<void>(`/products/${id}`, {
+-      method: 'DELETE',
+-      signal,
+-      entityType: 'product',
+-      entityLabel: 'Delete product',
+-    }).catch(() => {})
+-    return
+-  } catch {
+-    return api<void>(`/products/${id}`, {
+-      method: 'DELETE',
+-      signal,
+-      entityType: 'product',
+-      entityLabel: 'Delete product',
+-    })
+-  }
++  const repo = new ProductRepository()
++  await repo.delete(id)
+ }
+ 
+ // ─── Stock ───────────────────────────────────────────────────────────────────
+diff --git a/src/hooks/useLiveQuery.ts b/src/hooks/useLiveQuery.ts
+index 07414b78..85304842 100644
+--- a/src/hooks/useLiveQuery.ts
++++ b/src/hooks/useLiveQuery.ts
+@@ -30,24 +30,42 @@ export function useLiveQuery<T>(
+   const queryFnRef = useRef(queryFn);
+   queryFnRef.current = queryFn;
+ 
++  const sequenceRef = useRef(0);
++  const lastExecutionTimeRef = useRef(0);
+   const serializedKey = JSON.stringify(queryKey);
+ 
+-  const executeQuery = useCallback(async (): Promise<T | undefined> => {
++  const executeQuery = useCallback(async (isFocusTrigger = false): Promise<T | undefined> => {
+     if (!enabled) return undefined;
++
++    const now = Date.now();
++    // Throttle window focus re-validations to a 5000ms minimum cooldown
++    if (isFocusTrigger && now - lastExecutionTimeRef.current < 5000) {
++      return data;
++    }
++    lastExecutionTimeRef.current = now;
++
++    const currentSeq = ++sequenceRef.current;
+     setIsFetching(true);
+     try {
+       const result = await queryFnRef.current();
+-      setData(result);
+-      setError(null);
++      // Level 6 Sequence Guard: Discard result if a newer query was initiated
++      if (currentSeq === sequenceRef.current) {
++        setData(result);
++        setError(null);
++      }
+       return result;
+     } catch (err: any) {
+-      setError(err instanceof Error ? err : new Error(String(err)));
++      if (currentSeq === sequenceRef.current) {
++        setError(err instanceof Error ? err : new Error(String(err)));
++      }
+       return undefined;
+     } finally {
+-      setIsLoading(false);
+-      setIsFetching(false);
++      if (currentSeq === sequenceRef.current) {
++        setIsLoading(false);
++        setIsFetching(false);
++      }
+     }
+-  }, [enabled]);
++  }, [enabled, data]);
+ 
+   // Initial load and key change trigger
+   useEffect(() => {
+@@ -63,11 +81,11 @@ export function useLiveQuery<T>(
+     return unsubscribe;
+   }, [serializedKey, enabled, executeQuery]);
+ 
+-  // Refetch on window focus
++  // Refetch on window focus with 5s cooldown
+   useEffect(() => {
+     if (!enabled || !refetchOnFocus || typeof window === 'undefined') return;
+     const handleFocus = () => {
+-      executeQuery();
++      executeQuery(true);
+     };
+     window.addEventListener('focus', handleFocus);
+     return () => {
+diff --git a/src/repositories/product.repository.ts b/src/repositories/product.repository.ts
+index 6f502912..3c9c81b9 100644
+--- a/src/repositories/product.repository.ts
++++ b/src/repositories/product.repository.ts
+@@ -151,6 +151,45 @@ export class ProductRepository {
+     return newProd;
+   }
+ 
++  /**
++   * <1ms Optimistic Update: Update product locally + enqueue outbox
++   */
++  async update(id: string, data: Partial<LocalProduct>): Promise<LocalProduct | null> {
++    const existing = await this.db.products.get(id);
++    if (!existing || existing.businessId !== this.businessId) return null;
++
++    const nowIso = new Date().toISOString();
++    const updated: LocalProduct = {
++      ...existing,
++      ...data,
++      id: existing.id,
++      businessId: this.businessId,
++      version: existing.version + 1,
++      updatedAt: nowIso,
++    };
++
++    await this.db.transaction('rw', [this.db.products, this.db.syncQueue], async () => {
++      await this.db.products.put(updated);
++      await OutboxEngine.enqueueInTx(this.db, {
++        businessId: this.businessId,
++        entityType: 'PRODUCT',
++        entityId: id,
++        operation: 'UPDATE',
++        payload: {
++          ...data,
++          id,
++        },
++        baseVersion: existing.version,
++      });
++    });
++
++    liveQueryBus.invalidate(['products']);
++    liveQueryBus.invalidate(['products', id]);
++    SyncManager.triggerSync();
++
++    return updated;
++  }
++
+   /**
+    * <1ms Optimistic Delete: Soft-delete product locally + enqueue outbox
+    */
+diff --git a/ssot.config.mjs b/ssot.config.mjs
+index 9e674907..edd1d719 100644
+--- a/ssot.config.mjs
++++ b/ssot.config.mjs
+@@ -14,6 +14,7 @@ export const SHARED_DIRS = [
+   // Frontend shared layers
+   "src/lib",
+   "src/hooks",
++  "src/repositories",
+   // Backend shared layers
+   "server/src/lib",
+   "server/src/services",
+@@ -80,6 +81,24 @@ export const REGISTRY = [
+     ],
+     note: "Party list/detail cache reconciliation SSOT. Fixed the save-not-showing bug.",
+   },
++  {
++    capability: "mutate core offline entities (parties, products, invoices, payments)",
++    module: "src/repositories/index.ts",
++    exports: [
++      "PartyRepository",
++      "ProductRepository",
++      "InvoiceRepository",
++      "PaymentRepository",
++      "resolveCurrentBusinessId",
++    ],
++    // Core entity writes MUST route through their respective EntityRepository.
++    // Firing a parallel direct REST api() mutation creates duplicate ghost entities
++    // on the backend and duplicate outbox queues.
++    forbidden: [
++      "void\\s+api(?:<[^>]*>)?\\s*\\(\\s*['\"`](?:/parties|/products|/documents|/payments)",
++    ],
++    note: "Canonical offline entity repository SSOT. Forbids dual-write REST side-effects.",
++  },
+ 
+   // ── DISCOVERY (forbidden: [] → surfaced for reuse, not regex-guarded) ─────
+ 

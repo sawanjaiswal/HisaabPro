@@ -54,12 +54,24 @@ export function usePartyLedger(
 
   const query = useInfiniteQuery({
     queryKey: queryKeys.parties.ledger(partyId, params),
-    queryFn: ({ pageParam, signal }) =>
-      getPartyLedger(
-        partyId,
-        { ...params, cursor: pageParam as string | undefined },
-        signal,
-      ),
+    queryFn: async ({ pageParam, signal }) => {
+      try {
+        return await getPartyLedger(
+          partyId,
+          { ...params, cursor: pageParam as string | undefined },
+          signal,
+        );
+      } catch (err: any) {
+        // Fallback to local computation strictly on offline/network errors
+        const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+        const isNetworkErr = err instanceof TypeError || err?.code === 'TIMEOUT' || err?.message?.includes('Network');
+        if (isOffline || isNetworkErr) {
+          const { calculateLocalLedger } = await import('./calculateLocalLedger');
+          return await calculateLocalLedger(partyId, params);
+        }
+        throw err;
+      }
+    },
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled: !!partyId,

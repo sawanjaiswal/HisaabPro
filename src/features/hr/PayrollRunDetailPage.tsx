@@ -37,6 +37,7 @@ import {
 } from './hr.constants'
 import { PayrollReverseButton } from './components/PayrollReverseButton'
 import { Heading } from '@/components/ui/Heading'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
 
 interface RunDetailLocationState {
   fromDate?: string
@@ -138,30 +139,14 @@ export default function PayrollRunDetailPage() {
 
       {/* Sticky action bar — Reverse only when FINALIZED */}
       {status === 'FINALIZED' && hasSummary && (
-        <div
-          role="region"
-          aria-label={t.payrollRunActionsLabel as string}
-          style={{
-            position: 'fixed',
-            left: 0,
-            right: 0,
-            bottom: 'var(--bottom-nav-height)',
-            zIndex: 2,
-            display: 'flex',
-            gap: 'var(--space-2)',
-            padding: 'var(--space-3) var(--space-4)',
-            background: 'var(--color-surface)',
-            borderTop: '1px solid var(--color-border)',
-            boxShadow: 'var(--shadow-md)',
-          }}
-        >
+        <BottomActionBar aria-label={t.payrollRunActionsLabel as string}>
           <PayrollReverseButton
             payrollRunId={id}
             fromDate={state.fromDate as string}
             toDate={state.toDate as string}
             onReversed={() => navigate(ROUTES.HR_PAYROLL)}
           />
-        </div>
+        </BottomActionBar>
       )}
     </AppShell>
   )

@@ -20,6 +20,15 @@
      * app should never invoke. Set on both html and body so neither edge of
      * the propagation chain leaks. See PLATFORM_SHELL.md C11. */
     overscroll-behavior: none;
+    /* Level 6 Keyboard & Bottom Bar Clearance SSOT:
+     * When any input is focused, scroll-padding ensures the document scroller
+     * reserves space so the focused input is brought well above the on-screen
+     * keyboard and any fixed bottom actions. */
+    scroll-padding-bottom: calc(
+      var(--bottom-action-bar-height, 72px) +
+      max(var(--safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)) +
+      var(--space-4)
+    );
   }
 
   @media (min-width: 1024px) {
@@ -33,6 +42,23 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     overscroll-behavior: none;
+    scroll-padding-bottom: calc(
+      var(--bottom-action-bar-height, 72px) +
+      max(var(--safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)) +
+      var(--space-4)
+    );
+  }
+
+  /* Form controls automatic scroll margin — ensures focused fields pop above keyboard */
+  input,
+  textarea,
+  select,
+  [contenteditable="true"] {
+    scroll-margin-bottom: calc(
+      var(--bottom-action-bar-height, 80px) +
+      max(var(--safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)) +
+      var(--space-6)
+    );
   }
 
   [data-theme="dark"] body {

@@ -202,8 +202,12 @@ export default function PartyDetailPage() {
 
                 <TabsContent value="info" className="flex-1 flex flex-col min-h-0">
                   <div className="space-y-4">
-                    <PartyOverviewTab party={party} />
-                    <PartyAddressesTab addresses={party.addresses} />
+                    <PartyOverviewTab party={party} onPatched={refresh} />
+                    <PartyAddressesTab
+                      partyId={partyId}
+                      addresses={party.addresses}
+                      onPatched={refresh}
+                    />
                     <PartyCrmTab party={party} onPatched={refresh} />
                     <CommitmentsSection partyId={partyId} partyName={party.name} />
                   </div>

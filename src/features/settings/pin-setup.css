@@ -13,6 +13,7 @@
   justify-content: center;
   min-height: 100vh;
   min-height: 100dvh;
+  min-height: 100dvh;
   padding: calc(var(--space-6) + env(safe-area-inset-top, 0px)) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
   background-color: var(--color-gray-0);
   gap: var(--space-8);

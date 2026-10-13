@@ -1,0 +1,26 @@
+### COMPREHENSIVE IMPLEMENTATION AUDIT: OFFLINE-FIRST WHATSAPP-GRADE REFACTOR
+
+We have implemented all phases of the offline plan in HisaabPro. Please perform a rigorous, brutal, adversarial code review and verification of the implemented changes.
+
+Review the diff below against our core mandates:
+1. **SSOT Purity & Dual-Write Elimination**:
+   - Were all dual-write `void api(...)` side-effects in `party-crud.service.ts`, `product-crud.service.ts`, and `invoice-crud.service.ts` completely eliminated?
+   - Does `ssot.config.mjs` successfully guard the repository pattern with 0 leaks?
+2. **0ms Local Reads & Hydration State**:
+   - Did `useParties.ts` and `useInvoices.ts` eliminate the blocking `getParties(filters)` / `getDocuments(filters)` call?
+   - Is the `hasHydrated` check against `db.syncMeta.lastSyncTimestamp` sound to prevent false empty-state flashing on initial load?
+3. **useLiveQuery Sequence Guard & Throttle**:
+   - Does `src/hooks/useLiveQuery.ts` safely guard against out-of-order race conditions and throttle window focus re-validations?
+4. **Sub-1ms Dexie Token Indexing**:
+   - Did `schema.ts` bump to v2 with `*searchTokens` multiEntry indexes?
+   - Are `PartyRepository` and `ProductRepository` using `searchTokens` properly to prevent full-table array scans on low-end devices?
+5. **Backend Sync Push Full-Fidelity & Idempotency**:
+   - Does `POST /api/sync/push` in `server/src/routes/sync.routes.ts` faithfully handle `PARTY`, `PRODUCT`, `DOCUMENT`, and `PAYMENT` with `IdempotencyLog` tracking?
+6. **Local Ledger Engine**:
+   - Does `calculateLocalLedger.ts` compute running balances accurately with integer paise arithmetic and handle offline fallbacks in `usePartyLedger.ts`?
+
+```diff
+$(cat .agent_debate/offline_impl_diff.patch)
+```
+
+Provide your brutal adversarial verdict: **APPROVED** or **REVISE**, citing any flaws, regressions, or unhandled edge cases.

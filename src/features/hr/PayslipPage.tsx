@@ -34,6 +34,7 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { usePayslipSnapshot } from './usePayroll'
 import { PayslipPDF, type PayslipPDFLabels } from './components/PayslipPDF'
 import { PayslipShareButton } from './components/PayslipShareButton'
+import { BottomActionBar } from '@/components/ui/BottomActionBar'
 
 export default function PayslipPage() {
   const { t } = useLanguage()
@@ -118,25 +119,9 @@ export default function PayslipPage() {
 
       {/* Sticky share bar */}
       {snapshotQuery.status === 'success' && snapshot && (
-        <div
-          role="region"
-          aria-label={t.payslipShareCta as string}
-          style={{
-            position: 'fixed',
-            left: 0,
-            right: 0,
-            bottom: 'var(--bottom-nav-height)',
-            zIndex: 2,
-            display: 'flex',
-            gap: 'var(--space-2)',
-            padding: 'var(--space-3) var(--space-4)',
-            background: 'var(--color-surface)',
-            borderTop: '1px solid var(--color-border)',
-            boxShadow: 'var(--shadow-md)',
-          }}
-        >
+        <BottomActionBar aria-label={t.payslipShareCta as string}>
           <PayslipShareButton snapshot={snapshot} pdfLabels={pdfLabels} />
-        </div>
+        </BottomActionBar>
       )}
     </AppShell>
   )

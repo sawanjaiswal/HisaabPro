@@ -128,3 +128,11 @@ export function reconcilePartyDeleted(qc: QueryClient, id: string): void {
 export function invalidatePartyLists(qc: QueryClient): void {
   qc.invalidateQueries({ queryKey: queryKeys.parties.all() })
 }
+
+/**
+ * Invalidate cached party detail — for sub-resource updates (addresses, custom fields)
+ * where the full party detail record needs to be refetched.
+ */
+export function invalidatePartyDetail(qc: QueryClient, id: string): void {
+  qc.invalidateQueries({ queryKey: queryKeys.parties.detail(id) })
+}

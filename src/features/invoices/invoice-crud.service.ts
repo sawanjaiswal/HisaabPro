@@ -135,42 +135,29 @@ export async function getDocument(
 }
 
 /** Create a new document (DRAFT or SAVED). Accepts the wire payload from
- *  `normalizeFormPayload` — carries `payment` only when money was received. */
+ *  `normalizeFormPayload` — carries `payment` only when money was received.
+ *  Level 6 SSOT: Writes locally to Dexie in <1ms + enqueues to transactional outbox.
+ */
 export async function createDocument(
   data: DocumentWirePayload
 ): Promise<DocumentDetail> {
-  try {
-    const rawData = data as any
-    const repo = new InvoiceRepository()
-    const lineItems = (data.lineItems || []) as any[]
-    const totalPaise = lineItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.rate || 0), 0)
-    const local = await repo.create({
-      partyId: data.partyId,
-      partyName: undefined,
-      type: data.type,
-      documentNumber: rawData.documentNumber,
-      documentDate: data.documentDate,
-      dueDate: data.dueDate,
-      grandTotal: rawData.grandTotal || totalPaise,
-      paidAmount: data.payment?.amountReceived || 0,
-      lineItems: data.lineItems,
-      notes: data.notes,
-    })
-    void api<DocumentDetail>('/documents', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      entityType: docTypeToEntity(data.type),
-      entityLabel: `New ${docTypeToEntity(data.type)}`,
-    }).catch(() => {})
-    return mapLocalDocToDetail(local)
-  } catch {
-    return api<DocumentDetail>('/documents', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      entityType: docTypeToEntity(data.type),
-      entityLabel: `New ${docTypeToEntity(data.type)}`,
-    })
-  }
+  const rawData = data as any
+  const repo = new InvoiceRepository()
+  const lineItems = (data.lineItems || []) as any[]
+  const totalPaise = lineItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.rate || 0), 0)
+  const local = await repo.create({
+    partyId: data.partyId,
+    partyName: undefined,
+    type: data.type,
+    documentNumber: rawData.documentNumber,
+    documentDate: data.documentDate,
+    dueDate: data.dueDate,
+    grandTotal: rawData.grandTotal || totalPaise,
+    paidAmount: data.payment?.amountReceived || 0,
+    lineItems: data.lineItems,
+    notes: data.notes,
+  })
+  return mapLocalDocToDetail(local)
 }
 
 /** Update an existing document (blocked once CONVERTED or DELETED). */

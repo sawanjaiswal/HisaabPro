@@ -1,0 +1,53 @@
+### CONTEXT: FRESH ARCHITECTURAL AUDIT OF HISAABPRO OFFLINE/SYNC SYSTEM
+
+We conducted a deep, fresh architectural audit from scratch. We discovered the fundamental reason why the app is slow, confusing, and glitching on sync:
+
+#### DISCOVERY 1: TWO COMPETING, DIVERGENT OFFLINE ARCHITECTURES RUNNING SIMULTANEOUSLY!
+1. **System A (Legacy Mutation Interceptor)**:
+   - DB: `SyncDB` in `src/lib/offline.queue.ts`
+   - Mechanism: `src/lib/api.ts` catches offline network errors on `fetch` and enqueues HTTP mutations to `SyncDB.syncQueue`.
+   - Sync engine: `src/lib/offline.processor.ts` & `src/lib/offline.autosync.ts` (started on boot in `src/main.tsx` line 29: `startOfflineAutoSync()`).
+   - Replays raw HTTP requests (`POST /parties`, `PUT /parties/:id`) sequentially.
+2. **System B (Level 6 Entity Outbox & Repository Layer)**:
+   - DB: `HisaabDatabase` (`HisaabPro_LocalDB_v1`) in `src/db/schema.ts` with local entity tables (`parties`, `products`, `documents`, `payments`) + `syncQueue`.
+   - Mechanism: `PartyRepository`, `InvoiceRepository`, etc. write optimistic entity records to Dexie and write to `HisaabDatabase.syncQueue` via `OutboxEngine.enqueueInTx`.
+   - Sync engine: `src/sync/SyncManager.ts` pushes batches of 50 mutations to `POST /api/sync/push` and pulls from `GET /api/sync/pull`.
+   - Started via `SyncManager.triggerSync()` on repo mutations and auto intervals.
+
+#### DISCOVERY 2: CATASTROPHIC DUAL-WRITING & RACE CONDITIONS!
+Look at `createParty` in `src/features/parties/party-crud.service.ts`:
+```ts
+export async function createParty(data: PartyFormData): Promise<PartyDetail | null> {
+  try {
+    const repo = new PartyRepository()
+    const local = await repo.create(data) // WRITES TO SYSTEM B (LocalDB + syncQueue + triggers SyncManager)
+    
+    // BUT THEN ALSO DOES THIS:
+    void api<{ party: PartyDetail }>('/parties', { // HITS api.ts!
+      method: 'POST',
+      body: JSON.stringify(data),
+      ...
+    }).catch(() => {})
+    return local
+  } ...
+}
+```
+If online: The app creates the party via `PartyRepository` (which queues a sync item in System B AND triggers `SyncManager.triggerSync` to `/sync/push`), AND AT THE EXACT SAME TIME fires a background `POST /parties` to the REST API!
+If offline: `repo.create` queues to System B. The `api('/parties')` fails network check, triggering `api.ts:89`, which ALSO enqueues the mutation into System A (`SyncDB.syncQueue`)!
+Result: Every offline mutation is DUPLICATED across two independent outbox databases (`HisaabPro_LocalDB_v1` and `SyncDB`), and drained by two separate sync loops (`SyncManager` to `/sync/push` and `offline.processor` to `/parties`)!
+
+#### DISCOVERY 3: WHY READING & NAVIGATION IS SLOW:
+1. `useParties.ts` and `useInvoices.ts`:
+   ```ts
+   if (local && local.parties.length > 0) return local;
+   return getParties(filters); // When local is empty, AWAITS REST network call!
+   ```
+2. Invoicing search (`PartySearchInput.tsx` and `lib/services/party.service.ts`):
+   When creating an invoice, typing a party fires `GET /parties?search=...` to the REST backend on every keystroke, completely ignoring Dexie!
+3. `useLiveQuery.ts`:
+   Re-runs on every window focus and bus event with zero throttle, firing un-throttled background `getParties()` network requests.
+
+#### QUESTION FOR CLAUDE CODE DEBATE:
+1. Is this dual-engine diagnosis accurate based on your inspection of the codebase?
+2. Axiomatic Level 6 elimination requires retiring one system. Should we completely deprecate the legacy System A (`src/lib/offline.*`) and consolidate 100% on System B (`src/repositories/*` + `src/sync/SyncManager` + `/api/sync/push`), removing the redundant `void api(...)` dual-writes from the CRUD services?
+3. How should we order this consolidation to make the app truly WhatsApp-grade without regressions?

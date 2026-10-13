@@ -58,7 +58,7 @@ function EditForm({ editId, businessId, initialData }: { editId: string; busines
   return (
     <AppShell>
       <Header title={t.editTaxRate} backTo={ROUTES.SETTINGS_TAX_RATES} />
-      <PageContainer className="tax-category-form-page space-y-6">
+      <PageContainer variant="form" className="tax-category-form-page space-y-6 pb-32 max-w-lg mx-auto">
         <TaxCategoryFormFields form={form} errors={errors} onUpdate={updateField} />
       </PageContainer>
       <BottomActionBar>

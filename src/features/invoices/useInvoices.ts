@@ -66,7 +66,7 @@ export function useInvoices({
       // Background SWR update (non-blocking)
       void getDocuments(filters).catch(() => {})
 
-      if (local && local.documents.length > 0) {
+      if (local) {
         return local
       }
       return getDocuments(filters)
@@ -88,7 +88,25 @@ export function useInvoices({
     }
   }, [rawData, removedIds])
 
-  const status: Status = isLoading && !data ? 'loading' : error ? 'error' : 'success'
+  // Track if local store has completed at least one sync to prevent false empty state on fresh install
+  const [hasHydrated, setHasHydrated] = useState<boolean>(true)
+  useEffect(() => {
+    import('@/db/schema').then(({ db }) => {
+      db.syncMeta.toCollection().first().then((meta) => {
+        if (!meta?.lastSyncTimestamp && (!rawData || rawData.documents.length === 0)) {
+          setHasHydrated(false)
+        } else {
+          setHasHydrated(true)
+        }
+      }).catch(() => {})
+    })
+  }, [rawData])
+
+  const status: Status = (isLoading && !data) || (!hasHydrated && (!data || data.documents.length === 0))
+    ? 'loading'
+    : error
+      ? 'error'
+      : 'success'
 
   // Show toast on fetch error
   const prevErrorRef = useRef<Error | null>(null)

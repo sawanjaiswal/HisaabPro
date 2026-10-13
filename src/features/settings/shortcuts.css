@@ -12,6 +12,7 @@
   gap: var(--space-5);
   padding: var(--space-4);
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--color-gray-50);
 }
 
