@@ -13,7 +13,7 @@ import { useCreatePtp, useUpdatePtp } from './usePtp'
 import type { Ptp } from './collections.types'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
-import { DateField } from '@/components/ui/DateField'
+import { DatePicker } from '@/components/ui/DatePicker'
 
 interface Props {
   open: boolean
@@ -147,20 +147,18 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
             required
             error={fieldErrors.date}
           >
-            <DateField
+            <DatePicker
               id="ptp-date"
-              type="date"
-              min={todayStr}
               value={promiseDate}
-              onChange={e => {
-                setPromiseDate(e.target.value)
+              minDate={todayStr}
+              onChange={(val: string) => {
+                setPromiseDate(val)
                 if (fieldErrors.date) setFieldErrors(prev => ({ ...prev, date: undefined }))
               }}
-              required
-              aria-required="true"
-              aria-invalid={Boolean(fieldErrors.date)}
-              className={fieldErrors.date ? 'input-error-border' : ''}
+              error={fieldErrors.date}
               disabled={isPending}
+              placeholder="DD / MM / YYYY"
+              className="w-full"
             />
           </FormField>
         </div>

@@ -5,6 +5,7 @@ import { ROUTES } from '@/config/routes.config'
 import { Button } from '@/components/ui/Button'
 import type { HomeDashboardData } from '../../dashboard/dashboard.types'
 import { Heading } from '@/components/ui/Heading'
+import { formatPaise } from '@/lib/format'
 
 interface PreviewActionableRailProps {
   data: HomeDashboardData
@@ -19,8 +20,9 @@ export function PreviewActionableRail({ data }: PreviewActionableRailProps) {
 
   const handleWhatsAppReminder = () => {
     if (topDebtor) {
+      const formattedAmount = formatPaise(topDebtor.outstanding)
       const msg = encodeURIComponent(
-        `Dear ${topDebtor.name}, gentle reminder regarding outstanding balance of ₹${Math.round(topDebtor.outstanding / 100)} with HisaabPro.`
+        `Dear ${topDebtor.name}, gentle reminder regarding outstanding balance of ${formattedAmount} with HisaabPro.`
       )
       window.open(`https://wa.me/?text=${msg}`, '_blank')
     } else {
@@ -47,7 +49,7 @@ export function PreviewActionableRail({ data }: PreviewActionableRailProps) {
           <div className="action-card action-card--urgent">
             <div className="action-card__badge">
               <span className="action-card__badge-dot" />
-              <span>Overdue ₹{Math.round(topDebtor.outstanding / 100)}</span>
+              <span>Overdue {formatPaise(topDebtor.outstanding)}</span>
             </div>
             <Heading level={4} className="action-card__party">{topDebtor.name}</Heading>
             <Text className="action-card__desc">Payment pending for {topDebtor.daysOverdue ?? 14} days</Text>

@@ -30,6 +30,7 @@ export const createDocumentSchema = z.object({
   type: z.enum(DOCUMENT_TYPES),
   status: z.enum(DOCUMENT_STATUSES).default('DRAFT'),
   partyId: z.string().min(1),
+  documentNumber: z.string().max(100).nullable().optional(),
   documentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   paymentTerms: z.enum(PAYMENT_TERMS).optional(),
   dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),

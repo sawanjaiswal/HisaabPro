@@ -1,16 +1,16 @@
 /** Receive-Payment Toggle — payment-at-creation card.
- *  Tokens only; dark mode follows automatically via CSS variables.
- *  Fields render through <Input> and chips through <Button>, so those own
- *  their border/focus/hover — this file only lays them out. */
+ *  Tokens only; dark mode follows automatically via CSS variables. */
 
-.receive-payment {
+.receive-payment-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-xs);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
+  gap: var(--space-3-5);
+  transition: all var(--duration-fast) var(--ease-default);
 }
 
 .receive-payment-head {
@@ -23,10 +23,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-lg);
   background: var(--color-primary-50);
   color: var(--color-primary-600);
 }
@@ -37,15 +37,15 @@
 }
 
 .receive-payment-title {
-  font-size: var(--fs-md);
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: 700;
   color: var(--color-text-primary);
   line-height: 1.2;
 }
 
 .receive-payment-subtitle {
   font-size: var(--fs-2xs);
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   margin-top: 2px;
 }
 
@@ -57,11 +57,52 @@
   gap: var(--space-2);
 }
 
-/* Let the Input flex to fill the row beside the Clear button. */
-.receive-payment-amount-row .receive-payment-input {
+.receive-payment-input-wrap {
+  position: relative;
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.receive-payment-currency-sym {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--color-primary-600);
+  pointer-events: none;
+  user-select: none;
+}
+
+.receive-payment-input-wrap input {
+  width: 100%;
+  padding-left: 28px;
+  padding-right: 12px;
+  min-height: 44px;
+  font-size: var(--fs-md);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-50);
+  color: var(--color-text-primary);
+  transition: all var(--duration-fast) var(--ease-default);
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.receive-payment-input-wrap input::-webkit-outer-spin-button,
+.receive-payment-input-wrap input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.receive-payment-input-wrap input:focus {
+  outline: none;
+  background: var(--color-surface);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 2px var(--color-primary-100);
 }
 
 /* ── Mode chips ───────────────────────────────────────────────────────── */
@@ -71,9 +112,29 @@
   gap: var(--space-2);
 }
 
-/* Equal-width fill; <Button> supplies the look (primary=selected). */
-.receive-payment-mode {
+.receive-payment-mode-btn {
   flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: var(--space-2) var(--space-2-5);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-gray-50);
+  color: var(--color-text-secondary);
+  transition: all var(--duration-fast) var(--ease-default);
+  cursor: pointer;
+  min-height: 38px;
+}
+
+.receive-payment-mode-btn.active {
+  background: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  color: var(--color-white-inverse);
+  box-shadow: var(--shadow-xs);
 }
 
 /* ── Balance line ─────────────────────────────────────────────────────── */
@@ -82,18 +143,51 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: var(--space-2);
+  padding-top: var(--space-2-5);
   border-top: 1px dashed var(--color-border);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   color: var(--color-text-secondary);
 }
 
 .receive-payment-balance-value {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-text-primary);
 }
 
 .receive-payment-paid {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-success-600);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Dark Theme ─────────────────────────────────────────────────────────── */
+
+[data-theme='dark'] .receive-payment-card {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] .receive-payment-icon {
+  background: var(--color-primary-bg-subtle);
+  color: var(--color-primary-300);
+}
+
+[data-theme='dark'] .receive-payment-input-wrap input {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-300);
+  color: var(--color-gray-100);
+}
+
+[data-theme='dark'] .receive-payment-mode-btn {
+  background: var(--color-gray-200);
+  border-color: var(--color-gray-300);
+  color: var(--color-gray-200);
+}
+
+[data-theme='dark'] .receive-payment-mode-btn.active {
+  background: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+  color: var(--color-white-inverse);
 }

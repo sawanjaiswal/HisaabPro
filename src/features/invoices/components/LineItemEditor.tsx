@@ -121,34 +121,42 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
       className={`line-item-row${isFree ? ' line-item-row--free' : ''}`}
       aria-label={`Line item ${index + 1}: ${item.productName}`}
     >
-      <div className="line-item-header">
-        <span className="line-item-product-name">
-          {item.productName}
+      <div className="line-item-header flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-5 h-5 rounded-full bg-[var(--color-gray-100)] text-[var(--color-text-secondary)] text-[10px] font-bold flex items-center justify-center shrink-0">
+            {index + 1}
+          </span>
+          <span className="line-item-product-name text-sm sm:text-base font-bold text-[var(--color-text-primary)] truncate">
+            {item.productName}
+          </span>
           {isFree && (
-            <span
-              className="badge"
-              style={{ marginLeft: 8, padding: '2px 6px', borderRadius: 999, background: 'var(--color-success-50)', color: 'var(--color-success-700)', fontSize: 11, fontWeight: 700 }}
-            >
+            <span className="px-2 py-0.5 rounded-full bg-[var(--color-success-50)] text-[var(--color-success-700)] text-[10px] font-bold shrink-0">
               {t.freeItemBadge}
             </span>
           )}
-        </span>
-        <div style={{ display: 'flex', gap: 'var(--space-1)' }}>
+        </div>
+        <div className="flex items-center gap-1 shrink-0">
           {canMarkFree && (
-            <Button variant="none"
+            <Button
+              variant="none"
               type="button"
-              className={`btn btn-ghost btn-sm${isFree ? ' active' : ''}`}
+              className={`p-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer border-0 ${
+                isFree
+                  ? 'bg-[var(--color-success-100)] text-[var(--color-success-800)]'
+                  : 'text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]'
+              }`}
               onClick={toggleFree}
               aria-pressed={isFree}
               aria-label={isFree ? t.unmarkFreeItem : t.markFreeItem}
               title={isFree ? t.unmarkFreeItem : t.markFreeItem}
             >
-              <Gift size={16} aria-hidden="true" />
+              <Gift size={15} aria-hidden="true" />
             </Button>
           )}
-          <Button variant="none"
+          <Button
+            variant="none"
             type="button"
-            className="line-item-remove"
+            className="line-item-remove cursor-pointer"
             onClick={() => onRemove(index)}
             aria-label={`${item.productName} ${t.removeFromLineItems}`}
           >
@@ -181,8 +189,8 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
         onResetPrice={handleResetPrice}
       />
 
-      <div className="line-item-total">
-        <span className="line-item-total-label">{t.lineTotal}</span>
+      <div className="line-item-total flex items-center justify-between pt-2.5 border-t border-[var(--color-border)] mt-1">
+        <span className="line-item-total-label text-xs font-semibold text-[var(--color-text-secondary)]">{t.lineTotal}</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
           {showProfit && !isFree && (
             <span className={profitClass}>

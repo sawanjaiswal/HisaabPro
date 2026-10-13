@@ -8,16 +8,16 @@
  * SALE_INVOICE with a non-zero total.
  */
 
-import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
-import { IndianRupee, Banknote, Smartphone, Building2 } from 'lucide-react'
+import { IndianRupee, Banknote, Smartphone, Building2, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Text } from '@/components/ui/Text'
+import { Heading } from '@/components/ui/Heading'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatRupees } from '@/lib/format'
 import type { InvoicePaymentFormData, PaymentModeValue } from '../invoice-api.types'
 import './receive-payment-toggle.css'
-import { Heading } from '@/components/ui/Heading'
 
 interface ReceivePaymentToggleProps {
   /** Invoice grand total in paise — drives Full quick-fill + balance line. */
@@ -60,40 +60,51 @@ export function ReceivePaymentToggle({ grandTotal, payment, onChange }: ReceiveP
   const showReference = payment.mode !== 'CASH' && received > 0
 
   return (
-    <section className="receive-payment" aria-label={t.receivePaymentTitle}>
+    <section className="receive-payment-card" aria-label={t.receivePaymentTitle}>
       <header className="receive-payment-head">
         <span className="receive-payment-icon" aria-hidden="true">
-          <IndianRupee size={16} />
+          <IndianRupee size={18} />
         </span>
         <div className="receive-payment-titles">
           <Heading level={3} className="receive-payment-title">{t.receivePaymentTitle}</Heading>
-          {received === 0 && (
-            <Text className="receive-payment-subtitle">{t.receivePaymentSubtitle}</Text>
-          )}
+          <Text className="receive-payment-subtitle">{t.receivePaymentSubtitle}</Text>
         </div>
-        <Button variant="outline" size="sm" type="button" onClick={setFull}>
-          {t.receiveFull}
+        <Button
+          variant="outline"
+          size="sm"
+          type="button"
+          onClick={setFull}
+          className="border-[var(--color-primary-600)] text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)] text-xs font-bold rounded-xl px-3 py-1.5 transition-colors cursor-pointer"
+        >
+          {t.receiveFull || 'Full'} ({formatRupees(grandTotal)})
         </Button>
       </header>
 
       <div className="receive-payment-amount-row">
-        <Input
-          type="number"
-          inputMode="decimal"
-          className="receive-payment-input"
-          icon={<IndianRupee size={16} />}
-          value={raw}
-          onChange={(e) => applyRupees(e.target.value)}
-          onKeyDown={(e) => {
-            if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault()
-          }}
-          placeholder="0"
-          aria-label={t.amountReceivedLabel}
-          min={0}
-        />
+        <div className="receive-payment-input-wrap">
+          <span className="receive-payment-currency-sym" aria-hidden="true">₹</span>
+          <input
+            type="number"
+            inputMode="decimal"
+            value={raw}
+            onChange={(e) => applyRupees(e.target.value)}
+            onKeyDown={(e) => {
+              if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault()
+            }}
+            placeholder="0.00"
+            aria-label={t.amountReceivedLabel}
+            min={0}
+          />
+        </div>
         {received > 0 && (
-          <Button variant="ghost" size="sm" type="button" onClick={clear}>
-            {t.receiveClear}
+          <Button
+            variant="ghost"
+            size="sm"
+            type="button"
+            onClick={clear}
+            className="text-[var(--color-gray-500)] hover:text-[var(--color-error-600)] text-xs font-semibold px-2 py-1 cursor-pointer"
+          >
+            {t.receiveClear || 'Clear'}
           </Button>
         )}
       </div>
@@ -101,18 +112,16 @@ export function ReceivePaymentToggle({ grandTotal, payment, onChange }: ReceiveP
       {received > 0 && (
         <div className="receive-payment-modes" role="group" aria-label={t.amountReceivedLabel}>
           {QUICK_MODES.map(({ value, icon: Icon, labelKey }) => (
-            <Button
+            <button
               key={value}
               type="button"
-              size="sm"
-              variant={payment.mode === value ? 'primary' : 'outline'}
-              className="receive-payment-mode"
+              className={`receive-payment-mode-btn ${payment.mode === value ? 'active' : ''}`}
               aria-pressed={payment.mode === value}
               onClick={() => onChange({ ...payment, mode: value })}
             >
               <Icon size={14} aria-hidden="true" />
-              {t[labelKey]}
-            </Button>
+              <span>{t[labelKey]}</span>
+            </button>
           ))}
         </div>
       )}
@@ -125,6 +134,7 @@ export function ReceivePaymentToggle({ grandTotal, payment, onChange }: ReceiveP
           placeholder={t.paymentRefPlaceholder}
           aria-label={t.paymentRefPlaceholder}
           maxLength={100}
+          className="bg-[var(--color-gray-50)] rounded-xl text-xs font-medium min-h-[40px]"
         />
       )}
 
@@ -132,16 +142,23 @@ export function ReceivePaymentToggle({ grandTotal, payment, onChange }: ReceiveP
         <div className="receive-payment-balance">
           {balance > 0 ? (
             <>
-              <span>{t.balanceRemaining}</span>
-              <span className="receive-payment-balance-value tabular-nums">{formatRupees(balance)}</span>
+              <span className="font-medium text-[var(--color-text-secondary)]">{t.balanceRemaining}</span>
+              <span className="receive-payment-balance-value tabular-nums text-sm text-[var(--color-warning-700)]">
+                {formatRupees(balance)}
+              </span>
             </>
           ) : balance < 0 ? (
             <>
-              <span>{t.changeToReturn}</span>
-              <span className="receive-payment-balance-value tabular-nums">{formatRupees(-balance)}</span>
+              <span className="font-medium text-[var(--color-text-secondary)]">{t.changeToReturn}</span>
+              <span className="receive-payment-balance-value tabular-nums text-sm text-[var(--color-success-700)]">
+                {formatRupees(-balance)}
+              </span>
             </>
           ) : (
-            <span className="receive-payment-paid">{t.fullyPaidNote}</span>
+            <span className="receive-payment-paid">
+              <CheckCircle2 size={14} aria-hidden="true" />
+              <span>{t.fullyPaidNote || 'Fully Paid'}</span>
+            </span>
           )}
         </div>
       )}

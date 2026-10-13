@@ -58,12 +58,12 @@ export function InvoiceScanButton({ onAdd }: InvoiceScanButtonProps) {
         type="button"
         variant="outline"
         size="sm"
-        className="invoice-scan-btn"
+        className="invoice-scan-btn !border-solid !border-[var(--color-border)] !rounded-xl !bg-[var(--color-surface)] !text-[var(--color-text-primary)] hover:!border-[var(--color-primary-500)] hover:!bg-[var(--color-primary-50)] shadow-xs font-bold text-xs"
         onClick={handleOpen}
         aria-label={t.scanToAdd}
       >
-        <ScanLine size={16} aria-hidden="true" />
-        {t.scanToAdd}
+        <ScanLine size={15} className="text-[var(--color-primary-600)]" aria-hidden="true" />
+        <span>{t.scanToAdd}</span>
       </Button>
       {open && <BarcodeScanner key={scanKey} onScan={handleScan} onClose={handleClose} />}
     </>

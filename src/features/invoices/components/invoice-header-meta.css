@@ -2,86 +2,48 @@
  * invoice-header-meta.css — # + date surfaced at top of create flow
  * ============================================================ */
 
-.invoice-header-meta {
-  display: grid;
-  grid-template-columns: 1fr 1.3fr;
-  gap: var(--space-3);
-  align-items: stretch;
-  background: var(--color-gray-0);
-  border: 1px solid var(--color-gray-200);
+.invoice-header-bar {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
-  padding: var(--space-4);
   box-shadow: var(--shadow-xs);
+  transition: border-color var(--duration-fast) var(--ease-default);
 }
 
-.invoice-header-meta-cell {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1-5);
-  min-width: 0;
-}
-
-.invoice-header-meta-label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: var(--fs-xs);
-  font-weight: 500;
-  color: var(--text-secondary);
-  letter-spacing: 0.01em;
-}
-
-.invoice-header-meta-value {
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-md);
-  background: var(--color-gray-50);
-  border: 1px solid var(--color-gray-200);
-}
-
-.invoice-header-meta-auto {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-md);
+.invoice-header-meta-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-lg);
   background: var(--color-primary-50);
-  border: 1px solid var(--color-primary-200);
+  color: var(--color-primary-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.invoice-header-meta-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-50);
   color: var(--color-primary-700);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   font-weight: 600;
 }
 
-.invoice-header-meta-date {
-  min-height: 44px !important;
-  font-size: var(--fs-sm) !important;
-  border-radius: var(--radius-md) !important;
-  background: var(--color-gray-0) !important;
-  border: 1px solid var(--color-gray-200) !important;
-  padding: 0 var(--space-3) !important;
-  color: var(--text-primary) !important;
-}
-
-[data-theme='dark'] .invoice-header-meta {
+[data-theme='dark'] .invoice-header-bar {
   background: var(--color-gray-100);
   border-color: var(--color-gray-200);
 }
 
-[data-theme='dark'] .invoice-header-meta-auto {
+[data-theme='dark'] .invoice-header-meta-icon {
   background: var(--color-primary-bg-subtle);
-  border-color: var(--color-primary-300);
   color: var(--color-primary-300);
 }
 
-[data-theme='dark'] .invoice-header-meta-value {
-  background: var(--color-gray-200);
-  border-color: var(--color-gray-300);
+[data-theme='dark'] .invoice-header-meta-badge {
+  background: var(--color-primary-bg-subtle);
+  color: var(--color-primary-300);
 }
-
-

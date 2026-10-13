@@ -70,7 +70,7 @@ export function InvoiceChargesSection({
       <Button
         variant="none"
         type="button"
-        className="w-full py-2.5 px-4 bg-[#F8F9FA] hover:bg-emerald-50 text-[#026F39] hover:text-[#025a2e] border border-dashed border-emerald-300/80 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-[0.99]"
+        className="w-full py-2.5 px-4 bg-[var(--color-primary-50)] hover:bg-[var(--color-primary-100)] text-[var(--color-primary-700)] border border-[var(--color-primary-200)] rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-[0.99]"
         onClick={() => onAddCharge({ name: '', type: 'FIXED', value: 0 })}
         aria-label={t.addAdditionalCharge || 'Add Additional Charge'}
       >

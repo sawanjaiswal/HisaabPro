@@ -140,6 +140,8 @@ export default function CreateInvoicePage({ type = 'SALE_INVOICE' }: CreateInvoi
         )}
 
         <InvoiceHeaderMeta
+          documentNumber={form.documentNumber}
+          onNumberChange={(v) => updateField('documentNumber', v)}
           documentDate={form.documentDate}
           onDateChange={(v) => updateField('documentDate', v)}
         />

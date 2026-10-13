@@ -131,11 +131,11 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
       isCreating={isCreating}
       error={error}
       renderSelected={({ title, onClear }) => (
-        <div className="bg-[var(--color-gray-50)] border border-[var(--color-gray-200)] rounded-2xl p-3.5 flex items-center justify-between w-full" role="status" aria-label={`Selected: ${title}`}>
+        <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-3 sm:p-3.5 flex items-center justify-between w-full shadow-xs" role="status" aria-label={`Selected: ${title}`}>
           <div className="flex items-center gap-3 min-w-0">
             <PartyAvatar name={title} size="md" className="flex-shrink-0" />
             <div className="flex flex-col min-w-0 gap-1">
-              <span className="font-bold text-base text-[var(--color-gray-900)] leading-tight truncate">{title}</span>
+              <span className="font-bold text-sm sm:text-base text-[var(--color-text-primary)] leading-tight truncate">{title}</span>
               <div>
                 <PartyBalanceChip partyId={value} />
               </div>
@@ -146,7 +146,7 @@ export const PartySearchInput: React.FC<PartySearchInputProps> = ({
             size="sm"
             type="button"
             onClick={onClear}
-            className="border border-[var(--color-primary-600)] text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)] bg-white font-semibold text-xs px-3.5 py-1.5 rounded-lg shrink-0 ml-3 transition-colors cursor-pointer"
+            className="border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] hover:border-[var(--color-primary-500)] hover:bg-[var(--color-primary-50)] bg-[var(--color-surface)] font-semibold text-xs px-3 py-1.5 rounded-xl shrink-0 ml-3 transition-colors cursor-pointer"
             aria-label={t.changeSelectedParty || 'Change'}
           >
             {t.changeLabel || 'Change'}

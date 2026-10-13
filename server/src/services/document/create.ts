@@ -2,7 +2,7 @@
 import { prisma } from '../../lib/prisma.js'
 import { notFoundError, validationError } from '../../lib/errors.js'
 import { deductForSaleInvoice, addForPurchaseInvoice, scheduleAlertChecks } from '../stock.service.js'
-import { generateNextNumber } from '../document-number.service.js'
+import { generateNextNumber, getFinancialYear } from '../document-number.service.js'
 import { calculateChargeAmount } from '../document-calc.js'
 import {
   assertGstEnabled, assertCompositionNoLineTax, assertCompositionNoInterState,
@@ -105,7 +105,15 @@ export async function createDocument(
   const result = await prisma.$transaction(async (tx) => {
     let numberData: { documentNumber: string; sequenceNumber: number; financialYear: string } | null = null
     if (isSaving) {
-      numberData = await generateNextNumber(tx, businessId, data.type, new Date(data.documentDate))
+      if (data.documentNumber && data.documentNumber.trim()) {
+        numberData = {
+          documentNumber: data.documentNumber.trim(),
+          sequenceNumber: 0,
+          financialYear: getFinancialYear(new Date(data.documentDate)),
+        }
+      } else {
+        numberData = await generateNextNumber(tx, businessId, data.type, new Date(data.documentDate))
+      }
     }
 
     const doc = await tx.document.create({

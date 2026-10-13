@@ -19,6 +19,7 @@ export function buildInitialForm(type: DocumentType): DocumentFormData {
     type,
     status: 'DRAFT',
     partyId: '',
+    documentNumber: null,
     documentDate: toLocalISODate(new Date()),
     paymentTerms: 'COD',
     dueDate: undefined,
@@ -109,6 +110,7 @@ export function normalizeFormPayload(
   return {
     ...rest,
     status: targetStatus,
+    documentNumber: form.documentNumber?.trim() || undefined,
     // Percentages are basis points on the wire — see invoice-discount-units.ts.
     lineItems: form.lineItems.map((item) => ({
       ...item,

@@ -143,6 +143,8 @@ export interface DocumentFormData {
   /** DRAFT (auto-save) or SAVED (user taps Save) */
   status: DocumentStatus
   partyId: string
+  /** Custom document number, or null/empty for auto-generation */
+  documentNumber?: string | null
   /** ISO date string "YYYY-MM-DD" */
   documentDate: string
   paymentTerms?: PaymentTerms

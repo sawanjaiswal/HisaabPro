@@ -43,13 +43,13 @@ export function InvoiceDetailsSection({
     <div className="space-y-4">
       {!hideDate && (
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="invoice-date">
+          <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]" htmlFor="invoice-date">
             {t.invoiceDateLabel || 'INVOICE DATE'}
           </label>
           <DateField
             id="invoice-date"
             type="date"
-            className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[44px] focus:bg-white focus:border-[#026F39] focus:ring-2 focus:ring-[#026F39]/20"
+            className="w-full bg-[var(--color-gray-50)] border border-[var(--color-gray-200)] rounded-xl px-3.5 py-2 text-sm font-medium text-[var(--color-text-primary)] min-h-[44px] focus:bg-[var(--color-surface)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-100)]"
             value={documentDate}
             onChange={(e) => onUpdateField('documentDate', e.target.value)}
             aria-label={t.invoiceDateAriaLabel}
@@ -58,7 +58,7 @@ export function InvoiceDetailsSection({
       )}
 
       <div className="space-y-1.5">
-        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+        <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">
           {t.paymentTermsLabel || 'PAYMENT TERMS'}
         </label>
         <PaymentTermsSelector
@@ -68,13 +68,13 @@ export function InvoiceDetailsSection({
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="invoice-vehicle">
+        <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]" htmlFor="invoice-vehicle">
           {t.vehicleNumberLabel || 'VEHICLE NUMBER'}
         </label>
         <Input
           id="invoice-vehicle"
           type="text"
-          className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 min-h-[44px] uppercase focus:bg-white focus:border-[#026F39] focus:ring-2 focus:ring-[#026F39]/20"
+          className="w-full bg-[var(--color-gray-50)] border border-[var(--color-gray-200)] rounded-xl px-3.5 py-2 text-sm font-medium text-[var(--color-text-primary)] min-h-[44px] uppercase focus:bg-[var(--color-surface)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-100)]"
           placeholder="MH 12 AB 1234"
           value={vehicleNumber}
           onChange={(e) => onUpdateField('vehicleNumber', e.target.value.toUpperCase())}
@@ -84,12 +84,12 @@ export function InvoiceDetailsSection({
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="invoice-notes">
+        <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]" htmlFor="invoice-notes">
           {t.notesLabel || 'NOTES'}
         </label>
         <Textarea
           id="invoice-notes"
-          className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:bg-white focus:border-[#026F39] focus:ring-2 focus:ring-[#026F39]/20 min-h-[72px] resize-none"
+          className="w-full bg-[var(--color-gray-50)] border border-[var(--color-gray-200)] rounded-xl p-3 text-sm font-medium text-[var(--color-text-primary)] focus:bg-[var(--color-surface)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-100)] min-h-[72px] resize-none"
           rows={2}
           placeholder={t.addNoteForCustomer || 'Add a note for your customer...'}
           value={notes}
@@ -99,12 +99,12 @@ export function InvoiceDetailsSection({
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-bold uppercase tracking-wider text-slate-500" htmlFor="invoice-terms">
+        <label className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]" htmlFor="invoice-terms">
           {t.termsConditionsLabel || 'TERMS & CONDITIONS'}
         </label>
         <Textarea
           id="invoice-terms"
-          className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:bg-white focus:border-[#026F39] focus:ring-2 focus:ring-[#026F39]/20 min-h-[72px] resize-none"
+          className="w-full bg-[var(--color-gray-50)] border border-[var(--color-gray-200)] rounded-xl p-3 text-sm font-medium text-[var(--color-text-primary)] focus:bg-[var(--color-surface)] focus:border-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-100)] min-h-[72px] resize-none"
           rows={2}
           placeholder={t.paymentTermsReturnPolicy || 'Payment terms, return policy...'}
           value={termsAndConditions}

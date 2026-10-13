@@ -97,12 +97,12 @@ export function InvoiceItemsSection({
   return (
     <div className="line-items-section py-0 space-y-6">
       {/* ── 1. Customer Section ── */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-slate-500">
-            <User size={14} className="text-[#026F39]" />
+          <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)]">
+            <User size={13} className="text-[var(--color-primary-600)]" />
             <span>{t.customer || 'CUSTOMER'}</span>
-            <span className="text-red-500">*</span>
+            <span className="text-[var(--color-error-500)]">*</span>
           </label>
         </div>
 
@@ -123,21 +123,26 @@ export function InvoiceItemsSection({
       </div>
 
       {/* ── 2. Items Section ── */}
-      <div className="space-y-4">
+      <div className="space-y-3.5">
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-slate-500">
-            <Package size={14} className="text-[#026F39]" />
+          <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)]">
+            <Package size={13} className="text-[var(--color-primary-600)]" />
             <span>{t.sectionItems || 'ITEMS'}</span>
+            {lineItems.length > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[var(--color-primary-50)] text-[var(--color-primary-700)] text-[10px] font-bold">
+                {lineItems.length}
+              </span>
+            )}
           </label>
           <Button
             variant="none"
             type="button"
-            className="text-[#026F39] hover:text-emerald-800 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+            className="text-[var(--color-primary-600)] hover:text-[var(--color-primary-700)] bg-[var(--color-primary-50)] hover:bg-[var(--color-primary-100)] px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
             onClick={onToggleProductSearch}
             aria-label={showProductSearch ? t.hideProductSearch : t.addLineItemLabel}
             aria-expanded={showProductSearch}
           >
-            {showProductSearch ? <X size={14} aria-hidden="true" /> : <Plus size={14} aria-hidden="true" />}
+            {showProductSearch ? <X size={13} aria-hidden="true" /> : <Plus size={13} aria-hidden="true" />}
             <span>{showProductSearch ? t.hideSearch : `+ ${t.addItem || 'Add Item'}`}</span>
           </Button>
         </div>
