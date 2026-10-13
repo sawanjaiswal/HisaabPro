@@ -81,28 +81,39 @@ export function PartyCrmTab({ party, onPatched }: PartyCrmTabProps) {
   }
 
   return (
-    <div className="party-crm-tab">
+    <div className="card p-4 rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-surface)] shadow-xs space-y-4">
+      <div className="flex items-center justify-between pb-2 border-b border-[var(--color-gray-100)]">
+        <div className="flex items-center gap-2">
+          <CheckCircle2 size={15} className="text-[var(--color-primary-600)]" />
+          <span className="text-sm font-bold text-[var(--text-primary)]">{t.crmFollowUpsTitle ?? 'Follow-up & Activity'}</span>
+        </div>
+      </div>
+
       <FollowUpDatePicker
         value={draftFollowUpAt}
         onChange={onChange}
         error={error}
         disabled={isSaving}
       />
-      <div className="party-crm-tab__last-contact" aria-live="polite">
-        <span className="party-crm-tab__last-contact-label">{t.crmLastContacted}</span>
-        <span className="party-crm-tab__last-contact-value">
+
+      <div className="flex items-center justify-between p-3 rounded-lg border border-[var(--color-gray-100)] bg-[var(--color-gray-50)] text-xs">
+        <span className="font-medium text-[var(--text-secondary)]">{t.crmLastContacted}</span>
+        <span className="font-semibold text-[var(--text-primary)]">
           {party.lastContactedAt ? formatRelativeTime(party.lastContactedAt) : t.crmNeverContacted}
         </span>
       </div>
-      <div className="party-crm-tab__actions">
+
+      <div className="flex justify-end pt-1">
         <Button
           type="button"
-          variant="primary" size="md"
+          variant="primary"
+          size="md"
+          className="px-6"
           onClick={onSave}
           disabled={!isDirty || isSaving || error !== null}
           aria-label={t.save}
         >
-          <CheckCircle2 size={18} aria-hidden="true" />
+          <CheckCircle2 size={16} aria-hidden="true" className="mr-1.5" />
           <span>{isSaving ? t.saving : t.save}</span>
         </Button>
       </div>

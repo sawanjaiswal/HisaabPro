@@ -2,8 +2,8 @@
 
 import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, RefreshCw } from 'lucide-react'
+import { useParams } from 'react-router-dom'
+import { RefreshCw } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useCampaignDetail, useCancelCampaign } from '../hooks/useCampaigns'
 import { CampaignStatusBadge } from '../components/CampaignStatusBadge'
@@ -13,6 +13,9 @@ import { MARKETING_ROUTES } from '../marketing.constants'
 import { formatDate, formatPaiseAsRupees, formatScheduledAt } from '../marketing.utils'
 import { Button } from '@/components/ui/Button'
 import { Heading } from '@/components/ui/Heading'
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 function Stat({ label, value, color }: { label: string; value: string | number; color?: string }) {
   return (
@@ -34,7 +37,6 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export default function CampaignDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const { t } = useLanguage()
   const { campaign, status, refresh } = useCampaignDetail(id ?? '')
   const cancelMutation = useCancelCampaign()
@@ -44,43 +46,46 @@ export default function CampaignDetailPage() {
 
   if (status === 'loading') {
     return (
-      <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)' }} aria-busy="true" aria-label={t.marketingLoadingCampaignAria}>
-        <div style={{ height: 48, borderRadius: 10, background: 'var(--color-gray-100)', marginBottom: 16, animation: 'pulse 1.5s infinite' }} />
-        <div style={{ display: 'flex', gap: 10 }}>
-          {[0, 1, 2].map((i) => <div key={i} style={{ flex: 1, height: 80, borderRadius: 10, background: 'var(--color-gray-100)', animation: 'pulse 1.5s infinite' }} />)}
-        </div>
-      </div>
+      <AppShell header={<Header title={t.marketingCampaignsTitle} backTo={MARKETING_ROUTES.CAMPAIGNS} />}>
+        <PageContainer className="py-4 pb-24 max-w-2xl mx-auto" aria-busy="true" aria-label={t.marketingLoadingCampaignAria}>
+          <div style={{ height: 48, borderRadius: 10, background: 'var(--color-gray-100)', marginBottom: 16, animation: 'pulse 1.5s infinite' }} />
+          <div style={{ display: 'flex', gap: 10 }}>
+            {[0, 1, 2].map((i) => <div key={i} style={{ flex: 1, height: 80, borderRadius: 10, background: 'var(--color-gray-100)', animation: 'pulse 1.5s infinite' }} />)}
+          </div>
+        </PageContainer>
+      </AppShell>
     )
   }
 
   if (status === 'error' || !campaign) {
     return (
-      <div className="page-container" style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-error-600)', fontSize: '14px' }}>
-        <div>{t.marketingCampaignLoadFailed}</div>
-        <Button variant="none" type="button" onClick={refresh} style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', cursor: 'pointer', fontSize: '14px', minHeight: '44px' }}>
-          <RefreshCw size={14} aria-hidden="true" /> {t.marketingRetry}
-        </Button>
-      </div>
+      <AppShell header={<Header title={t.marketingCampaignsTitle} backTo={MARKETING_ROUTES.CAMPAIGNS} />}>
+        <PageContainer className="py-8 text-center max-w-2xl mx-auto">
+          <div style={{ color: 'var(--color-error-600)', fontSize: '14px' }}>{t.marketingCampaignLoadFailed}</div>
+          <Button variant="none" type="button" onClick={refresh} style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', cursor: 'pointer', fontSize: '14px', minHeight: '44px' }}>
+            <RefreshCw size={14} aria-hidden="true" /> {t.marketingRetry}
+          </Button>
+        </PageContainer>
+      </AppShell>
     )
   }
 
   const canCancel = campaign.status === 'SCHEDULED' || campaign.status === 'RUNNING'
 
   return (
-    <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGNS)} aria-label={t.marketingBackToCampaigns}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <Heading level={1} style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{campaign.name}</Heading>
-          <div style={{ display: 'flex', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
-            <ChannelBadge channel={campaign.channel} />
-            <CampaignStatusBadge status={campaign.status} />
-          </div>
+    <AppShell
+      header={
+        <Header
+          title={campaign.name}
+          backTo={MARKETING_ROUTES.CAMPAIGNS}
+        />
+      }
+    >
+      <PageContainer className="py-4 pb-24 max-w-2xl mx-auto">
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+          <ChannelBadge channel={campaign.channel} />
+          <CampaignStatusBadge status={campaign.status} />
         </div>
-      </div>
 
       {/* Stats */}
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
@@ -138,6 +143,7 @@ export default function CampaignDetailPage() {
           </div>
         </div>
       )}
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }

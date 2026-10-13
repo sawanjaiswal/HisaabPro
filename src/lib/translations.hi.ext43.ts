@@ -243,4 +243,5 @@ export const hiExt43 = {
 
   // डैशबोर्ड ट्रेंड विंडो
   last30Days: 'पिछले 30 दिन',
+  last90Days: 'पिछले 90 दिन',
 } as const

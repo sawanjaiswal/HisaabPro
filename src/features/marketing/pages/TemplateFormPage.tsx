@@ -3,7 +3,6 @@
 import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useMarketingTemplateDetail, useCreateTemplate, useUpdateTemplate } from '../hooks/useMarketingTemplates'
 import { DltWarningCard } from '../components/DltWarningCard'
@@ -13,7 +12,9 @@ import type { MarketingChannel, CreateTemplatePayload } from '../marketing.types
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
-import { Heading } from '@/components/ui/Heading'
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 const SMS_CHAR_WARN = 140
 const SMS_CHAR_MAX = 160
@@ -75,25 +76,21 @@ export default function TemplateFormPage() {
   const showDltWarning = channel === 'SMS' && (!dltTemplateId.trim() || !dltRegistered)
   const charCount = bodyEn.length
 
+  const title = isEdit ? t.marketingEditTemplate : t.marketingNewTemplate
+
   if (isEdit && detailStatus === 'loading') {
     return (
-      <div className="page-container" style={{ padding: '16px' }} aria-busy="true" aria-label={t.marketingTemplates}>
-        {[0, 1, 2, 3].map((i) => <div key={i} style={{ height: 48, borderRadius: 8, background: 'var(--color-gray-100)', marginBottom: 12, animation: 'pulse 1.5s infinite' }} />)}
-      </div>
+      <AppShell header={<Header title={title} backTo={MARKETING_ROUTES.TEMPLATES} />}>
+        <PageContainer className="py-4 max-w-2xl mx-auto" aria-busy="true" aria-label={t.marketingTemplates}>
+          {[0, 1, 2, 3].map((i) => <div key={i} style={{ height: 48, borderRadius: 8, background: 'var(--color-gray-100)', marginBottom: 12, animation: 'pulse 1.5s infinite' }} />)}
+        </PageContainer>
+      </AppShell>
     )
   }
 
   return (
-    <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(MARKETING_ROUTES.TEMPLATES)} aria-label={t.marketingBackToTemplates}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <Heading level={1} className="text-xl font-bold text-[var(--text-primary)] m-0">
-          {isEdit ? t.marketingEditTemplate : t.marketingNewTemplate}
-        </Heading>
-      </div>
+    <AppShell header={<Header title={title} backTo={MARKETING_ROUTES.TEMPLATES} />}>
+      <PageContainer className="py-4 pb-24 max-w-2xl mx-auto">
 
       {/* DLT warning */}
       {showDltWarning && <DltWarningCard hasDltId={!!dltTemplateId.trim()} isRegistered={dltRegistered} />}
@@ -190,7 +187,8 @@ export default function TemplateFormPage() {
           {isPending ? t.marketingSaving : t.marketingSaveTemplate}
         </Button>
       </form>
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }
 

@@ -4,7 +4,7 @@ import { Text } from '@/components/ui/Text'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Plus, ArrowLeft, Loader2 } from 'lucide-react'
+import { Plus, Loader2 } from 'lucide-react'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { BomFormHeader } from '../components/BomFormHeader'
 import { BomComponentRow } from '../components/BomComponentRow'
@@ -14,6 +14,10 @@ import { useLanguage } from '@/context/LanguageContext'
 import { BOM_MAX_COMPONENTS } from '../bom.constants'
 import '../bom.css'
 import { Heading } from '@/components/ui/Heading'
+
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -36,15 +40,9 @@ function BomCreateForm() {
   const { form, errors, saving, updateField, addRow, updateRow, removeRow, save } = useBomForm()
 
   return (
-    <div className="bom-page">
-      <div className="bom-page__header">
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/bom')} aria-label={t.back}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <Heading level={1} className="bom-page__title">{t.bomNewRecipe}</Heading>
-      </div>
-
-      <form onSubmit={(e) => { e.preventDefault(); void save() }} noValidate>
+    <AppShell header={<Header title={t.bomNewRecipe} backTo="/bom" />}>
+      <PageContainer className="bom-page py-4 pb-24 max-w-2xl mx-auto">
+        <form onSubmit={(e) => { e.preventDefault(); void save() }} noValidate>
         <BomFormHeader form={form} errors={errors} editMode={false} onUpdate={updateField} />
 
         <section className="bom-section">
@@ -102,7 +100,8 @@ function BomCreateForm() {
           </Button>
         </div>
       </form>
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }
 
@@ -121,25 +120,23 @@ function BomEditForm({ id }: { id: string }) {
   }, [bom, formInit])
 
   if (status === 'loading') return (
-    <div className="bom-page"><FormSkeleton /></div>
+    <AppShell header={<Header title={t.bomEditRecipeTitle} backTo={`/bom/${id}`} />}>
+      <PageContainer className="bom-page py-4 max-w-2xl mx-auto"><FormSkeleton /></PageContainer>
+    </AppShell>
   )
 
   if (status === 'error') return (
-    <div className="bom-page">
-      <ErrorState title={t.bomLoadRecipeError} onRetry={refresh} />
-    </div>
+    <AppShell header={<Header title={t.bomEditRecipeTitle} backTo={`/bom/${id}`} />}>
+      <PageContainer className="bom-page py-4 max-w-2xl mx-auto">
+        <ErrorState title={t.bomLoadRecipeError} onRetry={refresh} />
+      </PageContainer>
+    </AppShell>
   )
 
   return (
-    <div className="bom-page">
-      <div className="bom-page__header">
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(`/bom/${id}`)} aria-label={t.back}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <Heading level={1} className="bom-page__title">{t.bomEditRecipeTitle}</Heading>
-      </div>
-
-      <form onSubmit={(e) => { e.preventDefault(); void save() }} noValidate>
+    <AppShell header={<Header title={t.bomEditRecipeTitle} backTo={`/bom/${id}`} />}>
+      <PageContainer className="bom-page py-4 pb-24 max-w-2xl mx-auto">
+        <form onSubmit={(e) => { e.preventDefault(); void save() }} noValidate>
         <BomFormHeader form={form} errors={errors} editMode={true} onUpdate={updateField} />
 
         <section className="bom-section">
@@ -178,7 +175,8 @@ function BomEditForm({ id }: { id: string }) {
           </Button>
         </div>
       </form>
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }
 

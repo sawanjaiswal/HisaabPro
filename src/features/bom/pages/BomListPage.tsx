@@ -1,6 +1,5 @@
 /** BomListPage — /bom — list all BOMs with 4 UI states */
 
-import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
@@ -12,7 +11,10 @@ import { useLanguage } from '@/context/LanguageContext'
 import { formatVersionBadge } from '../bom.utils'
 import type { BomListFilters } from '../bom.types'
 import '../bom.css'
-import { Heading } from '@/components/ui/Heading'
+
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
@@ -38,25 +40,29 @@ export default function BomListPage() {
   const setPage = (p: number) => setFilters((f) => ({ ...f, page: p }))
 
   return (
-    <div className="bom-page">
-      {/* Header */}
-      <div className="bom-page__header">
-        <div>
-          <Heading level={1} className="bom-page__title">{t.bomRecipes}</Heading>
-          {status === 'success' && (
-            <Text className="bom-page__subtitle">{pagination.total} {pagination.total !== 1 ? t.bomRecipesLower : t.bomRecipe}</Text>
-          )}
-        </div>
-        <Button
-          type="button"
-          variant="primary" size="sm"
-          onClick={() => navigate('/bom/new')}
-          aria-label={t.bomCreateNewRecipe}
-        >
-          <Plus size={16} aria-hidden="true" />
-          {t.bomNewRecipe}
-        </Button>
-      </div>
+    <AppShell
+      header={
+        <Header
+          title={t.bomRecipes}
+          subtitle={status === 'success' ? `${pagination.total} ${pagination.total !== 1 ? t.bomRecipesLower : t.bomRecipe}` : undefined}
+          backTo={true}
+          actions={
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={() => navigate('/bom/new')}
+              aria-label={t.bomCreateNewRecipe}
+              className="gap-1.5"
+            >
+              <Plus size={16} aria-hidden="true" />
+              <span>{t.bomNewRecipe}</span>
+            </Button>
+          }
+        />
+      }
+    >
+      <PageContainer className="bom-page py-4 pb-24 max-w-2xl mx-auto">
 
       {/* Loading */}
       {status === 'loading' && <BomListSkeleton />}
@@ -152,6 +158,7 @@ export default function BomListPage() {
           </Button>
         </div>
       )}
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }

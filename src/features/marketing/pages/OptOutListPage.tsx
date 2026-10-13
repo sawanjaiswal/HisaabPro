@@ -2,8 +2,7 @@
 
 import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, ShieldOff, ShieldCheck } from 'lucide-react'
+import { ShieldOff, ShieldCheck } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -12,6 +11,9 @@ import { ApiError } from '@/lib/api'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
 import { Heading } from '@/components/ui/Heading'
 
@@ -38,7 +40,6 @@ function useOptOutList() {
 }
 
 export default function OptOutListPage() {
-  const navigate = useNavigate()
   const { t } = useLanguage()
   const toast = useToast()
   const queryClient = useQueryClient()
@@ -65,17 +66,13 @@ export default function OptOutListPage() {
   const parties = query.data?.optOuts ?? []
 
   return (
-    <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketingAria}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <div style={{ flex: 1 }}>
-          <Heading level={1} className="text-xl font-bold text-[var(--text-primary)] m-0">{t.marketingOptOutsTitle}</Heading>
-          <Text style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0 }}>{t.marketingOptOutsSubtitle}</Text>
-        </div>
-      </div>
+    <AppShell>
+      <Header
+        title={t.marketingOptOutsTitle}
+        subtitle={t.marketingOptOutsSubtitle}
+        backTo={MARKETING_ROUTES.HUB}
+      />
+      <PageContainer className="py-4 pb-24 max-w-2xl mx-auto">
 
       {query.isPending && (
         <div aria-busy="true" aria-label={t.marketingLoadingOptOutsAria}>
@@ -146,6 +143,7 @@ export default function OptOutListPage() {
           </div>
         </div>
       )}
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }

@@ -2,7 +2,6 @@
 
 import { Text } from '@/components/ui/Text'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { useProductionRunDetail } from '../hooks/useProductionRuns'
 import { ProductionRunCancelButton } from '../components/ProductionRunCancelButton'
@@ -10,8 +9,11 @@ import { PR_STATUS_BADGE_CLASS } from '../production-run.constants'
 import { formatRunDate, formatCostPaise } from '../production-run.utils'
 import { useLanguage } from '@/context/LanguageContext'
 import '../production-run.css'
-import { Button } from '@/components/ui/Button'
 import { Heading } from '@/components/ui/Heading'
+
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 function PRDetailSkeleton() {
   const { t } = useLanguage()
@@ -37,15 +39,19 @@ export default function ProductionRunDetailPage() {
 
   if (!id) return null
 
+  const title = run ? `${run.bomName}` : t.prDetailTitle
+
   return (
-    <div className="bom-page">
-      {/* Back */}
-      <div className="bom-page__header">
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/production-runs')} aria-label={t.prBackToRuns}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <Heading level={1} className="bom-page__title">{t.prDetailTitle}</Heading>
-      </div>
+    <AppShell
+      header={
+        <Header
+          title={title}
+          subtitle={run ? formatRunDate(run.runDate) : undefined}
+          backTo="/production-runs"
+        />
+      }
+    >
+      <PageContainer className="bom-page py-4 pb-24 max-w-2xl mx-auto">
 
       {/* Loading */}
       {status === 'loading' && <PRDetailSkeleton />}
@@ -124,6 +130,7 @@ export default function ProductionRunDetailPage() {
           )}
         </>
       )}
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }

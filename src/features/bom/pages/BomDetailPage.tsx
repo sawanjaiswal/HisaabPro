@@ -4,7 +4,7 @@ import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Edit2, Play, Trash2 } from 'lucide-react'
+import { Edit2, Play, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { useToast } from '@/hooks/useToast'
@@ -17,6 +17,10 @@ import { deleteBom } from '../bom.service'
 import { useQueryClient } from '@tanstack/react-query'
 import '../bom.css'
 import { Heading } from '@/components/ui/Heading'
+
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 function BomDetailSkeleton() {
   const { t } = useLanguage()
@@ -56,15 +60,33 @@ export default function BomDetailPage() {
     }
   }
 
+  const title = bom ? bom.name : t.bomRecipe
+
   return (
-    <div className="bom-page">
-      {/* Back */}
-      <div className="bom-page__header">
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate('/bom')} aria-label={t.bomBackToRecipes}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <Heading level={1} className="bom-page__title">{t.bomRecipeDetail}</Heading>
-      </div>
+    <AppShell
+      header={
+        <Header
+          title={title}
+          subtitle={bom ? formatVersionBadge(bom.version) : undefined}
+          backTo="/bom"
+          actions={
+            bom ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(`/bom/${id}/edit`)}
+                aria-label={t.bomEditRecipeAria}
+              >
+                <Edit2 size={16} aria-hidden="true" />
+              </Button>
+            ) : undefined
+          }
+        />
+      }
+    >
+      <PageContainer className="bom-page py-4 pb-24 max-w-2xl mx-auto">
+
 
       {/* Loading */}
       {status === 'loading' && <BomDetailSkeleton />}
@@ -144,6 +166,7 @@ export default function BomDetailPage() {
         isDanger
         isLoading={deleting}
       />
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }

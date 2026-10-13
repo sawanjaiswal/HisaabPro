@@ -1,15 +1,16 @@
 /** MarketingHubPage — /marketing — landing with quick stats and CTAs */
 
-import { Text } from '@/components/ui/Text'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Send, FileText, Bell, ShieldOff } from 'lucide-react'
+import { Send, FileText, Bell, ShieldOff } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { Button } from '@/components/ui/Button'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { listCampaigns, listTemplates, listReminderRules } from '../marketing.service'
-import { Button } from '@/components/ui/Button'
-import { Heading } from '@/components/ui/Heading'
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 function StatCard({ label, value, loading }: { label: string; value: number | string; loading?: boolean }) {
   return (
@@ -107,17 +108,16 @@ export default function MarketingHubPage() {
   const activeReminders = rules.filter((r) => r.enabled).length
 
   return (
-    <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(-1)} aria-label={t.marketingBack}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <div>
-          <Heading level={1} className="text-xl font-bold text-[var(--text-primary)] m-0">{t.marketing}</Heading>
-          <Text style={{ fontSize: '13px', color: 'var(--color-gray-500)', margin: 0 }}>{t.marketingSubtitle}</Text>
-        </div>
-      </div>
+    <AppShell
+      header={
+        <Header
+          title={t.marketing}
+          subtitle={t.marketingSubtitle}
+          backTo={true}
+        />
+      }
+    >
+      <PageContainer className="py-4 pb-24 max-w-2xl mx-auto">
 
       {/* Stats / error */}
       {hasError ? (
@@ -190,6 +190,7 @@ export default function MarketingHubPage() {
           cta={t.marketingView}
         />
       </div>
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }

@@ -243,4 +243,5 @@ export const enExt43 = {
 
   // Dashboard trend window (the hero chart and the overview carousel)
   last30Days: 'Last 30 days',
+  last90Days: 'Last 90 days',
 } as const

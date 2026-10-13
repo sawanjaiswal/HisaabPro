@@ -1,6 +1,7 @@
 /** POS Quick-Sale — Main page */
 
 import { useCallback } from 'react'
+import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -32,38 +33,40 @@ export default function PosPage() {
 
   if (cart.status === 'receipt' && checkout.receipt) {
     return (
-      <div className="pos-page space-y-6">
-        <SaleReceipt receipt={checkout.receipt} items={checkout.receiptItems} onNewSale={handleNewSale} />
-      </div>
+      <AppShell>
+        <div className="pos-page space-y-6">
+          <SaleReceipt receipt={checkout.receipt} items={checkout.receiptItems} onNewSale={handleNewSale} />
+        </div>
+      </AppShell>
     )
   }
 
   return (
-    <div className="pos-page space-y-6">
-      <Header title={t.posQuickSale} backTo={ROUTES.DASHBOARD} />
+    <AppShell header={<Header title={t.posQuickSale} backTo={ROUTES.DASHBOARD} />}>
+      <div className="pos-page space-y-6">
+        <ScanBar onProductFound={cart.addItem} />
 
-      <ScanBar onProductFound={cart.addItem} />
+        <div className="pos-body">
+          {cart.items.length === 0 ? (
+            <QuickProductGrid onSelect={cart.addItem} />
+          ) : (
+            <div className="pos-cart-list stagger-list" role="list" aria-label={t.posCartItems}>
+              {cart.items.map((item) => (
+                <CartItem key={item.productId} item={item} onUpdateQty={cart.updateQty} onRemove={cart.removeItem} />
+              ))}
+            </div>
+          )}
+        </div>
 
-      <div className="pos-body">
-        {cart.items.length === 0 ? (
-          <QuickProductGrid onSelect={cart.addItem} />
-        ) : (
-          <div className="pos-cart-list stagger-list" role="list" aria-label={t.posCartItems}>
-            {cart.items.map((item) => (
-              <CartItem key={item.productId} item={item} onUpdateQty={cart.updateQty} onRemove={cart.removeItem} />
-            ))}
-          </div>
-        )}
+        <CartSummary items={cart.items} onCheckout={() => cart.setStatus('checkout')} />
+        <CheckoutSheet
+          open={cart.status === 'checkout'}
+          onClose={() => cart.setStatus('cart-active')}
+          items={cart.items}
+          isProcessing={checkout.isProcessing}
+          onConfirm={handleConfirm}
+        />
       </div>
-
-      <CartSummary items={cart.items} onCheckout={() => cart.setStatus('checkout')} />
-      <CheckoutSheet
-        open={cart.status === 'checkout'}
-        onClose={() => cart.setStatus('cart-active')}
-        items={cart.items}
-        isProcessing={checkout.isProcessing}
-        onConfirm={handleConfirm}
-      />
-    </div>
+    </AppShell>
   )
 }

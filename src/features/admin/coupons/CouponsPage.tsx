@@ -7,6 +7,7 @@ import { Text } from '@/components/ui/Text'
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Tag, Plus, Search } from 'lucide-react'
+import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
@@ -68,10 +69,11 @@ export default function CouponsPage() {
   )
 
   return (
-    <>
-      <Header
-        title={t.coupons ?? "Coupons"}
-        actions={
+    <AppShell
+      header={
+        <Header
+          title={t.coupons ?? "Coupons"}
+          actions={
           <Button variant="none"
             className="coupon-add-btn"
             onClick={() => setShowForm(true)}
@@ -81,6 +83,8 @@ export default function CouponsPage() {
           </Button>
         }
       />
+    }
+  >
 
       <PageContainer>
         {/* Search + filter bar */}
@@ -186,6 +190,6 @@ export default function CouponsPage() {
           </div>
         </div>
       )}
-    </>
+    </AppShell>
   )
 }

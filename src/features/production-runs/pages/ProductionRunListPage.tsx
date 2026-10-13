@@ -1,6 +1,5 @@
 /** ProductionRunListPage — /production-runs — 4 UI states */
 
-import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { useNavigate } from 'react-router-dom'
@@ -13,7 +12,10 @@ import { formatRunDate, formatCostPaise } from '../production-run.utils'
 import { useLanguage } from '@/context/LanguageContext'
 import type { ProductionRunListFilters, ProductionRunStatus } from '../production-run.types'
 import '../production-run.css'
-import { Heading } from '@/components/ui/Heading'
+
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 function PRListSkeleton() {
   const { t } = useLanguage()
@@ -49,24 +51,29 @@ export default function ProductionRunListPage() {
     setFilters((f) => ({ ...f, status: s || undefined, page: 1 }))
 
   return (
-    <div className="bom-page">
-      {/* Header */}
-      <div className="bom-page__header">
-        <div>
-          <Heading level={1} className="bom-page__title">{t.prTitle}</Heading>
-          {status === 'success' && (
-            <Text className="bom-page__subtitle">{pagination.total} {pagination.total !== 1 ? t.prRuns : t.prRun}</Text>
-          )}
-        </div>
-        <Button
-          type="button"
-          variant="primary" size="sm"
-          onClick={() => navigate('/production-runs/new')}
-          aria-label={t.prStartRunAria}
-        >
-          <Plus size={16} aria-hidden="true" /> {t.prStartRun}
-        </Button>
-      </div>
+    <AppShell
+      header={
+        <Header
+          title={t.prTitle}
+          subtitle={status === 'success' ? `${pagination.total} ${pagination.total !== 1 ? t.prRuns : t.prRun}` : undefined}
+          backTo={true}
+          actions={
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={() => navigate('/production-runs/new')}
+              aria-label={t.prStartRunAria}
+              className="gap-1.5"
+            >
+              <Plus size={16} aria-hidden="true" />
+              <span>{t.prStartRun}</span>
+            </Button>
+          }
+        />
+      }
+    >
+      <PageContainer className="bom-page py-4 pb-24 max-w-2xl mx-auto">
 
       {/* Status filter */}
       <div className="pr-filter-bar" role="group" aria-label={t.prFilterByStatus}>
@@ -154,6 +161,7 @@ export default function ProductionRunListPage() {
           </Button>
         </div>
       )}
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }

@@ -3,7 +3,7 @@
 import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, RefreshCw, Pencil, Trash2, FileText } from 'lucide-react'
+import { Plus, RefreshCw, Pencil, Trash2, FileText } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useMarketingTemplateList, useDeleteTemplate } from '../hooks/useMarketingTemplates'
@@ -13,6 +13,10 @@ import { formatDate } from '../marketing.utils'
 import type { MarketingChannel, MarketingTemplate } from '../marketing.types'
 import { Button } from '@/components/ui/Button'
 import { Heading } from '@/components/ui/Heading'
+
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 export default function TemplateListPage() {
   const navigate = useNavigate()
@@ -29,22 +33,26 @@ export default function TemplateListPage() {
   ]
 
   return (
-    <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketing}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <Heading level={1} className="flex-1 text-xl font-bold text-[var(--text-primary)] m-0">{t.marketingTemplates}</Heading>
-        <Button variant="none"
-          type="button"
-          onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_NEW)}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
-          aria-label={t.marketingNewTemplate}
-        >
-          <Plus size={16} aria-hidden="true" /> {t.marketingNewTemplate}
-        </Button>
-      </div>
+    <AppShell
+      header={
+        <Header
+          title={t.marketingTemplates}
+          backTo={MARKETING_ROUTES.HUB}
+          actions={
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_NEW)}
+              className="gap-1.5"
+            >
+              <Plus size={16} aria-hidden="true" />
+              <span>{t.marketingNewTemplate}</span>
+            </Button>
+          }
+        />
+      }
+    >
+      <PageContainer className="py-4 pb-24 max-w-2xl mx-auto">
 
       {/* Channel filter */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
@@ -162,6 +170,7 @@ export default function TemplateListPage() {
           </div>
         </div>
       )}
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }

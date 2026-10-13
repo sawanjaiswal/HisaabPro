@@ -1,4 +1,5 @@
 import { Text } from '@/components/ui/Text'
+import { AppShell } from '@/components/layout/AppShell'
 import { PIN_MAX_LENGTH } from './settings.constants'
 import { useLanguage } from '@/hooks/useLanguage'
 import { PinPad } from './components/PinPad'
@@ -32,18 +33,19 @@ export default function PinSetupPage() {
   } = usePinSetup()
 
   return (
-    <div
-      className="pin-screen stagger-enter"
-      style={{ position: 'relative' }}
-      aria-label={pageTitle}
-    >
+    <AppShell>
+      <div
+        className="pin-screen stagger-enter"
+        style={{ position: 'relative' }}
+        aria-label={pageTitle}
+      >
       {/* Back button — top-left */}
       <Button variant="none"
         type="button"
         onClick={handleBack}
         style={{
           position: 'absolute',
-          top: 'var(--space-5)',
+          top: 'calc(var(--space-4) + env(safe-area-inset-top, 0px))',
           left: 'var(--space-4)',
           background: 'none',
           border: 'none',
@@ -137,6 +139,7 @@ export default function PinSetupPage() {
           {t.skipSetUpLater}
         </Button>
       )}
-    </div>
+      </div>
+    </AppShell>
   )
 }

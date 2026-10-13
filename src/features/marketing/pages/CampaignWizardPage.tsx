@@ -1,7 +1,7 @@
 /** CampaignWizardPage — /marketing/campaigns/new — 5-step wizard */
 
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useCampaignWizard } from '../hooks/useCampaignWizard'
 import { useCreateCampaign } from '../hooks/useCampaigns'
@@ -14,7 +14,9 @@ import { CampaignWizardStep5Preview } from '../components/CampaignWizardStep5Pre
 import { MARKETING_ROUTES } from '../marketing.constants'
 import type { WizardStep } from '../marketing.types'
 import { Button } from '@/components/ui/Button'
-import { Heading } from '@/components/ui/Heading'
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 function StepIndicator({ current, total, ariaLabel }: { current: WizardStep; total: number; ariaLabel: string }) {
   return (
@@ -100,17 +102,16 @@ export default function CampaignWizardPage() {
   const stepAria = `${t.marketingStepAriaLabel} ${state.step}/5`
 
   return (
-    <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 480, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <Button variant="ghost" type="button" className="btn-icon" onClick={handleBack} aria-label={t.marketingBackAria}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <div style={{ flex: 1 }}>
-          <Heading level={1} style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-gray-900)', margin: 0 }}>{t.marketingNewCampaignTitle}</Heading>
-          <div style={{ fontSize: '12px', color: 'var(--color-gray-500)' }}>{stepLabel}</div>
-        </div>
-      </div>
+    <AppShell
+      header={
+        <Header
+          title={t.marketingNewCampaignTitle}
+          subtitle={stepLabel}
+          onBack={handleBack}
+        />
+      }
+    >
+      <PageContainer className="py-4 pb-24 max-w-lg mx-auto">
 
       {/* Step indicator */}
       <StepIndicator current={state.step} total={5} ariaLabel={stepAria} />
@@ -183,6 +184,7 @@ export default function CampaignWizardPage() {
           {t.marketingNext} <ChevronRight size={18} aria-hidden="true" />
         </Button>
       )}
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }

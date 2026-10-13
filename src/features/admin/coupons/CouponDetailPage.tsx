@@ -6,7 +6,8 @@
 import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Tag } from 'lucide-react'
+import { Tag, ArrowLeft } from 'lucide-react'
+import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
@@ -56,8 +57,7 @@ export default function CouponDetailPage() {
 
   if (status === 'loading') {
     return (
-      <>
-        <Header title={t.couponDetail} />
+      <AppShell header={<Header title={t.couponDetail} backTo="/admin/coupons" />}>
         <PageContainer>
           <div className="coupon-detail-skeleton" aria-busy="true">
             <Skeleton width="40%" height="1.5rem" />
@@ -65,14 +65,13 @@ export default function CouponDetailPage() {
             <Skeleton width="100%" height="6rem" />
           </div>
         </PageContainer>
-      </>
+      </AppShell>
     )
   }
 
   if (status === 'error' || !detail) {
     return (
-      <>
-        <Header title={t.couponDetail} />
+      <AppShell header={<Header title={t.couponDetail} backTo="/admin/coupons" />}>
         <PageContainer>
           <ErrorState
             title={t.couldntLoadCoupon}
@@ -80,7 +79,7 @@ export default function CouponDetailPage() {
             onRetry={() => navigate(0)}
           />
         </PageContainer>
-      </>
+      </AppShell>
     )
   }
 
@@ -88,10 +87,12 @@ export default function CouponDetailPage() {
   const statusColor = STATUS_COLORS[coupon.status]
 
   return (
-    <>
-      <Header
-        title={coupon.code}
-        actions={
+    <AppShell
+      header={
+        <Header
+          title={coupon.code}
+          backTo="/admin/coupons"
+          actions={
           <Button variant="none"
             className="coupon-back-btn"
             onClick={() => navigate(-1)}
@@ -101,6 +102,8 @@ export default function CouponDetailPage() {
           </Button>
         }
       />
+    }
+  >
 
       <PageContainer>
         {/* Status + Discount */}
@@ -193,6 +196,6 @@ export default function CouponDetailPage() {
           )}
         </section>
       </PageContainer>
-    </>
+    </AppShell>
   )
 }

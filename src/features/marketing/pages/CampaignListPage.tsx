@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Plus, RefreshCw, Send } from 'lucide-react'
+import { Plus, RefreshCw, Send } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useCampaignList } from '../hooks/useCampaigns'
@@ -12,7 +12,9 @@ import { MARKETING_ROUTES } from '../marketing.constants'
 import { formatDate, formatPaiseAsRupees } from '../marketing.utils'
 import type { CampaignStatus } from '../marketing.types'
 import { Button } from '@/components/ui/Button'
-import { Heading } from '@/components/ui/Heading'
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 type FilterValue = CampaignStatus | ''
 
@@ -43,22 +45,27 @@ export default function CampaignListPage() {
   const { campaigns, status, refresh } = useCampaignList(statusFilter)
 
   return (
-    <div className="page-container" style={{ padding: '16px', paddingBottom: 'var(--bottom-nav-height, 112px)', maxWidth: 600, margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-        <Button variant="ghost" type="button" className="btn-icon" onClick={() => navigate(MARKETING_ROUTES.HUB)} aria-label={t.marketingBackToMarketingAria}>
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <Heading level={1} className="flex-1 text-xl font-bold text-[var(--text-primary)] m-0">{t.marketingCampaignsTitle}</Heading>
-        <Button variant="none"
-          type="button"
-          onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer', minHeight: '44px' }}
-          aria-label={t.marketingNewAria}
-        >
-          <Plus size={16} aria-hidden="true" /> {t.marketingNew}
-        </Button>
-      </div>
+    <AppShell
+      header={
+        <Header
+          title={t.marketingCampaignsTitle}
+          backTo={MARKETING_ROUTES.HUB}
+          actions={
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)}
+              aria-label={t.marketingNewAria}
+              className="gap-1.5"
+            >
+              <Plus size={16} aria-hidden="true" />
+              <span>{t.marketingNew}</span>
+            </Button>
+          }
+        />
+      }
+    >
+      <PageContainer className="py-4 pb-24 max-w-2xl mx-auto">
 
       {/* Status filter chips */}
       <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', marginBottom: '20px' }}>
@@ -138,6 +145,7 @@ export default function CampaignListPage() {
           ))}
         </div>
       )}
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }

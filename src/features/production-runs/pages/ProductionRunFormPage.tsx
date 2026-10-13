@@ -2,14 +2,18 @@
 
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
-import { ArrowLeft, Loader2 } from 'lucide-react'
+import { Heading } from '@/components/ui/Heading'
+import { Loader2 } from 'lucide-react'
 import { ProductionRunWizardStep1 } from '../components/ProductionRunWizardStep1'
 import { ProductionRunWizardStep2 } from '../components/ProductionRunWizardStep2'
 import { ProductionRunWizardStep3 } from '../components/ProductionRunWizardStep3'
 import { useProductionRunForm } from '../hooks/useProductionRunForm'
 import { useLanguage } from '@/context/LanguageContext'
 import '../production-run.css'
-import { Heading } from '@/components/ui/Heading'
+
+import { AppShell } from '@/components/layout/AppShell'
+import { Header } from '@/components/layout/Header'
+import { PageContainer } from '@/components/layout/PageContainer'
 
 export default function ProductionRunFormPage() {
   const navigate = useNavigate()
@@ -28,33 +32,27 @@ export default function ProductionRunFormPage() {
   }
 
   return (
-    <div className="bom-page">
-      {/* Header */}
-      <div className="bom-page__header">
-        <Button variant="ghost"
-          type="button"
-          className="btn-icon"
-          onClick={handleBack}
-          aria-label={step === 0 ? t.prBackToRuns : t.prPrevStep}
-        >
-          <ArrowLeft size={20} aria-hidden="true" />
-        </Button>
-        <div style={{ flex: 1 }}>
-          <Heading level={1} className="bom-page__title">{wizardSteps[step]}</Heading>
-          <div className="pr-wizard-progress" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={wizardSteps.length}>
-            <div className="pr-wizard-dots">
-              {wizardSteps.map((_, i) => (
-                <span
-                  key={i}
-                  className={`pr-wizard-dot${i === step ? ' is-active' : i < step ? ' is-done' : ''}`}
-                  aria-hidden="true"
-                />
-              ))}
-            </div>
-            <span className="pr-wizard-progress__label">{t.prStep} {step + 1} {t.prOf} {wizardSteps.length}</span>
+    <AppShell
+      header={
+        <Header
+          title={wizardSteps[step]}
+          subtitle={`${t.prStep} ${step + 1} ${t.prOf} ${wizardSteps.length}`}
+          onBack={handleBack}
+        />
+      }
+    >
+      <PageContainer className="bom-page py-4 pb-24 max-w-2xl mx-auto">
+        <div className="pr-wizard-progress mb-4" role="progressbar" aria-valuenow={step + 1} aria-valuemin={1} aria-valuemax={wizardSteps.length}>
+          <div className="pr-wizard-dots">
+            {wizardSteps.map((_, i) => (
+              <span
+                key={i}
+                className={`pr-wizard-dot${i === step ? ' is-active' : i < step ? ' is-done' : ''}`}
+                aria-hidden="true"
+              />
+            ))}
           </div>
         </div>
-      </div>
 
       {/* Steps */}
       {step === 0 && (
@@ -128,6 +126,7 @@ export default function ProductionRunFormPage() {
           </div>
         </div>
       )}
-    </div>
+      </PageContainer>
+    </AppShell>
   )
 }

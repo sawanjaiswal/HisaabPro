@@ -25,14 +25,6 @@ function drCrTag(paise: number): string {
   return paise > 0 ? 'Dr' : 'Cr'
 }
 
-/** "10 May 2025" — short Indian date. */
-function formatShortDate(iso: string): string {
-  const d = new Date(iso)
-  return Number.isNaN(d.getTime())
-    ? ''
-    : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-}
-
 /** Trailing digits of a voucher number: "INV-1056" → "1056". */
 function trailingDigits(voucherNumber: string): string {
   return voucherNumber.match(/(\d+)$/)?.[1] ?? voucherNumber
@@ -63,7 +55,7 @@ function rowSubtitle(row: LedgerRow, itemsWord: string): string | undefined {
   return num || undefined
 }
 
-export function LedgerRowList({ rows, openingBalance, closingBalance, asOn }: LedgerRowListProps) {
+export function LedgerRowList({ rows, openingBalance }: LedgerRowListProps) {
   const { t } = useLanguage()
   const navigate = useNavigate()
   const groups = groupLedgerByMonth(rows, openingBalance)
@@ -74,7 +66,6 @@ export function LedgerRowList({ rows, openingBalance, closingBalance, asOn }: Le
     overdue: t.overdue,
     draft: t.draft,
   }
-  const closingTag = drCrTag(closingBalance)
   const openingTag = drCrTag(openingBalance)
 
   const rowHref = (row: LedgerRow): (() => void) | undefined => {
