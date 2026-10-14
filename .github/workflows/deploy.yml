@@ -16,12 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Trigger Backend Deployment
-        env:
-          COOLIFY_TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
-        run: |
-          echo "Triggering hisaabpro-backend deploy on Coolify (AWS Lightsail)..."
-          RESPONSE=$(curl -s -X POST \
-            -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
-            "http://13.200.234.40:8000/api/v1/deploy?uuid=aokz8bhkdqv1s67cxpbi46he&force=true")
-          echo "Backend deploy response: ${RESPONSE}"
+      - name: Trigger Backend Deployment via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "Triggering hisaabpro-backend deployment inside Coolify..."
+            sudo docker exec coolify php artisan tinker --execute='
+              $app = App\Models\Application::where("uuid", "aokz8bhkdqv1s67cxpbi46he")->first();
+              $deployment_uuid = new_public_id();
+              $res = queue_application_deployment(application: $app, deployment_uuid: $deployment_uuid, force_rebuild: true);
+              echo json_encode(["status" => $res, "deployment_uuid" => $deployment_uuid]);
+            '
