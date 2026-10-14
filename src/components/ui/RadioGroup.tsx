@@ -16,6 +16,7 @@ export const RadioGroup = React.forwardRef<
     <RadioGroupPrimitive.Root
       ref={ref}
       orientation={orientation}
+      data-slot="radio-group"
       className={cn(
         orientation === 'horizontal'
           ? 'flex flex-row flex-wrap items-center gap-6'
@@ -45,8 +46,9 @@ export const RadioGroupItem = React.forwardRef<
     <RadioGroupPrimitive.Item
       ref={ref}
       id={radioId}
+      data-slot="radio-group-item"
       className={cn(
-        'aspect-square h-4 w-4 shrink-0 rounded-full border border-[var(--border-control)] bg-[var(--bg-surface)] text-[var(--primary)] ring-offset-background hover:border-[var(--primary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-[var(--primary)] transition-colors',
+        'aspect-square h-4 w-4 shrink-0 rounded-full border border-[var(--border-control)] bg-[var(--bg-surface)] text-[var(--primary)] ring-offset-background hover:border-[var(--primary)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-[var(--primary)] flex items-center justify-center transition-colors',
         className
       )}
       {...props}
@@ -68,11 +70,11 @@ export const RadioGroupItem = React.forwardRef<
         description ? 'items-start' : 'items-center'
       )}
     >
-      <div className={cn('shrink-0', description && 'pt-0.5')}>{radioNode}</div>
+      {radioNode}
       <label
         htmlFor={radioId}
         className={cn(
-          'cursor-pointer text-sm font-medium text-[var(--text-primary)]',
+          'cursor-pointer text-sm font-medium text-[var(--text-primary)] select-none',
           !description && 'leading-none'
         )}
       >

@@ -157,14 +157,16 @@ export function PartyAddressesTab({
                       {t.defaultLabel}
                     </span>
                   )}
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     type="button"
                     onClick={() => handleOpenEdit(address)}
-                    className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--color-gray-200)]"
+                    className="h-6 w-6 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] rounded hover:bg-[var(--color-gray-200)]"
                     aria-label={`Edit ${address.label}`}
                   >
                     <Pencil size={13} />
-                  </button>
+                  </Button>
                 </div>
               </div>
               <Text className="text-xs text-[var(--text-secondary)] leading-relaxed">

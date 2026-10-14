@@ -131,10 +131,10 @@ export const LineItemFields: React.FC<LineItemFieldsProps> = ({
             >
               <Minus size={13} />
             </Button>
-            <input
+            <Input
               id={`line-qty-${index}`}
               type="number"
-              className="w-full text-center text-sm font-bold text-[var(--color-text-primary)] bg-transparent border-0 focus:outline-none p-0 tabular-nums [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-full text-center text-sm font-bold text-[var(--color-text-primary)] bg-transparent border-0 focus:outline-none p-0 tabular-nums [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none shadow-none focus-visible:ring-0"
               value={quantity === 0 ? '' : quantity}
               placeholder="1"
               min={0}

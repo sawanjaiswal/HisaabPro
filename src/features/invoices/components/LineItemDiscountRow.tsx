@@ -3,6 +3,7 @@ import { Tag, X } from 'lucide-react'
 import type { DiscountType } from '../invoice.types'
 import { DISCOUNT_TYPE_LABELS } from '../invoice.constants'
 import { Input } from '@/components/ui/Input'
+import { Button } from '@/components/ui/Button'
 
 const DISCOUNT_TYPES: DiscountType[] = ['AMOUNT', 'PERCENTAGE']
 
@@ -40,7 +41,8 @@ export const LineItemDiscountRow: React.FC<LineItemDiscountRowProps> = ({
   if (!showDiscount && !hasActiveDiscount) {
     return (
       <div className="flex items-center">
-        <button
+        <Button
+          variant="none"
           type="button"
           onClick={onOpen}
           disabled={readOnly}
@@ -48,7 +50,7 @@ export const LineItemDiscountRow: React.FC<LineItemDiscountRowProps> = ({
         >
           <Tag size={12} className="text-[var(--color-gray-400)]" />
           <span>{addDiscountLabel}</span>
-        </button>
+        </Button>
       </div>
     )
   }
@@ -61,7 +63,8 @@ export const LineItemDiscountRow: React.FC<LineItemDiscountRowProps> = ({
         aria-label="Discount Type"
       >
         {DISCOUNT_TYPES.map((type) => (
-          <button
+          <Button
+            variant="none"
             key={type}
             type="button"
             onClick={() => onSelectType(type)}
@@ -75,7 +78,7 @@ export const LineItemDiscountRow: React.FC<LineItemDiscountRowProps> = ({
             }`}
           >
             {DISCOUNT_TYPE_LABELS[type]}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -96,7 +99,8 @@ export const LineItemDiscountRow: React.FC<LineItemDiscountRowProps> = ({
         />
       </div>
 
-      <button
+      <Button
+        variant="none"
         type="button"
         onClick={onRemove}
         disabled={readOnly}
@@ -105,7 +109,7 @@ export const LineItemDiscountRow: React.FC<LineItemDiscountRowProps> = ({
         aria-label="Remove discount"
       >
         <X size={14} />
-      </button>
+      </Button>
     </div>
   )
 }

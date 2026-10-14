@@ -13,9 +13,8 @@ import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import { useDocumentSettings } from './useDocumentSettings'
 import { UpiIdInput } from './components/UpiIdInput'
-import './settings-toggle.css'
 import './settings.css'
-import { Input } from '@/components/ui/Input'
+import { Switch } from '@/components/ui/Switch'
 
 interface BusinessVpaResponse {
   upiVpa: string | null
@@ -71,42 +70,34 @@ export default function DocumentSettingsPage() {
         {status === 'success' && (
           <div className="settings-group">
             {/* Enforce MOQ toggle */}
-            <label className="settings-item settings-item--toggle">
+            <div className="settings-item settings-item--toggle flex items-center justify-between">
               <span className="settings-item-content">
                 <span className="settings-item-label">{t.enforceMoqLabel}</span>
                 <span className="settings-item-description">{t.enforceMoqDesc}</span>
               </span>
               <span className="settings-item-action">
-                <span className="settings-toggle">
-                  <Input
-                    type="checkbox"
-                    checked={settings.enforceMoq ?? false}
-                    onChange={(e) => updateField('enforceMoq', e.target.checked)}
-                    aria-label={t.enforceMoqLabel}
-                  />
-                  <span className="settings-toggle-track" />
-                </span>
+                <Switch
+                  checked={settings.enforceMoq ?? false}
+                  onCheckedChange={(checked) => updateField('enforceMoq', checked)}
+                  ariaLabel={t.enforceMoqLabel}
+                />
               </span>
-            </label>
+            </div>
 
             {/* Show line item images toggle */}
-            <label className="settings-item settings-item--toggle">
+            <div className="settings-item settings-item--toggle flex items-center justify-between">
               <span className="settings-item-content">
                 <span className="settings-item-label">{t.showLineItemImagesLabel}</span>
                 <span className="settings-item-description">{t.showLineItemImagesDesc}</span>
               </span>
               <span className="settings-item-action">
-                <span className="settings-toggle">
-                  <Input
-                    type="checkbox"
-                    checked={settings.showLineItemImages ?? false}
-                    onChange={(e) => updateField('showLineItemImages', e.target.checked)}
-                    aria-label={t.showLineItemImagesLabel}
-                  />
-                  <span className="settings-toggle-track" />
-                </span>
+                <Switch
+                  checked={settings.showLineItemImages ?? false}
+                  onCheckedChange={(checked) => updateField('showLineItemImages', checked)}
+                  ariaLabel={t.showLineItemImagesLabel}
+                />
               </span>
-            </label>
+            </div>
           </div>
         )}
 

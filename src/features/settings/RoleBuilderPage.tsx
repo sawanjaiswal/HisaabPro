@@ -28,7 +28,6 @@ import { RoleSaveBar } from './components/RoleSaveBar'
 import { PERMISSION_MODULES } from './permission.constants'
 import type { Role } from './settings.types'
 import './role-builder.css'
-import './settings-toggle.css'
 
 const LABEL_STYLE: React.CSSProperties = {
   fontSize: 'var(--fs-xs)',

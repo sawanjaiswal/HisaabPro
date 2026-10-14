@@ -83,7 +83,7 @@ export function ReceivePaymentToggle({ grandTotal, payment, onChange }: ReceiveP
       <div className="receive-payment-amount-row">
         <div className="receive-payment-input-wrap">
           <span className="receive-payment-currency-sym" aria-hidden="true">₹</span>
-          <input
+          <Input
             type="number"
             inputMode="decimal"
             value={raw}
@@ -94,6 +94,7 @@ export function ReceivePaymentToggle({ grandTotal, payment, onChange }: ReceiveP
             placeholder="0.00"
             aria-label={t.amountReceivedLabel}
             min={0}
+            className="bg-transparent border-0 text-xl font-bold p-0 shadow-none focus-visible:ring-0"
           />
         </div>
         {received > 0 && (
@@ -112,7 +113,8 @@ export function ReceivePaymentToggle({ grandTotal, payment, onChange }: ReceiveP
       {received > 0 && (
         <div className="receive-payment-modes" role="group" aria-label={t.amountReceivedLabel}>
           {QUICK_MODES.map(({ value, icon: Icon, labelKey }) => (
-            <button
+            <Button
+              variant="none"
               key={value}
               type="button"
               className={`receive-payment-mode-btn ${payment.mode === value ? 'active' : ''}`}
@@ -121,7 +123,7 @@ export function ReceivePaymentToggle({ grandTotal, payment, onChange }: ReceiveP
             >
               <Icon size={14} aria-hidden="true" />
               <span>{t[labelKey]}</span>
-            </button>
+            </Button>
           ))}
         </div>
       )}

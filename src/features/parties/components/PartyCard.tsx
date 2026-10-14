@@ -1,9 +1,10 @@
 import React, { useRef, useCallback } from 'react'
-import { Check, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PartySummary, PartyType } from '../party.types'
 import { formatOutstanding, getPartyRowStatus } from '../party.utils'
-import { PartyAvatar } from '../../../components/ui/PartyAvatar'
+import { PartyAvatar } from '@/components/ui/PartyAvatar'
+import { Checkbox } from '@/components/ui/Checkbox'
 import { OptOutChip } from '@/features/marketing/components/OptOutChip'
 
 /** labelKey per party type — resolves via useLanguage() */
@@ -82,11 +83,8 @@ export const PartyCard: React.FC<PartyCardProps> = ({
       style={{ cursor: 'pointer' }}
     >
       {isBulkMode ? (
-        <div
-          className={`bulk-check${isSelected ? ' bulk-check--active' : ''}`}
-          aria-hidden="true"
-        >
-          {isSelected && <Check size={16} />}
+        <div className="w-9 h-9 flex items-center justify-center shrink-0" aria-hidden="true">
+          <Checkbox checked={isSelected} tabIndex={-1} />
         </div>
       ) : (
         <PartyAvatar name={party.name} size="sm" className="txn-avatar" />

@@ -1,7 +1,7 @@
 import { Text } from '@/components/ui/Text'
 import type { TransactionLockConfig } from '../settings.types'
 import { useLanguage } from '@/hooks/useLanguage'
-import { Input } from '@/components/ui/Input'
+import { Switch } from '@/components/ui/Switch'
 
 interface ApprovalTogglesSectionProps {
   requireApprovalForEdit: boolean
@@ -28,14 +28,11 @@ export function ApprovalTogglesSection({
               {t.approvalEditsDesc}
             </Text>
           </div>
-          <label className="settings-toggle" aria-label={t.requireApprovalEditsAria}>
-            <Input
-              type="checkbox"
-              checked={requireApprovalForEdit}
-              onChange={(e) => onUpdate('requireApprovalForEdit', e.target.checked)}
-            />
-            <span className="settings-toggle-track" />
-          </label>
+          <Switch
+            checked={requireApprovalForEdit}
+            onCheckedChange={(checked) => onUpdate('requireApprovalForEdit', checked)}
+            ariaLabel={t.requireApprovalEditsAria}
+          />
         </div>
 
         <div className="txn-control-row">
@@ -45,14 +42,11 @@ export function ApprovalTogglesSection({
               {t.approvalDeletesDesc}
             </Text>
           </div>
-          <label className="settings-toggle" aria-label={t.requireApprovalDeletesAria}>
-            <Input
-              type="checkbox"
-              checked={requireApprovalForDelete}
-              onChange={(e) => onUpdate('requireApprovalForDelete', e.target.checked)}
-            />
-            <span className="settings-toggle-track" />
-          </label>
+          <Switch
+            checked={requireApprovalForDelete}
+            onCheckedChange={(checked) => onUpdate('requireApprovalForDelete', checked)}
+            ariaLabel={t.requireApprovalDeletesAria}
+          />
         </div>
 
       </div>

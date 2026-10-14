@@ -17,7 +17,6 @@ import { useDocumentCustomFields } from './useDocumentCustomFields'
 import { DocumentCustomFieldRow } from './components/DocumentCustomFieldRow'
 import { DocumentCustomFieldDrawer } from './components/DocumentCustomFieldDrawer'
 import type { DocumentCustomFieldDef } from './document-custom-fields.service'
-import './settings-toggle.css'
 import './settings.css'
 
 export default function DocumentCustomFieldsPage() {

@@ -1,7 +1,8 @@
 /** Payment list row — direction arrow + party name + amount + type badge */
 
 import React, { useRef, useCallback } from 'react'
-import { ArrowDownLeft, ArrowUpRight, Check } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight } from 'lucide-react'
+import { Checkbox } from '@/components/ui/Checkbox'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { PaymentSummary } from '../payment.types'
 import { PAYMENT_TYPE_LABELS } from '../payment.constants'
@@ -91,11 +92,8 @@ export const PaymentCard: React.FC<PaymentCardProps> = ({
       onPointerCancel={handlePointerUp}
     >
       {isBulkMode ? (
-        <div
-          className={`bulk-check${isSelected ? ' bulk-check--active' : ''}`}
-          aria-hidden="true"
-        >
-          {isSelected && <Check size={16} />}
+        <div className="w-9 h-9 flex items-center justify-center shrink-0" aria-hidden="true">
+          <Checkbox checked={isSelected} tabIndex={-1} />
         </div>
       ) : (
         <div className={arrowClass} aria-hidden="true">

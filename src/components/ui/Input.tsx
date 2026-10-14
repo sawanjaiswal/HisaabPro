@@ -1,10 +1,11 @@
 /** Input — Level 6 Canonical SSOT Input Primitive */
 
 import { forwardRef, useId } from 'react'
-import type { InputHTMLAttributes, ReactNode, MouseEvent, ChangeEvent } from 'react'
+import type { InputHTMLAttributes, ReactNode, MouseEvent, ChangeEvent, FocusEvent } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { formatName, formatGSTIN, formatPAN } from '@/lib/format'
 
 export const inputVariants = cva(
   'flex w-full rounded-xl text-sm font-medium text-[var(--text-primary)] bg-[var(--bg-surface)] placeholder:text-[var(--text-muted)] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
@@ -54,6 +55,16 @@ export interface InputProps
   onClear?: () => void
   required?: boolean
   size?: 'sm' | 'default' | 'lg' | 'hero'
+  /**
+   * Automatic text formatting on blur:
+   * - 'name': Title case, preserve business acronyms ("sawan jaiswal" -> "Sawan Jaiswal", "pvt ltd" -> "PVT LTD")
+   * - 'uppercase': Convert to uppercase (GSTIN, PAN, IFSC, Vehicle Number)
+   * - 'lowercase': Convert to lowercase (email, username)
+   * - 'trim': Strip leading, trailing, and excessive inner whitespace
+   * - 'auto': (default) automatically infers 'name' when id/label/placeholder/autoComplete indicates an entity name
+   * - 'none': disable all auto-formatting
+   */
+  autoFormat?: 'name' | 'uppercase' | 'lowercase' | 'trim' | 'auto' | 'none'
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -79,6 +90,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       size,
       value,
       onChange,
+      onBlur,
+      autoFormat = 'auto',
       ...props
     },
     ref
@@ -90,6 +103,63 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const effectiveSize = size || inputSize || 'default'
     const hasValue = value !== undefined && String(value).length > 0
     const displayedHint = hint || helperText
+
+    const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
+      onBlur?.(e)
+
+      if (autoFormat === 'none' || props.type === 'password' || props.type === 'number') {
+        return
+      }
+
+      const rawVal = e.target.value
+      if (!rawVal || typeof rawVal !== 'string') return
+
+      let formatted: string | null = null
+
+      if (autoFormat === 'name') {
+        formatted = formatName(rawVal)
+      } else if (autoFormat === 'uppercase') {
+        formatted = rawVal.trim().toUpperCase()
+      } else if (autoFormat === 'lowercase') {
+        formatted = rawVal.trim().toLowerCase()
+      } else if (autoFormat === 'trim') {
+        formatted = rawVal.trim().replace(/\s+/g, ' ')
+      } else if (autoFormat === 'auto') {
+        // Infer from label, id, name, placeholder, autoComplete, or aria-label if it's an entity name
+        const rawId = (id || '').toLowerCase()
+        const ariaLabel = (props['aria-label'] || '').toLowerCase()
+        const textToCheck = `${label || ''} ${inputId} ${rawId} ${ariaLabel} ${props.name || ''} ${props.placeholder || ''} ${props.autoComplete || ''}`.toLowerCase()
+        const isNameField = /(name|party|customer|vendor|supplier|employee|category|godown|business|company|city|state|bank|designation|branch|role)/.test(textToCheck)
+        const isGstin = /\b(gstin|gst)\b/.test(textToCheck)
+        const isPan = /\b(pan)\b/.test(textToCheck)
+
+        if (isGstin) {
+          const res = formatGSTIN(rawVal)
+          if (res && res !== '—') formatted = res
+        } else if (isPan) {
+          const res = formatPAN(rawVal)
+          if (res && res !== '—') formatted = res
+        } else if (isNameField) {
+          const res = formatName(rawVal)
+          if (res && res !== '—') formatted = res
+        }
+      }
+
+      if (formatted && formatted !== '—' && formatted !== rawVal) {
+        if (onChange) {
+          const syntheticEvent = {
+            target: { value: formatted, name: props.name || inputId },
+            currentTarget: { value: formatted, name: props.name || inputId },
+            persist: () => {},
+            preventDefault: () => {},
+            stopPropagation: () => {},
+            defaultPrevented: false,
+            nativeEvent: e.nativeEvent,
+          } as unknown as ChangeEvent<HTMLInputElement>
+          onChange(syntheticEvent)
+        }
+      }
+    }
 
     const handleClear = (e: MouseEvent) => {
       e.stopPropagation()
@@ -116,6 +186,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           value={value}
           onChange={onChange}
+          onBlur={handleBlur}
           className={cn(
             inputVariants({ variant, inputSize: effectiveSize, hasError: Boolean(error) }),
             className
@@ -175,6 +246,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             value={value}
             onChange={onChange}
+            onBlur={handleBlur}
             className={cn(
               inputVariants({ variant, inputSize: effectiveSize, hasError: Boolean(error) }),
               (activeLeftIcon || prefixText) && 'pl-8',

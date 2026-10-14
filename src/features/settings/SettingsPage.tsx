@@ -26,7 +26,6 @@ import { SettingsSkeleton } from './components/SettingsSkeleton'
 import { SETTINGS_SECTIONS, DATE_FORMATS } from './settings.constants'
 import type { SettingsItem, AppSettings, DateFormat, CalculatorPosition } from './settings.types'
 import './settings.css'
-import './settings-toggle.css'
 import { Button } from '@/components/ui/Button'
 
 function getNextDateFormat(current: DateFormat): DateFormat {

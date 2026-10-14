@@ -6,7 +6,7 @@
  */
 
 import React, { useRef, useCallback } from 'react'
-import { Check, MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import type { ProductSummary } from '../product.types'
 import {
@@ -18,6 +18,7 @@ import {
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { PartyAvatar } from '@/components/ui/PartyAvatar'
+import { Checkbox } from '@/components/ui/Checkbox'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -102,11 +103,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       onPointerCancel={handlePointerUp}
     >
       {isBulkMode ? (
-        <div
-          className={`bulk-check${isSelected ? ' bulk-check--active' : ''}`}
-          aria-hidden="true"
-        >
-          {isSelected && <Check size={16} />}
+        <div className="w-9 h-9 flex items-center justify-center shrink-0" aria-hidden="true">
+          <Checkbox checked={isSelected} tabIndex={-1} />
         </div>
       ) : product.imageUrl ? (
         <img

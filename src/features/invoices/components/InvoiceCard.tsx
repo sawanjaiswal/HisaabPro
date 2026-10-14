@@ -1,8 +1,8 @@
 /** Invoice list row item — txn-row pattern with doc-type icon */
 
 import React, { useRef, useCallback } from 'react'
-import { Check } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Checkbox } from '@/components/ui/Checkbox'
 import type { DocumentSummary, PaymentStatus, DocumentType } from '../invoice.types'
 import { formatInvoiceAmount, formatInvoiceDate } from '../invoice-format.utils'
 import { getPaymentStatus } from '../invoice-document.utils'
@@ -108,11 +108,8 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
       style={{ cursor: 'pointer' }}
     >
       {isBulkMode ? (
-        <div
-          className={`bulk-check${isSelected ? ' bulk-check--active' : ''}`}
-          aria-hidden="true"
-        >
-          {isSelected && <Check size={16} />}
+        <div className="w-9 h-9 flex items-center justify-center shrink-0" aria-hidden="true">
+          <Checkbox checked={isSelected} tabIndex={-1} />
         </div>
       ) : (
         <div className={iconClass} aria-hidden="true">

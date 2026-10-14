@@ -51,61 +51,7 @@ body:has(.bnav) .create-product-actions {
   padding-bottom: var(--space-8);
 }
 
-/* Toggle switch for SKU auto-generate */
-.sku-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.sku-toggle-label {
-  font-size: var(--fs-md);
-  color: var(--color-gray-600);
-}
-
-.sku-toggle-switch {
-  position: relative;
-  width: 48px;
-  height: 28px;
-  background: var(--color-gray-200);
-  border-radius: var(--radius-full);
-  border: none;
-  cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-default);
-  -webkit-tap-highlight-color: transparent;
-  flex-shrink: 0;
-}
-
-.sku-toggle-switch.active {
-  background: var(--color-primary-500);
-}
-
-.sku-toggle-switch::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
-  background: var(--color-gray-0);
-  border-radius: var(--radius-full);
-  transition: transform var(--duration-fast) var(--ease-default);
-  box-shadow: var(--shadow-toggle-knob);
-}
-
-.sku-toggle-switch.active::after {
-  transform: translateX(20px);
-}
-
 /* Section pill tabs top spacing */
 .create-product-page .pill-tabs {
   margin-bottom: var(--space-5);
-}
-
-/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
-
-/* Toggle switch knob shadow — lighter in dark mode */
-[data-theme="dark"] .sku-toggle-switch::after {
-  box-shadow: var(--shadow-toggle-knob);
 }

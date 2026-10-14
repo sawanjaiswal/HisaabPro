@@ -146,44 +146,54 @@ export function PartyCrmTab({ party, onPatched }: PartyCrmTabProps) {
             Quick Presets
           </span>
           {draftFollowUpAt && (
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               type="button"
               onClick={() => onChange(null)}
-              className="text-[11px] font-medium text-[var(--color-error-600)] hover:underline flex items-center gap-0.5"
+              className="h-auto p-0 text-[11px] font-medium text-[var(--color-error-600)] hover:underline flex items-center gap-0.5 hover:bg-transparent"
             >
               <X size={11} /> Clear
-            </button>
+            </Button>
           )}
         </div>
         <div className="flex flex-wrap gap-1.5">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             type="button"
             onClick={() => applyPreset(4)}
-            className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-300)] text-[var(--text-primary)] transition-all"
+            className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-300)] text-[var(--text-primary)] transition-all h-auto"
           >
             Today (+4 hrs)
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             type="button"
             onClick={() => applyPreset(24)}
-            className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-300)] text-[var(--text-primary)] transition-all"
+            className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-300)] text-[var(--text-primary)] transition-all h-auto"
           >
             Tomorrow 10 AM
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             type="button"
             onClick={() => applyPreset(72)}
-            className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-300)] text-[var(--text-primary)] transition-all"
+            className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-300)] text-[var(--text-primary)] transition-all h-auto"
           >
             In 3 Days
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             type="button"
             onClick={() => applyPreset(168)}
-            className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-300)] text-[var(--text-primary)] transition-all"
+            className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-300)] text-[var(--text-primary)] transition-all h-auto"
           >
             Next Week
-          </button>
+          </Button>
         </div>
       </div>
 

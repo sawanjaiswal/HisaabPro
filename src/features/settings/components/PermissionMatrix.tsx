@@ -4,8 +4,7 @@ import { ChevronRight } from 'lucide-react'
 import type { PermissionModule } from '../settings.types'
 import { formatPermissionKey, getPermissionCount } from '../settings.utils'
 import '../role-builder.css'
-import { Input } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
+import { Switch } from '@/components/ui/Switch'
 
 interface PermissionMatrixProps {
   modules: PermissionModule[]
@@ -29,34 +28,36 @@ const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onTo
 
   return (
     <div className="role-module">
-      <Button variant="none"
+      <div
         className="role-module-header"
         onClick={() => setIsOpen((prev) => !prev)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            setIsOpen((prev) => !prev)
+          }
+        }}
         aria-expanded={isOpen}
         aria-controls={`module-content-${module.key}`}
         aria-label={`${module.label} ${t.moduleWord}, ${granted} ${t.ofWord} ${total} ${t.permissionsGranted}`}
       >
         <span className="role-module-name">{module.label}</span>
         <span className="role-module-count">{granted}/{total}</span>
-        <label
-          className="settings-toggle"
-          onClick={(e) => { e.stopPropagation(); onToggleModuleAll(module.key) }}
-          aria-label={`${t.toggleAllPrefix} ${module.label} ${t.toggleAllSuffix}`}
-        >
-          <Input
-            type="checkbox"
+        <div onClick={(e) => e.stopPropagation()}>
+          <Switch
             checked={allGranted}
-            onChange={() => onToggleModuleAll(module.key)}
-            aria-label={`${t.toggleAllPrefix} ${module.label} ${t.toggleAllSuffix}`}
+            onCheckedChange={() => onToggleModuleAll(module.key)}
+            ariaLabel={`${t.toggleAllPrefix} ${module.label} ${t.toggleAllSuffix}`}
           />
-          <span className="settings-toggle-track" />
-        </label>
+        </div>
         <ChevronRight
           className={`role-module-chevron${isOpen ? ' role-module-chevron--open' : ''}`}
           size={16}
           aria-hidden="true"
         />
-      </Button>
+      </div>
       {isOpen && (
         <div
           className="role-module-content"
@@ -66,10 +67,18 @@ const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onTo
             const permKey = formatPermissionKey(module.key, action.key)
             const isChecked = selectedPermissions.includes(permKey)
             return (
-              <Button variant="none"
+              <div
                 key={permKey}
                 className="role-permission-row"
                 onClick={() => onToggle(permKey)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onToggle(permKey)
+                  }
+                }}
                 aria-label={`${action.label}${action.description ? ': ' + action.description : ''}, ${isChecked ? t.enabledLabel : t.disabledLabel}`}
               >
                 <span className="role-permission-label">
@@ -78,16 +87,14 @@ const ModuleRow: React.FC<ModuleRowProps> = ({ module, selectedPermissions, onTo
                     <span className="role-permission-description">{action.description}</span>
                   )}
                 </span>
-                <label className="settings-toggle" onClick={(e) => e.stopPropagation()}>
-                  <Input
-                    type="checkbox"
+                <div onClick={(e) => e.stopPropagation()}>
+                  <Switch
                     checked={isChecked}
-                    onChange={() => onToggle(permKey)}
-                    aria-label={action.label}
+                    onCheckedChange={() => onToggle(permKey)}
+                    ariaLabel={action.label}
                   />
-                  <span className="settings-toggle-track" />
-                </label>
-              </Button>
+                </div>
+              </div>
             )
           })}
         </div>

@@ -53,35 +53,6 @@
   color: var(--color-gray-700);
 }
 
-.calculator-settings-toggle {
-  position: relative;
-  width: 40px;
-  height: 22px;
-  border-radius: 11px;
-  background: var(--color-gray-300);
-  transition: background-color var(--duration-normal) var(--ease-default);
-  flex-shrink: 0;
-}
-
-.calculator-settings-toggle--on {
-  background: var(--color-primary-500);
-}
-
-.calculator-settings-toggle-knob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--color-gray-0);
-  box-shadow: var(--shadow-toggle-knob-sm);
-  transition: transform var(--duration-normal) var(--ease-default);
-}
-
-.calculator-settings-toggle--on .calculator-settings-toggle-knob {
-  transform: translateX(18px);
-}
 
 /* ─── Display — grows to absorb extra space ─────────────────────────────── */
 

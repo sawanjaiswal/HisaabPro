@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Switch } from '@/components/ui/Switch'
 import { Drawer } from '@/components/ui/Drawer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useToast } from '@/hooks/useToast'
@@ -180,23 +181,19 @@ export function DocumentCustomFieldDrawer({ open, onClose, editing, onCreate, on
           </div>
         </div>
 
-        <label className="settings-item settings-item--toggle !px-0">
+        <div className="settings-item settings-item--toggle !px-0 flex items-center justify-between">
           <span className="settings-item-content">
             <span className="settings-item-label">{t.fieldRequiredLabel}</span>
             <span className="settings-item-description">{t.fieldRequiredDesc}</span>
           </span>
           <span className="settings-item-action">
-            <span className="settings-toggle">
-              <Input
-                type="checkbox"
-                checked={required}
-                onChange={(e) => setRequired(e.target.checked)}
-                aria-label={t.fieldRequiredLabel}
-              />
-              <span className="settings-toggle-track" />
-            </span>
+            <Switch
+              checked={required}
+              onCheckedChange={setRequired}
+              ariaLabel={t.fieldRequiredLabel}
+            />
           </span>
-        </label>
+        </div>
       </div>
     </Drawer>
   )

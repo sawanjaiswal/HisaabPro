@@ -1,7 +1,7 @@
 /** Create Party — Basic info section */
 
-import { Text } from '@/components/ui/Text'
 import { Input } from '@/components/ui/Input'
+import { Checkbox } from '@/components/ui/Checkbox'
 import { useLanguage } from '@/hooks/useLanguage'
 import { formatName } from '@/lib/format'
 import type { PartyFormData, PartyType } from '../party.types'
@@ -116,20 +116,13 @@ export function PartyFormBasic({ form, errors, onUpdate, isEditMode = false }: P
       {/* CRM (#127) — opt-out toggle. UI-only in PR2 (loyaltyOptOut is a
           server-only field per M2 .strict()); wired live in the next CRM PR
           via the narrow PATCH /api/parties/:id route. */}
-      <div className="party-form-opt-out">
-        <label htmlFor="party-opt-out" className="party-form-opt-out__label">
-          <Input
-            id="party-opt-out"
-            type="checkbox"
-            className="party-form-opt-out__input"
-            disabled
-            aria-describedby="party-opt-out-help"
-          />
-          <span>{t.crmLoyaltyOptOut}</span>
-        </label>
-        <Text id="party-opt-out-help" className="party-form-opt-out__help">
-          {t.crmLoyaltyOptOutHelp}
-        </Text>
+      <div className="party-form-opt-out pt-2">
+        <Checkbox
+          id="party-opt-out"
+          label={t.crmLoyaltyOptOut}
+          description={t.crmLoyaltyOptOutHelp}
+          disabled
+        />
       </div>
     </div>
   )

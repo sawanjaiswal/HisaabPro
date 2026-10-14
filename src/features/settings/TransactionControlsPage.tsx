@@ -10,7 +10,6 @@ import { ThresholdSection } from './components/ThresholdSection'
 import { OperationPinSection } from './components/OperationPinSection'
 import { useTransactionControls } from './useTransactionControls'
 import './transaction-controls.css'
-import './settings-toggle.css'
 
 export default function TransactionControlsPage() {
   const { config, status, refresh, updateField } = useTransactionControls()

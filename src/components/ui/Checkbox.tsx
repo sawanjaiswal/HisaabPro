@@ -20,8 +20,9 @@ export const Checkbox = React.forwardRef<
     <CheckboxPrimitive.Root
       ref={ref}
       id={checkboxId}
+      data-slot="checkbox"
       className={cn(
-        'peer h-4 w-4 shrink-0 rounded-[4px] border border-[var(--border-control)] bg-[var(--bg-surface)] ring-offset-background hover:border-[var(--primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[var(--primary)] data-[state=checked]:border-[var(--primary)] data-[state=checked]:text-white transition-colors',
+        'peer h-4 w-4 shrink-0 rounded-[4px] border border-[var(--border-control)] bg-[var(--bg-surface)] ring-offset-background hover:border-[var(--primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[var(--primary)] data-[state=checked]:border-[var(--primary)] data-[state=checked]:text-white flex items-center justify-center transition-colors',
         className
       )}
       {...props}
@@ -43,11 +44,11 @@ export const Checkbox = React.forwardRef<
         description ? 'items-start' : 'items-center'
       )}
     >
-      <div className={cn('shrink-0', description && 'pt-0.5')}>{checkboxNode}</div>
+      {checkboxNode}
       <label
         htmlFor={checkboxId}
         className={cn(
-          'cursor-pointer text-sm font-medium text-[var(--text-primary)]',
+          'cursor-pointer text-sm font-medium text-[var(--text-primary)] select-none',
           !description && 'leading-none'
         )}
       >
