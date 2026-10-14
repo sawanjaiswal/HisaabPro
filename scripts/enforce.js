@@ -160,7 +160,7 @@ let consoleCount = 0
 
 for (const file of serverFiles) {
   // Skip test files and scripts
-  if (file.includes('__tests__') || file.includes('.test.') || file.includes('.spec.')) continue
+  if (file.includes('__tests__') || file.includes('.test.') || file.includes('.spec.') || file.includes('/scripts/')) continue
 
   const content = readFileSync(file, 'utf8')
   const lines = content.split('\n')
@@ -932,6 +932,7 @@ const TOKEN_ALLOWED_FILES = [
   'src/styles/tokens-core.css',
   'src/styles/tokens-dark.css',
   'src/styles/tokens-variants.css',
+  'src/styles/tokens.css',
   'src/styles/tokens.ts',
 ]
 

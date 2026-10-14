@@ -2,7 +2,8 @@
 
 import { useLanguage } from '@/hooks/useLanguage'
 import type { MarketingChannel } from '../marketing.types'
-import { CHANNEL_LABEL, CHANNEL_COLOR } from '../marketing.constants'
+import { CHANNEL_LABEL } from '../marketing.constants'
+import { cn } from '@/lib/utils'
 
 interface Props {
   channel: MarketingChannel
@@ -11,25 +12,17 @@ interface Props {
 
 export function ChannelBadge({ channel, size = 'sm' }: Props) {
   const { t } = useLanguage()
-  const color = CHANNEL_COLOR[channel]
   const label = CHANNEL_LABEL[channel]
 
   return (
     <span
-      className={`channel-badge channel-badge--${size}`}
-      style={{
-        '--channel-color': color,
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: size === 'sm' ? '2px 8px' : '4px 10px',
-        borderRadius: '999px',
-        fontSize: size === 'sm' ? '11px' : '13px',
-        fontWeight: 600,
-        color,
-        background: `color-mix(in srgb, ${color} 12%, transparent)`,
-        border: `1px solid color-mix(in srgb, ${color} 30%, transparent)`,
-      } as React.CSSProperties}
+      className={cn(
+        'inline-flex items-center gap-1 rounded-full font-semibold border',
+        size === 'sm' ? 'text-[11px] py-0.5 px-2' : 'text-xs py-1 px-2.5',
+        channel === 'WHATSAPP'
+          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800'
+          : 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800'
+      )}
       aria-label={`${t.marketingChannelAria}: ${label}`}
     >
       {channel === 'WHATSAPP' ? (

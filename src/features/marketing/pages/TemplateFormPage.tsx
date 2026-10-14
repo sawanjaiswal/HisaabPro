@@ -1,6 +1,5 @@
 /** TemplateFormPage — /marketing/templates/new and /marketing/templates/:id/edit */
 
-import { Text } from '@/components/ui/Text'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -15,6 +14,9 @@ import { Button } from '@/components/ui/Button'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+
+import { Checkbox } from '@/components/ui/Checkbox'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 const SMS_CHAR_WARN = 140
 const SMS_CHAR_MAX = 160
@@ -81,8 +83,10 @@ export default function TemplateFormPage() {
   if (isEdit && detailStatus === 'loading') {
     return (
       <AppShell header={<Header title={title} backTo={MARKETING_ROUTES.TEMPLATES} />}>
-        <PageContainer className="py-4 max-w-2xl mx-auto" aria-busy="true" aria-label={t.marketingTemplates}>
-          {[0, 1, 2, 3].map((i) => <div key={i} style={{ height: 48, borderRadius: 8, background: 'var(--color-gray-100)', marginBottom: 12, animation: 'pulse 1.5s infinite' }} />)}
+        <PageContainer className="py-4 max-w-2xl mx-auto space-y-3" aria-busy="true" aria-label={t.marketingTemplates}>
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-12 w-full rounded-xl" />
+          ))}
         </PageContainer>
       </AppShell>
     )
@@ -91,122 +95,106 @@ export default function TemplateFormPage() {
   return (
     <AppShell header={<Header title={title} backTo={MARKETING_ROUTES.TEMPLATES} />}>
       <PageContainer className="py-4 pb-24 max-w-2xl mx-auto">
+        {/* DLT warning */}
+        {showDltWarning && <DltWarningCard hasDltId={!!dltTemplateId.trim()} isRegistered={dltRegistered} />}
 
-      {/* DLT warning */}
-      {showDltWarning && <DltWarningCard hasDltId={!!dltTemplateId.trim()} isRegistered={dltRegistered} />}
-
-      <form onSubmit={(e) => { void handleSubmit(e) }} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-        {/* Channel */}
-        <div>
-          <Text style={labelStyle}>{t.marketingSendVia}</Text>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <ChannelToggle value={channel} onChange={(ch) => { setChannel(ch); setDltTemplateId(''); setWaTemplateName('') }} disabled={isEdit} />
+        <form onSubmit={(e) => { void handleSubmit(e) }} className="flex flex-col gap-4">
+          {/* Channel */}
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">
+              {t.marketingSendVia}
+            </label>
+            <div className="flex gap-2.5">
+              <ChannelToggle value={channel} onChange={(ch) => { setChannel(ch); setDltTemplateId(''); setWaTemplateName('') }} disabled={isEdit} />
+            </div>
+            {isEdit && <div className="text-xs text-[var(--text-muted)] mt-1">{t.marketingChannelCannotChange}</div>}
           </div>
-          {isEdit && <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{t.marketingChannelCannotChange}</div>}
-        </div>
 
-        {/* Name */}
-        <div>
-          <label htmlFor="tmpl-name" style={labelStyle}>{t.marketingTemplateName} *</label>
-          <Input id="tmpl-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required maxLength={100} placeholder={t.marketingTemplateNamePh} style={inputStyle} aria-required="true" />
-        </div>
+          {/* Name */}
+          <div>
+            <label htmlFor="tmpl-name" className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">
+              {t.marketingTemplateName} *
+            </label>
+            <Input id="tmpl-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required maxLength={100} placeholder={t.marketingTemplateNamePh} aria-required="true" />
+          </div>
 
-        {/* Body */}
-        <div>
-          <label htmlFor="tmpl-body" style={labelStyle}>
-            {t.marketingMessageBody} *
-            {channel === 'SMS' && (
-              <span style={{ float: 'right', fontSize: '12px', fontWeight: 400, color: charCount > SMS_CHAR_WARN ? 'var(--color-error-600)' : 'var(--color-gray-400)' }}>
-                {charCount}/{SMS_CHAR_MAX}
-              </span>
+          {/* Body */}
+          <div>
+            <label htmlFor="tmpl-body" className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">
+              {t.marketingMessageBody} *
+              {channel === 'SMS' && (
+                <span className={`float-right text-xs font-normal ${charCount > SMS_CHAR_WARN ? 'text-destructive' : 'text-[var(--text-muted)]'}`}>
+                  {charCount}/{SMS_CHAR_MAX}
+                </span>
+              )}
+            </label>
+            <Textarea
+              id="tmpl-body"
+              value={bodyEn}
+              onChange={(e) => setBodyEn(e.target.value)}
+              required
+              maxLength={channel === 'SMS' ? SMS_CHAR_MAX : 1000}
+              rows={5}
+              placeholder={t.marketingMessageBodyPh}
+              className="resize-y min-h-[100px]"
+              aria-required="true"
+              aria-describedby={channel === 'SMS' ? 'sms-char-note' : undefined}
+            />
+            {channel === 'SMS' && charCount > SMS_CHAR_WARN && (
+              <div id="sms-char-note" className="text-xs text-amber-600 mt-1">
+                {t.marketingSmsCharOver140}
+              </div>
             )}
-          </label>
-          <Textarea
-            id="tmpl-body"
-            value={bodyEn}
-            onChange={(e) => setBodyEn(e.target.value)}
-            required
-            maxLength={channel === 'SMS' ? SMS_CHAR_MAX : 1000}
-            rows={5}
-            placeholder={t.marketingMessageBodyPh}
-            style={{ ...inputStyle, resize: 'vertical', minHeight: '100px' }}
-            aria-required="true"
-            aria-describedby={channel === 'SMS' ? 'sms-char-note' : undefined}
-          />
-          {channel === 'SMS' && charCount > SMS_CHAR_WARN && (
-            <div id="sms-char-note" style={{ fontSize: '12px', color: 'var(--color-warning-600)', marginTop: '4px' }}>
-              {t.marketingSmsCharOver140}
+          </div>
+
+          {/* Variables */}
+          <div>
+            <label htmlFor="tmpl-vars" className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">
+              {t.marketingVariableNames}
+            </label>
+            <Input id="tmpl-vars" type="text" value={variables} onChange={(e) => setVariables(e.target.value)} placeholder={t.marketingVariableNamesPh} />
+            <div className="text-xs text-[var(--text-muted)] mt-1">{t.marketingVariableNamesHelper}</div>
+          </div>
+
+          {/* Channel-specific */}
+          {channel === 'SMS' && (
+            <>
+              <div>
+                <label htmlFor="tmpl-dlt" className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">
+                  {t.marketingDltTemplateId}
+                </label>
+                <Input id="tmpl-dlt" type="text" value={dltTemplateId} onChange={(e) => setDltTemplateId(e.target.value)} placeholder={t.marketingDltTemplateIdPh} maxLength={60} />
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Checkbox id="dlt-reg" checked={dltRegistered} onCheckedChange={(val) => setDltRegistered(Boolean(val))} />
+                <label htmlFor="dlt-reg" className="text-sm font-medium text-[var(--text-secondary)] cursor-pointer select-none">
+                  {t.marketingDltRegisteredCheck}
+                </label>
+              </div>
+            </>
+          )}
+
+          {channel === 'WHATSAPP' && (
+            <div>
+              <label htmlFor="tmpl-wa" className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">
+                {t.marketingWaTemplateName}
+              </label>
+              <Input id="tmpl-wa" type="text" value={waTemplateName} onChange={(e) => setWaTemplateName(e.target.value)} placeholder={t.marketingWaTemplateNamePh} maxLength={80} />
+              <div className="text-xs text-[var(--text-muted)] mt-1">{t.marketingWaTemplateHelper}</div>
             </div>
           )}
-        </div>
 
-        {/* Variables */}
-        <div>
-          <label htmlFor="tmpl-vars" style={labelStyle}>{t.marketingVariableNames}</label>
-          <Input id="tmpl-vars" type="text" value={variables} onChange={(e) => setVariables(e.target.value)} placeholder={t.marketingVariableNamesPh} style={inputStyle} />
-          <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{t.marketingVariableNamesHelper}</div>
-        </div>
-
-        {/* Channel-specific */}
-        {channel === 'SMS' && (
-          <>
-            <div>
-              <label htmlFor="tmpl-dlt" style={labelStyle}>{t.marketingDltTemplateId}</label>
-              <Input id="tmpl-dlt" type="text" value={dltTemplateId} onChange={(e) => setDltTemplateId(e.target.value)} placeholder={t.marketingDltTemplateIdPh} maxLength={60} style={inputStyle} />
-            </div>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: 'var(--color-gray-700)' }}>
-              <Input type="checkbox" checked={dltRegistered} onChange={(e) => setDltRegistered(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary-600)' }} />
-              {t.marketingDltRegisteredCheck}
-            </label>
-          </>
-        )}
-
-        {channel === 'WHATSAPP' && (
-          <div>
-            <label htmlFor="tmpl-wa" style={labelStyle}>{t.marketingWaTemplateName}</label>
-            <Input id="tmpl-wa" type="text" value={waTemplateName} onChange={(e) => setWaTemplateName(e.target.value)} placeholder={t.marketingWaTemplateNamePh} maxLength={80} style={inputStyle} />
-            <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{t.marketingWaTemplateHelper}</div>
-          </div>
-        )}
-
-        <Button variant="none"
-          type="submit"
-          disabled={isPending || !name.trim() || !bodyEn.trim()}
-          style={{
-            padding: '14px',
-            borderRadius: '12px',
-            border: 'none',
-            background: (isPending || !name.trim() || !bodyEn.trim()) ? 'var(--color-gray-300)' : 'var(--color-primary-600)',
-            color: 'white',
-            fontWeight: 700,
-            fontSize: '15px',
-            cursor: (isPending || !name.trim() || !bodyEn.trim()) ? 'not-allowed' : 'pointer',
-            marginTop: '8px',
-          }}
-        >
-          {isPending ? t.marketingSaving : t.marketingSaveTemplate}
-        </Button>
-      </form>
+          <Button
+            variant="primary"
+            size="lg"
+            type="submit"
+            disabled={isPending || !name.trim() || !bodyEn.trim()}
+            className="w-full mt-2"
+          >
+            {isPending ? t.marketingSaving : t.marketingSaveTemplate}
+          </Button>
+        </form>
       </PageContainer>
     </AppShell>
   )
-}
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '13px',
-  fontWeight: 600,
-  color: 'var(--color-gray-700)',
-  marginBottom: '8px',
-}
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '11px 12px',
-  borderRadius: '10px',
-  border: '1px solid var(--color-gray-300)',
-  fontSize: '14px',
-  color: 'var(--color-gray-800)',
-  background: 'white',
-  boxSizing: 'border-box',
 }

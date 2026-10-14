@@ -126,7 +126,7 @@ export default function BudgetsPage() {
         )}
 
         {(query.data ?? []).length > 0 && (
-          <Button variant="none" type="button" className="expense-add-btn" onClick={openAdd} style={{ marginTop: '1rem' }}>
+          <Button variant="outline" type="button" className="expense-add-btn mt-4" onClick={openAdd}>
             <Plus size={14} aria-hidden="true" /> {t.expensesBudgetSetAction ?? 'Add Budget'}
           </Button>
         )}

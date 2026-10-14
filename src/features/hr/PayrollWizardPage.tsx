@@ -99,7 +99,7 @@ export default function PayrollWizardPage() {
     <AppShell>
       <Header title={t.payrollWizardTitle as string} backTo={ROUTES.HR_PAYROLL} />
       <PageContainer variant="form" className="space-y-4">
-        <div style={{ paddingBottom: 'calc(var(--bottom-nav-height) + 5rem)' }}>
+        <div className="hr-page-content">
           {step === 'dates' && (
             <PayrollWizardStepDates
               employees={employeesQuery.employees}

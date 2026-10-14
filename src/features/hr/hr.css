@@ -171,3 +171,7 @@
 [data-theme="dark"] .employee-detail-row {
   border-bottom-color: var(--color-gray-200);
 }
+
+.hr-page-content {
+  padding-bottom: calc(var(--bottom-nav-height) + 5rem);
+}

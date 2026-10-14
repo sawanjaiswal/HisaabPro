@@ -14,6 +14,7 @@ import {
   DOCUMENT_TYPE_CODES,
 } from '../invoice.constants'
 import '../invoice-detail-header.css'
+import { Card } from '@/components/ui/Card'
 import { Heading } from '@/components/ui/Heading'
 
 interface InvoiceDetailHeaderProps {
@@ -46,8 +47,9 @@ export const InvoiceDetailHeader: React.FC<InvoiceDetailHeaderProps> = ({ docume
   const iconClass = DOC_TYPE_ICON_CLASS[document.type]
 
   return (
-    <div
-      className="card-primary invoice-detail-header"
+    <Card
+      variant="primary"
+      className="invoice-detail-header"
       role="region"
       aria-label={`${typeLabel} ${document.documentNumber} ${t.overviewLabel}`}
     >
@@ -59,7 +61,7 @@ export const InvoiceDetailHeader: React.FC<InvoiceDetailHeaderProps> = ({ docume
         <Heading level={2} className="invoice-detail-number">{document.documentNumber}</Heading>
         <Text className="invoice-detail-party">{document.party.name}</Text>
         <div className="invoice-detail-meta">
-          <span style={{ fontSize: 'var(--fs-xs)', opacity: 0.75, color: 'var(--color-gray-0)' }}>
+          <span className="text-xs opacity-75 text-[var(--color-gray-0)]">
             {formatInvoiceDate(document.documentDate)}
           </span>
           <span
@@ -93,6 +95,6 @@ export const InvoiceDetailHeader: React.FC<InvoiceDetailHeaderProps> = ({ docume
           </span>
         )}
       </div>
-    </div>
+    </Card>
   )
 }

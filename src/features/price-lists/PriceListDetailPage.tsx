@@ -27,9 +27,9 @@ import '../invoices/invoice-product-search.css'
 function DetailSkeleton() {
   return (
     <div className="pl-skeleton" aria-busy="true" aria-label="Loading price list">
-      <div className="pl-skeleton__card" style={{ height: 56 }} />
-      <div className="pl-skeleton__card" style={{ height: 40 }} />
-      {[0, 1, 2].map((i) => <div key={i} className="pl-skeleton__card" style={{ height: 68 }} />)}
+      <div className="pl-skeleton__card h-14" />
+      <div className="pl-skeleton__card h-10" />
+      {[0, 1, 2].map((i) => <div key={i} className="pl-skeleton__card h-[68px]" />)}
     </div>
   )
 }
@@ -126,9 +126,10 @@ export default function PriceListDetailPage() {
               </div>
 
               {/* Bulk assign CTA */}
-              <Button variant="none"
+              <Button
                 type="button"
-                className="btn btn-outline btn-md"
+                variant="outline"
+                size="md"
                 onClick={() => setBulkAssignOpen(true)}
                 aria-label={t.plBulkAssign}
               >
@@ -166,10 +167,11 @@ export default function PriceListDetailPage() {
               </div>
 
               {/* Danger zone */}
-              <div style={{ paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
-                <Button variant="none"
+              <div className="pt-4 border-t border-[var(--color-border)]">
+                <Button
                   type="button"
-                  className="btn btn-outline btn-md btn-danger"
+                  variant="destructive"
+                  size="md"
                   onClick={() => setDeleteListOpen(true)}
                 >
                   {t.plDeleteList}

@@ -35,36 +35,36 @@ export const PreviewInvoiceHeader: React.FC<PreviewInvoiceHeaderProps> = ({
       }}
     >
       <div>
-        <div style={{ fontWeight: 700, fontSize: 'var(--fs-base)', lineHeight: 1.2 }}>
+        <div className="font-bold text-base leading-tight">
           {SAMPLE_BUSINESS.name}
         </div>
         {fields.businessPhone && (
-          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.85, marginTop: '2px' }}>
+          <div className="text-xs opacity-85 mt-0.5">
             {SAMPLE_BUSINESS.phone}
           </div>
         )}
         {fields.businessAddress && (
-          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.75, marginTop: '2px', maxWidth: '160px' }}>
+          <div className="text-xs opacity-75 mt-0.5 max-w-[160px]">
             {SAMPLE_BUSINESS.address}
           </div>
         )}
         {fields.udyamNumber && (
-          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.75, marginTop: '2px' }}>
+          <div className="text-xs opacity-75 mt-0.5">
             {t.udyamPrefix}: {SAMPLE_BUSINESS.udyamNumber}
           </div>
         )}
       </div>
 
       <div style={{ textAlign: layout.headerStyle === 'side-by-side' ? 'right' : 'left' }}>
-        <div style={{ fontWeight: 700, fontSize: 'var(--fs-df)' }}>{documentTypeLabel}</div>
+        <div className="font-bold text-base">{documentTypeLabel}</div>
         {fields.invoiceNumber && (
-          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.85 }}>{SAMPLE_INVOICE.number}</div>
+          <div className="text-xs opacity-85">{SAMPLE_INVOICE.number}</div>
         )}
         {fields.invoiceDate && (
-          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.75 }}>{SAMPLE_INVOICE.date}</div>
+          <div className="text-xs opacity-75">{SAMPLE_INVOICE.date}</div>
         )}
         {fields.dueDate && (
-          <div style={{ fontSize: 'var(--fs-xs)', opacity: 0.75 }}>{t.duePrefix}: {SAMPLE_INVOICE.dueDate}</div>
+          <div className="text-xs opacity-75">{t.duePrefix}: {SAMPLE_INVOICE.dueDate}</div>
         )}
       </div>
     </div>

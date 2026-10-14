@@ -6,6 +6,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { listCampaigns, listTemplates, listReminderRules } from '../marketing.service'
 import { AppShell } from '@/components/layout/AppShell'
@@ -14,20 +16,12 @@ import { PageContainer } from '@/components/layout/PageContainer'
 
 function StatCard({ label, value, loading }: { label: string; value: number | string; loading?: boolean }) {
   return (
-    <div style={{
-      flex: '1 1 120px',
-      minWidth: 0,
-      padding: '16px',
-      borderRadius: '12px',
-      background: 'white',
-      border: '1px solid var(--color-gray-200)',
-      boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-    }}>
-      <div style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-gray-900)' }}>
-        {loading ? <span style={{ display: 'inline-block', width: 40, height: 24, borderRadius: 6, background: 'var(--color-gray-100)', animation: 'pulse 1.5s infinite' }} /> : value}
+    <Card className="flex-1 min-w-[120px] p-4 rounded-xl border border-border bg-card shadow-2xs">
+      <div className="text-xl font-bold text-[var(--text-primary)]">
+        {loading ? <Skeleton className="w-10 h-6 rounded-md inline-block" /> : value}
       </div>
-      <div style={{ fontSize: '12px', color: 'var(--color-gray-500)', marginTop: '4px' }}>{label}</div>
-    </div>
+      <div className="text-xs text-[var(--text-muted)] mt-1">{label}</div>
+    </Card>
   )
 }
 
@@ -43,33 +37,21 @@ interface NavTileProps {
 function NavTile({ icon, title, description, route, color, cta }: NavTileProps) {
   const navigate = useNavigate()
   return (
-    <Button variant="none"
-      type="button"
+    <Card
+      clickable
+      hover
       onClick={() => navigate(route)}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-        padding: '16px',
-        borderRadius: '14px',
-        background: 'white',
-        border: '1px solid var(--color-gray-200)',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-        textAlign: 'left',
-        cursor: 'pointer',
-        flex: '1 1 140px',
-        minWidth: 0,
-      }}
+      className="flex flex-col gap-2 p-4 rounded-xl border border-border bg-card shadow-2xs text-left flex-1 min-w-[140px]"
     >
-      <span style={{ width: 40, height: 40, borderRadius: '10px', background: color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: color }}>
         {icon}
       </span>
       <div>
-        <div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--color-gray-800)' }}>{title}</div>
-        <div style={{ fontSize: '12px', color: 'var(--color-gray-500)', marginTop: '2px' }}>{description}</div>
+        <div className="font-bold text-sm text-[var(--text-primary)]">{title}</div>
+        <div className="text-xs text-[var(--text-muted)] mt-0.5">{description}</div>
       </div>
-      <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-primary-600)', marginTop: 'auto' }}>{cta} →</span>
-    </Button>
+      <span className="text-xs font-semibold text-primary mt-auto">{cta} →</span>
+    </Card>
   )
 }
 
@@ -117,79 +99,65 @@ export default function MarketingHubPage() {
         />
       }
     >
-      <PageContainer className="py-4 pb-24 max-w-2xl mx-auto">
-
-      {/* Stats / error */}
-      {hasError ? (
-        <div style={{ marginBottom: '24px' }}>
+      <PageContainer className="py-4 pb-24 max-w-2xl mx-auto space-y-6">
+        {/* Stats / error */}
+        {hasError ? (
           <ErrorState title={t.marketingOptOutsLoadFailed} onRetry={retryAll} />
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '24px' }}>
-          <StatCard label={t.marketingCampaigns} value={campaigns.length} loading={loading} />
-          <StatCard label={t.marketingTemplates} value={templates.length} loading={loading} />
-          <StatCard label={t.marketingActiveReminders} value={activeReminders} loading={loading} />
-        </div>
-      )}
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <StatCard label={t.marketingCampaigns} value={campaigns.length} loading={loading} />
+            <StatCard label={t.marketingTemplates} value={templates.length} loading={loading} />
+            <StatCard label={t.marketingActiveReminders} value={activeReminders} loading={loading} />
+          </div>
+        )}
 
-      {/* Quick actions */}
-      <div style={{ marginBottom: '24px' }}>
-        <Button variant="none"
-          type="button"
-          onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)}
-          style={{
-            display: 'block',
-            width: '100%',
-            padding: '14px',
-            borderRadius: '12px',
-            border: 'none',
-            background: 'var(--color-primary-600)',
-            color: 'white',
-            fontWeight: 700,
-            fontSize: '15px',
-            cursor: 'pointer',
-            marginBottom: '10px',
-          }}
-        >
-          {t.marketingNewCampaign}
-        </Button>
-      </div>
+        {/* Quick actions */}
+        <div>
+          <Button
+            variant="primary"
+            size="lg"
+            className="w-full"
+            onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)}
+          >
+            {t.marketingNewCampaign}
+          </Button>
+        </div>
 
-      {/* Nav tiles */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-        <NavTile
-          icon={<Send size={20} color="var(--color-primary-600)" aria-hidden="true" />}
-          title={t.marketingCampaigns}
-          description={t.marketingCampaignsDesc}
-          route={MARKETING_ROUTES.CAMPAIGNS}
-          color="var(--color-primary-50)"
-          cta={t.marketingViewAll}
-        />
-        <NavTile
-          icon={<FileText size={20} color="var(--color-secondary-600, #7c3aed)" aria-hidden="true" />}
-          title={t.marketingTemplatesNav}
-          description={t.marketingTemplatesDesc}
-          route={MARKETING_ROUTES.TEMPLATES}
-          color="var(--color-secondary-50, #f5f3ff)"
-          cta={t.marketingManage}
-        />
-        <NavTile
-          icon={<Bell size={20} color="var(--color-warning-600, #d97706)" aria-hidden="true" />}
-          title={t.marketingReminders}
-          description={t.marketingRemindersDesc}
-          route={MARKETING_ROUTES.REMINDERS}
-          color="var(--color-warning-50, #fffbeb)"
-          cta={t.marketingSetUp}
-        />
-        <NavTile
-          icon={<ShieldOff size={20} color="var(--color-error-600, var(--color-error-600))" aria-hidden="true" />}
-          title={t.marketingOptOuts}
-          description={t.marketingOptOutsDesc}
-          route={MARKETING_ROUTES.OPT_OUTS}
-          color="var(--color-error-50, var(--color-error-50))"
-          cta={t.marketingView}
-        />
-      </div>
+        {/* Nav tiles */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <NavTile
+            icon={<Send size={20} className="text-primary" aria-hidden="true" />}
+            title={t.marketingCampaigns}
+            description={t.marketingCampaignsDesc}
+            route={MARKETING_ROUTES.CAMPAIGNS}
+            color="var(--color-primary-50)"
+            cta={t.marketingViewAll}
+          />
+          <NavTile
+            icon={<FileText size={20} color="var(--color-secondary-600, #7c3aed)" aria-hidden="true" />}
+            title={t.marketingTemplatesNav}
+            description={t.marketingTemplatesDesc}
+            route={MARKETING_ROUTES.TEMPLATES}
+            color="var(--color-secondary-50, #f5f3ff)"
+            cta={t.marketingManage}
+          />
+          <NavTile
+            icon={<Bell size={20} color="var(--color-warning-600, #d97706)" aria-hidden="true" />}
+            title={t.marketingReminders}
+            description={t.marketingRemindersDesc}
+            route={MARKETING_ROUTES.REMINDERS}
+            color="var(--color-warning-50, #fffbeb)"
+            cta={t.marketingSetUp}
+          />
+          <NavTile
+            icon={<ShieldOff size={20} color="var(--color-error-600, var(--color-error-600))" aria-hidden="true" />}
+            title={t.marketingOptOuts}
+            description={t.marketingOptOutsDesc}
+            route={MARKETING_ROUTES.OPT_OUTS}
+            color="var(--color-error-50, var(--color-error-50))"
+            cta={t.marketingView}
+          />
+        </div>
       </PageContainer>
     </AppShell>
   )

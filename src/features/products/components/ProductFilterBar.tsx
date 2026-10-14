@@ -44,8 +44,8 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
   const { t } = useLanguage()
 
   return (
-    <div className="party-filter-bar product-filter-bar">
-      <div className="party-search-row product-search-row">
+    <div className="product-filter-bar">
+      <div className="product-search-row">
         <SearchInput
           variant="pill"
           value={search}
@@ -67,7 +67,7 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
         />
         <Button
           variant="none"
-          className={`party-filter-icon-btn${filtersActive ? ' party-filter-icon-btn--active' : ''}`}
+          className={`product-filter-icon-btn${filtersActive ? ' product-filter-icon-btn--active' : ''}`}
           onClick={onOpenFilters}
           aria-label={t.filters}
         >
@@ -75,10 +75,10 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
         </Button>
       </div>
 
-      <div className="type-chips product-chips" role="group" aria-label={t.filters}>
+      <div className="product-chips" role="group" aria-label={t.filters}>
         <Button
           variant="none"
-          className={`type-chip${mode === 'all' && !categoryActive ? ' type-chip--on' : ''}`}
+          className={`product-chip${mode === 'all' && !categoryActive ? ' product-chip--on' : ''}`}
           onClick={onSelectAll}
           aria-pressed={mode === 'all' && !categoryActive}
         >
@@ -87,25 +87,26 @@ export const ProductFilterBar: React.FC<ProductFilterBarProps> = ({
 
         <Button
           variant="none"
-          className={`type-chip${mode === 'low' ? ' type-chip--on' : ''}`}
+          className={`product-chip${mode === 'low' ? ' product-chip--on' : ''}`}
           onClick={onLowStock}
           aria-pressed={mode === 'low'}
         >
           {t.lowStock}
           {typeof lowStockCount === 'number' && lowStockCount > 0 && (
-            <span className="type-chip-count">{lowStockCount}</span>
+            <span className="product-chip-count">{lowStockCount}</span>
           )}
         </Button>
 
         <Button
           variant="none"
-          className={`type-chip${categoryActive ? ' type-chip--on' : ''}`}
+          className={`product-chip${categoryActive ? ' product-chip--on' : ''}`}
           onClick={onOpenCategories}
+          aria-pressed={categoryActive}
         >
           {t.categories}
         </Button>
 
-        <Button variant="none" className="type-chip" onClick={onFavorites}>
+        <Button variant="none" className="product-chip" onClick={onFavorites}>
           {t.favorites}
         </Button>
       </div>

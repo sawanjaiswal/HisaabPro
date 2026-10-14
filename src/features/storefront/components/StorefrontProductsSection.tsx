@@ -48,7 +48,7 @@ export function StorefrontProductsSection() {
       {prodStatus === 'loading' && (
         <div role="status" aria-label="Loading products">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="sf-skeleton__bar sf-skeleton__bar--full" style={{ marginBottom: 8 }} />
+            <div key={i} className="sf-skeleton__bar sf-skeleton__bar--full mb-2" />
           ))}
         </div>
       )}
@@ -58,7 +58,7 @@ export function StorefrontProductsSection() {
       )}
 
       {prodStatus === 'empty' && (
-        <Text className="sf-help" style={{ textAlign: 'center', padding: '16px 0' }}>
+        <Text className="sf-help text-center py-4">
           No products added yet — tap below to add from your catalogue.
         </Text>
       )}

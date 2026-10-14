@@ -1,6 +1,7 @@
 import { Text } from '@/components/ui/Text'
 import { Shield } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { cn } from '@/lib/utils'
 
 interface OperationPinSectionProps {
   operationPinSet: boolean
@@ -19,18 +20,17 @@ export function OperationPinSection({ operationPinSet }: OperationPinSectionProp
               {t.operationPinDesc}
             </Text>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexShrink: 0 }}>
+          <div className="flex items-center gap-2 shrink-0">
             <Shield
               size={16}
               aria-hidden="true"
-              style={{ color: operationPinSet ? 'var(--color-success-600)' : 'var(--color-gray-400)' }}
+              className={operationPinSet ? 'text-[var(--color-success-600)]' : 'text-[var(--color-gray-400)]'}
             />
             <span
-              style={{
-                fontSize: 'var(--fs-xs)',
-                fontWeight: 500,
-                color: operationPinSet ? 'var(--color-success-600)' : 'var(--color-gray-400)',
-              }}
+              className={cn(
+                'text-xs font-medium',
+                operationPinSet ? 'text-[var(--color-success-600)]' : 'text-[var(--color-gray-400)]'
+              )}
             >
               {operationPinSet ? t.operationPinSetLabel : t.operationPinNotSet}
             </span>

@@ -18,40 +18,43 @@ interface JobItemRowProps {
   onRemove: (key: string) => void
 }
 
-const labelStyle = { fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' } as const
-
 export function JobItemRow({ item, index, canRemove, onUpdate, onRemove }: JobItemRowProps) {
   const { t } = useLanguage()
   const isHourly = item.kind === 'HOURLY'
   const n = index + 1
 
   return (
-    <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', fontWeight: 500 }}>{t.jobItemLabel} {n}</span>
+    <div className="border border-[var(--color-border)] rounded-lg p-3 flex flex-col gap-2">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-[var(--color-text-secondary)] font-medium">{t.jobItemLabel} {n}</span>
         {canRemove && (
-          <Button variant="none" type="button" onClick={() => onRemove(item._key)} aria-label="Remove item" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-error-600)', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Button
+            variant="ghost"
+            size="sm"
+            type="button"
+            onClick={() => onRemove(item._key)}
+            aria-label="Remove item"
+            className="text-red-600 min-w-[44px] min-h-[44px]"
+          >
             <Trash2 size={16} aria-hidden="true" />
           </Button>
         )}
       </div>
 
       {/* Item / Hourly toggle */}
-      <div role="group" aria-label={`${t.jobItemLabel} ${n} type`} style={{ display: 'inline-flex', alignSelf: 'flex-start', border: '1px solid var(--color-border)', borderRadius: 8, overflow: 'hidden' }}>
+      <div role="group" aria-label={`${t.jobItemLabel} ${n} type`} className="inline-flex self-start border border-[var(--color-border)] rounded-lg overflow-hidden">
         {(['ITEM', 'HOURLY'] as const).map((k) => {
           const active = (item.kind ?? 'ITEM') === k
           return (
-            <Button variant="none"
+            <Button
+              variant="none"
               key={k}
               type="button"
               aria-pressed={active}
               onClick={() => onUpdate(item._key, 'kind', k)}
-              style={{
-                minHeight: 44, padding: '0 var(--space-3)', border: 'none', cursor: 'pointer',
-                fontSize: 'var(--fs-xs)', fontWeight: 600,
-                background: active ? 'var(--color-primary-600)' : 'transparent',
-                color: active ? 'var(--color-on-primary, #fff)' : 'var(--color-text-secondary)',
-              }}
+              className={`min-h-[44px] px-3 text-xs font-semibold ${
+                active ? 'bg-[var(--color-primary-600)] text-white' : 'bg-transparent text-[var(--color-text-secondary)]'
+              }`}
             >
               {k === 'ITEM' ? t.jobItemTypeItem : t.jobItemTypeHourly}
             </Button>
@@ -69,9 +72,9 @@ export function JobItemRow({ item, index, canRemove, onUpdate, onRemove }: JobIt
         aria-label={`${t.jobItemLabel} ${n} description`}
       />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-2)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={labelStyle}>{isHourly ? t.jobItemHoursLabel : t.jobItemQtyLabel}</label>
+      <div className="grid grid-cols-3 gap-2">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-[var(--color-text-secondary)]">{isHourly ? t.jobItemHoursLabel : t.jobItemQtyLabel}</label>
           <Input
             type="number"
             className="input"
@@ -82,8 +85,8 @@ export function JobItemRow({ item, index, canRemove, onUpdate, onRemove }: JobIt
             aria-label={`${t.jobItemLabel} ${n} ${isHourly ? t.jobItemHoursLabel : t.jobItemQtyLabel}`}
           />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={labelStyle}>{isHourly ? t.jobItemRatePerHrLabel : t.jobItemRateLabel}</label>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-[var(--color-text-secondary)]">{isHourly ? t.jobItemRatePerHrLabel : t.jobItemRateLabel}</label>
           <Input
             type="number"
             className="input"
@@ -94,8 +97,8 @@ export function JobItemRow({ item, index, canRemove, onUpdate, onRemove }: JobIt
             aria-label={`${t.jobItemLabel} ${n} ${isHourly ? t.jobItemRatePerHrLabel : t.jobItemRateLabel}`}
           />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={labelStyle}>{t.jobItemDiscountLabel}</label>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-[var(--color-text-secondary)]">{t.jobItemDiscountLabel}</label>
           <Input
             type="number"
             className="input"

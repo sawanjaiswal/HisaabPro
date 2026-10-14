@@ -97,7 +97,7 @@ export default function EditInvoicePage() {
         <Header title={t.editInvoice} backTo={`/invoices/${invoiceId}`} />
         <PageContainer variant="form" className="space-y-6">
           <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
-          <div style={{ marginTop: 'var(--space-4)' }}>
+          <div className="mt-4">
             <Skeleton height="5rem" borderRadius="var(--radius-md)" count={3} />
           </div>
         </PageContainer>

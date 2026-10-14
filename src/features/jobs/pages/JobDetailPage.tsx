@@ -17,10 +17,11 @@ import { JobConvertButton } from '../components/JobConvertButton'
 import { formatJobNumber, formatPaise } from '../jobs.utils'
 import { JOB_ROUTES } from '../jobs.constants'
 import { Heading } from '@/components/ui/Heading'
+import { Card } from '@/components/ui/Card'
 
 function DetailSkeleton() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', padding: 'var(--space-4)' }} aria-busy="true" aria-label="Loading job details">
+    <div className="flex flex-col gap-3 p-4" aria-busy="true" aria-label="Loading job details">
       {[180, 120, 80, 60, 250].map((w, i) => (
         <div key={i} className="skeleton" style={{ height: i === 4 ? 120 : 44, borderRadius: 8, width: `${w}px`, maxWidth: '100%' }} aria-hidden="true" />
       ))}
@@ -30,8 +31,8 @@ function DetailSkeleton() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-      <Heading level={2} style={{ fontSize: 'var(--fs-sm)', fontWeight: 700, color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>{title}</Heading>
+    <section className="flex flex-col gap-2">
+      <Heading level={2} className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider m-0">{title}</Heading>
       {children}
     </section>
   )
@@ -81,39 +82,39 @@ export default function JobDetailPage() {
       />
 
       <PageContainer>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+        <div className="flex flex-col gap-5">
 
         {/* Header card */}
-        <div style={{ padding: 'var(--space-4)', background: 'var(--color-surface)', borderRadius: 12, boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-2)' }}>
-            <Heading level={1} style={{ fontSize: 'var(--fs-lg)', fontWeight: 700, color: 'var(--color-text)', margin: 0, lineHeight: 1.3 }}>{job.title}</Heading>
+        <Card className="p-4 flex flex-col gap-3">
+          <div className="flex items-start justify-between gap-2">
+            <Heading level={1} className="text-lg font-bold text-[var(--color-text)] m-0 leading-snug">{job.title}</Heading>
             <JobStatusPill status={job.status} size="md" />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
               <User size={14} aria-hidden="true" />
               <span>{job.partyName}</span>
             </div>
             {scheduled && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+              <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                 <Calendar size={14} aria-hidden="true" />
                 <span>{scheduled}</span>
               </div>
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontWeight: 700, fontSize: 'var(--fs-xl)', color: 'var(--color-text)' }}>
+          <div className="flex items-center gap-2 font-bold text-xl text-[var(--color-text)]">
             <IndianRupee size={18} aria-hidden="true" />
             {formatPaise(job.totalPaise)}
           </div>
 
           {job.description && (
-            <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
+            <Text className="text-sm text-[var(--color-text-secondary)] m-0">
               {job.description}
             </Text>
           )}
-        </div>
+        </Card>
 
         {/* Status actions */}
         {job.status !== 'INVOICED' && job.status !== 'CANCELLED' && (
@@ -125,7 +126,7 @@ export default function JobDetailPage() {
         {/* Convert to invoice CTA */}
         {job.status === 'COMPLETED' && !job.invoiceId && (
           <Section title={t.jobInvoiceSection}>
-            <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', margin: 0 }}>
+            <Text className="text-sm text-[var(--color-text-secondary)] m-0">
               {t.jobCompleteInvoiceHint}
             </Text>
             <JobConvertButton jobId={id} jobTitle={job.title} isOnline={isOnline} />
@@ -139,7 +140,7 @@ export default function JobDetailPage() {
               type="button"
               variant="ghost" size="sm"
               onClick={() => navigate(`/invoices/${job.invoiceId}`)}
-              style={{ alignSelf: 'flex-start', minHeight: 44 }}
+              className="self-start min-h-[44px]"
             >
               {t.viewInvoice}
             </Button>
@@ -152,14 +153,14 @@ export default function JobDetailPage() {
         </Section>
 
         {/* Totals */}
-        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', alignItems: 'flex-end' }}>
+        <div className="border-t border-[var(--color-border)] pt-3 flex flex-col gap-1 items-end">
           {job.discountPaise > 0 && (
-            <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-error-600)' }}>
+            <div className="flex gap-4 text-sm text-red-600">
               <span>{t.jobDiscountLabel}</span>
               <span>-₹{formatPaise(job.discountPaise)}</span>
             </div>
           )}
-          <div style={{ display: 'flex', gap: 'var(--space-4)', fontWeight: 700, fontSize: 'var(--fs-md)', color: 'var(--color-text)' }}>
+          <div className="flex gap-4 font-bold text-base text-[var(--color-text)]">
             <span>{t.jobTotalLabel}</span>
             <span>₹{formatPaise(job.totalPaise)}</span>
           </div>
@@ -167,8 +168,8 @@ export default function JobDetailPage() {
 
         {/* Cancel info */}
         {job.status === 'CANCELLED' && job.cancelReason && (
-          <div style={{ padding: 'var(--space-3)', background: 'var(--color-error-50)', borderRadius: 8 }}>
-            <Text style={{ margin: 0, fontSize: 'var(--fs-sm)', color: 'var(--color-error-700)' }}>
+          <div className="p-3 bg-red-50 rounded-lg">
+            <Text className="m-0 text-sm text-red-700">
               <strong>{t.jobCancelledLabel}</strong> {job.cancelReason}
             </Text>
           </div>

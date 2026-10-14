@@ -37,7 +37,7 @@ export function PartyDetailLoyaltyTab({ partyId }: PartyDetailLoyaltyTabProps) {
     return (
       <div
         aria-busy="true"
-        style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}
+        className="flex flex-col gap-3"
       >
         <Skeleton height="120px" borderRadius="var(--radius-md)" />
         <Skeleton height="72px" borderRadius="var(--radius-md)" />
@@ -54,8 +54,7 @@ export function PartyDetailLoyaltyTab({ partyId }: PartyDetailLoyaltyTabProps) {
         action={
           <Link
             to={ROUTES.SETTINGS_LOYALTY}
-            className="btn btn-primary btn-md"
-            style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}
+            className="btn btn-primary btn-md inline-flex items-center min-h-[44px]"
           >
             {t.loyaltyTabGoToSettings}
           </Link>
@@ -65,12 +64,12 @@ export function PartyDetailLoyaltyTab({ partyId }: PartyDetailLoyaltyTabProps) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+    <div className="flex flex-col gap-4">
       <section>
         {balanceLoading && (
           <div
             aria-busy="true"
-            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}
+            className="flex flex-col gap-3"
           >
             <Skeleton height="120px" borderRadius="var(--radius-md)" />
           </div>

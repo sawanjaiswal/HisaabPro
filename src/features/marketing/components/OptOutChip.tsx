@@ -1,31 +1,19 @@
-/** OptOutChip — tiny badge on party rows indicating marketing opt-out */
-
 import { ShieldOff } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Badge } from '@/components/ui/Badge'
 
 export function OptOutChip() {
   const { t } = useLanguage()
   const label = t.marketingOptOutChipLabel
   return (
-    <span
-      className="badge"
+    <Badge
+      variant="warning"
       aria-label={label}
       title={label}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: '2px 6px',
-        borderRadius: '999px',
-        background: 'var(--color-warning-50)',
-        color: 'var(--color-warning-700)',
-        fontSize: '11px',
-        fontWeight: 600,
-        lineHeight: 1,
-      }}
+      className="inline-flex items-center gap-1 text-[11px] py-0.5 px-1.5"
     >
       <ShieldOff size={11} aria-hidden="true" />
       {label}
-    </span>
+    </Badge>
   )
 }

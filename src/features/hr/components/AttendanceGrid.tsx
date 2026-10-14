@@ -78,42 +78,20 @@ export function AttendanceGrid({
       style={{ width: '100%', overflowX: 'auto' }}
     >
       {/* Desktop grid — hidden <md via CSS class */}
-      <table
-        className={mobileSingleDay ? 'hidden md:table' : 'w-full'}
-        style={{
-          width: '100%',
-          borderCollapse: 'separate',
-          borderSpacing: 'var(--space-2)',
-          tableLayout: 'fixed',
-        }}
-      >
+      <table className={`${mobileSingleDay ? 'hidden md:table' : 'table'} w-full border-separate [border-spacing:var(--space-2)] table-fixed`}>
         <thead>
           <tr>
             <th
               scope="col"
-              style={{
-                textAlign: 'left',
-                padding: 'var(--space-2)',
-                fontSize: 'var(--fs-sm, 0.875rem)',
-                color: 'var(--color-gray-600)',
-                fontWeight: 600,
-                minWidth: 140,
-              }}
+              className="text-left p-2 text-sm text-[var(--color-gray-600)] font-semibold min-w-[140px]"
             >
               Employee
             </th>
-            {(mobileSingleDay ? desktopDates : desktopDates).map((date) => (
+            {desktopDates.map((date) => (
               <th
                 key={`hd-${date}`}
                 scope="col"
-                style={{
-                  textAlign: 'center',
-                  padding: 'var(--space-2)',
-                  fontSize: 'var(--fs-sm, 0.875rem)',
-                  color: 'var(--color-gray-600)',
-                  fontWeight: 600,
-                  minWidth: 100,
-                }}
+                className="text-center p-2 text-sm text-[var(--color-gray-600)] font-semibold min-w-[100px]"
               >
                 {dayShortLabel(date)}
               </th>
@@ -125,25 +103,12 @@ export function AttendanceGrid({
             <tr key={emp.id}>
               <th
                 scope="row"
-                style={{
-                  textAlign: 'left',
-                  padding: 'var(--space-2)',
-                  fontWeight: 500,
-                  fontSize: 'var(--fs-md, 1rem)',
-                  color: 'var(--color-gray-700)',
-                  background: 'var(--color-gray-50)',
-                  borderRadius: 'var(--radius-md)',
-                  verticalAlign: 'middle',
-                }}
+                className="text-left p-2 font-medium text-base text-[var(--color-gray-700)] bg-[var(--color-gray-50)] rounded-md align-middle"
               >
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div className="flex flex-col">
                   <span>{emp.name}</span>
                   {emp.role && (
-                    <span style={{
-                      fontSize: 'var(--fs-xs, 0.75rem)',
-                      color: 'var(--color-gray-500)',
-                      fontWeight: 400,
-                    }}>{emp.role}</span>
+                    <span className="text-xs text-[var(--color-gray-500)] font-normal">{emp.role}</span>
                   )}
                 </div>
               </th>
@@ -152,7 +117,7 @@ export function AttendanceGrid({
                 return (
                   <td
                     key={`${emp.id}-${date}`}
-                    style={{ padding: 'var(--space-1)', textAlign: 'center', verticalAlign: 'middle' }}
+                    className="p-1 text-center align-middle"
                   >
                     <AttendanceStatusPill
                       status={status}
@@ -173,24 +138,11 @@ export function AttendanceGrid({
       {/* Mobile single-day list — visible <md only (md:hidden) */}
       {mobileSingleDay && (
         <ul
-          className="md:hidden"
+          className="md:hidden list-none p-0 m-0 flex flex-col gap-2"
           aria-label="Attendance (mobile single-day view)"
-          style={{
-            listStyle: 'none',
-            padding: 0,
-            margin: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 'var(--space-2)',
-          }}
         >
           {mobileDates.length > 0 && (
-            <li style={{
-              fontSize: 'var(--fs-sm, 0.875rem)',
-              color: 'var(--color-gray-600)',
-              fontWeight: 600,
-              padding: 'var(--space-2) var(--space-3)',
-            }}>
+            <li className="text-sm text-[var(--color-gray-600)] font-semibold px-3 py-2">
               {fullLabel(mobileDates[0])}
             </li>
           )}
@@ -201,31 +153,12 @@ export function AttendanceGrid({
             return (
               <li
                 key={`m-${emp.id}-${cellKey(emp.id, date)}`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 'var(--space-3)',
-                  padding: 'var(--space-3)',
-                  background: 'var(--color-gray-0, white)',
-                  border: '1px solid var(--color-gray-100)',
-                  borderRadius: 'var(--radius-lg)',
-                }}
+                className="flex items-center justify-between gap-3 p-3 bg-[var(--color-gray-0,white)] border border-[var(--color-gray-100)] rounded-lg"
               >
-                <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                  <span style={{
-                    fontSize: 'var(--fs-md, 1rem)',
-                    fontWeight: 500,
-                    color: 'var(--color-gray-700)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}>{emp.name}</span>
+                <div className="min-w-0 flex flex-col">
+                  <span className="text-base font-medium text-[var(--color-gray-700)] truncate">{emp.name}</span>
                   {emp.role && (
-                    <span style={{
-                      fontSize: 'var(--fs-xs, 0.75rem)',
-                      color: 'var(--color-gray-500)',
-                    }}>{emp.role}</span>
+                    <span className="text-xs text-[var(--color-gray-500)]">{emp.role}</span>
                   )}
                 </div>
                 <AttendanceStatusPill

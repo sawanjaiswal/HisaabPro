@@ -93,7 +93,7 @@ export default function ImportUploadPage() {
         <Header title={tx.importPageTitle ?? 'Import data'} backTo={ROUTES.MORE} />
         <PageContainer variant="form" className="space-y-6">
           <Card variant="default" className="p-4">
-            <Text style={{ color: 'var(--color-text-secondary)' }}>
+            <Text className="text-[var(--text-secondary)]">
               {tx.importFeatureDisabled ?? 'Data import is not available yet for this business.'}
             </Text>
           </Card>
@@ -108,8 +108,7 @@ export default function ImportUploadPage() {
       <PageContainer variant="form" className="space-y-6">
         <div className="space-y-2">
           <Heading level={1}
-            className="font-semibold text-lg text-[var(--text-primary)] font-semibold"
-            
+            className="font-semibold text-lg text-[var(--text-primary)]"
           >
             {entity === 'payments'
               ? (tx.importPayments ?? 'Import payments')
@@ -119,25 +118,24 @@ export default function ImportUploadPage() {
                   ? (tx.importProducts ?? 'Import products')
                   : (tx.importParties ?? 'Import parties')}
           </Heading>
-          <Text style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-secondary)' }}>
+          <Text className="text-base text-[var(--text-secondary)]">
             {entity === 'payments'
               ? (tx.importIntroPayments ??
                 'Bring receipts and payments in from Tally, Vyapar, Busy, or a generic CSV.')
               : entity === 'invoice'
                 ? (tx.importIntroInvoice ??
                   'Bring invoices in from Tally, Vyapar, Busy, or a generic CSV.')
-                : entity === 'product'
-                  ? (tx.importIntroProduct ??
-                    'Bring products in from Tally, Vyapar, Busy, or a generic CSV.')
-                  : (tx.importIntro ?? 'Bring parties in from Tally, Vyapar, Busy, or a generic CSV.')}
+              : entity === 'product'
+                ? (tx.importIntroProduct ??
+                  'Bring products in from Tally, Vyapar, Busy, or a generic CSV.')
+                : (tx.importIntro ?? 'Bring parties in from Tally, Vyapar, Busy, or a generic CSV.')}
           </Text>
         </div>
 
         <section className="space-y-3" aria-labelledby="import-entity-heading">
           <Heading level={2}
             id="import-entity-heading"
-            className="font-semibold"
-            style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
+            className="font-semibold text-base text-[var(--text-primary)]"
           >
             1. {tx.importStepEntity ?? 'What are you importing?'}
           </Heading>
@@ -147,8 +145,7 @@ export default function ImportUploadPage() {
         <section className="space-y-3" aria-labelledby="import-format-heading">
           <Heading level={2}
             id="import-format-heading"
-            className="font-semibold"
-            style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
+            className="font-semibold text-base text-[var(--text-primary)]"
           >
             2. {tx.importStepFormat ?? 'Choose source'}
           </Heading>
@@ -158,8 +155,7 @@ export default function ImportUploadPage() {
         <section className="space-y-3" aria-labelledby="import-file-heading">
           <Heading level={2}
             id="import-file-heading"
-            className="font-semibold"
-            style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
+            className="font-semibold text-base text-[var(--text-primary)]"
           >
             3. {tx.importStepFile ?? 'Pick file'}
           </Heading>

@@ -149,26 +149,19 @@ export default function BusinessTypePage() {
           )}
 
           {dirty && (
-            <Text style={{
-              padding: 'var(--space-3)',
-              background: 'var(--color-warning-50)',
-              borderRadius: 'var(--radius-md)',
-              color: 'var(--color-gray-800)',
-              fontSize: 'var(--fs-sm)',
-              lineHeight: 1.5,
-            }}>
+            <Text className="p-3 bg-[var(--color-warning-50)] rounded-md text-[var(--color-gray-800)] text-sm leading-normal">
               {t.switchBusinessTypeWarn}
             </Text>
           )}
 
-          <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+          <div className="flex gap-3">
             <Button
               type="button"
               variant="ghost"
               size="lg"
               onClick={() => navigate(ROUTES.SETTINGS)}
               disabled={saving}
-              style={{ flex: 1 }}
+              className="flex-1"
             >
               {t.cancel}
             </Button>
@@ -179,7 +172,7 @@ export default function BusinessTypePage() {
               onClick={handleSubmit}
               disabled={!dirty || saving}
               loading={saving}
-              style={{ flex: 1 }}
+              className="flex-1"
             >
               {t.switchBusinessTypeBtn}
             </Button>

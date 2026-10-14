@@ -91,7 +91,7 @@ export function StatementPeriodPicker({ open, onClose, onConfirm, loading }: Pro
       footer={
         <Button
           variant="primary" size="md"
-          style={{ width: '100%' }}
+          className="w-full"
           onClick={handleConfirm}
           disabled={loading || !canConfirm}
           aria-label={t.stmtGenerateStatement}
@@ -100,12 +100,13 @@ export function StatementPeriodPicker({ open, onClose, onConfirm, loading }: Pro
         </Button>
       }
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+      <div className="flex flex-col gap-3">
         {presets.map((p) => (
-          <Button variant="none"
+          <Button
             key={p.id}
-            className={`btn btn-md ${preset === p.id ? 'btn-primary' : 'btn-outline'}`}
-            style={{ width: '100%', textAlign: 'left', justifyContent: 'flex-start' }}
+            variant={preset === p.id ? 'primary' : 'outline'}
+            size="md"
+            className="w-full text-left justify-start"
             onClick={() => setPreset(p.id)}
             aria-pressed={preset === p.id}
           >
@@ -114,7 +115,7 @@ export function StatementPeriodPicker({ open, onClose, onConfirm, loading }: Pro
         ))}
 
         {preset === 'custom' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
+          <div className="flex flex-col gap-2 mt-2">
             <div>
               <label className="form-label" htmlFor="stmt-from">{t.stmtFrom}</label>
               <DateField

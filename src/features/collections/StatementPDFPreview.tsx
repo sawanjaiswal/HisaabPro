@@ -131,33 +131,36 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
         title={t.stmtTitle}
         size="lg"
         footer={
-          <div style={{ display: 'flex', gap: 'var(--space-2)', width: '100%' }}>
-            <Button variant="none"
-              className="btn btn-outline btn-sm"
+          <div className="flex gap-2 w-full">
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleWhatsApp}
               disabled={status !== 'success'}
               aria-label={t.stmtShareWhatsApp}
-              style={{ flex: 1 }}
+              className="flex-1"
             >
               <MessageCircle size={16} aria-hidden="true" />
               {t.stmtShareWhatsApp}
             </Button>
-            <Button variant="none"
-              className="btn btn-outline btn-sm"
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleShare}
               disabled={status !== 'success' || isSharing}
               aria-label={t.stmtShare}
-              style={{ flex: 1 }}
+              className="flex-1"
             >
               <Share2 size={16} aria-hidden="true" />
               {isSharing ? t.stmtSharing : t.stmtShare}
             </Button>
             <Button
-              variant="primary" size="sm"
+              variant="primary"
+              size="sm"
               onClick={handleDownload}
               disabled={status !== 'success' || isDownloading}
               aria-label={t.stmtDownload}
-              style={{ flex: 1 }}
+              className="flex-1"
             >
               <Download size={16} aria-hidden="true" />
               {isDownloading ? t.stmtDownloading : t.stmtDownload}
@@ -168,9 +171,10 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
         {/* Period chip */}
         {periodLabel && (
           <Button
-            variant="ghost" size="sm"
+            variant="ghost"
+            size="sm"
             onClick={() => setPickerOpen(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 'var(--space-4)' }}
+            className="flex items-center gap-1 mb-4"
             aria-label={t.stmtChangePeriod}
           >
             <Calendar size={14} aria-hidden="true" />
@@ -180,17 +184,17 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
 
         {/* Loading */}
         {status === 'pending' && from && (
-          <div style={{ textAlign: 'center', padding: 'var(--space-8)', color: 'var(--color-text-secondary)' }}>
-            <RefreshCw size={32} className="spin" aria-hidden="true" />
+          <div className="text-center p-8 text-secondary">
+            <RefreshCw size={32} className="spin mx-auto mb-2" aria-hidden="true" />
             <Text>{t.stmtGenerating}</Text>
           </div>
         )}
 
         {/* Empty */}
         {status === 'success' && data && data.transactions.length === 0 && (
-          <div style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
-            <Text>{t.stmtNoTransactions}</Text>
-            <Button variant="none" className="btn btn-outline btn-sm" onClick={() => setPickerOpen(true)}>
+          <div className="text-center p-8">
+            <Text className="mb-2">{t.stmtNoTransactions}</Text>
+            <Button variant="outline" size="sm" onClick={() => setPickerOpen(true)}>
               {t.stmtChangePeriod}
             </Button>
           </div>
@@ -198,9 +202,9 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
 
         {/* Error */}
         {status === 'error' && (
-          <div style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
-            <Text style={{ color: 'var(--color-error)' }}>{t.stmtLoadError}</Text>
-            <Button variant="none" className="btn btn-outline btn-sm" onClick={() => refetch()}>
+          <div className="text-center p-8">
+            <Text className="text-destructive mb-2">{t.stmtLoadError}</Text>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
               {t.retry}
             </Button>
           </div>
@@ -208,9 +212,9 @@ export function StatementPDFPreview({ open, onClose, partyId, partyName, partyPh
 
         {/* Success: PDF preview placeholder (PDFViewer requires iframe, tricky in Drawer) */}
         {status === 'success' && data && data.transactions.length > 0 && (
-          <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: 'var(--space-4)', textAlign: 'center' }}>
-            <Text style={{ marginBottom: 4, fontWeight: 600 }}>{t.stmtReadyToDownload}</Text>
-            <Text style={{ color: 'var(--color-text-secondary)', fontSize: 13 }}>
+          <div className="bg-surface rounded-lg p-4 text-center">
+            <Text className="mb-1 font-semibold">{t.stmtReadyToDownload}</Text>
+            <Text className="text-secondary text-xs">
               {`${data.transactions.length} ${t.stmtTransactions} · ${t.stmtClosingBalance}: ${formatPaise(data.closingBalancePaise)}`}
             </Text>
           </div>

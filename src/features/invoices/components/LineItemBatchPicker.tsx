@@ -24,23 +24,15 @@ export const LineItemBatchPicker: React.FC<LineItemBatchPickerProps> = ({
 
   return (
     <>
-      <div style={{ marginBottom: 'var(--space-2)' }}>
-        <Button variant="none"
+      <div className="mb-2">
+        <Button
+          variant="outline"
+          size="sm"
           type="button"
           onClick={() => setOpen(true)}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 'var(--space-1)',
-            fontSize: 'var(--fs-xs)',
-            color: batchId ? 'var(--color-primary)' : 'var(--color-text-muted)',
-            background: 'none',
-            border: '1px dashed var(--color-border)',
-            borderRadius: 'var(--radius-sm)',
-            padding: '4px 10px',
-            cursor: 'pointer',
-            minHeight: 44,
-          }}
+          className={`inline-flex items-center gap-1 text-xs border-dashed min-h-[44px] px-2.5 py-1 ${
+            batchId ? 'text-[var(--color-primary)] border-[var(--color-primary)]' : 'text-[var(--color-text-muted)] border-[var(--color-border)]'
+          }`}
           aria-label={batchId ? `Batch selected — ${t.pickBatch}` : t.pickBatch}
         >
           <Package size={12} aria-hidden="true" />

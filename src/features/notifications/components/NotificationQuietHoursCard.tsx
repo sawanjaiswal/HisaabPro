@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useNotificationSettings, useUpdateSettings } from '../useNotifications'
 import '../notifications.css'
-import { Input } from '@/components/ui/Input'
+import { Switch } from '@/components/ui/Switch'
 import { DateField } from '@/components/ui/DateField'
 import { Button } from '@/components/ui/Button'
 import { Heading } from '@/components/ui/Heading'
@@ -52,7 +52,7 @@ export function NotificationQuietHoursCard() {
   if (status === 'pending') {
     return (
       <div className="notif-quiet-hours" aria-busy="true">
-        <div className="notif-prefs-skeleton__label" style={{ width: '40%', marginBottom: '1rem' }} />
+        <div className="notif-prefs-skeleton__label w-2/5 mb-4" />
         <div className="notif-prefs-skeleton__row">
           <div className="notif-prefs-skeleton__label" />
           <div className="notif-prefs-skeleton__label" />
@@ -63,18 +63,15 @@ export function NotificationQuietHoursCard() {
 
   return (
     <div className="notif-quiet-hours">
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
-        <Heading level={3} className="notif-quiet-hours__title" style={{ margin: 0 }}>
+      <div className="flex items-center justify-between mb-4">
+        <Heading level={3} className="notif-quiet-hours__title m-0">
           {t.notifQuietHoursTitle ?? 'Quiet Hours'}
         </Heading>
-        <label className="notif-toggle" aria-label={t.notifQuietHoursToggle ?? 'Enable quiet hours'}>
-          <Input
-            type="checkbox"
-            checked={enabled}
-            onChange={(e) => setEnabled(e.target.checked)}
-          />
-          <span className="notif-toggle__track" />
-        </label>
+        <Switch
+          checked={enabled}
+          onCheckedChange={setEnabled}
+          aria-label={t.notifQuietHoursToggle ?? 'Enable quiet hours'}
+        />
       </div>
 
       <div className="notif-quiet-hours__fields" style={{ opacity: enabled ? 1 : 0.5 }}>
@@ -109,9 +106,9 @@ export function NotificationQuietHoursCard() {
         </div>
       </div>
 
-      <Button variant="none"
-        type="button"
-        className="notif-quiet-hours__save-btn"
+      <Button
+        variant="primary"
+        className="w-full mt-4"
         onClick={handleSave}
         disabled={!isDirty || !isValid || updateSettings.isPending}
       >

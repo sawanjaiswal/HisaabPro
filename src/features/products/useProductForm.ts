@@ -56,7 +56,7 @@ export interface UseProductFormReturn {
   setActiveSection: (section: FormSection) => void
   updateField: <K extends keyof ProductFormData>(key: K, value: ProductFormData[K]) => void
   validate: () => boolean
-  handleSubmit: () => Promise<void>
+  handleSubmit: (opts?: { addAnother?: boolean }) => Promise<boolean>
   reset: () => void
   /** #150 — conflict reconcile state + actions; page renders <ConflictDialog>. */
   conflictReconcile: ReturnType<typeof useConflictReconcile>
@@ -137,98 +137,86 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
     }
 
     setErrors(next)
-    return Object.keys(next).length === 0
-  }, [form, isEditMode, initialData])
+    const errKeys = Object.keys(next)
+    if (errKeys.length > 0) {
+      const k = errKeys[0]
+      if (['name', 'unitId', 'salePrice', 'purchasePrice', 'sku'].includes(k)) setActiveSection('basic')
+      else if (['openingStock', 'minStockLevel'].includes(k)) setActiveSection('stock')
+      else setActiveSection('extra')
+      toast.error(next[k])
+      return false
+    }
+    return true
+  }, [form, isEditMode, initialData, toast])
 
-  // Submit mutation
   const submitMutation = useMutation({
-    mutationFn: async (versionOverride?: number) => {
+    mutationFn: async (vars: { versionOverride?: number; addAnother?: boolean } = {}) => {
+      const { versionOverride, addAnother } = vars
       if (isEditMode && editId) {
-        // openingStock and autoGenerateSku cannot be changed directly via PUT
         const { openingStock: _os, autoGenerateSku: _ag, pendingImages, ...editPayload } = form
         await updateProduct(editId, editPayload, undefined, versionOverride ?? version)
+        if (pendingImages?.length) await uploadProductImages(editId, pendingImages)
 
-        // Upload any new images immediately in edit mode
-        if (pendingImages && pendingImages.length > 0) {
-          await uploadProductImages(editId, pendingImages)
-        }
-
-        // Adjust stock if changed during product edit
-        const initialStock = initialData?.openingStock ?? 0
-        const targetStock = form.openingStock ?? 0
-        const stockDiff = targetStock - initialStock
+        const stockDiff = (form.openingStock ?? 0) - (initialData?.openingStock ?? 0)
         if (stockDiff !== 0) {
-          if (stockDiff > 0) {
-            await adjustStock(editId, {
-              type: 'ADJUSTMENT_IN',
-              quantity: stockDiff,
-              reason: 'AUDIT',
-              notes: 'Stock updated via Edit Product',
-            })
-          } else {
-            await adjustStock(editId, {
-              type: 'ADJUSTMENT_OUT',
-              quantity: Math.abs(stockDiff),
-              reason: 'AUDIT',
-              notes: 'Stock updated via Edit Product',
-            })
-          }
+          await adjustStock(editId, {
+            type: stockDiff > 0 ? 'ADJUSTMENT_IN' : 'ADJUSTMENT_OUT',
+            quantity: Math.abs(stockDiff),
+            reason: 'AUDIT',
+            notes: 'Stock updated via Edit Product',
+          })
         }
-
-        return { mode: 'edit' as const, editId }
+        return { mode: 'edit' as const, editId, addAnother: false, name: form.name }
       }
-      // Form already stores prices in paise (ProductFormBasic multiplies by 100 on input)
       const { pendingImages, ...createPayload } = form
       const created = await createProduct(createPayload)
-      // Upload images after product is created (need the id)
-      if (pendingImages && pendingImages.length > 0 && created?.id) {
-        await uploadProductImages(created.id, pendingImages)
-      }
-      return { mode: 'create' as const }
+      if (pendingImages?.length && created?.id) await uploadProductImages(created.id, pendingImages)
+      return { mode: 'create' as const, addAnother: Boolean(addAnother), name: form.name }
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.products.all() })
-
       if (result.mode === 'edit') {
-        toast.success(`${form.name} updated`)
+        toast.success(`${result.name} updated`)
         navigate(`/products/${result.editId}`, { replace: true })
+      } else if (result.addAnother) {
+        toast.success(`${result.name} added. Enter next product.`)
+        setForm(INITIAL_FORM)
+        setErrors({})
+        setActiveSection('basic')
       } else {
-        toast.success(`${form.name} added`)
+        toast.success(`${result.name} added`)
         navigate(ROUTES.PRODUCTS, { replace: true })
       }
     },
     onError: (err) => {
-      // #150 — a CONFLICT opens the reconcile dialog (handled below), not a toast.
       if (isConflictError(err)) return
       const fallback = isEditMode ? t.productUpdateFailed : t.productSaveFailed
-      if (err instanceof Error) {
-        toast.error(err.message || fallback, { detail: err })
-      } else {
-        toast.error(err ?? fallback)
-      }
+      if (err instanceof Error) toast.error(err.message || fallback, { detail: err })
+      else toast.error(err ?? fallback)
     },
   })
 
   const isSubmitting = submitMutation.isPending
 
-  const handleSubmit = useCallback(async () => {
-    if (!validate()) return
-    if (isSubmitting) return
+  const handleSubmit = useCallback(async (opts?: { addAnother?: boolean }): Promise<boolean> => {
+    if (!validate() || isSubmitting) return false
     try {
-      // #150 — a stale save 409s; withConflictGuard opens the reconcile dialog.
+      let ok = false
       await conflictReconcile.withConflictGuard(async (versionOverride) => {
-        await submitMutation.mutateAsync(versionOverride)
+        await submitMutation.mutateAsync({ versionOverride, addAnother: opts?.addAnother })
+        ok = true
       })
+      return ok
     } catch {
-      // onError already toasted; swallow so callers don't see an unhandled rejection
+      return false
     }
   }, [validate, isSubmitting, submitMutation, conflictReconcile])
 
   const reset = useCallback(() => {
-    setForm(initialData ?? INITIAL_FORM)
+    setForm(isEditMode && initialData ? initialData : INITIAL_FORM)
     setErrors({})
     setActiveSection('basic')
-  }, [initialData])
+  }, [isEditMode, initialData])
 
   return {
     form,

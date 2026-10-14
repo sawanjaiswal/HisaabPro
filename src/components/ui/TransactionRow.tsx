@@ -95,8 +95,7 @@ export function TransactionRow({
 
       <div className="txn-row__amount-wrap">
         <span
-          className="txn-row__amount tabular-nums"
-          style={{ color: isCredit ? 'var(--color-success-600)' : 'var(--text-primary)' }}
+          className={`txn-row__amount tabular-nums ${isCredit ? 'text-success-600' : 'text-[var(--text-primary)]'}`}
         >
           {isCredit ? '−' : ''}
           {formatPaise(amountPaise)}

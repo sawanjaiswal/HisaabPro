@@ -1,0 +1,1 @@
+HisaabPro v1.1.0 - Live backend sync, Google SSO cryptographic authentication, Level 6 offline Dexie outbox engine, and spatial UI layout enhancements.

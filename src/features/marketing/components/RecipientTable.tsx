@@ -8,6 +8,9 @@ import { DeliveryStatusBadge } from './DeliveryStatusBadge'
 import { formatPaiseAsRupees } from '../marketing.utils'
 import { Button } from '@/components/ui/Button'
 
+import { Skeleton } from '@/components/ui/Skeleton'
+import { Card } from '@/components/ui/Card'
+
 interface Props {
   campaignId: string
 }
@@ -30,9 +33,9 @@ export function RecipientTable({ campaignId }: Props) {
 
   if (query.isPending) {
     return (
-      <div aria-busy="true" aria-label={t.marketingLoadingRecipientsAria}>
+      <div aria-busy="true" aria-label={t.marketingLoadingRecipientsAria} className="space-y-2">
         {[0, 1, 2].map((i) => (
-          <div key={i} style={{ height: 44, borderRadius: 8, background: 'var(--color-gray-100)', marginBottom: 8, animation: 'pulse 1.5s infinite' }} />
+          <Skeleton key={i} className="h-11 w-full rounded-xl" />
         ))}
       </div>
     )
@@ -40,9 +43,9 @@ export function RecipientTable({ campaignId }: Props) {
 
   if (query.isError) {
     return (
-      <div style={{ padding: '16px', color: 'var(--color-error-600)', fontSize: '14px' }}>
-        {t.marketingRecipientsLoadFailed}
-        <Button variant="none" type="button" onClick={() => query.refetch()} style={{ marginLeft: 8, color: 'var(--color-primary-600)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>
+      <div className="p-4 text-destructive text-sm flex items-center gap-2">
+        <span>{t.marketingRecipientsLoadFailed}</span>
+        <Button variant="ghost" size="sm" onClick={() => query.refetch()}>
           {t.marketingRetry}
         </Button>
       </div>
@@ -53,73 +56,51 @@ export function RecipientTable({ campaignId }: Props) {
 
   if (recipients.length === 0) {
     return (
-      <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--color-gray-500)', fontSize: '14px' }}>
+      <div className="py-6 px-4 text-center text-[var(--text-muted)] text-sm">
         {t.marketingNoRecipients}
       </div>
     )
   }
 
   return (
-    <div>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+    <Card className="overflow-hidden border border-border bg-card">
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-xs">
           <thead>
-            <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
-              <th style={thStyle}>{t.marketingNameCol}</th>
-              <th style={thStyle}>{t.marketingPhoneCol}</th>
-              <th style={thStyle}>{t.marketingStatusCol}</th>
-              <th style={thStyle}>{t.marketingCostCol}</th>
+            <tr className="border-b border-border bg-muted/40 text-[var(--text-muted)]">
+              <th className="py-2.5 px-3 text-left font-semibold whitespace-nowrap">{t.marketingNameCol}</th>
+              <th className="py-2.5 px-3 text-left font-semibold whitespace-nowrap">{t.marketingPhoneCol}</th>
+              <th className="py-2.5 px-3 text-left font-semibold whitespace-nowrap">{t.marketingStatusCol}</th>
+              <th className="py-2.5 px-3 text-left font-semibold whitespace-nowrap">{t.marketingCostCol}</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border">
             {recipients.map((r) => (
-              <tr key={r.id} style={{ borderBottom: '1px solid var(--color-gray-100)' }}>
-                <td style={tdStyle}>{r.partyName}</td>
-                <td style={tdStyle}>{r.phone ?? '—'}</td>
-                <td style={tdStyle}>
+              <tr key={r.id} className="hover:bg-muted/20 transition-colors">
+                <td className="py-2.5 px-3 text-[var(--text-primary)] font-medium">{r.partyName}</td>
+                <td className="py-2.5 px-3 text-[var(--text-secondary)]">{r.phone ?? '—'}</td>
+                <td className="py-2.5 px-3">
                   <DeliveryStatusBadge status={r.status} skipReason={r.skipReason} />
                 </td>
-                <td style={tdStyle}>{r.costPaise > 0 ? formatPaiseAsRupees(r.costPaise) : '—'}</td>
+                <td className="py-2.5 px-3 text-[var(--text-secondary)]">{r.costPaise > 0 ? formatPaiseAsRupees(r.costPaise) : '—'}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       {query.data?.nextCursor && (
-        <Button variant="none"
-          type="button"
-          onClick={handleLoadMore}
-          disabled={query.isFetching}
-          style={{
-            display: 'block',
-            width: '100%',
-            marginTop: '12px',
-            padding: '10px',
-            border: '1px solid var(--color-gray-300)',
-            borderRadius: '8px',
-            background: 'transparent',
-            cursor: 'pointer',
-            fontSize: '13px',
-            color: 'var(--color-primary-600)',
-          }}
-        >
-          {query.isFetching ? t.marketingLoadingMore : t.marketingLoadMore}
-        </Button>
+        <div className="p-2 border-t border-border">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={handleLoadMore}
+            disabled={query.isFetching}
+          >
+            {query.isFetching ? t.marketingLoadingMore : t.marketingLoadMore}
+          </Button>
+        </div>
       )}
-    </div>
+    </Card>
   )
-}
-
-const thStyle: React.CSSProperties = {
-  padding: '8px 10px',
-  textAlign: 'left',
-  fontWeight: 600,
-  color: 'var(--color-gray-600)',
-  whiteSpace: 'nowrap',
-}
-
-const tdStyle: React.CSSProperties = {
-  padding: '10px 10px',
-  color: 'var(--color-gray-800)',
-  verticalAlign: 'middle',
 }

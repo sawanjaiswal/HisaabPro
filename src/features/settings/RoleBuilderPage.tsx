@@ -29,14 +29,6 @@ import { PERMISSION_MODULES } from './permission.constants'
 import type { Role } from './settings.types'
 import './role-builder.css'
 
-const LABEL_STYLE: React.CSSProperties = {
-  fontSize: 'var(--fs-xs)',
-  fontWeight: 600,
-  color: 'var(--color-gray-600)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-}
-
 // ---- Inner form -- only rendered when role data is resolved ----
 
 interface BuilderFormProps {
@@ -83,8 +75,8 @@ function BuilderForm({ roleId, role, systemRoles, businessId }: BuilderFormProps
       )}
 
       {/* Permission matrix */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-        <Text style={LABEL_STYLE}>{t.permissionsLabel}</Text>
+      <div className="flex flex-col gap-2">
+        <Text className="text-xs font-semibold text-[var(--color-gray-600)] uppercase tracking-wider">{t.permissionsLabel}</Text>
         {errors.permissions && (
           <Text className="input-error" role="alert">
             {errors.permissions}

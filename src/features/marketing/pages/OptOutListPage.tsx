@@ -1,6 +1,5 @@
 /** OptOutListPage — /marketing/opt-outs — opted-out parties management */
 
-import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { ShieldOff, ShieldCheck } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -15,7 +14,9 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { Button } from '@/components/ui/Button'
-import { Heading } from '@/components/ui/Heading'
+import { Card } from '@/components/ui/Card'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 interface OptOutParty {
   id: string
@@ -73,76 +74,67 @@ export default function OptOutListPage() {
         backTo={MARKETING_ROUTES.HUB}
       />
       <PageContainer className="py-4 pb-24 max-w-2xl mx-auto">
-
-      {query.isPending && (
-        <div aria-busy="true" aria-label={t.marketingLoadingOptOutsAria}>
-          {[0, 1, 2].map((i) => <div key={i} style={{ height: 64, borderRadius: 10, background: 'var(--color-gray-100)', marginBottom: 10, animation: 'pulse 1.5s infinite' }} />)}
-        </div>
-      )}
-
-      {query.isError && (
-        <ErrorState
-          title={t.marketingOptOutsLoadFailed}
-          onRetry={() => { void query.refetch() }}
-        />
-      )}
-
-      {query.isSuccess && parties.length === 0 && (
-        <EmptyState
-          icon={<ShieldCheck size={22} aria-hidden="true" />}
-          title={t.marketingNoOptOuts}
-          description={t.marketingNoOptOutsDesc}
-        />
-      )}
-
-      {query.isSuccess && parties.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {parties.map((party) => (
-            <div key={party.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', borderRadius: '12px', background: 'white', border: '1px solid var(--color-gray-200)', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
-              <ShieldOff size={20} color="var(--color-error-400)" aria-hidden="true" style={{ flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--color-gray-800)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{party.name}</div>
-                <div style={{ fontSize: '12px', color: 'var(--color-gray-400)' }}>{party.phone ?? t.marketingNoPhoneOnRow}</div>
-              </div>
-              <Button variant="none"
-                type="button"
-                onClick={() => setConfirmOptIn(party)}
-                style={{ padding: '7px 12px', borderRadius: '8px', border: '1px solid var(--color-gray-300)', background: 'white', fontSize: '12px', fontWeight: 600, color: 'var(--color-primary-600)', cursor: 'pointer', flexShrink: 0 }}
-                aria-label={t.marketingAllowMessagesAria.replace('{{name}}', party.name)}
-              >
-                {t.marketingAllowMessages}
-              </Button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Confirm opt-in */}
-      {confirmOptIn && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', background: 'rgba(0,0,0,0.5)' }} role="dialog" aria-modal="true" aria-labelledby="opt-in-title">
-          <div style={{ width: '100%', maxWidth: 480, background: 'white', borderRadius: '20px 20px 0 0', padding: '24px 20px' }}>
-            <Heading level={3} id="opt-in-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>
-              {t.marketingConfirmOptInTitle.replace('{{name}}', confirmOptIn.name)}
-            </Heading>
-            <Text style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>
-              {t.marketingConfirmOptInDesc}
-            </Text>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Button variant="none" type="button" onClick={() => setConfirmOptIn(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
-                {t.marketingCancel}
-              </Button>
-              <Button variant="none"
-                type="button"
-                onClick={() => { optInMutation.mutate(confirmOptIn); setConfirmOptIn(null) }}
-                disabled={optInMutation.isPending}
-                style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', background: 'var(--color-primary-600)', color: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
-              >
-                {t.marketingAllowMessagesBtn}
-              </Button>
-            </div>
+        {query.isPending && (
+          <div aria-busy="true" aria-label={t.marketingLoadingOptOutsAria} className="space-y-2.5">
+            {[0, 1, 2].map((i) => (
+              <Skeleton key={i} className="h-16 w-full rounded-xl" />
+            ))}
           </div>
-        </div>
-      )}
+        )}
+
+        {query.isError && (
+          <ErrorState
+            title={t.marketingOptOutsLoadFailed}
+            onRetry={() => { void query.refetch() }}
+          />
+        )}
+
+        {query.isSuccess && parties.length === 0 && (
+          <EmptyState
+            icon={<ShieldCheck size={22} aria-hidden="true" />}
+            title={t.marketingNoOptOuts}
+            description={t.marketingNoOptOutsDesc}
+          />
+        )}
+
+        {query.isSuccess && parties.length > 0 && (
+          <div className="flex flex-col gap-2.5">
+            {parties.map((party) => (
+              <Card key={party.id} className="flex items-center gap-3 p-3.5 rounded-xl border border-border bg-card shadow-2xs">
+                <ShieldOff size={20} className="text-destructive shrink-0" aria-hidden="true" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm text-[var(--text-primary)] truncate">{party.name}</div>
+                  <div className="text-xs text-[var(--text-muted)]">{party.phone ?? t.marketingNoPhoneOnRow}</div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setConfirmOptIn(party)}
+                  aria-label={t.marketingAllowMessagesAria.replace('{{name}}', party.name)}
+                >
+                  {t.marketingAllowMessages}
+                </Button>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        <ConfirmDialog
+          open={Boolean(confirmOptIn)}
+          onClose={() => setConfirmOptIn(null)}
+          onConfirm={() => {
+            if (confirmOptIn) {
+              optInMutation.mutate(confirmOptIn)
+              setConfirmOptIn(null)
+            }
+          }}
+          title={t.marketingConfirmOptInTitle.replace('{{name}}', confirmOptIn?.name ?? '')}
+          description={t.marketingConfirmOptInDesc}
+          confirmLabel={t.marketingAllowMessagesBtn}
+          cancelLabel={t.marketingCancel}
+          isDanger={false}
+          isLoading={optInMutation.isPending}
+        />
       </PageContainer>
     </AppShell>
   )

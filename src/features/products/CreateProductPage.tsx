@@ -19,13 +19,18 @@ export default function CreateProductPage() {
   const { user } = useAuth()
   const businessId = user?.businessId ?? ''
   const { categories: taxCategories } = useTaxCategories(businessId)
-  const { form, errors, isSubmitting, isEditMode, activeSection, setActiveSection, updateField, handleSubmit, reset } = useProductForm()
+  const { form, errors, isSubmitting, isEditMode, activeSection, setActiveSection, updateField, handleSubmit } = useProductForm()
 
   const sectionIds = PRODUCT_FORM_SECTIONS.map((s) => s.id)
   const sectionIndex = sectionIds.indexOf(activeSection)
   const isLastSection = sectionIndex === sectionIds.length - 1
 
-  const handleSaveAndAddAnother = async () => { await handleSubmit(); reset(); setActiveSection('basic') }
+  const handleSaveAndAddAnother = async () => {
+    await handleSubmit({ addAnother: true })
+  }
+  const handleSaveProduct = async () => {
+    await handleSubmit({ addAnother: false })
+  }
   const handleNext = () => setActiveSection(sectionIds[sectionIndex + 1])
 
   return (
@@ -34,7 +39,7 @@ export default function CreateProductPage() {
       backTo={ROUTES.PRODUCTS}
       onSubmit={(e) => {
         e.preventDefault()
-        if (isLastSection) handleSubmit()
+        if (isLastSection) void handleSaveProduct()
         else handleNext()
       }}
       footer={
@@ -50,10 +55,11 @@ export default function CreateProductPage() {
               {t.saveAndAddAnother}
             </Button>
             <Button
+              type="button"
               variant="primary"
               size="lg"
               loading={isSubmitting}
-              onClick={handleSubmit}
+              onClick={handleSaveProduct}
               aria-label={t.saveProduct}
             >
               {t.saveProductBtn}

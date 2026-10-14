@@ -28,7 +28,7 @@ export function JobConvertButton({ jobId, jobTitle, isOnline }: JobConvertButton
       disabled={isPending || !isOnline}
       title={!isOnline ? t.jobConvertOffline : undefined}
       aria-label={t.jobConvertAria}
-      style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', minHeight: 44 }}
+      className="flex items-center gap-2 min-h-[44px]"
     >
       <FileText size={16} aria-hidden="true" />
       {isPending ? t.jobConverting : t.jobConvertToInvoice}

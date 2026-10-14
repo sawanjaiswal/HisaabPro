@@ -1,7 +1,8 @@
-/** ExpiryAlertCard — single expiry alert row for StockAlertsPage (BAT-05) */
-
 import { AlertTriangle } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
+import { Card } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
+import { cn } from '@/lib/utils'
 
 export interface ExpiryAlertCardData {
   id: string
@@ -44,46 +45,51 @@ function expiryLabel(daysRemaining: number | null, alertType: 'EXPIRY_NEAR' | 'E
 export function ExpiryAlertCard({ alert }: ExpiryAlertCardProps) {
   const { t } = useLanguage()
   const isExpired = alert.alertType === 'EXPIRY_PASSED'
-  const color = isExpired ? 'var(--color-error-500)' : 'var(--color-warning)'
-  const surface = isExpired ? 'var(--color-danger-surface, #fff1f0)' : 'var(--color-warning-surface, #fffbeb)'
 
   return (
-    <div
+    <Card
       role="listitem"
-      className="card-primary"
-      style={{ padding: 'var(--space-4)' }}
+      className="p-4"
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)' }}>
-        <AlertTriangle size={16} aria-hidden="true" style={{ color, flexShrink: 0, marginTop: 2 }} />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-            <span className="text-sm font-semibold text-[var(--text-primary)]">
+      <div className="flex items-start gap-3">
+        <AlertTriangle
+          size={16}
+          aria-hidden="true"
+          className={cn('shrink-0 mt-0.5', isExpired ? 'text-[var(--color-error-500)]' : 'text-amber-500')}
+        />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm font-semibold text-foreground">
               {alert.product.name}
             </span>
-            <span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color, background: surface, borderRadius: 'var(--radius-full)', padding: '2px 8px' }}>
+            <Badge variant={isExpired ? 'danger' : 'warning'}>
               {isExpired ? t.expiryPassedAlert : t.expiryNearAlert}
-            </span>
+            </Badge>
           </div>
-          <div style={{ marginTop: 'var(--space-2)', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--space-2)' }}>
+          <div className="mt-2 grid grid-cols-2 gap-2">
             <div>
-              <div className="text-xs text-[var(--text-muted)]">{t.expiryBatchLabel}</div>
-              <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 500 }}>{alert.batch.batchNumber}</div>
+              <div className="text-xs text-muted-foreground">{t.expiryBatchLabel}</div>
+              <div className="text-sm font-medium">{alert.batch.batchNumber}</div>
             </div>
             <div>
-              <div className="text-xs text-[var(--text-muted)]">{t.expiryDateLabel}</div>
-              <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color }}>{formatExpiryDate(alert.batch.expiryDate)}</div>
+              <div className="text-xs text-muted-foreground">{t.expiryDateLabel}</div>
+              <div className={cn('text-sm font-medium', isExpired ? 'text-[var(--color-error-500)]' : 'text-amber-600')}>
+                {formatExpiryDate(alert.batch.expiryDate)}
+              </div>
             </div>
             <div>
-              <div className="text-xs text-[var(--text-muted)]">{t.expiryStockLabel}</div>
-              <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 500 }}>{alert.batch.currentStock} {alert.product.unit.symbol}</div>
+              <div className="text-xs text-muted-foreground">{t.expiryStockLabel}</div>
+              <div className="text-sm font-medium">{alert.batch.currentStock} {alert.product.unit.symbol}</div>
             </div>
             <div>
-              <div className="text-xs text-[var(--text-muted)]">Status</div>
-              <div style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color }}>{expiryLabel(alert.daysRemaining, alert.alertType)}</div>
+              <div className="text-xs text-muted-foreground">Status</div>
+              <div className={cn('text-sm font-medium', isExpired ? 'text-[var(--color-error-500)]' : 'text-amber-600')}>
+                {expiryLabel(alert.daysRemaining, alert.alertType)}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   )
 }

@@ -90,29 +90,22 @@ export function CommitBlockedBanner({
   return (
     <Card
       variant="default"
-      className="p-4 space-y-3"
+      className="p-4 space-y-3 border border-destructive/20 bg-destructive/5"
       role="alert"
       aria-live="polite"
-      style={{
-        borderColor: 'var(--color-danger-200)',
-        borderWidth: '1px',
-        backgroundColor: 'var(--color-danger-50)',
-      }}
     >
       <div className="flex items-start gap-3">
         <AlertTriangle
-          className="w-5 h-5 shrink-0 mt-0.5"
-          style={{ color: 'var(--color-danger-700)' }}
+          className="w-5 h-5 shrink-0 mt-0.5 text-destructive"
           aria-hidden="true"
         />
         <div className="flex-1 min-w-0 space-y-1">
           <Heading level={2}
-            className="font-semibold"
-            style={{ fontSize: 'var(--fs-md)', color: 'var(--color-danger-900)' }}
+            className="font-semibold text-base text-destructive"
           >
             {title}
           </Heading>
-          <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-danger-800)' }}>
+          <Text className="text-sm text-destructive/90">
             {desc}
           </Text>
         </div>
@@ -121,8 +114,7 @@ export function CommitBlockedBanner({
       {sample.length > 0 && (
         <div className="space-y-1">
           <span
-            className="font-medium"
-            style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-danger-800)' }}
+            className="font-medium text-xs text-destructive/90"
           >
             {sampleLabel}
           </span>
@@ -130,12 +122,7 @@ export function CommitBlockedBanner({
             {sample.map((item) => (
               <li key={item}>
                 <span
-                  className="inline-flex items-center px-2 py-0.5 rounded-full tabular-nums"
-                  style={{
-                    fontSize: 'var(--fs-xs)',
-                    color: 'var(--color-danger-800)',
-                    backgroundColor: 'var(--color-danger-100)',
-                  }}
+                  className="inline-flex items-center px-2 py-0.5 rounded-full tabular-nums text-xs text-destructive bg-destructive/10"
                 >
                   {item}
                 </span>

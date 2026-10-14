@@ -71,11 +71,9 @@ export function ListDetailLayout({
   return (
     <div className={`list-detail-layout list-detail-layout--desktop flex gap-0 min-h-[calc(100dvh-var(--header-height))] ${className}`.trim()}>
       <aside
-        className="list-detail-layout__rail flex-shrink-0 border-r overflow-y-auto"
+        className="list-detail-layout__rail flex-shrink-0 border-r border-[var(--color-gray-100)] bg-[var(--color-gray-0)] overflow-y-auto"
         style={{
           width: 'var(--list-rail-width)',
-          borderColor: 'var(--color-gray-100)',
-          backgroundColor: 'var(--color-gray-0)',
           ...railStyle,
         }}
         aria-label="List"
@@ -83,8 +81,7 @@ export function ListDetailLayout({
         {list}
       </aside>
       <section
-        className="list-detail-layout__detail flex-1 overflow-y-auto"
-        style={{ backgroundColor: 'var(--color-gray-50)' }}
+        className="list-detail-layout__detail flex-1 overflow-y-auto bg-[var(--color-gray-50)]"
         aria-label="Detail"
       >
         {selectedId ? detail : emptyDetail}

@@ -57,33 +57,17 @@ export default function JobsListPage() {
         <div
           role="group"
           aria-label={t.jobFilterAriaLabel}
-          style={{
-            display: 'flex',
-            gap: 'var(--space-2)',
-            overflowX: 'auto',
-            paddingBottom: 'var(--space-2)',
-            scrollbarWidth: 'none',
-          }}
+          className="flex gap-2 overflow-x-auto pb-2 scrollbar-none"
         >
           {([ALL, ...JOB_STATUSES] as Filter[]).map((f) => (
-            <Button variant="none"
+            <Button
               key={f}
               type="button"
+              variant={activeFilter === f ? 'primary' : 'outline'}
+              size="sm"
               onClick={() => setActiveFilter(f)}
               aria-pressed={activeFilter === f}
-              style={{
-                flexShrink: 0,
-                padding: '6px 14px',
-                borderRadius: 9999,
-                border: `1px solid ${activeFilter === f ? 'var(--color-primary-600)' : 'var(--color-border)'}`,
-                background: activeFilter === f ? 'var(--color-primary-600)' : 'var(--color-surface)',
-                color: activeFilter === f ? '#fff' : 'var(--color-text)',
-                fontSize: 'var(--fs-xs)',
-                fontWeight: 500,
-                cursor: 'pointer',
-                minHeight: 36,
-                whiteSpace: 'nowrap',
-              }}
+              className="flex-shrink-0 rounded-full text-xs font-medium min-h-[36px] whitespace-nowrap px-3.5 py-1.5"
             >
               {PILL_LABELS[f]}
             </Button>
@@ -98,7 +82,7 @@ export default function JobsListPage() {
         )}
 
         {status === 'success' && allItems.length > 0 && (
-          <div role="list" aria-label={t.jobsListAriaLabel} style={{ display: 'flex', flexDirection: 'column' }}>
+          <div role="list" aria-label={t.jobsListAriaLabel} className="flex flex-col">
             {allItems.map((job) => (
               <div key={job.id} role="listitem">
                 <JobListItem job={job} onClick={(id) => navigate(JOB_ROUTES.DETAIL(id))} />
@@ -113,7 +97,7 @@ export default function JobsListPage() {
             variant="ghost" size="sm"
             onClick={() => void fetchNextPage()}
             disabled={isFetchingNextPage}
-            style={{ width: '100%', marginTop: 'var(--space-3)', minHeight: 44 }}
+            className="w-full mt-3 min-h-[44px]"
           >
             {isFetchingNextPage ? t.jobLoadingMore : t.jobLoadMore}
           </Button>

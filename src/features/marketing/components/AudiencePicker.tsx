@@ -5,6 +5,8 @@ import { Select, SelectItem } from '@/components/ui/Select'
 import type { SegmentFilter } from '../marketing.types'
 import { useSegmentPreview } from '../hooks/useSegmentPreview'
 import { Input } from '@/components/ui/Input'
+import { Checkbox } from '@/components/ui/Checkbox'
+import { Badge } from '@/components/ui/Badge'
 
 interface Props {
   value: SegmentFilter
@@ -26,10 +28,10 @@ export function AudiencePicker({ value, onChange }: Props) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div className="flex flex-col gap-4">
       {/* Party type */}
       <div>
-        <label style={labelStyle} htmlFor="seg-party-type">{t.marketingPartyType}</label>
+        <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5" htmlFor="seg-party-type">{t.marketingPartyType}</label>
         <Select
           value={value.partyType ?? 'CUSTOMER'}
           onValueChange={(v) => update('partyType', v as SegmentFilter['partyType'])}
@@ -43,7 +45,7 @@ export function AudiencePicker({ value, onChange }: Props) {
 
       {/* Tags */}
       <div>
-        <label style={labelStyle} htmlFor="seg-tags">{t.marketingTagsLabel}</label>
+        <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5" htmlFor="seg-tags">{t.marketingTagsLabel}</label>
         <Input
           id="seg-tags"
           type="text"
@@ -53,13 +55,12 @@ export function AudiencePicker({ value, onChange }: Props) {
             const tags = e.target.value.split(',').map((tag) => tag.trim()).filter(Boolean)
             update('tags', tags.length > 0 ? tags : undefined)
           }}
-          style={inputStyle}
         />
       </div>
 
       {/* City */}
       <div>
-        <label style={labelStyle} htmlFor="seg-city">{t.marketingCityLabel}</label>
+        <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5" htmlFor="seg-city">{t.marketingCityLabel}</label>
         <Input
           id="seg-city"
           type="text"
@@ -67,13 +68,12 @@ export function AudiencePicker({ value, onChange }: Props) {
           value={value.cityContains ?? ''}
           onChange={(e) => update('cityContains', e.target.value || undefined)}
           maxLength={60}
-          style={inputStyle}
         />
       </div>
 
       {/* Inactive days */}
       <div>
-        <label style={labelStyle} htmlFor="seg-inactive">{t.marketingInactiveDaysLabel}</label>
+        <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5" htmlFor="seg-inactive">{t.marketingInactiveDaysLabel}</label>
         <Input
           id="seg-inactive"
           type="number"
@@ -82,13 +82,12 @@ export function AudiencePicker({ value, onChange }: Props) {
           placeholder={t.marketingInactiveDaysPh}
           value={value.inactiveDays ?? ''}
           onChange={(e) => update('inactiveDays', e.target.value ? parseInt(e.target.value, 10) : undefined)}
-          style={inputStyle}
         />
       </div>
 
       {/* Outstanding */}
       <div>
-        <label style={labelStyle} htmlFor="seg-outstanding">{t.marketingOutstandingLabel}</label>
+        <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5" htmlFor="seg-outstanding">{t.marketingOutstandingLabel}</label>
         <Input
           id="seg-outstanding"
           type="number"
@@ -99,77 +98,39 @@ export function AudiencePicker({ value, onChange }: Props) {
             const rupees = parseInt(e.target.value, 10)
             update('outstandingGtePaise', Number.isFinite(rupees) && rupees >= 0 ? rupees * 100 : undefined)
           }}
-          style={inputStyle}
         />
       </div>
 
       {/* Birthday this week */}
-      <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: 'var(--color-gray-700)' }}>
-        <Input
-          type="checkbox"
+      <div className="pt-1">
+        <Checkbox
           checked={value.birthdayThisWeek ?? false}
-          onChange={(e) => update('birthdayThisWeek', e.target.checked || undefined)}
-          style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary-600)' }}
+          onCheckedChange={(checked) => update('birthdayThisWeek', Boolean(checked) || undefined)}
+          label={t.marketingBirthdayThisWeek}
         />
-        {t.marketingBirthdayThisWeek}
-      </label>
+      </div>
 
       {/* Preview chip */}
-      <div style={{ marginTop: '4px' }}>
+      <div className="mt-1">
         {loading && (
-          <span style={chipStyle('var(--color-gray-400)')}>{t.marketingCountingRecipients}</span>
+          <Badge variant="secondary">{t.marketingCountingRecipients}</Badge>
         )}
         {!loading && error && (
-          <span style={chipStyle('var(--color-error-600)', 'var(--color-error-50)')}>{error}</span>
+          <Badge variant="danger">{error}</Badge>
         )}
         {!loading && !error && preview != null && (
-          <span style={chipStyle(
-            tooLarge ? 'var(--color-error-700)' : 'var(--color-primary-700)',
-            tooLarge ? 'var(--color-error-50)' : 'var(--color-primary-50)',
-          )}>
+          <Badge variant={tooLarge ? 'danger' : 'secondary'} className="text-xs font-semibold">
             {tooLarge
               ? t.marketingTooLargeChip
               : `~${preview.count.toLocaleString('en-IN')} ${t.marketingApproxCustomers}`
             }
-          </span>
+          </Badge>
         )}
         {!loading && !error && preview == null && (
-          <span style={chipStyle('var(--color-gray-400)')}>{t.marketingEnterFilters}</span>
+          <Badge variant="secondary">{t.marketingEnterFilters}</Badge>
         )}
       </div>
     </div>
   )
-}
-
-function chipStyle(color: string, bg = 'var(--color-gray-100)'): React.CSSProperties {
-  return {
-    display: 'inline-block',
-    padding: '4px 12px',
-    borderRadius: '999px',
-    background: bg,
-    color,
-    fontSize: '13px',
-    fontWeight: 600,
-    border: `1px solid ${color}30`,
-  }
-}
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '13px',
-  fontWeight: 600,
-  color: 'var(--color-gray-700)',
-  marginBottom: '6px',
-}
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '10px 12px',
-  borderRadius: '8px',
-  border: '1px solid var(--color-gray-300)',
-  fontSize: '14px',
-  color: 'var(--color-gray-800)',
-  background: 'white',
-  boxSizing: 'border-box',
 }
 

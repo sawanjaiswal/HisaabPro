@@ -19,29 +19,24 @@ export const PreviewTotalsSummary: React.FC<PreviewTotalsSummaryProps> = ({
   const { t } = useLanguage()
   return (
   <div
+    className="px-4 py-3"
     style={{
       display: 'flex',
       justifyContent: layout.summaryPosition === 'right' ? 'flex-end' : layout.summaryPosition === 'center' ? 'center' : 'stretch',
-      padding: 'var(--space-3) var(--space-4)',
       borderTop: `1px solid ${borderColor}`,
     }}
     aria-hidden="true"
   >
-    <div style={{ minWidth: '180px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: 'var(--fs-sm)' }}>
-        <span style={{ color: 'var(--color-gray-500)' }}>{t.subtotal}</span>
-        <span style={{ color: 'var(--color-gray-700)' }}>{paise(SAMPLE_SUBTOTAL)}</span>
+    <div className="min-w-[180px]">
+      <div className="flex justify-between mb-1 text-sm">
+        <span className="text-muted-foreground">{t.subtotal}</span>
+        <span className="text-foreground">{paise(SAMPLE_SUBTOTAL)}</span>
       </div>
       <div
+        className="flex justify-between font-bold text-base pt-1.5 mt-1"
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontWeight: 700,
-          fontSize: 'var(--fs-df)',
           color: accentColor,
           borderTop: `1px solid ${borderColor}`,
-          paddingTop: '6px',
-          marginTop: '4px',
         }}
       >
         <span>{t.grandTotal}</span>

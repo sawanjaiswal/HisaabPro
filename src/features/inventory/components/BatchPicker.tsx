@@ -41,14 +41,14 @@ function ExpiryBadge({ isExpired, expiryDate, expiredLabel, daysLeftLabel }: {
 
   if (isExpired) {
     return (
-      <span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color: 'var(--color-error-500)', background: 'var(--color-danger-surface, #fff1f0)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>
+      <span className="text-xs font-semibold text-[var(--color-error-500)] bg-[var(--color-danger-surface,#fff1f0)] rounded px-1.5 py-0.5 whitespace-nowrap">
         {expiredLabel}
       </span>
     )
   }
   if (daysLeft <= 30) {
     return (
-      <span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color: 'var(--color-warning)', background: 'var(--color-warning-surface, #fffbeb)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>
+      <span className="text-xs font-semibold text-[var(--color-warning)] bg-[var(--color-warning-surface,#fffbeb)] rounded px-1.5 py-0.5 whitespace-nowrap">
         {daysLeft}{daysLeftLabel}
       </span>
     )
@@ -71,45 +71,26 @@ function BatchRow({
   const { t } = useLanguage()
 
   return (
-    <Button variant="none"
+    <Button
+      variant="none"
       type="button"
       disabled={isBlocked}
       onClick={() => onSelect(batch.id)}
       aria-pressed={selected}
       aria-disabled={isBlocked}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 'var(--space-3)',
-        width: '100%',
-        textAlign: 'left',
-        padding: 'var(--space-3) var(--space-4)',
-        background: selected ? 'var(--color-primary-surface, #e0f2f1)' : 'transparent',
-        border: selected ? '1.5px solid var(--color-primary)' : '1px solid var(--color-border)',
-        borderRadius: 'var(--radius-md)',
-        cursor: isBlocked ? 'not-allowed' : 'pointer',
-        opacity: isBlocked ? 0.5 : 1,
-        minHeight: 44,
-      }}
+      className={`flex items-center justify-between gap-3 w-full text-left p-3 px-4 rounded-lg min-h-[44px] ${
+        selected ? 'bg-[var(--color-primary-surface,#e0f2f1)] border-2 border-[var(--color-primary)]' : 'bg-transparent border border-[var(--color-border)]'
+      } ${isBlocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
       aria-label={`${t.pickBatch}: ${batch.batchNumber}${batch.isExpired ? ` — ${t.expired}` : ''}`}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1, minWidth: 0 }}>
-        <span style={{
-          fontWeight: 600,
-          fontSize: 'var(--fs-sm)',
-          color: 'var(--color-text-primary)',
-          textDecoration: batch.isExpired && policy === 'WARN_ONLY' ? 'line-through' : 'none',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}>
+      <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+        <span className={`font-semibold text-sm text-[var(--color-text-primary)] truncate ${batch.isExpired && policy === 'WARN_ONLY' ? 'line-through' : ''}`}>
           {batch.batchNumber}
         </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+        <div className="flex items-center gap-2 flex-wrap">
           {batch.expiryDate && (
             <span className="text-xs text-[var(--text-muted)]">
-              <Clock size={10} style={{ display: 'inline', marginRight: 3 }} aria-hidden="true" />
+              <Clock size={10} className="inline mr-1" aria-hidden="true" />
               {formatExpiry(batch.expiryDate)}
             </span>
           )}
@@ -171,15 +152,17 @@ export function BatchPicker({
         }}
       >
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Heading level={2} style={{ fontSize: 'var(--fs-base)', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+        <div className="flex items-center justify-between">
+          <Heading level={2} className="text-base font-bold text-[var(--color-text-primary)] m-0">
             {t.pickBatch}
           </Heading>
-          <Button variant="none"
+          <Button
+            variant="ghost"
+            size="sm"
             type="button"
             onClick={onClose}
             aria-label={t.batchPickerClose}
-            style={{ minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}
+            className="min-w-[44px] min-h-[44px] text-[var(--color-text-muted)]"
           >
             <X size={20} aria-hidden="true" />
           </Button>
@@ -187,7 +170,7 @@ export function BatchPicker({
 
         {/* Loading */}
         {status === 'loading' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }} aria-busy="true">
+          <div className="flex flex-col gap-2" aria-busy="true">
             {[1, 2, 3].map((i) => (
               <Skeleton key={i} height="3.5rem" />
             ))}
@@ -196,16 +179,16 @@ export function BatchPicker({
 
         {/* Error */}
         {status === 'error' && (
-          <div role="alert" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: 'var(--color-error-500)', fontSize: 'var(--fs-sm)' }}>
+          <div role="alert" className="flex items-center gap-2 text-sm text-[var(--color-error-500)]">
             <AlertTriangle size={16} aria-hidden="true" />
             <span>{error}</span>
-            <Button variant="none" type="button" onClick={refetch} className="btn btn-sm" style={{ marginLeft: 'auto' }}>{t.batchPickerRetry}</Button>
+            <Button variant="outline" size="sm" type="button" onClick={refetch} className="ml-auto">{t.batchPickerRetry}</Button>
           </div>
         )}
 
         {/* Empty */}
         {status === 'success' && batches.length === 0 && (
-          <div style={{ textAlign: 'center', padding: 'var(--space-6)', color: 'var(--color-text-muted)', fontSize: 'var(--fs-sm)' }}>
+          <div className="text-center p-6 text-sm text-[var(--color-text-muted)]">
             {t.batchPickerNoneAvailable}
           </div>
         )}
@@ -215,10 +198,10 @@ export function BatchPicker({
           <div
             role="listbox"
             aria-label={t.pickBatch}
-            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}
+            className="flex flex-col gap-2"
           >
             {expiredBatchPolicy === 'HARD_BLOCK' && batches.some((b) => !b.isExpired) && (
-              <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
+              <Text className="text-xs text-[var(--color-text-muted)] m-0">
                 {t.expiredBatchBlocked}
               </Text>
             )}

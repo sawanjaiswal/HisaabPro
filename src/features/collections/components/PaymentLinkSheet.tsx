@@ -92,11 +92,11 @@ export function PaymentLinkSheet({
 
   return (
     <Drawer open={open} onClose={onClose} title="Payment Link" size="sm">
-      <div style={{ padding: 'var(--space-4)', minHeight: 200 }}>
+      <div className="p-4 min-h-[200px]">
 
         {/* Loading */}
         {isLoading && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-3)', paddingTop: 'var(--space-6)' }}>
+          <div className="flex flex-col items-center gap-3 pt-6">
             <Loader2 size={32} className="spin" aria-hidden="true" />
             <span className="text-sm text-[var(--text-secondary)]">
               {mutation.isPending ? 'Generating link…' : 'Loading…'}
@@ -106,9 +106,9 @@ export function PaymentLinkSheet({
 
         {/* Error */}
         {hasError && !isLoading && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-3)', paddingTop: 'var(--space-4)' }}>
-            <AlertCircle size={28} color="var(--color-error-500)" aria-hidden="true" />
-            <Text style={{ color: 'var(--color-error-500)', textAlign: 'center', fontSize: 'var(--fs-sm)' }}>
+          <div className="flex flex-col items-center gap-3 pt-4">
+            <AlertCircle size={28} className="text-[var(--color-error-500)]" aria-hidden="true" />
+            <Text className="text-[var(--color-error-500)] text-center text-sm">
               {mutation.error?.message || 'Could not create payment link'}
             </Text>
             <Button variant="secondary" size="sm" onClick={handleCreate}>
@@ -119,21 +119,21 @@ export function PaymentLinkSheet({
 
         {/* Success / Active link */}
         {currentLink && !isLoading && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          <div className="flex flex-col gap-4">
             {/* Amount */}
-            <div style={{ textAlign: 'center' }}>
-              <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-1)' }}>
+            <div className="text-center">
+              <Text className="text-xs text-[var(--color-text-secondary)] mb-1">
                 Amount due
               </Text>
-              <Text style={{ fontSize: 'var(--fs-2xl)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+              <Text className="text-2xl font-bold text-[var(--color-text-primary)]">
                 {formatPaise(currentLink.amountPaise)}
               </Text>
             </div>
 
             {/* Short URL pill */}
-            <div style={{ background: 'var(--color-surface-2)', borderRadius: 'var(--radius-full)', padding: 'var(--space-2) var(--space-3)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <Link size={14} aria-hidden="true" style={{ color: 'var(--color-text-secondary)', flexShrink: 0 }} />
-              <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div className="bg-[var(--color-surface-2)] rounded-full py-2 px-3 flex items-center gap-2">
+              <Link size={14} aria-hidden="true" className="text-[var(--color-text-secondary)] flex-shrink-0" />
+              <span className="text-xs text-[var(--color-text-secondary)] truncate">
                 {currentLink.shortUrl ?? 'rzp.io/…'}
               </span>
             </div>
@@ -143,12 +143,12 @@ export function PaymentLinkSheet({
               readOnly
               value={currentLink.shortUrl ?? ''}
               aria-label="Payment link URL"
-              style={{ fontSize: 'var(--fs-xs)', padding: 'var(--space-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)', width: '100%', boxSizing: 'border-box' }}
+              className="text-xs p-2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] w-full"
             />
 
             {/* Expiry + status */}
             {expiry && (
-              <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+              <Text className="text-xs text-[var(--color-text-secondary)] text-center">
                 {currentLink.status === 'PAID'
                   ? `Paid on ${new Date(currentLink.paidAt!).toLocaleDateString('en-IN')}`
                   : `Active — link valid until ${expiry}`}
@@ -157,12 +157,12 @@ export function PaymentLinkSheet({
 
             {/* Actions */}
             {currentLink.status !== 'PAID' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                <Button variant="primary" size="md" onClick={handleCopy} style={{ width: '100%' }}>
+              <div className="flex flex-col gap-2">
+                <Button variant="primary" size="md" onClick={handleCopy} className="w-full">
                   <Copy size={16} aria-hidden="true" />
                   Copy Link
                 </Button>
-                <Button variant="secondary" size="md" onClick={handleWhatsApp} style={{ width: '100%' }}>
+                <Button variant="secondary" size="md" onClick={handleWhatsApp} className="w-full">
                   <Share2 size={16} aria-hidden="true" />
                   Share on WhatsApp
                 </Button>
@@ -173,11 +173,11 @@ export function PaymentLinkSheet({
 
         {/* No link yet — show create button */}
         {!currentLink && !isLoading && !hasError && !submitted && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', paddingTop: 'var(--space-2)' }}>
-            <Text style={{ fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+          <div className="flex flex-col gap-3 pt-2">
+            <Text className="text-sm text-[var(--color-text-secondary)] text-center">
               Generate a Razorpay payment link for {formatPaise(balanceDue)}.
             </Text>
-            <Button variant="primary" size="md" onClick={handleCreate} style={{ width: '100%' }}>
+            <Button variant="primary" size="md" onClick={handleCreate} className="w-full">
               Generate Payment Link
             </Button>
           </div>

@@ -39,7 +39,7 @@ export default function PayrollPage() {
     <AppShell>
       <Header title={t.payrollTitle as string} backTo={ROUTES.HR_ATTENDANCE} />
       <PageContainer variant="dashboard" className="space-y-4">
-        <div style={{ paddingBottom: 'calc(var(--bottom-nav-height) + 5rem)' }}>
+        <div className="hr-page-content">
           <article
             className="rounded-xl bg-surface border border-border p-4"
             aria-label={t.payrollHubIntroTitle as string}

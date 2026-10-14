@@ -62,7 +62,7 @@ export default function EditProductPage() {
         <Header title={t.editProductTitle} backTo={`/products/${productId}`} />
         <PageContainer variant="form" className="space-y-6">
           <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
-          <div style={{ marginTop: 'var(--space-4)' }}>
+          <div className="mt-4">
             <Skeleton height="3.5rem" borderRadius="var(--radius-md)" count={5} />
           </div>
         </PageContainer>

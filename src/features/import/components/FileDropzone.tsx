@@ -78,20 +78,20 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
         {file ? (
           <>
             <FileCheck2
-              className="w-6 h-6"
-              style={{ color: 'var(--color-success-600)' }}
+              className="w-6 h-6 text-success-600"
               aria-hidden="true"
             />
             <span
               className="font-semibold break-all text-sm text-[var(--text-primary)] font-medium"
-              
             >
               {file.name}
             </span>
             <span className="text-xs text-[var(--text-secondary)]">
               {formatBytes(file.size)}
             </span>
-            <Button variant="none"
+            <Button
+              variant="ghost"
+              size="sm"
               type="button"
               onClick={(e) => {
                 e.stopPropagation()
@@ -99,8 +99,7 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
               }}
               disabled={disabled}
               aria-label={tx.importRemoveFile ?? 'Remove file'}
-              className="mt-1 inline-flex items-center gap-1 min-h-11 px-3 rounded-sm"
-              style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-xs)' }}
+              className="mt-1 text-xs text-[var(--text-secondary)]"
             >
               <X className="w-4 h-4" aria-hidden="true" />
               {tx.importRemoveFile ?? 'Remove'}
@@ -109,13 +108,11 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
         ) : (
           <>
             <UploadCloud
-              className="w-6 h-6"
-              style={{ color: 'var(--color-primary-600)' }}
+              className="w-6 h-6 text-primary-600"
               aria-hidden="true"
             />
             <span
               className="font-semibold text-sm text-[var(--text-primary)] font-medium"
-              
             >
               {tx.importDropzoneTitle ?? 'Drop file here or tap to browse'}
             </span>
@@ -141,8 +138,7 @@ export function FileDropzone({ file, onFile, disabled = false, errorMessage }: F
       {errorMessage ? (
         <Text
           role="alert"
-          className="mt-2"
-          style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-error-600)' }}
+          className="mt-2 text-xs text-destructive"
         >
           {errorMessage}
         </Text>

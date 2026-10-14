@@ -169,7 +169,7 @@ describe('useProductForm', () => {
       mockCreateProduct.mockReturnValue(new Promise<void>((r) => { resolveCreate = r }))
       const { result } = renderHook(() => useProductForm(), { wrapper: wrap })
       fillValid(result)
-      let submitPromise: Promise<void>
+      let submitPromise: Promise<boolean>
       act(() => { submitPromise = result.current.handleSubmit() })
       expect(result.current.isSubmitting).toBe(true)
       await act(async () => { resolveCreate!(); await submitPromise! })
@@ -184,10 +184,24 @@ describe('useProductForm', () => {
       expect(mockToast.error).toHaveBeenCalledWith('Network', expect.objectContaining({ detail: expect.any(Error) }))
       expect(result.current.isSubmitting).toBe(false)
     })
-    it('does not submit when validation fails', async () => {
+    it('does not submit when validation fails and auto-switches section', async () => {
       const { result } = renderHook(() => useProductForm(), { wrapper: wrap })
+      act(() => result.current.setActiveSection('extra'))
       await act(() => result.current.handleSubmit())
       expect(mockCreateProduct).not.toHaveBeenCalled()
+      expect(result.current.activeSection).toBe('basic')
+      expect(mockToast.error).toHaveBeenCalledWith('Product name is required')
+    })
+    it('supports addAnother: true without navigating away and resets to basic', async () => {
+      const { result } = renderHook(() => useProductForm(), { wrapper: wrap })
+      fillValid(result)
+      act(() => result.current.setActiveSection('extra'))
+      await act(() => result.current.handleSubmit({ addAnother: true }))
+      expect(mockCreateProduct).toHaveBeenCalledTimes(1)
+      expect(mockToast.success).toHaveBeenCalledWith(expect.stringContaining('Enter next product'))
+      expect(mockNavigate).not.toHaveBeenCalled()
+      expect(result.current.activeSection).toBe('basic')
+      expect(result.current.form.name).toBe('')
     })
   })
 })

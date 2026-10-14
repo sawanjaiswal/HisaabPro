@@ -3,7 +3,8 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import { QuietHoursNotice } from './QuietHoursNotice'
 import { DateField } from '@/components/ui/DateField'
-import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import { cn } from '@/lib/utils'
 
 interface Props {
   sendNow: boolean
@@ -25,38 +26,48 @@ export function CampaignWizardStep4Schedule({ sendNow, scheduledAt, onSendNowCha
     .slice(0, 16)
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <Button variant="none"
-          type="button"
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-2.5">
+        <Card
+          clickable
           role="radio"
           aria-checked={sendNow}
           onClick={() => handleToggle(true)}
-          style={optionStyle(sendNow)}
+          className={cn(
+            'flex flex-col items-start p-3.5 rounded-xl border text-left transition-all',
+            sendNow
+              ? 'border-primary bg-primary/5 ring-1 ring-primary'
+              : 'border-border bg-card hover:border-[var(--border-strong)]'
+          )}
         >
-          <div style={{ fontWeight: 600, fontSize: '15px' }}>{t.marketingSendNowTitle}</div>
-          <div style={{ fontSize: '13px', color: sendNow ? 'var(--color-primary-600)' : 'var(--color-gray-400)', marginTop: '2px' }}>
+          <div className="font-semibold text-sm text-[var(--text-primary)]">{t.marketingSendNowTitle}</div>
+          <div className="text-xs text-[var(--text-muted)] mt-0.5">
             {t.marketingSendNowDesc}
           </div>
-        </Button>
+        </Card>
 
-        <Button variant="none"
-          type="button"
+        <Card
+          clickable
           role="radio"
           aria-checked={!sendNow}
           onClick={() => handleToggle(false)}
-          style={optionStyle(!sendNow)}
+          className={cn(
+            'flex flex-col items-start p-3.5 rounded-xl border text-left transition-all',
+            !sendNow
+              ? 'border-primary bg-primary/5 ring-1 ring-primary'
+              : 'border-border bg-card hover:border-[var(--border-strong)]'
+          )}
         >
-          <div style={{ fontWeight: 600, fontSize: '15px' }}>{t.marketingScheduleLaterTitle}</div>
-          <div style={{ fontSize: '13px', color: !sendNow ? 'var(--color-primary-600)' : 'var(--color-gray-400)', marginTop: '2px' }}>
+          <div className="font-semibold text-sm text-[var(--text-primary)]">{t.marketingScheduleLaterTitle}</div>
+          <div className="text-xs text-[var(--text-muted)] mt-0.5">
             {t.marketingScheduleLaterDesc}
           </div>
-        </Button>
+        </Card>
       </div>
 
       {!sendNow && (
         <div>
-          <label htmlFor="schedule-datetime" style={labelStyle}>
+          <label htmlFor="schedule-datetime" className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">
             {t.marketingScheduleDatetimeLabel} *
           </label>
           <DateField
@@ -73,14 +84,6 @@ export function CampaignWizardStep4Schedule({ sendNow, scheduledAt, onSendNowCha
                 onScheduledAtChange(null)
               }
             }}
-            style={{
-              width: '100%',
-              padding: '12px 14px',
-              borderRadius: '10px',
-              border: '1px solid var(--color-gray-300)',
-              fontSize: '16px',
-              boxSizing: 'border-box',
-            }}
             aria-required={!sendNow}
           />
         </div>
@@ -89,27 +92,4 @@ export function CampaignWizardStep4Schedule({ sendNow, scheduledAt, onSendNowCha
       <QuietHoursNotice />
     </div>
   )
-}
-
-function optionStyle(active: boolean): React.CSSProperties {
-  return {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    padding: '14px 16px',
-    borderRadius: '12px',
-    border: `2px solid ${active ? 'var(--color-primary-500)' : 'var(--color-gray-200)'}`,
-    background: active ? 'var(--color-primary-50)' : 'white',
-    cursor: 'pointer',
-    textAlign: 'left',
-    color: active ? 'var(--color-primary-800)' : 'var(--color-gray-700)',
-  }
-}
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '13px',
-  fontWeight: 600,
-  color: 'var(--color-gray-700)',
-  marginBottom: '8px',
 }

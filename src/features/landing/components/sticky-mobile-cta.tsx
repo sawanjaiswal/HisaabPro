@@ -55,7 +55,7 @@ export function StickyMobileCTA() {
             zIndex: Z.floatingAction,
             backgroundColor: 'var(--lp-bg-nav)',
             borderColor: 'var(--lp-border-subtle)',
-            paddingBottom: 'max(var(--safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px))',
+            paddingBottom: 'var(--safe-area-inset-bottom, 0px)',
           }}
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

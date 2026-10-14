@@ -20,33 +20,33 @@ export function CustomOrderItemsList({ items }: CustomOrderItemsListProps) {
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
+    <div className="overflow-x-auto">
       <table
-        style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--fs-sm)' }}
+        className="w-full border-collapse text-sm"
         aria-label={t.coOrderItemsAria}
       >
         <thead>
-          <tr style={{ borderBottom: '2px solid var(--color-border)' }}>
-            <th style={{ textAlign: 'left', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>{t.coColDescription}</th>
-            <th style={{ textAlign: 'right', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>{t.qty}</th>
-            <th style={{ textAlign: 'right', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>{t.coColRate}</th>
-            <th style={{ textAlign: 'right', padding: 'var(--space-2)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>{t.coColTotal}</th>
+          <tr className="border-b-2 border-[var(--color-border)]">
+            <th className="text-left p-2 text-[var(--color-text-secondary)] font-semibold">{t.coColDescription}</th>
+            <th className="text-right p-2 text-[var(--color-text-secondary)] font-semibold">{t.qty}</th>
+            <th className="text-right p-2 text-[var(--color-text-secondary)] font-semibold">{t.coColRate}</th>
+            <th className="text-right p-2 text-[var(--color-text-secondary)] font-semibold">{t.coColTotal}</th>
           </tr>
         </thead>
         <tbody>
           {items.map((item) => (
-            <tr key={item.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-              <td style={{ padding: 'var(--space-2)', color: 'var(--color-text)' }}>
+            <tr key={item.id} className="border-b border-[var(--color-border)]">
+              <td className="p-2 text-[var(--color-text)]">
                 <div>{item.description}</div>
                 {item.spec && (
-                  <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', marginTop: 2 }}>
+                  <div className="text-xs text-[var(--color-text-secondary)] mt-0.5">
                     {formatSpecOneLiner(item.spec).replace(/^\s*\(|\)\s*$/g, '')}
                   </div>
                 )}
               </td>
-              <td style={{ padding: 'var(--space-2)', textAlign: 'right', color: 'var(--color-text-secondary)' }}>{item.quantity}</td>
-              <td style={{ padding: 'var(--space-2)', textAlign: 'right', color: 'var(--color-text-secondary)' }}>₹{formatPaise(item.ratePaise)}</td>
-              <td style={{ padding: 'var(--space-2)', textAlign: 'right', fontWeight: 600, color: 'var(--color-text)' }}>₹{formatPaise(item.totalPaise)}</td>
+              <td className="p-2 text-right text-[var(--color-text-secondary)]">{item.quantity}</td>
+              <td className="p-2 text-right text-[var(--color-text-secondary)]">₹{formatPaise(item.ratePaise)}</td>
+              <td className="p-2 text-right font-semibold text-[var(--color-text)]">₹{formatPaise(item.totalPaise)}</td>
             </tr>
           ))}
         </tbody>

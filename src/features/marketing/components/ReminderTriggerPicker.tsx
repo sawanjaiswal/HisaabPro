@@ -1,9 +1,8 @@
-/** ReminderTriggerPicker — trigger type selector */
-
 import { useLanguage } from '@/hooks/useLanguage'
+import { Card } from '@/components/ui/Card'
+import { cn } from '@/lib/utils'
 import { TRIGGER_LABEL_KEYS } from '../marketing.constants'
 import type { ReminderRuleTrigger } from '../marketing.types'
-import { Button } from '@/components/ui/Button'
 
 interface Props {
   value: ReminderRuleTrigger
@@ -25,38 +24,31 @@ const DESC_KEY: Record<ReminderRuleTrigger, 'marketingTriggerBirthdayDesc' | 'ma
 export function ReminderTriggerPicker({ value, onChange, disabled = false }: Props) {
   const { t } = useLanguage()
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }} role="radiogroup" aria-label={t.marketingTriggerGroupAria}>
+    <div className="flex flex-col gap-2 w-full" role="radiogroup" aria-label={t.marketingTriggerGroupAria}>
       {TRIGGERS.map((trigger) => {
         const active = value === trigger
         return (
-          <Button variant="none"
+          <Card
             key={trigger}
-            type="button"
+            clickable={!disabled}
             role="radio"
             aria-checked={active}
             onClick={() => !disabled && onChange(trigger)}
-            disabled={disabled}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              gap: '2px',
-              padding: '12px 14px',
-              borderRadius: '10px',
-              border: `2px solid ${active ? 'var(--color-primary-500)' : 'var(--color-gray-200)'}`,
-              background: active ? 'var(--color-primary-50)' : 'white',
-              cursor: disabled ? 'not-allowed' : 'pointer',
-              opacity: disabled ? 0.6 : 1,
-              textAlign: 'left',
-            }}
+            className={cn(
+              'p-3.5 flex flex-col items-start gap-0.5 text-left border rounded-xl transition-all',
+              disabled && 'opacity-60 cursor-not-allowed',
+              active
+                ? 'border-primary ring-1 ring-primary bg-primary/5'
+                : 'border-border bg-card hover:border-[var(--border-strong)]'
+            )}
           >
-            <span style={{ fontWeight: 600, fontSize: '14px', color: active ? 'var(--color-primary-700)' : 'var(--color-gray-800)' }}>
+            <span className={cn('font-semibold text-sm', active ? 'text-primary' : 'text-foreground')}>
               {t[TRIGGER_LABEL_KEYS[trigger]]}
             </span>
-            <span style={{ fontSize: '12px', color: active ? 'var(--color-primary-600)' : 'var(--color-gray-400)' }}>
+            <span className={cn('text-xs', active ? 'text-primary/80' : 'text-muted-foreground')}>
               {t[DESC_KEY[trigger]]}
             </span>
-          </Button>
+          </Card>
         )
       })}
     </div>

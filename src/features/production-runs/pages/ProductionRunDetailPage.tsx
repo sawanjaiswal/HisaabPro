@@ -86,7 +86,7 @@ export default function ProductionRunDetailPage() {
           {/* Warnings */}
           {run.warnings.length > 0 && (
             <div className="pr-wizard-banner pr-wizard-banner--warning" role="status">
-              <ul style={{ margin: 0, paddingLeft: 'var(--space-4)' }}>
+              <ul className="m-0 pl-4">
                 {run.warnings.map((w, i) => <li key={i}>{w}</li>)}
               </ul>
             </div>

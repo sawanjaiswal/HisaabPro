@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { useParams, useNavigate } from 'react-router-dom'
 import { FileText } from 'lucide-react'
@@ -71,12 +72,12 @@ export default function ChallanDetailPage() {
       <PageContainer variant="detail" className="space-y-6">
         {status === 'loading' && (
           <>
-            <div className="card-primary" style={{ minHeight: 160 }}>
+            <Card className="min-h-[160px] p-4">
               <Skeleton height="1.5rem" width="60%" />
-              <div style={{ marginTop: 'var(--space-3)' }}>
+              <div className="mt-3">
                 <Skeleton height="1rem" width="40%" />
               </div>
-            </div>
+            </Card>
             <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
             <Skeleton height="5rem" borderRadius="var(--radius-lg)" count={3} />
           </>

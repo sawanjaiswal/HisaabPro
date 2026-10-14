@@ -88,11 +88,11 @@ export function AuditFilterDrawer({
       title={t.auditFiltersLabel}
       size="md"
       footer={(
-        <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
-          <Button variant="ghost" size="md" onClick={handleClear} style={{ flex: 1 }}>
+        <div className="flex gap-3 w-full">
+          <Button variant="ghost" size="md" onClick={handleClear} className="flex-1">
             {t.auditClearFilters}
           </Button>
-          <Button variant="primary" size="md" onClick={handleApply} style={{ flex: 1 }}>
+          <Button variant="primary" size="md" onClick={handleApply} className="flex-1">
             {t.auditApplyFilters}
           </Button>
         </div>

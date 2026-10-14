@@ -70,8 +70,8 @@ export const OutstandingFilterBar: React.FC<OutstandingFilterBarProps> = ({
         </Button>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-        <SlidersHorizontal size={16} aria-hidden="true" style={{ color: 'var(--color-gray-500)', flexShrink: 0 }} />
+      <div className="flex items-center gap-2">
+        <SlidersHorizontal size={16} aria-hidden="true" className="text-[var(--color-gray-500)] flex-shrink-0" />
         <Select
           value={sortBy}
           onValueChange={(v) => onSortChange(v as OutstandingSortBy)}

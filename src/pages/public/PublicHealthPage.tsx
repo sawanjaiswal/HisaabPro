@@ -73,7 +73,7 @@ export function PublicHealthPage() {
     return (
       <div className="public-health" role="status" aria-live="polite" aria-label={s.loading}>
         <div className="public-health__skeleton" aria-hidden="true" />
-        <Text className="public-health__status" style={{ color: 'var(--color-gray-400)' }}>
+        <Text className="public-health__status text-gray-400">
           {s.loading}
         </Text>
       </div>

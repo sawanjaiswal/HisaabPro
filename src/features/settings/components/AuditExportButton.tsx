@@ -76,7 +76,7 @@ export function AuditExportButton({
       disabled={busy}
       aria-busy={busy}
     >
-      <Download size={16} aria-hidden="true" style={{ marginRight: 'var(--space-2)' }} />
+      <Download size={16} aria-hidden="true" className="mr-2" />
       {t.auditExportCsv}
     </Button>
   )

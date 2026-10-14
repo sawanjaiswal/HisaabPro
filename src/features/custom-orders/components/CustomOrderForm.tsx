@@ -90,28 +90,28 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
       <div>
         <PartySearchInput value={partyId} onChange={handlePartyChange} error={errors.partyId} />
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+      <div className="flex flex-col gap-1">
         <label className="label" htmlFor="order-title">{t.coOrderTitle} *</label>
         <Input id="order-title" type="text" className="input" value={title} onChange={(e) => { setTitle(e.target.value); if (e.target.value) setErrors((p) => { const n = { ...p }; delete n.title; return n }) }} placeholder={t.coTitlePlaceholder} maxLength={200} aria-required="true" aria-invalid={Boolean(errors.title)} />
         {errors.title && <span className="field-error" role="alert">{errors.title}</span>}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+      <div className="flex flex-col gap-1">
         <label className="label" htmlFor="order-notes">{t.coNotesOptional}</label>
-        <Textarea id="order-notes" className="input" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t.coNotesPlaceholder} rows={2} maxLength={5000} style={{ resize: 'vertical', minHeight: 64 }} />
+        <Textarea id="order-notes" className="input resize-y min-h-[64px]" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t.coNotesPlaceholder} rows={2} maxLength={5000} />
       </div>
 
-      <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: 140, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+      <div className="flex gap-3 flex-wrap">
+        <div className="flex-1 min-w-[140px] flex flex-col gap-1">
           <label className="label" htmlFor="order-delivery">{t.coDeliveryDateTime}</label>
           <DateField id="order-delivery" type="datetime-local" className="input" value={deliveryAt} onChange={(e) => setDeliveryAt(e.target.value)} />
         </div>
-        <div style={{ flex: 1, minWidth: 120, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+        <div className="flex-1 min-w-[120px] flex flex-col gap-1">
           <label className="label" htmlFor="order-slot">{t.coSlot}</label>
           <Select
             value={deliverySlot || ANY}
@@ -126,47 +126,47 @@ export function CustomOrderForm({ initialData, onSubmit, isSubmitting, submitLab
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+      <div className="flex flex-col gap-1">
         <label className="label" htmlFor="order-addr">{t.coDeliveryAddress}</label>
         <Input id="order-addr" type="text" className="input" value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} maxLength={500} />
       </div>
 
       {/* Line items */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span className="label" style={{ margin: 0 }}>{t.coItemsRequired} *</span>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <span className="label m-0">{t.coItemsRequired} *</span>
           {errors.items && <span className="field-error" role="alert">{errors.items}</span>}
         </div>
         {items.map((item, idx) => (
           <CustomOrderItemEditor key={item._key} item={item} index={idx} showRemove={items.length > 1} onUpdate={updateItem} onRemove={removeItem} />
         ))}
-        <Button type="button" variant="ghost" size="sm" onClick={addItem} style={{ alignSelf: 'flex-start', minHeight: 44 }}>
+        <Button type="button" variant="ghost" size="sm" onClick={addItem} className="self-start min-h-[44px]">
           <Plus size={16} aria-hidden="true" /> {t.coAddItem}
         </Button>
       </div>
 
       {/* Order-level discount */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+      <div className="flex flex-col gap-1">
         <label className="label" htmlFor="order-discount">{t.coOrderDiscount}</label>
-        <Input id="order-discount" type="number" className="input" value={discountRs} min="0" step="0.01" onChange={(e) => setDiscountRs(e.target.value)} style={{ maxWidth: 160 }} />
+        <Input id="order-discount" type="number" className="input max-w-[160px]" value={discountRs} min="0" step="0.01" onChange={(e) => setDiscountRs(e.target.value)} />
       </div>
 
       {/* Totals summary */}
-      <div style={{ borderTop: '2px solid var(--color-border)', paddingTop: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', alignItems: 'flex-end' }}>
-        <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <div className="border-t-2 border-[var(--color-border)] pt-3 flex flex-col gap-1 items-end">
+        <div className="flex gap-4 text-sm text-[var(--color-text-secondary)]">
           <span>{t.coSubtotal}:</span><span>₹{formatPaise(totals.subtotalPaise)}</span>
         </div>
         {orderDiscountPaise > 0 && (
-          <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-error-600)' }}>
+          <div className="flex gap-4 text-sm text-red-600">
             <span>{t.coDiscount}:</span><span>-₹{formatPaise(orderDiscountPaise)}</span>
           </div>
         )}
-        <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-md)', fontWeight: 700, color: 'var(--color-text)' }}>
+        <div className="flex gap-4 text-base font-bold text-[var(--color-text)]">
           <span>{t.coTotal}:</span><span>₹{formatPaise(grandTotal)}</span>
         </div>
       </div>
 
-      <Button type="submit" variant="primary" size="lg" disabled={isSubmitting} style={{ minHeight: 48, width: '100%' }}>
+      <Button type="submit" variant="primary" size="lg" disabled={isSubmitting} className="min-h-[48px] w-full">
         {isSubmitting ? t.saving : resolvedSubmitLabel}
       </Button>
     </form>

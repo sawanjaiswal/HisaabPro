@@ -173,27 +173,15 @@ export default function ProductDetailPage() {
                     onViewActivity={() => setActiveTab('history')}
                   />
                 </TabsContent>
-
                 <TabsContent value="stock">
-                  <ProductStockTab
-                    movements={product.recentMovements}
-                    unitSymbol={product.unit.symbol}
-                    onAdjust={() => setAdjustModalOpen(true)}
-                  />
+                  <ProductStockTab movements={product.recentMovements} unitSymbol={product.unit.symbol} onAdjust={() => setAdjustModalOpen(true)} />
                 </TabsContent>
-
                 <TabsContent value="history">
-                  <ProductStockTab
-                    movements={product.recentMovements}
-                    unitSymbol={product.unit.symbol}
-                    onAdjust={() => setAdjustModalOpen(true)}
-                  />
+                  <ProductStockTab movements={product.recentMovements} unitSymbol={product.unit.symbol} onAdjust={() => setAdjustModalOpen(true)} />
                 </TabsContent>
-
                 <TabsContent value="pricing">
                   <ProductPricingTab product={product} />
                 </TabsContent>
-
                 <TabsContent value="info">
                   <ProductInfoTab
                     description={product.description}
@@ -214,9 +202,7 @@ export default function ProductDetailPage() {
                 productId={product.id}
                 productName={product.name}
                 unitSymbol={product.unit.symbol}
-                onSuccess={() => {
-                  refresh()
-                }}
+                onSuccess={() => { refresh() }}
               />
             </div>
           )}
@@ -224,23 +210,11 @@ export default function ProductDetailPage() {
 
         {status === 'success' && product && (
           <BottomActionBar className="pd-footer" role="group" aria-label={t.quickActions ?? 'Product actions'}>
-            <Button
-              variant="outline-destructive"
-              size="lg"
-              className="pd-footer__btn pd-footer__btn--danger rounded-full"
-              onClick={() => setDeleteOpen(true)}
-              aria-label={t.deleteProduct}
-            >
+            <Button variant="outline-destructive" size="lg" className="pd-footer__btn pd-footer__btn--danger rounded-full" onClick={() => setDeleteOpen(true)} aria-label={t.deleteProduct}>
               <Trash2 size={18} aria-hidden="true" />
               <span>{t.deleteProduct}</span>
             </Button>
-            <Button
-              variant="primary"
-              size="lg"
-              className="pd-footer__btn rounded-full"
-              onClick={goEdit}
-              aria-label={t.editProduct}
-            >
+            <Button variant="primary" size="lg" className="pd-footer__btn rounded-full" onClick={goEdit} aria-label={t.editProduct}>
               <Pencil size={18} aria-hidden="true" />
               <span>{t.editProduct}</span>
             </Button>

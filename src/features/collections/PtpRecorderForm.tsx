@@ -181,7 +181,7 @@ export function PtpRecorderForm({ open, onClose, partyId, partyName, existingPtp
                 if (fieldErrors.notes) setFieldErrors(prev => ({ ...prev, notes: undefined }))
               }}
               disabled={isPending}
-              style={{ resize: 'vertical', minHeight: 80 }}
+              className="resize-y min-h-[80px]"
             />
           </FormField>
         </div>

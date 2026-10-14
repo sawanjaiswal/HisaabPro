@@ -59,27 +59,14 @@ export function StockSummaryFilterBar({
   return (
     <div className="report-filter-bar">
       {/* Search input */}
-      <div style={{ position: 'relative', flex: 1 }}>
-        <Search
-          size={16}
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            left: 'var(--space-3)',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            color: 'var(--color-gray-400)',
-            pointerEvents: 'none',
-          }}
-        />
+      <div className="flex-1">
         <Input
           type="search"
-          className="input"
           placeholder={t.searchProductsPlaceholder}
           defaultValue={searchDefault}
           onChange={(e) => onSearchChange(e.target.value)}
           aria-label={t.searchProductsByName}
-          style={{ paddingLeft: 'var(--space-8)' }}
+          leftIcon={<Search size={16} className="text-[var(--color-gray-400)]" aria-hidden="true" />}
         />
       </div>
 

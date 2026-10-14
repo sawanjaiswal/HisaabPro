@@ -19,50 +19,38 @@ export function JobListItem({ job, onClick }: JobListItemProps) {
     : null
 
   return (
-    <Button variant="none"
+    <Button
+      variant="none"
       type="button"
-      className="job-list-item"
+      className="job-list-item flex flex-col gap-1 w-full text-left p-3 px-4 bg-[var(--color-surface)] border-b border-[var(--color-border)] min-h-[44px]"
       onClick={() => onClick(job.id)}
       aria-label={`${t.jobRowAriaPrefix} ${formatJobNumber(job.jobNumber, job.id)}: ${job.title}`}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'var(--space-1)',
-        width: '100%',
-        textAlign: 'left',
-        padding: 'var(--space-3) var(--space-4)',
-        background: 'var(--color-surface)',
-        border: 'none',
-        borderBottom: '1px solid var(--color-border)',
-        cursor: 'pointer',
-        minHeight: 44,
-      }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-2)' }}>
-        <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
+      <div className="flex items-center justify-between gap-2 w-full">
+        <span className="text-xs text-[var(--color-text-secondary)] font-medium">
           {formatJobNumber(job.jobNumber, job.id)}
         </span>
         <JobStatusPill status={job.status} />
       </div>
 
-      <span style={{ fontSize: 'var(--fs-sm)', fontWeight: 600, color: 'var(--color-text)', lineHeight: 1.3 }}>
+      <span className="text-sm font-semibold text-[var(--color-text)] leading-snug">
         {job.title}
       </span>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+      <div className="flex items-center justify-between gap-2 flex-wrap w-full">
+        <span className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)]">
           <User size={12} aria-hidden="true" />
           {job.partyName}
         </span>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+        <div className="flex items-center gap-3">
           {scheduled && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)' }}>
+            <span className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)]">
               <Calendar size={12} aria-hidden="true" />
               {scheduled}
             </span>
           )}
-          <span style={{ fontSize: 'var(--fs-sm)', fontWeight: 700, color: 'var(--color-text)' }}>
+          <span className="text-sm font-bold text-[var(--color-text)]">
             ₹{formatPaise(job.totalPaise)}
           </span>
         </div>

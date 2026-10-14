@@ -75,7 +75,7 @@ export default function JournalEntriesPage() {
               </Button>
             ))}
           </div>
-          <div className="pill-tabs" style={{ marginTop: 'var(--space-2)' }}>
+          <div className="pill-tabs mt-2">
             {STATUS_OPTIONS.map((opt) => (
               <Button variant="none"
                 key={opt.value}

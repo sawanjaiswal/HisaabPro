@@ -219,7 +219,7 @@ export function PublicInvoiceView({ invoice, lang }: PublicInvoiceViewProps) {
 
       {/* ── Terms ── */}
       {invoice.termsAndConditions && (
-        <div className="pub-invoice__notes-block" style={{ marginTop: 'var(--space-3)' }}>
+        <div className="pub-invoice__notes-block mt-3">
           <Text className="pub-invoice__notes-label">{s.terms}</Text>
           <Text className="pub-invoice__notes-text">{invoice.termsAndConditions}</Text>
         </div>

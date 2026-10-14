@@ -125,22 +125,14 @@ export function PaymentSheet({
 
           {/* Loyalty chip + CTA — hidden when program off / walk-in */}
           {isLoyaltyOn && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 'var(--space-2)',
-                margin: 'var(--space-2) 0 var(--space-3)',
-                flexWrap: 'wrap',
-              }}
-            >
+            <div className="flex items-center justify-between gap-2 mt-2 mb-3 flex-wrap">
               <LoyaltyBalanceChip partyId={store.partyId} />
               <Button
                 type="button"
                 onClick={() => setShowLoyalty(true)}
-                variant="secondary" size="sm"
-                style={{ minHeight: 36, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                variant="secondary"
+                size="sm"
+                className="min-h-[36px] inline-flex items-center gap-1.5"
               >
                 <Sparkles size={14} aria-hidden="true" />
                 {t.loyaltyRedeemUsePoints}

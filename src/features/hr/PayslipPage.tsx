@@ -78,7 +78,7 @@ export default function PayslipPage() {
       <Header title={t.payslipPageTitle as string} backTo={backToRun} />
 
       <PageContainer variant="detail" className="space-y-4">
-        <div style={{ paddingBottom: 'calc(var(--bottom-nav-height) + 5rem)' }}>
+        <div className="hr-page-content">
           {snapshotQuery.status === 'loading' && (
             <div aria-busy="true" aria-label={t.loading as string} className="space-y-2">
               <Skeleton height="400px" />

@@ -1,6 +1,6 @@
-/** TemplatePreview — substituted template body preview card */
-
 import { useLanguage } from '@/hooks/useLanguage'
+import { Card } from '@/components/ui/Card'
+import { cn } from '@/lib/utils'
 import { substituteVars } from '../marketing.utils'
 import type { MarketingTemplate } from '../marketing.types'
 
@@ -22,46 +22,25 @@ export function TemplatePreview({ template, vars }: Props) {
   const substituted = substituteVars(template.bodyEn, { ...SAMPLE_VARS, ...vars })
 
   return (
-    <div
-      style={{
-        padding: '16px',
-        borderRadius: '12px',
-        background: 'var(--color-gray-50)',
-        border: '1px solid var(--color-gray-200)',
-      }}
-    >
-      <div
-        style={{
-          fontSize: '11px',
-          fontWeight: 600,
-          color: 'var(--color-gray-500)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-          marginBottom: '8px',
-        }}
-      >
+    <Card className="p-4 bg-muted/20 border-border">
+      <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
         {t.marketingMessagePreview}
       </div>
       <div
-        style={{
-          padding: '12px 14px',
-          borderRadius: '8px',
-          background: template.channel === 'WHATSAPP' ? 'var(--color-success-50)' : 'white',
-          border: '1px solid var(--color-gray-200)',
-          fontSize: '14px',
-          lineHeight: '1.6',
-          color: 'var(--color-gray-800)',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
-        }}
+        className={cn(
+          'p-3.5 rounded-lg border text-sm leading-relaxed whitespace-pre-wrap break-words',
+          template.channel === 'WHATSAPP'
+            ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800 text-emerald-950 dark:text-emerald-100'
+            : 'bg-card border-border text-foreground'
+        )}
       >
         {substituted}
       </div>
       {template.variables.length > 0 && (
-        <div style={{ marginTop: '10px', fontSize: '12px', color: 'var(--color-gray-500)' }}>
+        <div className="mt-2.5 text-xs text-muted-foreground">
           {t.marketingVariablesLabel}: {template.variables.map((v) => `{{${v}}}`).join(', ')}
         </div>
       )}
-    </div>
+    </Card>
   )
 }

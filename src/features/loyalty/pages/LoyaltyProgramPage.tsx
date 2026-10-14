@@ -33,7 +33,7 @@ export default function LoyaltyProgramPage() {
         {isLoading && (
           <div
             aria-busy="true"
-            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}
+            className="flex flex-col gap-4"
           >
             {[56, 88, 56, 56, 56, 56, 48].map((h, i) => (
               <Skeleton key={i} height={`${h}px`} borderRadius="var(--radius-md)" />
@@ -47,13 +47,7 @@ export default function LoyaltyProgramPage() {
 
         {!isLoading && !isError && (
           <>
-            <Text
-              style={{
-                color: 'var(--text-secondary)',
-                fontSize: 'var(--fs-sm)',
-                marginBottom: 'var(--space-4)',
-              }}
-            >
+            <Text className="text-secondary text-sm mb-4">
               {t.loyaltyProgramDescription}
             </Text>
             <LoyaltyProgramForm program={program} />

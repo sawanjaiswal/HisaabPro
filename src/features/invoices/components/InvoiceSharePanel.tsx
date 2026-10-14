@@ -71,7 +71,7 @@ export function InvoiceSharePanel({ shareLogs, onShare }: InvoiceSharePanelProps
           </li>
         ))}
       </ul>
-      <div style={{ marginTop: 'var(--space-4)', display: 'flex', justifyContent: 'center' }}>
+      <div className="mt-4 flex justify-center">
         <Button
           variant="primary" size="md"
           aria-label={t.shareAgain}

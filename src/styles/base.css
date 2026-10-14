@@ -26,7 +26,6 @@
      * keyboard and any fixed bottom actions. */
     scroll-padding-bottom: calc(
       var(--bottom-action-bar-height, 72px) +
-      max(var(--safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)) +
       var(--space-4)
     );
   }
@@ -44,7 +43,6 @@
     overscroll-behavior: none;
     scroll-padding-bottom: calc(
       var(--bottom-action-bar-height, 72px) +
-      max(var(--safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)) +
       var(--space-4)
     );
   }
@@ -56,7 +54,6 @@
   [contenteditable="true"] {
     scroll-margin-bottom: calc(
       var(--bottom-action-bar-height, 80px) +
-      max(var(--safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)) +
       var(--space-6)
     );
   }

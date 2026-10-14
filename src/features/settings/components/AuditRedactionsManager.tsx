@@ -11,11 +11,13 @@ import { useState } from 'react'
 import { Trash2, Plus } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Select, SelectItem } from '@/components/ui/Select'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { EmptyState } from '@/components/feedback/EmptyState'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { Skeleton } from '@/components/feedback/Skeleton'
 import { useLanguage } from '@/hooks/useLanguage'
 import { AUDIT_ENTITY_LABELS } from '../audit.constants'
 import { useAuditRedactions } from '../useAuditRedactions'
@@ -91,25 +93,20 @@ export function AuditRedactionsManager({ open, onClose }: AuditRedactionsManager
             disabled={!entityType.trim() || !fieldPath.trim() || isSaving}
             loading={isSaving}
           >
-            <Plus size={16} aria-hidden="true" style={{ marginRight: 'var(--space-2)' }} />
+            <Plus size={16} aria-hidden="true" className="mr-2" />
             {t.auditRedactionsAddCta}
           </Button>
         </section>
 
         {/* List */}
-        <section style={{ marginTop: 'var(--space-6)' }}>
+        <section className="mt-6">
           {status === 'loading' && (
-            <div aria-busy="true" aria-label={t.auditRedactionsTitle}>
+            <div aria-busy="true" aria-label={t.auditRedactionsTitle} className="space-y-2">
               {[1, 2, 3].map((n) => (
-                <div
+                <Skeleton
                   key={n}
-                  style={{
-                    height: 56,
-                    marginBottom: 'var(--space-2)',
-                    borderRadius: 'var(--radius-md)',
-                    background: 'var(--color-gray-100)',
-                    opacity: 0.5,
-                  }}
+                  height="3.5rem"
+                  borderRadius="var(--radius-md)"
                 />
               ))}
             </div>
@@ -124,43 +121,29 @@ export function AuditRedactionsManager({ open, onClose }: AuditRedactionsManager
           )}
 
           {status === 'success' && activeItems.length > 0 && (
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            <ul className="list-none p-0 m-0 space-y-2">
               {activeItems.map((r) => (
-                <li
-                  key={r.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 'var(--space-3)',
-                    padding: 'var(--space-3)',
-                    border: '1px solid var(--color-gray-200)',
-                    borderRadius: 'var(--radius-md)',
-                    marginBottom: 'var(--space-2)',
-                  }}
-                >
-                  <div style={{ minWidth: 0 }}>
-                    <Text style={{ margin: 0, fontWeight: 500, color: 'var(--color-gray-900)' }}>
-                      {AUDIT_ENTITY_LABELS[r.entityType] ?? r.entityType}
-                    </Text>
-                    <Text style={{
-                      margin: 0,
-                      fontSize: 'var(--fs-xs)',
-                      color: 'var(--color-gray-500)',
-                      wordBreak: 'break-all',
-                    }}>
-                      {r.fieldPath}
-                    </Text>
-                  </div>
-                  <Button variant="none"
-                    type="button"
-                    className="staff-action-button"
-                    onClick={() => setConfirmTarget(r)}
-                    aria-label={t.auditRedactionsDisableCta}
-                    style={{ minWidth: 44, minHeight: 44 }}
-                  >
-                    <Trash2 size={18} aria-hidden="true" />
-                  </Button>
+                <li key={r.id}>
+                  <Card className="p-3 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <Text className="m-0 font-medium text-[var(--color-gray-900)]">
+                        {AUDIT_ENTITY_LABELS[r.entityType] ?? r.entityType}
+                      </Text>
+                      <Text className="m-0 text-xs text-[var(--color-gray-500)] break-all">
+                        {r.fieldPath}
+                      </Text>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      type="button"
+                      onClick={() => setConfirmTarget(r)}
+                      aria-label={t.auditRedactionsDisableCta}
+                      className="text-destructive shrink-0"
+                    >
+                      <Trash2 size={18} aria-hidden="true" />
+                    </Button>
+                  </Card>
                 </li>
               ))}
             </ul>

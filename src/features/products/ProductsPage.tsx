@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Package, Camera, Upload, Plus } from 'lucide-react'
+import { Package, Camera, Upload, Plus, Table2 } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { HeroPage } from '@/components/layout/HeroPage'
@@ -9,6 +9,7 @@ import { ErrorState } from '@/components/feedback/ErrorState'
 import { BulkActionBar } from '@/components/ui/BulkActionBar'
 import { ListLoadMore } from '@/components/ui/ListLoadMore'
 import { Button } from '@/components/ui/Button'
+import { Heading } from '@/components/ui/Heading'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { useToast } from '@/hooks/useToast'
 import { useLanguage } from '@/hooks/useLanguage'
@@ -20,24 +21,17 @@ import { ProductFilterBar } from './components/ProductFilterBar'
 import { ProductListHeader } from './components/ProductListHeader'
 import { ProductCard } from './components/ProductCard'
 import { ProductStockHealthCard } from './components/ProductStockHealthCard'
-import { ProductCategoryDrawer } from './components/ProductCategoryDrawer'
-import { ProductFilterDrawer } from './components/ProductFilterDrawer'
 import { ProductListSkeleton } from './components/ProductListSkeleton'
+import { ProductPageOverlays } from './components/ProductPageOverlays'
 import { getProductByBarcode } from './product.service'
-import { BarcodeScanner } from '@/components/ui/BarcodeScanner'
-import { LabelPrintDialog } from './label-print/LabelPrintDialog'
 import { ROUTES } from '@/config/routes.config'
-import type { ProductStatusFilter } from '@/lib/types/product.types'
 import './barcode.css'
 import './products.css'
-import './products-redesign.css'
-import { Heading } from '@/components/ui/Heading'
 
 export default function ProductsPage() {
   const navigate = useNavigate()
   const toast = useToast()
   const { t } = useLanguage()
-  // Arriving from the Categories list (#53) pre-applies that category.
   const [searchParams] = useSearchParams()
   const categoryIdFromUrl = searchParams.get('categoryId') ?? undefined
   const { data, status, filters, setSearch, setFilter, refresh, handleDelete, hasMore, loadMore, isLoadingMore } = useProducts({
@@ -48,6 +42,7 @@ export default function ProductsPage() {
   const [labelPrintOpen, setLabelPrintOpen] = useState(false)
   const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false)
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
+  const [bulkModalOpen, setBulkModalOpen] = useState(false)
 
   const { bulkActions, isBulkDeleting } = useProductBulkActions({
     selectedIds: bulk.selectedIds,
@@ -75,10 +70,8 @@ export default function ProductsPage() {
   }
 
   const handleLongPress = (id: string) => { if (!bulk.isActive) bulk.toggle(id) }
-
   const goToCreate = () => navigate(ROUTES.PRODUCT_NEW)
   const goToEdit = (id: string) => navigate(`/products/${id}/edit`)
-
   const productsList = data?.products ?? []
   const allProductIds = productsList.map((p) => p.id)
 
@@ -90,28 +83,16 @@ export default function ProductsPage() {
         actions={
           !bulk.isActive ? (
             <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setScannerOpen(true)}
-                aria-label={t.scanBarcode ?? 'Scan Barcode'}
-              >
+              <Button variant="ghost" size="sm" onClick={() => setScannerOpen(true)} aria-label={t.scanBarcode ?? 'Scan Barcode'}>
                 <Camera size={18} aria-hidden="true" />
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate(ROUTES.IMPORTS)}
-                aria-label={t.import ?? 'Import'}
-              >
+              <Button variant="ghost" size="sm" onClick={() => setBulkModalOpen(true)} aria-label="Bulk Add Products" title="Bulk Add Products">
+                <Table2 size={18} aria-hidden="true" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.IMPORTS)} aria-label={t.import ?? 'Import'}>
                 <Upload size={18} aria-hidden="true" />
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={goToCreate}
-                aria-label={t.addFirstProduct ?? 'Add Product'}
-              >
+              <Button variant="ghost" size="sm" onClick={goToCreate} aria-label={t.addFirstProduct ?? 'Add Product'}>
                 <Plus size={20} aria-hidden="true" />
               </Button>
             </div>
@@ -147,55 +128,33 @@ export default function ProductsPage() {
         )}
 
         {status === 'loading' && <ProductListSkeleton />}
-
         {status === 'error' && (
-          <ErrorState
-            title={t.couldNotLoadProducts}
-            message={t.checkConnectionRetry}
-            onRetry={refresh}
-          />
+          <ErrorState title={t.couldNotLoadProducts} message={t.checkConnectionRetry} onRetry={refresh} />
         )}
 
         {status === 'success' && data && productsList.length === 0 && (
           <EmptyState
             icon={<Package size={40} aria-hidden="true" />}
-            title={
-              filters.lowStockOnly
-                ? t.noLowStockProducts
-                : (filters.search || filters.categoryId || filtersActive)
-                ? t.noProductsMatchFilters
-                : t.noProductsYet
-            }
-            description={
-              filters.lowStockOnly
-                ? t.noLowStockDesc
-                : (filters.search || filters.categoryId || filtersActive)
-                ? (t.noProductsFound ?? t.checkConnectionRetry)
-                : t.addFirstProductDesc
-            }
+            title={filters.lowStockOnly ? t.noLowStockProducts : (filters.search || filters.categoryId || filtersActive) ? t.noProductsMatchFilters : t.noProductsYet}
+            description={filters.lowStockOnly ? t.noLowStockDesc : (filters.search || filters.categoryId || filtersActive) ? (t.noProductsFound ?? t.checkConnectionRetry) : t.addFirstProductDesc}
             action={
               filters.lowStockOnly || filters.search || filters.categoryId || filtersActive ? (
-                <Button
-                  variant="secondary"
-                  size="md"
-                  onClick={showAll}
-                  aria-label={filters.lowStockOnly ? t.viewAllProducts : t.clearFilters}
-                >
+                <Button variant="secondary" size="md" onClick={showAll} aria-label={filters.lowStockOnly ? t.viewAllProducts : t.clearFilters}>
                   {filters.lowStockOnly ? t.viewAllProducts : t.clearFilters}
                 </Button>
               ) : (
-                <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.addFirstProduct}>
-                  {t.addProduct}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.addFirstProduct}>
+                    {t.addProduct}
+                  </Button>
+                  <Button variant="outline" size="md" onClick={() => setBulkModalOpen(true)} aria-label="Bulk Add Products">
+                    <Table2 size={16} className="mr-1.5" aria-hidden="true" />
+                    Bulk Add
+                  </Button>
+                </div>
               )
             }
           />
-        )}
-
-        {status === 'success' && data && (
-          <div role="status" aria-live="polite" className="sr-only">
-            {productsList.length} {productsList.length === 1 ? t.item : t.items}
-          </div>
         )}
 
         {status === 'success' && data && productsList.length > 0 && (
@@ -226,12 +185,7 @@ export default function ProductsPage() {
                 </div>
               ))}
             </div>
-            <ListLoadMore
-              hasMore={hasMore}
-              isLoading={isLoadingMore}
-              onLoadMore={loadMore}
-              ariaLabel={t.loadMoreProducts}
-            />
+            <ListLoadMore hasMore={hasMore} isLoading={isLoadingMore} onLoadMore={loadMore} ariaLabel={t.loadMoreProducts} />
             {!bulk.isActive && (
               <ProductStockHealthCard
                 lowStockCount={data.summary?.lowStockCount ?? 0}
@@ -242,8 +196,6 @@ export default function ProductsPage() {
         )}
       </HeroPage>
 
-
-
       <BulkActionBar
         selectedCount={bulk.selectedCount}
         totalCount={allProductIds.length}
@@ -253,34 +205,30 @@ export default function ProductsPage() {
         isProcessing={isBulkDeleting}
       />
 
-      <ProductCategoryDrawer
-        open={categoryDrawerOpen}
-        onClose={() => setCategoryDrawerOpen(false)}
-        activeCategoryId={filters.categoryId ?? 'ALL'}
-        onSelect={selectCategory}
-      />
-
-      <ProductFilterDrawer
-        open={filterDrawerOpen}
-        onClose={() => setFilterDrawerOpen(false)}
+      <ProductPageOverlays
+        categoryDrawerOpen={categoryDrawerOpen}
+        onCloseCategoryDrawer={() => setCategoryDrawerOpen(false)}
+        activeCategoryId={filters.categoryId}
+        onSelectCategory={selectCategory}
+        filterDrawerOpen={filterDrawerOpen}
+        onCloseFilterDrawer={() => setFilterDrawerOpen(false)}
         status={filters.status}
         sortBy={filters.sortBy}
         sortOrder={filters.sortOrder}
-        onStatusChange={(s: ProductStatusFilter | undefined) => setFilter('status', s)}
+        onStatusChange={(s) => setFilter('status', s)}
         onSortByChange={(sortBy) => setFilter('sortBy', sortBy)}
         onSortOrderChange={(order) => setFilter('sortOrder', order)}
-        onReset={resetFilters}
+        onResetFilters={resetFilters}
+        scannerOpen={scannerOpen}
+        onCloseScanner={() => setScannerOpen(false)}
+        onBarcodeScan={handleBarcodeScan}
+        labelPrintOpen={labelPrintOpen}
+        onCloseLabelPrint={() => { setLabelPrintOpen(false); bulk.clear() }}
+        selectedIds={Array.from(bulk.selectedIds)}
+        bulkModalOpen={bulkModalOpen}
+        onCloseBulkModal={() => setBulkModalOpen(false)}
+        onBulkSuccess={refresh}
       />
-
-      {scannerOpen && (
-        <BarcodeScanner onScan={handleBarcodeScan} onClose={() => setScannerOpen(false)} />
-      )}
-      {labelPrintOpen && (
-        <LabelPrintDialog
-          productIds={Array.from(bulk.selectedIds)}
-          onClose={() => { setLabelPrintOpen(false); bulk.clear() }}
-        />
-      )}
     </AppShell>
   )
 }

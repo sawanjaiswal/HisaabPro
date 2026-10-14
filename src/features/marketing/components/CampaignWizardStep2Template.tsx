@@ -5,7 +5,9 @@ import { useLanguage } from '@/hooks/useLanguage'
 import { useMarketingTemplateList } from '../hooks/useMarketingTemplates'
 import { ChannelBadge } from './ChannelBadge'
 import type { MarketingChannel } from '../marketing.types'
-import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { cn } from '@/lib/utils'
 
 interface Props {
   channel: MarketingChannel
@@ -19,9 +21,9 @@ export function CampaignWizardStep2Template({ channel, value, onChange }: Props)
 
   if (status === 'loading') {
     return (
-      <div aria-busy="true" aria-label={t.marketingLoadingTemplatesAria}>
+      <div aria-busy="true" aria-label={t.marketingLoadingTemplatesAria} className="space-y-2.5">
         {[0, 1, 2].map((i) => (
-          <div key={i} style={{ height: 64, borderRadius: 10, background: 'var(--color-gray-100)', marginBottom: 10, animation: 'pulse 1.5s infinite' }} />
+          <Skeleton key={i} className="h-16 w-full rounded-xl" />
         ))}
       </div>
     )
@@ -29,7 +31,7 @@ export function CampaignWizardStep2Template({ channel, value, onChange }: Props)
 
   if (status === 'error') {
     return (
-      <div style={{ padding: '16px', color: 'var(--color-error-600)', fontSize: '14px' }}>
+      <div className="p-4 text-destructive text-sm text-center">
         {t.marketingTemplatesLoadFailed}
       </div>
     )
@@ -39,51 +41,46 @@ export function CampaignWizardStep2Template({ channel, value, onChange }: Props)
 
   if (active.length === 0) {
     return (
-      <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-gray-500)', fontSize: '14px' }}>
+      <div className="py-8 px-4 text-center text-[var(--text-muted)] text-sm space-y-2">
         <Text>{channel === 'WHATSAPP' ? t.marketingNoActiveWaTemplates : t.marketingNoActiveSmsTemplates}</Text>
-        <Text style={{ marginTop: '8px', fontSize: '13px' }}>{t.marketingCreateTemplateFirst}</Text>
+        <Text className="text-xs text-[var(--text-muted)]">{t.marketingCreateTemplateFirst}</Text>
       </div>
     )
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div className="flex flex-col gap-2.5">
       {active.map((tmpl) => {
         const selected = value === tmpl.id
         return (
-          <Button variant="none"
+          <Card
             key={tmpl.id}
-            type="button"
+            clickable
             role="radio"
             aria-checked={selected}
             onClick={() => onChange(tmpl.id)}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '4px',
-              padding: '12px 14px',
-              borderRadius: '10px',
-              border: `2px solid ${selected ? 'var(--color-primary-500)' : 'var(--color-gray-200)'}`,
-              background: selected ? 'var(--color-primary-50)' : 'white',
-              textAlign: 'left',
-              cursor: 'pointer',
-            }}
+            className={cn(
+              'flex flex-col gap-1 p-3.5 rounded-xl border text-left transition-all',
+              selected
+                ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                : 'border-border bg-card hover:border-[var(--border-strong)]'
+            )}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontWeight: 600, fontSize: '14px', color: 'var(--color-gray-800)', flex: 1 }}>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-sm text-[var(--text-primary)] flex-1">
                 {tmpl.name}
               </span>
               <ChannelBadge channel={tmpl.channel} />
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--color-gray-500)', WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            <div className="text-xs text-[var(--text-muted)] line-clamp-2">
               {tmpl.bodyEn}
             </div>
             {tmpl.variables.length > 0 && (
-              <div style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>
+              <div className="text-[11px] text-[var(--text-muted)] mt-1">
                 {t.marketingVariablesLabel}: {tmpl.variables.map((v) => `{{${v}}}`).join(', ')}
               </div>
             )}
-          </Button>
+          </Card>
         )
       })}
     </div>

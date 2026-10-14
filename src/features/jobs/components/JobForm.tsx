@@ -110,14 +110,14 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
       {/* Party picker — reuses invoice party search */}
       <div>
         <PartySearchInput value={partyId} onChange={handlePartyChange} error={errors.partyId} />
       </div>
 
       {/* Title */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+      <div className="flex flex-col gap-1">
         <label className="label" htmlFor="job-title">{t.jobTitleLabel} *</label>
         <Input
           id="job-title"
@@ -134,22 +134,21 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
       </div>
 
       {/* Description */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+      <div className="flex flex-col gap-1">
         <label className="label" htmlFor="job-desc">{t.jobDescLabel}</label>
         <Textarea
           id="job-desc"
-          className="input"
+          className="input resize-y min-h-[80px]"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder={t.jobDescPlaceholder}
           rows={3}
           maxLength={5000}
-          style={{ resize: 'vertical', minHeight: 80 }}
         />
       </div>
 
       {/* Scheduled date */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+      <div className="flex flex-col gap-1">
         <label className="label" htmlFor="job-scheduled">{t.jobScheduledLabel}</label>
         <DateField
           id="job-scheduled"
@@ -161,8 +160,8 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
       </div>
 
       {/* Estimated vs actual hours (tracking-only — never summed into money) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-2)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="flex flex-col gap-1">
           <label className="label" htmlFor="job-est-hours">{t.jobEstimatedHoursLabel}</label>
           <Input
             id="job-est-hours"
@@ -174,7 +173,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
             onChange={(e) => setEstimatedHours(e.target.value)}
           />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+        <div className="flex flex-col gap-1">
           <label className="label" htmlFor="job-act-hours">{t.jobActualHoursLabel}</label>
           <Input
             id="job-act-hours"
@@ -188,15 +187,15 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
         </div>
       </div>
       {variance !== null && variance !== 0 && (
-        <span style={{ alignSelf: 'flex-start', fontSize: 'var(--fs-xs)', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-full, 999px)', background: variance > 0 ? 'var(--color-error-50, var(--color-error-50))' : 'var(--color-success-50, #f0fdf4)', color: variance > 0 ? 'var(--color-error-600)' : 'var(--color-success-600, #16a34a)' }}>
+        <span className={`self-start text-xs font-semibold px-2 py-0.5 rounded-full ${variance > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
           {t.jobHoursVariance}: {Math.abs(variance)}h {variance > 0 ? t.jobHoursOver : t.jobHoursUnder}
         </span>
       )}
 
       {/* Line items */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span className="label" style={{ margin: 0 }}>{t.jobItemsLabel} *</span>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <span className="label m-0">{t.jobItemsLabel} *</span>
           {errors.items && <span className="field-error" role="alert">{errors.items}</span>}
         </div>
 
@@ -211,24 +210,24 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
           />
         ))}
 
-        <Button type="button" variant="ghost" size="sm" onClick={addItem} style={{ alignSelf: 'flex-start', minHeight: 44 }}>
+        <Button type="button" variant="ghost" size="sm" onClick={addItem} className="self-start min-h-[44px]">
           <Plus size={16} aria-hidden="true" /> {t.jobAddItem}
         </Button>
       </div>
 
       {/* Totals summary */}
-      <div style={{ borderTop: '2px solid var(--color-border)', paddingTop: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', alignItems: 'flex-end' }}>
-        <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+      <div className="border-t-2 border-[var(--color-border)] pt-3 flex flex-col gap-1 items-end">
+        <div className="flex gap-4 text-sm text-[var(--color-text-secondary)]">
           <span>{t.jobSubtotalLabel}</span>
           <span>₹{formatPaise(totals.subtotalPaise)}</span>
         </div>
         {totals.discountPaise > 0 && (
-          <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-sm)', color: 'var(--color-error-600)' }}>
+          <div className="flex gap-4 text-sm text-red-600">
             <span>{t.jobDiscountLabel}</span>
             <span>-₹{formatPaise(totals.discountPaise)}</span>
           </div>
         )}
-        <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--fs-md)', fontWeight: 700, color: 'var(--color-text)' }}>
+        <div className="flex gap-4 text-base font-bold text-[var(--color-text)]">
           <span>{t.jobTotalLabel}</span>
           <span>₹{formatPaise(totals.totalPaise)}</span>
         </div>
@@ -238,7 +237,7 @@ export function JobForm({ initialData, onSubmit, isSubmitting, submitLabel }: Jo
         type="submit"
         variant="primary" size="lg"
         disabled={isSubmitting}
-        style={{ minHeight: 48, width: '100%' }}
+        className="min-h-[48px] w-full"
       >
         {isSubmitting ? t.savingJob : resolvedSubmitLabel}
       </Button>

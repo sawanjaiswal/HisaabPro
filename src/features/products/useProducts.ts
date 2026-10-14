@@ -58,18 +58,12 @@ export function useProducts({ initialFilters }: UseProductsOptions = {}): UsePro
         local = await repo.list(filters)
       } catch {}
 
-      // Background SWR update (non-blocking)
-      void getProducts(filters).catch(() => {})
-
       if (local && (local.summary.totalProducts > 0 || local.products.length > 0)) {
+        // Background SWR update (non-blocking)
+        void getProducts(filters).catch(() => {})
         return local
       }
-      try {
-        return await getProducts(filters)
-      } catch (err) {
-        if (local) return local
-        throw err
-      }
+      return await getProducts(filters)
     }
   )
 

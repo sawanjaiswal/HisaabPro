@@ -19,6 +19,9 @@ import { useInventorySettings } from './useInventorySettings'
 import type { ExpiredBatchPolicy } from './useInventorySettings'
 import { Input } from '@/components/ui/Input'
 
+import { Card } from '@/components/ui/Card'
+import { cn } from '@/lib/utils'
+
 // ─── Policy Radio Option ──────────────────────────────────────────────────────
 
 function PolicyOption({
@@ -37,38 +40,30 @@ function PolicyOption({
   onSelect: (v: ExpiredBatchPolicy) => void
 }) {
   return (
-    <Button variant="none"
-      type="button"
+    <Card
+      clickable
       role="radio"
       aria-checked={selected}
       onClick={() => onSelect(value)}
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: 'var(--space-3)',
-        width: '100%',
-        textAlign: 'left',
-        padding: 'var(--space-4)',
-        border: selected ? '2px solid var(--color-primary)' : '1.5px solid var(--color-border)',
-        borderRadius: 'var(--radius-md)',
-        background: selected ? 'var(--color-primary-surface, #e0f2f1)' : 'var(--color-surface)',
-        cursor: 'pointer',
-        minHeight: 44,
-        transition: 'border-color 0.15s, background 0.15s',
-      }}
+      className={cn(
+        'p-4 flex items-start gap-3 w-full text-left transition-all',
+        selected
+          ? 'border-primary ring-1 ring-primary bg-primary/5'
+          : 'border-border bg-card hover:border-[var(--border-strong)]'
+      )}
     >
-      <span style={{ color: selected ? 'var(--color-primary)' : 'var(--color-text-muted)', flexShrink: 0, marginTop: 2 }}>
+      <span className={cn('flex-shrink-0 mt-0.5', selected ? 'text-primary' : 'text-muted-foreground')}>
         {icon}
       </span>
-      <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <span className="text-sm font-semibold text-[var(--text-primary)]">
+      <div className="flex flex-col gap-0.5">
+        <span className="text-sm font-semibold text-foreground">
           {label}
         </span>
-        <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
+        <span className="text-xs text-muted-foreground leading-relaxed">
           {description}
         </span>
-      </span>
-    </Button>
+      </div>
+    </Card>
   )
 }
 
@@ -100,7 +95,7 @@ export default function InventorySettingsPage() {
       <PageContainer>
         {/* Loading */}
         {status === 'pending' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }} aria-busy="true">
+          <div className="flex flex-col gap-4" aria-busy="true">
             {[40, 48, 40, 80, 80, 48].map((h, i) => (
               <Skeleton key={i} height={`${h}px`} />
             ))}
@@ -118,17 +113,17 @@ export default function InventorySettingsPage() {
 
         {/* Success / form */}
         {(status === 'success' || initialized) && (
-          <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
+          <form onSubmit={handleSave} className="flex flex-col gap-6">
 
             {/* Expiry alert days */}
-            <div className="card-primary" style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+            <Card className="p-4 flex flex-col gap-3">
               <label
                 htmlFor="expiry-alert-days"
-                className="text-sm font-semibold text-[var(--text-primary)]"
+                className="text-sm font-semibold text-foreground"
               >
                 {t.expiryAlertDaysLabel}
               </label>
-              <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
+              <Text className="text-xs text-muted-foreground m-0">
                 {t.expiryAlertDaysDesc}
               </Text>
               <Input
@@ -139,32 +134,21 @@ export default function InventorySettingsPage() {
                 value={alertDays}
                 onChange={handleAlertDaysChange}
                 placeholder={t.expiryAlertDaysPlaceholder}
-                style={{
-                  width: '100%',
-                  padding: 'var(--space-3)',
-                  border: '1.5px solid var(--color-border)',
-                  borderRadius: 'var(--radius-md)',
-                  fontSize: 'var(--fs-base)',
-                  color: 'var(--color-text-primary)',
-                  background: 'var(--color-surface)',
-                  minHeight: 44,
-                  boxSizing: 'border-box',
-                }}
               />
-            </div>
+            </Card>
 
             {/* Expired batch policy */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+            <div className="flex flex-col gap-3">
               <div>
-                <Text style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-text-primary)', margin: '0 0 4px' }}>
+                <Text className="font-semibold text-sm text-foreground mb-1">
                   {t.expiredBatchPolicyLabel}
                 </Text>
-                <Text style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
+                <Text className="text-xs text-muted-foreground m-0">
                   {t.expiredBatchPolicyDesc}
                 </Text>
               </div>
 
-              <div role="radiogroup" aria-label={t.expiredBatchPolicyLabel} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+              <div role="radiogroup" aria-label={t.expiredBatchPolicyLabel} className="flex flex-col gap-3">
                 <PolicyOption
                   value="WARN_ONLY"
                   selected={policy === 'WARN_ONLY'}
@@ -188,9 +172,10 @@ export default function InventorySettingsPage() {
             <Button
               type="submit"
               variant="primary"
+              size="lg"
               disabled={isSaving}
               aria-busy={isSaving}
-              style={{ minHeight: 48, fontWeight: 600, fontSize: 'var(--fs-base)' }}
+              className="w-full"
             >
               {isSaving ? '…' : t.saveInventorySettings}
             </Button>

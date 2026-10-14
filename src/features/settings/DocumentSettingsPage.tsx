@@ -44,7 +44,7 @@ export default function DocumentSettingsPage() {
         {status === 'loading' && (
           <div aria-busy="true" aria-label={t.loading}>
             {[1, 2].map((n) => (
-              <div key={n} style={{ marginBottom: 'var(--space-3)' }}>
+              <div key={n} className="mb-3">
                 <Skeleton height="3.5rem" borderRadius="var(--radius-lg)" />
               </div>
             ))}

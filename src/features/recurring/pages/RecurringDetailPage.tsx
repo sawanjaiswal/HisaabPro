@@ -12,6 +12,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { Skeleton } from '@/components/feedback/Skeleton'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ROUTES } from '@/config/routes.config'
 import { useRecurring } from '../hooks/useRecurring'
@@ -46,11 +47,11 @@ export default function RecurringDetailPage() {
       <AppShell>
         <Header title={t.recurringInvoices ?? 'Recurring'} backTo={ROUTES.RECURRING} />
         <PageContainer>
-          <div className="recurring-skeleton" aria-busy="true" aria-label="Loading schedule">
-            <div className="recurring-skeleton__card" style={{ height: 120 }} />
-            <div className="recurring-skeleton__card" style={{ height: 44 }} />
-            <div className="recurring-skeleton__card" style={{ height: 80 }} />
-            <div className="recurring-skeleton__card" style={{ height: 80 }} />
+          <div className="recurring-skeleton space-y-3" aria-busy="true" aria-label="Loading schedule">
+            <Skeleton height="7.5rem" borderRadius="var(--radius-lg)" />
+            <Skeleton height="2.75rem" borderRadius="var(--radius-lg)" />
+            <Skeleton height="5rem" borderRadius="var(--radius-lg)" />
+            <Skeleton height="5rem" borderRadius="var(--radius-lg)" />
           </div>
         </PageContainer>
       </AppShell>
@@ -119,7 +120,7 @@ export default function RecurringDetailPage() {
           {runsLoading && (
             <div className="recurring-skeleton" aria-busy="true">
               {(['r1', 'r2'] as const).map((k) => (
-                <div key={k} className="recurring-skeleton__card" style={{ height: 60 }} />
+                <div key={k} className="recurring-skeleton__card h-[60px]" />
               ))}
             </div>
           )}
@@ -148,10 +149,11 @@ export default function RecurringDetailPage() {
           )}
 
           {nextCursor && (
-            <Button variant="none"
+            <Button
               type="button"
-              className="recurring-btn recurring-btn--secondary"
-              style={{ marginTop: 'var(--space-3)', width: '100%' }}
+              variant="outline"
+              size="md"
+              className="mt-3 w-full"
               onClick={loadMore}
             >
               {t.jobLoadMore ?? 'Load more'}

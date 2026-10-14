@@ -61,7 +61,7 @@ export function EditProductForm({ productId, initialData, version }: EditProduct
         </Tabs>
       </PageContainer>
       <div className="create-product-actions">
-        <Button variant="primary" size="lg" loading={isSubmitting} onClick={handleSubmit} aria-label={t.updateProductLabel}>{t.updateProductBtn}</Button>
+        <Button variant="primary" size="lg" loading={isSubmitting} onClick={() => handleSubmit()} aria-label={t.updateProductLabel}>{t.updateProductBtn}</Button>
       </div>
 
       <ConflictDialog

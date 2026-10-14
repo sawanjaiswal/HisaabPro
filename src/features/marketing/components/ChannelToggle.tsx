@@ -3,7 +3,8 @@
 import { useLanguage } from '@/hooks/useLanguage'
 import type { MarketingChannel } from '../marketing.types'
 import { CHANNEL_LABEL, CHANNEL_COLOR } from '../marketing.constants'
-import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import { cn } from '@/lib/utils'
 
 interface Props {
   value: MarketingChannel
@@ -16,36 +17,24 @@ const CHANNELS: MarketingChannel[] = ['WHATSAPP', 'SMS']
 export function ChannelToggle({ value, onChange, disabled = false }: Props) {
   const { t } = useLanguage()
   return (
-    <div className="channel-toggle" role="group" aria-label={t.marketingSelectChannel}>
+    <div className="flex gap-2.5 w-full" role="group" aria-label={t.marketingSelectChannel}>
       {CHANNELS.map((ch) => {
         const active = value === ch
         const color = CHANNEL_COLOR[ch]
         return (
-          <Button variant="none"
+          <Card
             key={ch}
-            type="button"
+            clickable={!disabled}
             role="radio"
             aria-checked={active}
-            onClick={() => onChange(ch)}
-            disabled={disabled}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '12px 20px',
-              borderRadius: '10px',
-              border: `2px solid ${active ? color : 'var(--color-gray-200)'}`,
-              background: active ? `color-mix(in srgb, ${color} 10%, transparent)` : 'transparent',
-              cursor: disabled ? 'not-allowed' : 'pointer',
-              opacity: disabled ? 0.6 : 1,
-              fontWeight: active ? 700 : 400,
-              color: active ? color : 'var(--color-gray-600)',
-              fontSize: '14px',
-              transition: 'all 0.15s ease',
-              flex: 1,
-              minWidth: 0,
-            }}
+            onClick={() => !disabled && onChange(ch)}
+            className={cn(
+              'flex-1 flex flex-col items-center gap-1.5 p-3 rounded-xl border text-center transition-all',
+              disabled && 'opacity-60 cursor-not-allowed',
+              active
+                ? 'border-primary bg-primary/5 ring-1 ring-primary font-bold'
+                : 'border-border bg-card hover:border-[var(--border-strong)] font-normal text-[var(--text-secondary)]'
+            )}
           >
             {ch === 'WHATSAPP' ? (
               <svg width="28" height="28" viewBox="0 0 24 24" fill={active ? color : 'var(--color-gray-400)'} aria-hidden="true">
@@ -57,8 +46,8 @@ export function ChannelToggle({ value, onChange, disabled = false }: Props) {
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/>
               </svg>
             )}
-            {CHANNEL_LABEL[ch]}
-          </Button>
+            <span className="text-sm font-semibold">{CHANNEL_LABEL[ch]}</span>
+          </Card>
         )
       })}
     </div>

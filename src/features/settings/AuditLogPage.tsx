@@ -163,7 +163,7 @@ export default function AuditLogPage() {
                 ))}
 
                 {hasMore && (
-                  <div style={{ textAlign: 'center', padding: 'var(--space-4) 0' }}>
+                  <div className="text-center py-4">
                     <Button
                       variant="ghost"
                       size="md"

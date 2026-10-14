@@ -213,11 +213,6 @@ export async function getStockMovements(
 }
 
 /**
- * Pre-validate stock availability before saving an invoice.
- * Items may specify a non-base unit — server converts using UnitConversions.
- * Returns per-item OK / WARN / BLOCK status and an overall valid flag.
- */
-/**
  * Look up a product by barcode value.
  * Returns the product summary or null if not found.
  */

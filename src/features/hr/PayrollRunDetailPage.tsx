@@ -78,7 +78,7 @@ export default function PayrollRunDetailPage() {
     <AppShell>
       <Header title={t.payrollRunDetailTitle as string} backTo={ROUTES.HR_PAYROLL} />
       <PageContainer variant="detail" className="space-y-4">
-        <div style={{ paddingBottom: 'calc(var(--bottom-nav-height) + 5rem)' }}>
+        <div className="hr-page-content">
           <article
             className="rounded-xl bg-surface border border-border p-4 space-y-3"
             aria-label={t.payrollRunSummaryLabel as string}

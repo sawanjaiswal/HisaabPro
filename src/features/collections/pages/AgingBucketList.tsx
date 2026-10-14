@@ -22,7 +22,7 @@ import { useAgingBucketParties } from '../useAgingBucketParties'
 import { ReminderActionBar } from '../components/ReminderActionBar'
 import type { AgingBucketParam, PartyInBucket } from '../collections.types'
 import '../styles/aging.css'
-import { Input } from '@/components/ui/Input'
+import { Checkbox } from '@/components/ui/Checkbox'
 import { Button } from '@/components/ui/Button'
 
 const VALID_BUCKETS: AgingBucketParam[] = ['current', '31', '61', '91']
@@ -58,7 +58,7 @@ function PartyCard({ party, selected, onToggle, overdueLabel, overduesLabel, las
       onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') onToggle(party.partyId) }}
     >
       <div className="bucket-party-card__select">
-        <Input type="checkbox" readOnly checked={selected} tabIndex={-1} aria-hidden="true" />
+        <Checkbox checked={selected} tabIndex={-1} aria-hidden="true" />
       </div>
       <div className="bucket-party-card__body">
         <Text className="bucket-party-card__name">{party.name}</Text>
@@ -118,8 +118,12 @@ export default function AgingBucketList() {
   const bucketLabel = BUCKET_LABELS[bucketParam]
   const title = `${bucketLabel} — ${t.agingDrillDown ?? 'Parties'}`
   const backAction = (
-    <Button variant="none" type="button" onClick={() => navigate(-1)} aria-label="Go back"
-      style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 8, color: 'var(--color-gray-600)', marginLeft: -4 }}>
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => navigate(-1)}
+      aria-label="Go back"
+    >
       <ArrowLeft size={20} />
     </Button>
   )
@@ -155,15 +159,16 @@ export default function AgingBucketList() {
         {/* Select all on page (excludes no-phone) */}
         {allParties.length > 0 && (
           <div className="bucket-select-all">
-            <label className="bucket-select-all__label">
-              <Input type="checkbox" checked={allOnPageSelected}
-                onChange={() => {
+            <label className="bucket-select-all__label flex items-center gap-2 cursor-pointer">
+              <Checkbox
+                checked={allOnPageSelected}
+                onCheckedChange={() => {
                   setSelectedIds(allOnPageSelected
                     ? new Set()
                     : new Set(partiesWithPhone.map((p) => p.partyId)))
                 }}
               />
-              Select all ({partiesWithPhone.length} with phone)
+              <span>Select all ({partiesWithPhone.length} with phone)</span>
             </label>
           </div>
         )}
@@ -180,9 +185,9 @@ export default function AgingBucketList() {
             </div>
           ))}
         </div>
-        <div ref={sentinelRef} aria-hidden="true" style={{ height: 1 }} />
+        <div ref={sentinelRef} aria-hidden="true" className="h-px" />
         {isFetchingNextPage && (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}><Spinner /></div>
+          <div className="flex justify-center py-4"><Spinner /></div>
         )}
       </PageContainer>
 

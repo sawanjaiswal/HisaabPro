@@ -12,30 +12,7 @@ import { useNotificationPreferences, useUpdatePreferences } from '../useNotifica
 import { NotificationQuietHoursCard } from '../components/NotificationQuietHoursCard'
 import type { NotificationPreferenceRow, NotificationChannel } from '../notifications.types'
 import '../notifications.css'
-import { Input } from '@/components/ui/Input'
-
-// ─── Toggle ───────────────────────────────────────────────────────────────────
-
-interface ToggleProps {
-  checked: boolean
-  disabled?: boolean
-  onChange: (v: boolean) => void
-  ariaLabel: string
-}
-
-function Toggle({ checked, disabled = false, onChange, ariaLabel }: ToggleProps) {
-  return (
-    <label className="notif-toggle" aria-label={ariaLabel}>
-      <Input
-        type="checkbox"
-        checked={checked}
-        disabled={disabled}
-        onChange={(e) => onChange(e.target.checked)}
-      />
-      <span className="notif-toggle__track" />
-    </label>
-  )
-}
+import { Switch } from '@/components/ui/Switch'
 
 // ─── Preference Row ───────────────────────────────────────────────────────────
 
@@ -55,38 +32,38 @@ function PrefRow({ row, onToggle, isPending, t }: PrefRowProps) {
       <span className="notif-prefs__row-label">{eventLabel}</span>
       <div className="notif-prefs__channel-group">
         <div className="notif-prefs__channel-col">
-          <Toggle
+          <Switch
             checked={row.inApp}
             disabled={isPending}
-            onChange={(v) => onToggle('IN_APP', v)}
-            ariaLabel={`${eventLabel} — ${t.notifChannelInApp ?? 'In-app'}`}
+            onCheckedChange={(v) => onToggle('IN_APP', v)}
+            aria-label={`${eventLabel} — ${t.notifChannelInApp ?? 'In-app'}`}
           />
           <span className="notif-prefs__channel-label">{t.notifChannelInApp ?? 'App'}</span>
         </div>
         <div className="notif-prefs__channel-col">
-          <Toggle
+          <Switch
             checked={row.push}
             disabled={isPending}
-            onChange={(v) => onToggle('PUSH', v)}
-            ariaLabel={`${eventLabel} — ${t.notifChannelPush ?? 'Push'}`}
+            onCheckedChange={(v) => onToggle('PUSH', v)}
+            aria-label={`${eventLabel} — ${t.notifChannelPush ?? 'Push'}`}
           />
           <span className="notif-prefs__channel-label">{t.notifChannelPush ?? 'Push'}</span>
         </div>
         <div className="notif-prefs__channel-col">
-          <Toggle
+          <Switch
             checked={row.email}
             disabled={isPending}
-            onChange={(v) => onToggle('EMAIL', v)}
-            ariaLabel={`${eventLabel} — ${t.notifChannelEmail ?? 'Email'}`}
+            onCheckedChange={(v) => onToggle('EMAIL', v)}
+            aria-label={`${eventLabel} — ${t.notifChannelEmail ?? 'Email'}`}
           />
           <span className="notif-prefs__channel-label">{t.notifChannelEmail ?? 'Email'}</span>
         </div>
         <div className="notif-prefs__channel-col">
-          <Toggle
+          <Switch
             checked={false}
             disabled
-            onChange={() => { /* WhatsApp stub — coming soon */ }}
-            ariaLabel={`${eventLabel} — WhatsApp (${t.notifComingSoon ?? 'coming soon'})`}
+            onCheckedChange={() => { /* WhatsApp stub — coming soon */ }}
+            aria-label={`${eventLabel} — WhatsApp (${t.notifComingSoon ?? 'coming soon'})`}
           />
           <span className="notif-prefs__channel-label notif-prefs__coming-soon">
             {t.notifComingSoon ?? 'Soon'}
@@ -105,7 +82,7 @@ function PrefsSkeleton({ label }: { label: string }) {
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="notif-prefs-skeleton__row">
           <div className="notif-prefs-skeleton__label" />
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div className="flex gap-4">
             {[0, 1, 2, 3].map((j) => (
               <div key={j} className="notif-prefs-skeleton__toggle" />
             ))}
@@ -161,7 +138,7 @@ export default function NotificationPreferencesPage() {
           <>
             <div className="notif-prefs">
               {/* Channel header */}
-              <div className="notif-prefs__row" style={{ background: 'var(--color-gray-50)' }}>
+              <div className="notif-prefs__row bg-[var(--color-gray-50)]">
                 <span className="notif-prefs__row-label notif-prefs__row-label--muted">
                   {t.notifPrefsEventLabel ?? 'Event'}
                 </span>

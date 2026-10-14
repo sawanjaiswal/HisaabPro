@@ -1,4 +1,3 @@
-import { Text } from '@/components/ui/Text'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { SEO } from '../../components/layout/SEO'
@@ -7,18 +6,12 @@ import { BrandLogo } from '@/components/brand/BrandLogo'
 import { api, ApiError } from '@/lib/api'
 import { useLanguage } from '@/context/LanguageContext'
 import { ROUTES } from '@/config/routes.config'
-import {
-  type Step,
-  OTP_TTL_SEC,
-  RESEND_COOLDOWN_SEC,
-  maskPhone,
-  maskEmail,
-  formatTime,
-} from './forgot-password.utils'
+import { type Step, OTP_TTL_SEC, RESEND_COOLDOWN_SEC, maskPhone, maskEmail, formatTime } from './forgot-password.utils'
 import './LoginPage.css'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Heading } from '@/components/ui/Heading'
+import { Text } from '@/components/ui/Text'
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
@@ -28,12 +21,10 @@ export default function ForgotPasswordPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false); const [error, setError] = useState('')
   const [secondsLeft, setSecondsLeft] = useState(OTP_TTL_SEC)
   const [resendCooldown, setResendCooldown] = useState(RESEND_COOLDOWN_SEC)
-  const [resending, setResending] = useState(false)
-  const [shake, setShake] = useState(false)
+  const [resending, setResending] = useState(false); const [shake, setShake] = useState(false)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const submittingRef = useRef(false)
 
@@ -53,13 +44,9 @@ export default function ForgotPasswordPage() {
   const handleSendOtp = async () => {
     if (submittingRef.current || loading) return
     const clean = identifier.trim()
-    if (!clean) {
-      setError('Please enter your email address or mobile number.')
-      return
-    }
+    if (!clean) return setError('Please enter your email address or mobile number.')
     submittingRef.current = true
-    setError('')
-    setLoading(true)
+    setError(''); setLoading(true)
     try {
       await api('/auth/forgot-password', {
         method: 'POST',
@@ -72,21 +59,22 @@ export default function ForgotPasswordPage() {
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t.failedSendOtp)
     } finally {
-      setLoading(false)
-      submittingRef.current = false
+      setLoading(false); submittingRef.current = false
     }
   }
+
   const handleDigit = useCallback((index: number, value: string) => {
     const digit = value.replace(/\D/g, '').slice(-1)
     const next = [...otp]
     next[index] = digit
-    setOtp(next)
-    setError('')
+    setOtp(next); setError('')
     if (digit && index < 5) inputRefs.current[index + 1]?.focus()
   }, [otp])
+
   const handleKeyDown = useCallback((index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) inputRefs.current[index - 1]?.focus()
   }, [otp])
+
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
     if (text.length === 6) {
@@ -94,19 +82,20 @@ export default function ForgotPasswordPage() {
       inputRefs.current[5]?.focus()
     }
   }, [])
+
   const triggerShake = () => {
     setShake(true)
     setTimeout(() => setShake(false), 600)
   }
+
   const handleReset = async () => {
     if (submittingRef.current || loading) return
     const code = otp.join('')
     if (code.length < 6) return
-    if (newPassword !== confirmPassword) { setError(t.passwordsNoMatch); return }
-    if (newPassword.length < 6) { setError(t.passwordMin6); return }
+    if (newPassword !== confirmPassword) return setError(t.passwordsNoMatch)
+    if (newPassword.length < 6) return setError(t.passwordMin6)
     submittingRef.current = true
-    setError('')
-    setLoading(true)
+    setError(''); setLoading(true)
     try {
       const clean = identifier.trim()
       await api('/auth/reset-password', {
@@ -125,14 +114,13 @@ export default function ForgotPasswordPage() {
       inputRefs.current[0]?.focus()
       setError(err instanceof ApiError ? err.message : t.resetFailed)
     } finally {
-      setLoading(false)
-      submittingRef.current = false
+      setLoading(false); submittingRef.current = false
     }
   }
+
   const handleResend = async () => {
     if (resendCooldown > 0 || resending) return
-    setResending(true)
-    setError('')
+    setResending(true); setError('')
     try {
       const clean = identifier.trim()
       await api('/auth/forgot-password', {
@@ -158,12 +146,7 @@ export default function ForgotPasswordPage() {
         {(step === 'email' || step === 'phone') && (
           <>
             <div className="login-page__header">
-              <BrandLogo
-                variant="horizontal"
-                size={48}
-                className="login-page__brand-logo"
-                style={{ maxWidth: '210px', height: 'auto', margin: '0 auto 8px auto', display: 'block' }}
-              />
+              <BrandLogo variant="horizontal" size={48} className="login-page__brand-logo mx-auto mb-2 block max-w-[210px] h-auto" />
               <Heading level={1} className="login-page__title sr-only">{APP_NAME}</Heading>
               <Text className="login-page__subtitle">{t.resetYourPassword}</Text>
             </div>
@@ -181,7 +164,7 @@ export default function ForgotPasswordPage() {
                 />
               </div>
               {error && <Text className="login-page__error">{error}</Text>}
-              <Button variant="none" type="submit" className="login-page__submit" disabled={!identifier.trim() || loading}>
+              <Button type="submit" variant="primary" className="login-page__submit" disabled={!identifier.trim() || loading}>
                 {loading ? 'Sending code...' : 'Send Recovery Code'}
               </Button>
               <Text className="login-page__hint">
@@ -220,7 +203,7 @@ export default function ForgotPasswordPage() {
                   />
                 ))}
               </div>
-              <div className="login-page__field" style={{ marginTop: 'var(--space-2)' }}>
+              <div className="login-page__field mt-2">
                 <label className="login-page__label" htmlFor="newPassword">{t.newPasswordLabel}</label>
                 <Input id="newPassword" type="password" className="login-page__input" placeholder={t.min6CharsHint} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
               </div>
@@ -233,10 +216,11 @@ export default function ForgotPasswordPage() {
                 {secondsLeft > 0 && <Text className="auth-otp__cooldown">{t.otpExpiresIn} {formatTime(secondsLeft)}</Text>}
                 {resendCooldown > 0
                   ? <Text className="auth-otp__cooldown">{t.resendIn} {resendCooldown}s</Text>
-                  : <Button variant="none" className="auth-otp__back" onClick={handleResend} disabled={resending} type="button">{resending ? t.sending : t.resendOtp}</Button>
+                  : <Button variant="ghost" size="sm" className="auth-otp__back" onClick={handleResend} disabled={resending} type="button">{resending ? t.sending : t.resendOtp}</Button>
                 }
               </div>
-              <Button variant="none"
+              <Button
+                variant="primary"
                 className="login-page__submit"
                 disabled={otp.join('').length < 6 || !newPassword || !confirmPassword || loading}
                 onClick={handleReset}
@@ -250,11 +234,11 @@ export default function ForgotPasswordPage() {
         {step === 'success' && (
           <>
             <div className="login-page__header">
-              <div style={{ fontSize: 48, textAlign: 'center', marginBottom: 'var(--space-2)' }}>✓</div>
-              <Heading level={1} className="login-page__title" style={{ fontSize: 'var(--fs-2xl)' }}>{t.passwordResetDone}</Heading>
+              <div className="text-5xl text-center mb-2">✓</div>
+              <Heading level={1} className="login-page__title text-2xl">{t.passwordResetDone}</Heading>
               <Text className="login-page__subtitle">{t.passwordResetDesc}</Text>
             </div>
-            <Button variant="none" className="login-page__submit" onClick={() => navigate(ROUTES.LOGIN, { replace: true })} type="button">
+            <Button variant="primary" className="login-page__submit" onClick={() => navigate(ROUTES.LOGIN, { replace: true })} type="button">
               {t.signIn}
             </Button>
           </>

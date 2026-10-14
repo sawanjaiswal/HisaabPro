@@ -82,8 +82,7 @@ export function SubscriptionManagePage() {
 
               <section className="subscription-section py-0">
                 <Text
-                  className="text-xs font-medium uppercase tracking-wider mb-2"
-                  style={{ color: 'var(--text-muted)' }}
+                  className="text-xs font-medium uppercase tracking-wider mb-2 text-[var(--text-muted)]"
                 >
                   {t.addonActive}
                 </Text>

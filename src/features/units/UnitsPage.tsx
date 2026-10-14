@@ -97,7 +97,7 @@ export default function UnitsPage() {
         {status === 'loading' && (
           <>
             <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
-            <div style={{ marginTop: 'var(--space-4)' }}>
+            <div className="mt-4">
               <Skeleton height="3.5rem" borderRadius="var(--radius-md)" count={6} />
             </div>
           </>
@@ -129,12 +129,11 @@ export default function UnitsPage() {
                 {/* Search */}
                 <Input
                   type="search"
-                  className="input unit-search"
+                  className="input unit-search mt-3"
                   placeholder={t.search}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   aria-label={t.search}
-                  style={{ marginTop: 'var(--space-3)' }}
                 />
 
                 {/* Summary */}

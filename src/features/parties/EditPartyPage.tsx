@@ -87,7 +87,7 @@ export default function EditPartyPage() {
         <Header title={t.editParty} backTo={`/parties/${partyId}`} />
         <PageContainer>
           <Skeleton height="2.5rem" borderRadius="var(--radius-full)" />
-          <div style={{ marginTop: 'var(--space-4)' }}>
+          <div className="mt-4">
             <Skeleton height="3.5rem" borderRadius="var(--radius-md)" count={5} />
           </div>
         </PageContainer>

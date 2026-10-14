@@ -33,20 +33,23 @@ export function PriceListEntryRow({ entry, onEdit, onDelete }: PriceListEntryRow
         </span>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+      <div className="flex items-center gap-2">
         <span className="pl-entry-row__value">{entryValueLabel(entry)}</span>
         <div className="pl-entry-row__actions">
-          <Button variant="none"
+          <Button
             type="button"
-            className="btn btn-ghost btn-xs"
+            variant="ghost"
+            size="sm"
             onClick={onEdit}
             aria-label={`Edit entry for ${entry.productName}`}
           >
             <Pencil size={13} aria-hidden="true" />
           </Button>
-          <Button variant="none"
+          <Button
             type="button"
-            className="btn btn-ghost btn-xs btn-danger"
+            variant="ghost"
+            size="sm"
+            className="text-destructive hover:bg-destructive/10"
             onClick={onDelete}
             aria-label={`Delete entry for ${entry.productName}`}
           >

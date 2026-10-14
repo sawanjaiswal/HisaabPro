@@ -10,19 +10,11 @@ interface RoleNameInputProps {
   onChange: (value: string) => void
 }
 
-const LABEL_STYLE: React.CSSProperties = {
-  fontSize: 'var(--fs-xs)',
-  fontWeight: 600,
-  color: 'var(--color-gray-600)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-}
-
 export function RoleNameInput({ value, error, onChange }: RoleNameInputProps) {
   const { t } = useLanguage()
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-      <label htmlFor="role-name" style={LABEL_STYLE}>
+    <div className="flex flex-col gap-2">
+      <label htmlFor="role-name" className="text-xs font-semibold text-[var(--color-gray-600)] uppercase tracking-wider">
         {t.roleNameLabel}
       </label>
       <Input

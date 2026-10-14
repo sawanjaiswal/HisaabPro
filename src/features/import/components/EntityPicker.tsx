@@ -72,15 +72,11 @@ export function EntityPicker({ value, onChange, disabled = false }: EntityPicker
               }
             >
               <Icon
-                className="w-5 h-5 shrink-0"
-                style={{ color: 'var(--color-primary-600)' }}
+                className="w-5 h-5 shrink-0 text-primary-600"
                 aria-hidden="true"
               />
               <span className="flex flex-col gap-0.5">
-                <span
-                  className="font-semibold"
-                  style={{ fontSize: 'var(--fs-md)', color: 'var(--color-text-primary)' }}
-                >
+                <span className="font-semibold text-base text-text-primary">
                   {tx[opt.labelKey] ?? opt.value}
                 </span>
                 <span className="text-xs text-[var(--text-secondary)]">

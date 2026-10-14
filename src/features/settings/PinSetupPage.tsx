@@ -6,6 +6,7 @@ import { PinPad } from './components/PinPad'
 import { usePinSetup } from './usePinSetup'
 import './pin-setup.css'
 import { Button } from '@/components/ui/Button'
+import { ArrowLeft } from 'lucide-react'
 
 
 
@@ -40,27 +41,15 @@ export default function PinSetupPage() {
         aria-label={pageTitle}
       >
       {/* Back button — top-left */}
-      <Button variant="none"
+      <Button
+        variant="ghost"
+        size="icon"
         type="button"
         onClick={handleBack}
-        style={{
-          position: 'absolute',
-          top: 'calc(var(--space-4) + env(safe-area-inset-top, 0px))',
-          left: 'var(--space-4)',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          color: 'var(--color-gray-600)',
-          minHeight: '44px',
-          minWidth: '44px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 'var(--fs-lg)',
-        }}
+        className="absolute top-4 left-4"
         aria-label={t.goBack}
       >
-        &#8592;
+        <ArrowLeft size={20} />
       </Button>
 
       {step === 'enter' ? (

@@ -51,14 +51,15 @@ export function PriceListFormDrawer({
   const title = isEdit ? t.plEditTitle : t.plCreateTitle
 
   const footer = (
-    <div style={{ display: 'flex', gap: 'var(--space-2)', padding: 'var(--space-4)' }}>
-      <Button variant="none" type="button" className="btn btn-outline flex-1" onClick={onClose}>
+    <div className="flex gap-2 p-4">
+      <Button variant="outline" type="button" className="flex-1" onClick={onClose}>
         {t.cancel}
       </Button>
       <Button
         type="submit"
         form="pl-form"
-        variant="primary" className="flex-1"
+        variant="primary"
+        className="flex-1"
         disabled={isLoading}
         aria-busy={isLoading}
       >

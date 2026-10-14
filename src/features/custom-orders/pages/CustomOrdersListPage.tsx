@@ -62,33 +62,17 @@ export default function CustomOrdersListPage() {
         <div
           role="group"
           aria-label={t.coFilterByStatus}
-          style={{
-            display: 'flex',
-            gap: 'var(--space-2)',
-            overflowX: 'auto',
-            paddingBottom: 'var(--space-2)',
-            scrollbarWidth: 'none',
-          }}
+          className="flex gap-2 overflow-x-auto pb-2 scrollbar-none"
         >
           {([ALL, ...CUSTOM_ORDER_STATUSES] as Filter[]).map((f) => (
-            <Button variant="none"
+            <Button
               key={f}
               type="button"
+              variant={activeFilter === f ? 'primary' : 'outline'}
+              size="sm"
               onClick={() => setActiveFilter(f)}
               aria-pressed={activeFilter === f}
-              style={{
-                flexShrink: 0,
-                padding: '6px 14px',
-                borderRadius: 9999,
-                border: `1px solid ${activeFilter === f ? 'var(--color-primary-600)' : 'var(--color-border)'}`,
-                background: activeFilter === f ? 'var(--color-primary-600)' : 'var(--color-surface)',
-                color: activeFilter === f ? '#fff' : 'var(--color-text)',
-                fontSize: 'var(--fs-xs)',
-                fontWeight: 500,
-                cursor: 'pointer',
-                minHeight: 36,
-                whiteSpace: 'nowrap',
-              }}
+              className="flex-shrink-0 rounded-full text-xs font-medium min-h-[36px] whitespace-nowrap px-3.5 py-1.5"
             >
               {PILL_LABELS[f]}
             </Button>
@@ -96,12 +80,12 @@ export default function CustomOrdersListPage() {
         </div>
 
         {/* Balance-only toggle */}
-        <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)', cursor: 'pointer', minHeight: 36, paddingBottom: 'var(--space-2)' }}>
+        <label className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] cursor-pointer min-h-[36px] pb-2">
           <Input
             type="checkbox"
             checked={balanceOnly}
             onChange={(e) => setBalanceOnly(e.target.checked)}
-            style={{ width: 16, height: 16 }}
+            className="w-4 h-4"
           />
           {t.coBalancePendingOnly}
         </label>
@@ -114,7 +98,7 @@ export default function CustomOrdersListPage() {
         )}
 
         {status === 'success' && allItems.length > 0 && (
-          <div role="list" aria-label={t.coListAria} style={{ display: 'flex', flexDirection: 'column' }}>
+          <div role="list" aria-label={t.coListAria} className="flex flex-col">
             {allItems.map((order) => (
               <div key={order.id} role="listitem">
                 <CustomOrderListItem order={order} onClick={(id) => navigate(ORDER_ROUTES.DETAIL(id))} />
@@ -129,7 +113,7 @@ export default function CustomOrdersListPage() {
             variant="ghost" size="sm"
             onClick={() => void fetchNextPage()}
             disabled={isFetchingNextPage}
-            style={{ width: '100%', marginTop: 'var(--space-3)', minHeight: 44 }}
+            className="w-full mt-3 min-h-[44px]"
           >
             {isFetchingNextPage ? t.coLoadingMore : t.coLoadMore}
           </Button>

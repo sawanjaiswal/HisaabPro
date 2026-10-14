@@ -17,36 +17,30 @@ import { Button } from '@/components/ui/Button'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { cn } from '@/lib/utils'
 
 function StepIndicator({ current, total, ariaLabel }: { current: WizardStep; total: number; ariaLabel: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center', marginBottom: '20px' }} role="group" aria-label={ariaLabel}>
+    <div className="flex items-center gap-1 justify-center mb-5" role="group" aria-label={ariaLabel}>
       {Array.from({ length: total }, (_, i) => {
         const step = (i + 1) as WizardStep
         const done = step < current
         const active = step === current
         return (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div key={i} className="flex items-center gap-1">
             <div
-              style={{
-                width: active ? 28 : 22,
-                height: 22,
-                borderRadius: '999px',
-                background: done ? 'var(--color-success-500)' : active ? 'var(--color-primary-600)' : 'var(--color-gray-200)',
-                color: done || active ? 'white' : 'var(--color-gray-400)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '11px',
-                fontWeight: 700,
-                transition: 'all 0.15s ease',
-              }}
+              className={cn(
+                'h-5.5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all',
+                active ? 'w-7 bg-primary text-primary-foreground' : 'w-5.5',
+                done && 'bg-[var(--color-success-500)] text-white',
+                !done && !active && 'bg-muted text-[var(--text-muted)]'
+              )}
               aria-current={active ? 'step' : undefined}
             >
               {step}
             </div>
             {i < total - 1 && (
-              <div style={{ width: 16, height: 2, background: done ? 'var(--color-success-400)' : 'var(--color-gray-200)' }} />
+              <div className={cn('w-4 h-0.5', done ? 'bg-[var(--color-success-400)]' : 'bg-muted')} />
             )}
           </div>
         )
@@ -117,7 +111,7 @@ export default function CampaignWizardPage() {
       <StepIndicator current={state.step} total={5} ariaLabel={stepAria} />
 
       {/* Step content */}
-      <div style={{ minHeight: 300 }}>
+      <div className="min-h-[300px]">
         {state.step === 1 && (
           <CampaignWizardStep1Channel
             name={state.name}
@@ -158,30 +152,16 @@ export default function CampaignWizardPage() {
 
       {/* Next button (steps 1-4) */}
       {state.step < 5 && (
-        <Button variant="none"
-          type="button"
+        <Button
+          variant="primary"
+          size="lg"
+          className="w-full mt-6 gap-2"
           onClick={handleNext}
           disabled={!canAdvance(state.step)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            width: '100%',
-            marginTop: '24px',
-            padding: '14px',
-            minHeight: '44px',
-            borderRadius: '12px',
-            border: 'none',
-            background: canAdvance(state.step) ? 'var(--color-primary-600)' : 'var(--color-gray-200)',
-            color: canAdvance(state.step) ? 'white' : 'var(--color-gray-400)',
-            fontWeight: 700,
-            fontSize: '15px',
-            cursor: canAdvance(state.step) ? 'pointer' : 'not-allowed',
-          }}
           aria-disabled={!canAdvance(state.step)}
         >
-          {t.marketingNext} <ChevronRight size={18} aria-hidden="true" />
+          <span>{t.marketingNext}</span>
+          <ChevronRight size={18} aria-hidden="true" />
         </Button>
       )}
       </PageContainer>

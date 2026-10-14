@@ -52,16 +52,17 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap gap-2">
         {nextStatuses.map((status) => (
-          <Button variant="none"
+          <Button
             key={status}
             type="button"
-            className={status === 'CANCELLED' ? 'btn btn-danger btn-sm' : 'btn btn-primary btn-sm'}
+            variant={status === 'CANCELLED' ? 'destructive' : 'primary'}
+            size="sm"
             onClick={() => handleTransition(status)}
             disabled={isPending}
-            style={{ minHeight: 44 }}
+            className="min-h-[44px]"
           >
             {STATUS_BUTTON_LABELS[status]}
           </Button>
@@ -69,8 +70,8 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
       </div>
 
       {showCancelPrompt && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', padding: 'var(--space-3)', background: 'var(--color-error-50)', borderRadius: 8 }}>
-          <label style={{ fontSize: 'var(--fs-sm)', fontWeight: 500, color: 'var(--color-error-700)' }}>
+        <div className="flex flex-col gap-2 p-3 bg-red-50 rounded-lg">
+          <label className="text-sm font-medium text-red-700">
             {t.jobCancelReasonLabel} *
           </label>
           <Input
@@ -82,13 +83,14 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
             maxLength={500}
             aria-label={t.jobCancelReasonLabel}
           />
-          <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-            <Button variant="none"
+          <div className="flex gap-2">
+            <Button
               type="button"
-              className="btn btn-danger btn-sm"
+              variant="destructive"
+              size="sm"
               onClick={handleCancelConfirm}
               disabled={!cancelReason.trim() || isPending}
-              style={{ minHeight: 44 }}
+              className="min-h-[44px]"
             >
               {t.jobConfirmCancel}
             </Button>
@@ -96,7 +98,7 @@ export function JobStatusActions({ jobId, jobTitle, currentStatus }: JobStatusAc
               type="button"
               variant="ghost" size="sm"
               onClick={() => { setShowCancelPrompt(false); setCancelReason('') }}
-              style={{ minHeight: 44 }}
+              className="min-h-[44px]"
             >
               {t.jobCancelBack}
             </Button>

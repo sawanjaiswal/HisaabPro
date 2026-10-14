@@ -15,20 +15,13 @@ export function CampaignWizardStep3Audience({ value, onChange }: Props) {
   const { preview, tooLarge } = useSegmentPreview(value)
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div className="flex flex-col gap-4">
       <AudiencePicker value={value} onChange={onChange} />
 
       {tooLarge && (
         <div
           role="alert"
-          style={{
-            padding: '10px 14px',
-            borderRadius: '8px',
-            background: 'var(--color-error-50)',
-            border: '1px solid var(--color-error-200)',
-            color: 'var(--color-error-700)',
-            fontSize: '13px',
-          }}
+          className="p-3 rounded-lg bg-[var(--color-error-50)] border border-[var(--color-error-200)] text-destructive text-xs"
         >
           {t.marketingAudienceTooLarge}
         </div>
@@ -37,14 +30,7 @@ export function CampaignWizardStep3Audience({ value, onChange }: Props) {
       {!tooLarge && preview != null && preview.count === 0 && (
         <div
           role="alert"
-          style={{
-            padding: '10px 14px',
-            borderRadius: '8px',
-            background: 'var(--color-warning-50)',
-            border: '1px solid var(--color-warning-200)',
-            color: 'var(--color-warning-700)',
-            fontSize: '13px',
-          }}
+          className="p-3 rounded-lg bg-[var(--color-warning-50)] border border-[var(--color-warning-200)] text-amber-700 text-xs"
         >
           {t.marketingAudienceNoMatch}
         </div>
@@ -52,14 +38,14 @@ export function CampaignWizardStep3Audience({ value, onChange }: Props) {
 
       {!tooLarge && preview != null && preview.sample.length > 0 && (
         <div>
-          <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-gray-500)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <div className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">
             {t.marketingSampleRecipients}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div className="flex flex-col gap-1">
             {preview.sample.slice(0, 5).map((p) => (
-              <div key={p.id} style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '8px 10px', borderRadius: '8px', background: 'var(--color-gray-50)', fontSize: '13px' }}>
-                <span style={{ fontWeight: 600, color: 'var(--color-gray-800)', flex: 1 }}>{p.name}</span>
-                <span style={{ color: 'var(--color-gray-400)' }}>{p.phone ?? t.marketingNoPhone}</span>
+              <div key={p.id} className="flex gap-2 items-center py-2 px-2.5 rounded-lg bg-[var(--color-gray-50)] text-xs">
+                <span className="font-semibold text-[var(--text-primary)] flex-1">{p.name}</span>
+                <span className="text-[var(--text-muted)]">{p.phone ?? t.marketingNoPhone}</span>
               </div>
             ))}
           </div>

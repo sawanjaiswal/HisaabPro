@@ -15,7 +15,7 @@ import { useLanguage } from '@/context/LanguageContext'
 function EditSkeleton() {
   const { t } = useLanguage()
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', padding: 'var(--space-4)' }} aria-busy="true" aria-label={t.coLoadingOrder}>
+    <div className="flex flex-col gap-3 p-4" aria-busy="true" aria-label={t.coLoadingOrder}>
       {[200, 120, 80, 300].map((w, i) => (
         <div key={i} className="skeleton" style={{ height: 44, borderRadius: 8, width: `${w}px`, maxWidth: '100%' }} aria-hidden="true" />
       ))}

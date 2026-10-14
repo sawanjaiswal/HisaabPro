@@ -21,15 +21,17 @@ interface CustomOrderItemEditorProps {
 export function CustomOrderItemEditor({ item, index, showRemove, onUpdate, onRemove }: CustomOrderItemEditorProps) {
   const { t } = useLanguage()
   return (
-    <div style={{ border: '1px solid var(--color-border)', borderRadius: 8, padding: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', fontWeight: 500 }}>{t.coItemLabel} {index + 1}</span>
+    <div className="border border-[var(--color-border)] rounded-lg p-3 flex flex-col gap-2">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-[var(--color-text-secondary)] font-medium">{t.coItemLabel} {index + 1}</span>
         {showRemove && (
-          <Button variant="none"
+          <Button
+            variant="ghost"
+            size="sm"
             type="button"
             onClick={() => onRemove(item._key)}
             aria-label={t.coRemoveItemAria}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-error-600)', minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            className="text-red-600 min-w-[44px] min-h-[44px]"
           >
             <Trash2 size={16} aria-hidden="true" />
           </Button>
@@ -44,8 +46,8 @@ export function CustomOrderItemEditor({ item, index, showRemove, onUpdate, onRem
         maxLength={500}
         aria-label={`${t.coItemLabel} ${index + 1} ${t.coItemDescAria}`}
       />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-2)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div className="grid grid-cols-3 gap-2">
+        <div className="flex flex-col gap-1">
           <label className="text-xs text-[var(--text-secondary)]">{t.qty}</label>
           <Input
             type="number"
@@ -57,7 +59,7 @@ export function CustomOrderItemEditor({ item, index, showRemove, onUpdate, onRem
             aria-label={`${t.coItemLabel} ${index + 1} ${t.coItemQtyAria}`}
           />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div className="flex flex-col gap-1">
           <label className="text-xs text-[var(--text-secondary)]">{t.coRate}</label>
           <Input
             type="number"
@@ -69,7 +71,7 @@ export function CustomOrderItemEditor({ item, index, showRemove, onUpdate, onRem
             aria-label={`${t.coItemLabel} ${index + 1} ${t.coItemRateAria}`}
           />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div className="flex flex-col gap-1">
           <label className="text-xs text-[var(--text-secondary)]">{t.coDiscountRs}</label>
           <Input
             type="number"

@@ -107,7 +107,7 @@ export const AuditLogEntry: React.FC<AuditLogEntryProps> = ({ entry, onSelect })
         <Text className="audit-entry-meta">{formatTimeAgo(entry.createdAt)}</Text>
 
         {entry.reason && (
-          <Text className="audit-entry-meta" style={{ marginTop: 'var(--space-2)' }}>
+          <Text className="audit-entry-meta mt-2">
             {t.auditReasonPrefix}: {entry.reason}
           </Text>
         )}
@@ -117,7 +117,7 @@ export const AuditLogEntry: React.FC<AuditLogEntryProps> = ({ entry, onSelect })
         <ChevronRight
           size={18}
           aria-hidden="true"
-          style={{ color: 'var(--color-gray-400)', flexShrink: 0 }}
+          className="text-[var(--color-gray-400)] flex-shrink-0"
         />
       )}
     </RowTag>

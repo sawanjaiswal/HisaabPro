@@ -88,7 +88,7 @@ export function PartyTransactionsTab({ partyId }: PartyTransactionsTabProps) {
     return (
       <div className="party-txn-tab">
         <Skeleton height="3.5rem" borderRadius="var(--radius-md)" />
-        <div style={{ marginTop: 'var(--space-3)' }}>
+        <div className="mt-3">
           <Skeleton height="4rem" borderRadius="var(--radius-md)" count={5} />
         </div>
       </div>

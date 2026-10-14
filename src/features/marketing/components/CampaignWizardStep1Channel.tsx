@@ -1,6 +1,5 @@
 /** CampaignWizardStep1 — Name and Channel */
 
-import { Text } from '@/components/ui/Text'
 import { useLanguage } from '@/hooks/useLanguage'
 import { ChannelToggle } from './ChannelToggle'
 import type { MarketingChannel } from '../marketing.types'
@@ -16,9 +15,11 @@ interface Props {
 export function CampaignWizardStep1Channel({ name, channel, onNameChange, onChannelChange }: Props) {
   const { t } = useLanguage()
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div className="flex flex-col gap-5">
       <div>
-        <label htmlFor="campaign-name" style={labelStyle}>{t.marketingCampaignName} *</label>
+        <label htmlFor="campaign-name" className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">
+          {t.marketingCampaignName} *
+        </label>
         <Input
           id="campaign-name"
           type="text"
@@ -27,37 +28,21 @@ export function CampaignWizardStep1Channel({ name, channel, onNameChange, onChan
           placeholder={t.marketingCampaignNamePh}
           maxLength={100}
           autoFocus
-          style={{
-            width: '100%',
-            padding: '12px 14px',
-            borderRadius: '10px',
-            border: '1px solid var(--color-gray-300)',
-            fontSize: '16px',
-            color: 'var(--color-gray-800)',
-            background: 'white',
-            boxSizing: 'border-box',
-          }}
           aria-required="true"
         />
-        <div style={{ marginTop: '4px', fontSize: '12px', color: 'var(--color-gray-400)', textAlign: 'right' }}>
+        <div className="mt-1 text-xs text-[var(--text-muted)] text-right">
           {name.length}/100
         </div>
       </div>
 
       <div>
-        <Text style={labelStyle}>{t.marketingSendVia}</Text>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-2">
+          {t.marketingSendVia}
+        </label>
+        <div className="flex gap-3">
           <ChannelToggle value={channel} onChange={onChannelChange} />
         </div>
       </div>
     </div>
   )
-}
-
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: '14px',
-  fontWeight: 600,
-  color: 'var(--color-gray-700)',
-  marginBottom: '8px',
 }

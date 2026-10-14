@@ -23,6 +23,7 @@ import './storefront-settings.css'
 import { Textarea } from '@/components/ui/Textarea'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { Switch } from '@/components/ui/Switch'
 import { Heading } from '@/components/ui/Heading'
 
 const STORE_BASE_URL = 'hisaabpro.in/p/store/'
@@ -179,8 +180,7 @@ export default function StorefrontSettingsPage() {
               <div>
                 <Text className="sf-toggle-row__label">
                   Public store
-                  <span className={`sf-public-badge ${isPublic ? 'sf-public-badge--on' : 'sf-public-badge--off'}`}
-                    style={{ marginLeft: 8 }}>
+                  <span className={`sf-public-badge ${isPublic ? 'sf-public-badge--on' : 'sf-public-badge--off'} ml-2`}>
                     {isPublic ? 'Live' : 'Hidden'}
                   </span>
                 </Text>
@@ -188,10 +188,11 @@ export default function StorefrontSettingsPage() {
                   {isPublic ? 'Anyone with the link can view your store' : 'Only you can see your store'}
                 </Text>
               </div>
-              <label className="sf-toggle" aria-label="Toggle public store">
-                <Input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} />
-                <span className="sf-toggle__track" /><span className="sf-toggle__thumb" />
-              </label>
+              <Switch
+                checked={isPublic}
+                onCheckedChange={setIsPublic}
+                aria-label="Toggle public store"
+              />
             </div>
 
             {!isPublic && (

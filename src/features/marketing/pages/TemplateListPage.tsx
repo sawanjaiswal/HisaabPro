@@ -1,10 +1,10 @@
 /** TemplateListPage — /marketing/templates */
 
-import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, RefreshCw, Pencil, Trash2, FileText } from 'lucide-react'
+import { Plus, Pencil, Trash2, FileText } from 'lucide-react'
 import { EmptyState } from '@/components/feedback/EmptyState'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useMarketingTemplateList, useDeleteTemplate } from '../hooks/useMarketingTemplates'
 import { ChannelBadge } from '../components/ChannelBadge'
@@ -12,8 +12,9 @@ import { MARKETING_ROUTES } from '../marketing.constants'
 import { formatDate } from '../marketing.utils'
 import type { MarketingChannel, MarketingTemplate } from '../marketing.types'
 import { Button } from '@/components/ui/Button'
-import { Heading } from '@/components/ui/Heading'
-
+import { Card } from '@/components/ui/Card'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { Skeleton } from '@/components/ui/Skeleton'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -52,124 +53,115 @@ export default function TemplateListPage() {
         />
       }
     >
-      <PageContainer className="py-4 pb-24 max-w-2xl mx-auto">
-
-      {/* Channel filter */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-        {CHANNEL_FILTERS.map((f) => (
-          <Button variant="none"
-            key={String(f.value)}
-            type="button"
-            onClick={() => setChannel(f.value)}
-            style={{
-              padding: '6px 14px',
-              borderRadius: '999px',
-              border: `1px solid ${channel === f.value ? 'var(--color-primary-600)' : 'var(--color-gray-300)'}`,
-              background: channel === f.value ? 'var(--color-primary-600)' : 'white',
-              color: channel === f.value ? 'white' : 'var(--color-gray-600)',
-              fontWeight: channel === f.value ? 700 : 400,
-              fontSize: '13px',
-              cursor: 'pointer',
-            }}
-            aria-pressed={channel === f.value}
-          >
-            {f.label}
-          </Button>
-        ))}
-      </div>
-
-      {status === 'loading' && (
-        <div aria-busy="true" aria-label={t.marketingTemplates}>
-          {[0, 1, 2].map((i) => <div key={i} style={{ height: 80, borderRadius: 12, background: 'var(--color-gray-100)', marginBottom: 10, animation: 'pulse 1.5s infinite' }} />)}
-        </div>
-      )}
-
-      {status === 'error' && (
-        <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-error-600)', fontSize: '14px' }}>
-          {t.marketingLoadFailed}
-          <Button variant="none" type="button" onClick={refresh} style={{ marginLeft: 8, background: 'none', border: 'none', color: 'var(--color-primary-600)', cursor: 'pointer', fontSize: '14px' }}>
-            <RefreshCw size={14} style={{ display: 'inline', verticalAlign: 'middle' }} aria-hidden="true" /> {t.marketingRetry}
-          </Button>
-        </div>
-      )}
-
-      {status === 'success' && templates.length === 0 && (
-        <EmptyState
-          icon={<FileText size={22} aria-hidden="true" />}
-          title={t.marketingNoTemplatesYet}
-          action={
-            <Button variant="none" type="button" onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
-              {t.marketingNewTemplate}
-            </Button>
-          }
-        />
-      )}
-
-      {status === 'success' && templates.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {templates.map((tpl) => (
-            <div
-              key={tpl.id}
-              style={{ padding: '14px', borderRadius: '12px', background: 'white', border: '1px solid var(--color-gray-200)', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}
+      <PageContainer className="py-4 pb-24 max-w-2xl mx-auto space-y-4">
+        {/* Channel filter */}
+        <div className="flex gap-2">
+          {CHANNEL_FILTERS.map((f) => (
+            <Button
+              key={String(f.value)}
+              variant={channel === f.value ? 'primary' : 'outline'}
+              size="sm"
+              className="rounded-full text-xs font-medium"
+              onClick={() => setChannel(f.value)}
+              aria-pressed={channel === f.value}
             >
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--color-gray-800)' }}>{tpl.name}</span>
-                    <ChannelBadge channel={tpl.channel} />
-                    {!tpl.isActive && <span className="badge badge--neutral">{t.marketingInactiveLabel}</span>}
-                  </div>
-                  <div style={{ fontSize: '13px', color: 'var(--color-gray-500)', marginTop: '4px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    {tpl.bodyEn}
-                  </div>
-                  <div style={{ fontSize: '11px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{formatDate(tpl.createdAt)}</div>
-                </div>
-                <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
-                  <Button variant="none"
-                    type="button"
-                    onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_EDIT.replace(':id', tpl.id))}
-                    style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--color-gray-200)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                    aria-label={`${t.marketingEditAria} ${tpl.name}`}
-                  >
-                    <Pencil size={15} color="var(--color-gray-500)" aria-hidden="true" />
-                  </Button>
-                  <Button variant="none"
-                    type="button"
-                    onClick={() => setConfirmDelete(tpl)}
-                    style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--color-error-200)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                    aria-label={`${t.marketingDeleteAria} ${tpl.name}`}
-                  >
-                    <Trash2 size={15} color="var(--color-error-500)" aria-hidden="true" />
-                  </Button>
-                </div>
-              </div>
-            </div>
+              {f.label}
+            </Button>
           ))}
         </div>
-      )}
 
-      {/* Confirm delete */}
-      {confirmDelete && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', background: 'rgba(0,0,0,0.5)' }} role="dialog" aria-modal="true" aria-labelledby="del-tmpl-title">
-          <div style={{ width: '100%', maxWidth: 480, background: 'white', borderRadius: '20px 20px 0 0', padding: '24px 20px' }}>
-            <Heading level={3} id="del-tmpl-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>{t.marketingDeleteTemplateTitle}</Heading>
-            <Text style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>{t.marketingDeleteTemplateDesc}</Text>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Button variant="none" type="button" onClick={() => setConfirmDelete(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
-                {t.marketingCancel}
-              </Button>
-              <Button variant="none"
-                type="button"
-                onClick={() => { deleteMutation.mutate({ id: confirmDelete.id, name: confirmDelete.name }); setConfirmDelete(null) }}
-                disabled={deleteMutation.isPending}
-                style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', background: 'var(--color-error-600)', color: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
-              >
-                {t.marketingDelete}
-              </Button>
-            </div>
+        {status === 'loading' && (
+          <div aria-busy="true" aria-label={t.marketingTemplates} className="space-y-2.5">
+            {[0, 1, 2].map((i) => (
+              <Skeleton key={i} className="h-20 w-full rounded-xl" />
+            ))}
           </div>
-        </div>
-      )}
+        )}
+
+        {status === 'error' && (
+          <ErrorState
+            title={t.marketingLoadFailed}
+            onRetry={refresh}
+            retryLabel={t.marketingRetry}
+          />
+        )}
+
+        {status === 'success' && templates.length === 0 && (
+          <EmptyState
+            icon={<FileText size={22} aria-hidden="true" />}
+            title={t.marketingNoTemplatesYet}
+            action={
+              <Button
+                variant="primary"
+                onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_NEW)}
+              >
+                {t.marketingNewTemplate}
+              </Button>
+            }
+          />
+        )}
+
+        {status === 'success' && templates.length > 0 && (
+          <div className="flex flex-col gap-2.5">
+            {templates.map((tpl) => (
+              <Card
+                key={tpl.id}
+                className="p-3.5 rounded-xl border border-border bg-card shadow-2xs"
+              >
+                <div className="flex items-start gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-sm text-[var(--text-primary)]">{tpl.name}</span>
+                      <ChannelBadge channel={tpl.channel} />
+                      {!tpl.isActive && <span className="badge badge--neutral">{t.marketingInactiveLabel}</span>}
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)] mt-1 line-clamp-2">
+                      {tpl.bodyEn}
+                    </div>
+                    <div className="text-[11px] text-[var(--text-muted)] mt-1">{formatDate(tpl.createdAt)}</div>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_EDIT.replace(':id', tpl.id))}
+                      aria-label={`${t.marketingEditAria} ${tpl.name}`}
+                    >
+                      <Pencil size={15} className="text-[var(--text-muted)]" aria-hidden="true" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="border-destructive/30 text-destructive hover:bg-destructive/10"
+                      onClick={() => setConfirmDelete(tpl)}
+                      aria-label={`${t.marketingDeleteAria} ${tpl.name}`}
+                    >
+                      <Trash2 size={15} aria-hidden="true" />
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Confirm delete */}
+        <ConfirmDialog
+          open={Boolean(confirmDelete)}
+          onClose={() => setConfirmDelete(null)}
+          onConfirm={() => {
+            if (confirmDelete) {
+              deleteMutation.mutate({ id: confirmDelete.id, name: confirmDelete.name })
+              setConfirmDelete(null)
+            }
+          }}
+          title={t.marketingDeleteTemplateTitle}
+          description={t.marketingDeleteTemplateDesc}
+          confirmLabel={t.marketingDelete}
+          cancelLabel={t.marketingCancel}
+          isDanger={true}
+          isLoading={deleteMutation.isPending}
+        />
       </PageContainer>
     </AppShell>
   )

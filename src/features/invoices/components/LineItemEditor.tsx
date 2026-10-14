@@ -191,7 +191,7 @@ export const LineItemEditor: React.FC<LineItemEditorProps> = ({
 
       <div className="line-item-total flex items-center justify-between pt-2.5 border-t border-[var(--color-border)] mt-1">
         <span className="line-item-total-label text-xs font-semibold text-[var(--color-text-secondary)]">{t.lineTotal}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+        <div className="flex items-center gap-2">
           {showProfit && !isFree && (
             <span className={profitClass}>
               {isProfit ? '+' : ''}{item.profitPercent.toFixed(1)}%

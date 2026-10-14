@@ -8,6 +8,7 @@ import { useMarketingTemplateDetail } from '../hooks/useMarketingTemplates'
 import { useSegmentPreview } from '../hooks/useSegmentPreview'
 import { formatScheduledAt, formatCostEstimate } from '../marketing.utils'
 import type { CampaignWizardState } from '../marketing.types'
+import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 
 interface Props {
@@ -31,40 +32,40 @@ export function CampaignWizardStep5Preview({ state, onLaunch, launching }: Props
       : `~${count.toLocaleString('en-IN')} ${t.marketingApproxCustomers}`
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div className="flex flex-col gap-5">
       {/* Summary card */}
-      <div style={{ padding: '16px', borderRadius: '12px', background: 'var(--color-gray-50)', border: '1px solid var(--color-gray-200)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px' }}>
-          <div style={rowStyle}>
-            <span style={keyStyle}>{t.marketingCampaignRow}</span>
-            <span style={{ fontWeight: 600, color: 'var(--color-gray-800)' }}>{state.name}</span>
+      <Card className="p-4 rounded-xl bg-[var(--color-gray-50)] border border-border">
+        <div className="flex flex-col gap-2.5 text-xs">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[var(--text-muted)] shrink-0">{t.marketingCampaignRow}</span>
+            <span className="font-semibold text-[var(--text-primary)]">{state.name}</span>
           </div>
-          <div style={rowStyle}>
-            <span style={keyStyle}>{t.marketingChannelRow}</span>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[var(--text-muted)] shrink-0">{t.marketingChannelRow}</span>
             <ChannelBadge channel={state.channel} />
           </div>
-          <div style={rowStyle}>
-            <span style={keyStyle}>{t.marketingTemplateRow}</span>
-            <span style={{ color: 'var(--color-gray-700)' }}>{template?.name ?? '—'}</span>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[var(--text-muted)] shrink-0">{t.marketingTemplateRow}</span>
+            <span className="text-[var(--text-secondary)]">{template?.name ?? '—'}</span>
           </div>
-          <div style={rowStyle}>
-            <span style={keyStyle}>{t.marketingAudienceRow}</span>
-            <span style={{ fontWeight: 600, color: tooLarge ? 'var(--color-error-600)' : 'var(--color-gray-800)' }}>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[var(--text-muted)] shrink-0">{t.marketingAudienceRow}</span>
+            <span className={`font-semibold ${tooLarge ? 'text-destructive' : 'text-[var(--text-primary)]'}`}>
               {audienceText}
             </span>
           </div>
-          <div style={rowStyle}>
-            <span style={keyStyle}>{t.marketingScheduleRow}</span>
-            <span style={{ color: 'var(--color-gray-700)' }}>{formatScheduledAt(state.scheduledAt)}</span>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[var(--text-muted)] shrink-0">{t.marketingScheduleRow}</span>
+            <span className="text-[var(--text-secondary)]">{formatScheduledAt(state.scheduledAt)}</span>
           </div>
-          <div style={rowStyle}>
-            <span style={keyStyle}>{t.marketingEstCostRow}</span>
-            <span style={{ color: 'var(--color-gray-700)' }}>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[var(--text-muted)] shrink-0">{t.marketingEstCostRow}</span>
+            <span className="text-[var(--text-secondary)]">
               {count > 0 && !tooLarge ? formatCostEstimate(state.channel, count) : '—'}
             </span>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Template preview */}
       {template && <TemplatePreview template={template} />}
@@ -74,65 +75,27 @@ export function CampaignWizardStep5Preview({ state, onLaunch, launching }: Props
 
       {/* Errors */}
       {tooLarge && (
-        <div role="alert" style={alertStyle('error')}>
+        <div role="alert" className="p-3 rounded-lg bg-[var(--color-error-50)] border border-[var(--color-error-200)] text-destructive text-xs">
           {t.marketingAudienceTooLargeBack}
         </div>
       )}
       {!countLoading && count === 0 && !tooLarge && (
-        <div role="alert" style={alertStyle('warning')}>
+        <div role="alert" className="p-3 rounded-lg bg-[var(--color-warning-50)] border border-[var(--color-warning-200)] text-amber-700 text-xs">
           {t.marketingAudienceNoMatchBack}
         </div>
       )}
 
       {/* Launch CTA */}
-      <Button variant="none"
-        type="button"
+      <Button
+        variant="primary"
+        size="lg"
+        className="w-full mt-1"
         onClick={onLaunch}
         disabled={!canLaunch}
-        style={{
-          display: 'block',
-          width: '100%',
-          padding: '16px',
-          borderRadius: '12px',
-          border: 'none',
-          background: canLaunch ? 'var(--color-primary-600)' : 'var(--color-gray-300)',
-          color: 'white',
-          fontSize: '16px',
-          fontWeight: 700,
-          cursor: canLaunch ? 'pointer' : 'not-allowed',
-          letterSpacing: '0.3px',
-          marginTop: '4px',
-        }}
         aria-disabled={!canLaunch}
       >
         {launching ? t.marketingLaunching : t.marketingLaunchCampaign}
       </Button>
     </div>
   )
-}
-
-const rowStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: '12px',
-}
-
-const keyStyle: React.CSSProperties = {
-  color: 'var(--color-gray-500)',
-  flexShrink: 0,
-}
-
-function alertStyle(type: 'error' | 'warning'): React.CSSProperties {
-  const colors = type === 'error'
-    ? { bg: 'var(--color-error-50)', border: 'var(--color-error-200)', color: 'var(--color-error-700)' }
-    : { bg: 'var(--color-warning-50)', border: 'var(--color-warning-200)', color: 'var(--color-warning-700)' }
-  return {
-    padding: '12px 14px',
-    borderRadius: '8px',
-    background: colors.bg,
-    border: `1px solid ${colors.border}`,
-    color: colors.color,
-    fontSize: '13px',
-  }
 }

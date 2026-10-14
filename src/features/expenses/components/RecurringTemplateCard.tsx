@@ -115,11 +115,11 @@ export function RecurringCardSkeleton() {
     <div className="recurring-card recurring-card--skeleton" aria-busy="true">
       <div className="recurring-card__icon recurring-card__skel-circle" />
       <div className="recurring-card__info">
-        <div className="recurring-card__skel-line" style={{ width: '8rem' }} />
-        <div className="recurring-card__skel-line" style={{ width: '6rem', marginTop: '0.25rem' }} />
+        <div className="recurring-card__skel-line w-32" />
+        <div className="recurring-card__skel-line w-24 mt-1" />
       </div>
       <div className="recurring-card__right">
-        <div className="recurring-card__skel-line" style={{ width: '4rem' }} />
+        <div className="recurring-card__skel-line w-16" />
       </div>
     </div>
   )

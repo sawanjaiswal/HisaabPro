@@ -11,12 +11,11 @@ export const SettingsSkeleton: React.FC = () => {
       {Array.from({ length: 4 }, (_, sectionIndex) => (
         <div key={`section-${sectionIndex}`} className="settings-section py-0">
           <Skeleton width="80px" height="0.6875rem" borderRadius="var(--radius-sm)" />
-          <div className="settings-group" style={{ marginTop: 'var(--space-2)' }}>
+          <div className="settings-group mt-2">
             {Array.from({ length: sectionIndex === 0 ? 4 : sectionIndex === 1 ? 3 : 2 }, (_, itemIndex) => (
               <div
                 key={`item-${sectionIndex}-${itemIndex}`}
-                className="settings-item"
-                style={{ pointerEvents: 'none' }}
+                className="settings-item pointer-events-none"
               >
                 <Skeleton width="36px" height="36px" borderRadius="var(--radius-md)" />
                 <span className="settings-item-content">

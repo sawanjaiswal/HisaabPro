@@ -1,21 +1,21 @@
 {
-  "count": 801,
+  "count": 1344,
   "violations": [
     {
       "file": "src/App.tsx",
-      "line": 116,
+      "line": 120,
       "type": "RAW_HEX",
       "text": "{/* Phase 5 Epic B — Sales Pipeline (#122) */}"
     },
     {
       "file": "src/App.tsx",
-      "line": 171,
+      "line": 175,
       "type": "RAW_HEX",
       "text": "{/* Epic D #128 — Commission frontend */}"
     },
     {
       "file": "src/App.tsx",
-      "line": 294,
+      "line": 298,
       "type": "RAW_HEX",
       "text": "{/* Epic C PR4 — Online Storefront (#121) */}"
     },
@@ -84,6 +84,24 @@
       "line": 111,
       "type": "ARBITRARY_BRACKET",
       "text": "<pre className=\"whitespace-pre-wrap text-[11px] opacity-80 mt-2\">"
+    },
+    {
+      "file": "src/components/feedback/WhatsAppFab.tsx",
+      "line": 159,
+      "type": "RAW_HEX",
+      "text": "background: '#25D366',"
+    },
+    {
+      "file": "src/components/feedback/WhatsAppFab.tsx",
+      "line": 196,
+      "type": "RAW_HEX",
+      "text": "fill=\"#fff\""
+    },
+    {
+      "file": "src/components/feedback/WhatsAppFab.tsx",
+      "line": 200,
+      "type": "RAW_HEX",
+      "text": "fill=\"#25D366\""
     },
     {
       "file": "src/components/feedback/toast.css",
@@ -189,27 +207,75 @@
     },
     {
       "file": "src/components/layout/BottomNav.css",
-      "line": 149,
+      "line": 150,
       "type": "RAW_HEX",
-      "text": "background: linear-gradient(135deg, #038344 0%, #026F39 60%, #01582c 100%);"
+      "text": "color: #ffffff;"
     },
     {
       "file": "src/components/layout/BottomNav.css",
       "line": 152,
       "type": "RAW_HEX",
-      "text": "box-shadow: 0 10px 24px -4px rgba(2, 111, 57, 0.44), 0 0 0 4px #ffffff, inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);"
+      "text": "box-shadow: 0 8px 20px -4px rgba(2, 111, 57, 0.44), 0 0 0 3px #ffffff, inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);"
     },
     {
       "file": "src/components/layout/BottomNav.css",
-      "line": 172,
+      "line": 173,
       "type": "RAW_HEX",
-      "text": "box-shadow: 0 12px 28px -4px rgba(2, 111, 57, 0.52), 0 0 0 4px #ffffff, inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);"
+      "text": "box-shadow: 0 10px 24px -4px rgba(2, 111, 57, 0.52), 0 0 0 3px #ffffff, inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);"
     },
     {
       "file": "src/components/layout/BottomNav.css",
-      "line": 177,
+      "line": 178,
       "type": "RAW_HEX",
-      "text": "box-shadow: 0 6px 16px -2px rgba(2, 111, 57, 0.4), 0 0 0 4px #ffffff;"
+      "text": "box-shadow: 0 6px 16px -2px rgba(2, 111, 57, 0.4), 0 0 0 3px #ffffff;"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 246,
+      "type": "RAW_HEX",
+      "text": "background: var(--color-gray-0, #0B0F15);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 247,
+      "type": "RAW_HEX",
+      "text": "border-top: 1px solid var(--color-gray-200, #232B3A);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 252,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-gray-500, #959BA6);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 256,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-gray-800, #E0E2E7);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 260,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-primary-400, #5DD89B);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 264,
+      "type": "RAW_HEX",
+      "text": "background: var(--color-primary-400, #5DD89B);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 268,
+      "type": "RAW_HEX",
+      "text": "color: var(--color-primary-400, #5DD89B);"
+    },
+    {
+      "file": "src/components/layout/BottomNav.css",
+      "line": 272,
+      "type": "RAW_HEX",
+      "text": "box-shadow: 0 10px 24px -4px rgba(2, 111, 57, 0.44), 0 0 0 4px var(--color-gray-0, #0B0F15), inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);"
     },
     {
       "file": "src/components/layout/DataViewShell.tsx",
@@ -219,87 +285,21 @@
     },
     {
       "file": "src/components/layout/Header.tsx",
-      "line": 98,
+      "line": 121,
       "type": "ARBITRARY_BRACKET",
       "text": "<span className=\"text-[11px] font-normal leading-tight opacity-80 truncate text-current\">"
     },
     {
-      "file": "src/components/layout/SideNav.tsx",
-      "line": 86,
-      "type": "RAW_HEX",
-      "text": "{/* Phase 6 #138 PR2 — active tenant chip (suspend state visible at-a-glance). */}"
+      "file": "src/components/layout/ListDetailLayout.tsx",
+      "line": 74,
+      "type": "ARBITRARY_BRACKET",
+      "text": "className=\"list-detail-layout__rail flex-shrink-0 border-r border-[var(--color-gray-100)] bg-[var(--color-gray-0)] overflow-y-auto\""
     },
     {
-      "file": "src/components/layout/public-shell.css",
-      "line": 46,
-      "type": "RAW_HEX",
-      "text": "color: var(--color-teal-700, #0f766e);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
-      "line": 54,
-      "type": "RAW_HEX",
-      "text": "color: var(--color-teal-800, #115e59);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
-      "line": 55,
-      "type": "RAW_HEX",
-      "text": "outline: 2px solid var(--color-teal-300, #5eead4);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
+      "file": "src/components/layout/ListDetailLayout.tsx",
       "line": 84,
-      "type": "RAW_HEX",
-      "text": "background: var(--color-teal-50, #f0fdfa);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
-      "line": 89,
-      "type": "RAW_HEX",
-      "text": "background: var(--color-teal-100, #ccfbf1);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
-      "line": 91,
-      "type": "RAW_HEX",
-      "text": "border-color: var(--color-teal-300, #5eead4);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
-      "line": 95,
-      "type": "RAW_HEX",
-      "text": "outline: 2px solid var(--color-teal-400, #2dd4bf);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
-      "line": 145,
-      "type": "RAW_HEX",
-      "text": "color: var(--color-teal-600, #0d9488);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
-      "line": 164,
-      "type": "RAW_HEX",
-      "text": "color: var(--color-teal-700, #0f766e);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
-      "line": 172,
-      "type": "RAW_HEX",
-      "text": "background: var(--color-teal-50, #f0fdfa);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
-      "line": 173,
-      "type": "RAW_HEX",
-      "text": "border: 1.5px solid var(--color-teal-200, #99f6e4);"
-    },
-    {
-      "file": "src/components/layout/public-shell.css",
-      "line": 177,
-      "type": "RAW_HEX",
-      "text": "color: var(--color-teal-800, #115e59);"
+      "type": "ARBITRARY_BRACKET",
+      "text": "className=\"list-detail-layout__detail flex-1 overflow-y-auto bg-[var(--color-gray-50)]\""
     }
   ]
 }

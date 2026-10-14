@@ -107,7 +107,7 @@ export default function RecurringPage() {
         )}
 
         {(query.data ?? []).length > 0 && (
-          <Button variant="none" type="button" className="expense-add-btn" onClick={openAdd} style={{ marginTop: '0.5rem' }}>
+          <Button variant="outline" type="button" className="expense-add-btn mt-2" onClick={openAdd}>
             <Plus size={14} aria-hidden="true" /> {t.expensesRecurringAddAction ?? 'Add Recurring'}
           </Button>
         )}

@@ -137,8 +137,8 @@ export function ShareLinksSection({ documentId, documentNumber }: ShareLinksSect
       {/* ── 4 states: loading | error | empty | list ── */}
       {isLoading && (
         <div aria-busy="true" aria-label="Loading links">
-          <div className="share-links__skeleton-row" style={{ marginTop: 'var(--space-4)' }} />
-          <div className="share-links__skeleton-row" style={{ marginTop: 'var(--space-2)' }} />
+          <div className="share-links__skeleton-row mt-4" />
+          <div className="share-links__skeleton-row mt-2" />
         </div>
       )}
 

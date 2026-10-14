@@ -14,14 +14,6 @@ interface RoleTemplatePillsProps {
   onClearPermissions: () => void
 }
 
-const LABEL_STYLE: React.CSSProperties = {
-  fontSize: 'var(--fs-xs)',
-  fontWeight: 600,
-  color: 'var(--color-gray-600)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-}
-
 export function RoleTemplatePills({
   systemRoles,
   onCloneTemplate,
@@ -29,16 +21,17 @@ export function RoleTemplatePills({
 }: RoleTemplatePillsProps) {
   const { t } = useLanguage()
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-      <Text style={LABEL_STYLE}>{t.startFromTemplate}</Text>
-      <div className="role-template-pills">
+    <div className="flex flex-col gap-2">
+      <Text className="text-xs font-semibold text-[var(--color-gray-600)] uppercase tracking-wider">{t.startFromTemplate}</Text>
+      <div className="flex flex-wrap gap-2">
         {TEMPLATE_NAMES.map((name) => {
           const templateRole = systemRoles.find((r) => r.name === name)
           return (
-            <Button variant="none"
+            <Button
               key={name}
               type="button"
-              className="role-template-pill"
+              variant="outline"
+              size="sm"
               onClick={() => {
                 if (templateRole !== undefined) {
                   onCloneTemplate(templateRole)
@@ -51,9 +44,10 @@ export function RoleTemplatePills({
             </Button>
           )
         })}
-        <Button variant="none"
+        <Button
           type="button"
-          className="role-template-pill"
+          variant="outline"
+          size="sm"
           onClick={onClearPermissions}
           aria-label={t.startFromBlankDesc}
         >

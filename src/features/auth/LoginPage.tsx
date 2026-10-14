@@ -76,8 +76,7 @@ export default function LoginPage() {
           <BrandLogo
             variant="horizontal"
             size={48}
-            className="login-page__brand-logo"
-            style={{ maxWidth: '210px', height: 'auto', margin: '0 auto 8px auto', display: 'block' }}
+            className="login-page__brand-logo mx-auto mb-2 block max-w-[210px] h-auto"
           />
           <Heading level={1} className="login-page__title sr-only">{APP_NAME}</Heading>
           <Text className="login-page__subtitle">{t.signInToAccount}</Text>

@@ -92,11 +92,7 @@ export function ResponsiveTable<T>({
           <button
             key={rowKey(row)}
             type="button"
-            className="w-full text-left rounded-xl p-4 border min-h-11"
-            style={{
-              backgroundColor: 'var(--color-gray-0)',
-              borderColor: 'var(--color-gray-100)',
-            }}
+            className="w-full text-left rounded-xl p-4 border border-[var(--color-gray-100)] bg-[var(--color-gray-0)] min-h-11"
             onClick={onRowClick ? () => onRowClick(row) : undefined}
             disabled={!onRowClick}
           >
@@ -104,14 +100,12 @@ export function ResponsiveTable<T>({
               {columns.filter((c) => !c.mobileHide).map((col) => (
                 <div key={col.key} className="flex items-baseline justify-between gap-3">
                   <dt
-                    className="text-xs font-medium shrink-0"
-                    style={{ color: 'var(--text-muted)' }}
+                    className="text-xs font-medium shrink-0 text-[var(--text-muted)]"
                   >
                     {col.header}
                   </dt>
                   <dd
-                    className="text-sm text-right min-w-0 truncate"
-                    style={{ color: 'var(--text-primary)' }}
+                    className="text-sm text-right min-w-0 truncate text-[var(--text-primary)]"
                   >
                     {col.render(row)}
                   </dd>
@@ -126,16 +120,14 @@ export function ResponsiveTable<T>({
       <div className={`${alwaysTable ? 'block' : 'hidden md:block'} overflow-x-auto`}>
         <table className="w-full text-sm">
           <thead
-            className="sticky top-0 z-10"
-            style={{ backgroundColor: 'var(--color-gray-50)' }}
+            className="sticky top-0 z-10 bg-[var(--color-gray-50)]"
           >
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
                   scope="col"
-                  className={`${cellPad} font-medium text-${col.align ?? 'left'} ${col.width ?? ''}`}
-                  style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--color-gray-100)' }}
+                  className={`${cellPad} font-medium text-${col.align ?? 'left'} ${col.width ?? ''} text-[var(--text-secondary)] border-b border-[var(--color-gray-100)]`}
                 >
                   {col.header}
                 </th>
@@ -146,15 +138,13 @@ export function ResponsiveTable<T>({
             {rows.map((row, i) => (
               <tr
                 key={rowKey(row)}
-                className={onRowClick ? 'cursor-pointer hover:bg-gray-50' : ''}
-                style={zebra && i % 2 === 1 ? { backgroundColor: 'var(--color-gray-50)' } : undefined}
+                className={`${onRowClick ? 'cursor-pointer hover:bg-gray-50' : ''} ${zebra && i % 2 === 1 ? 'bg-[var(--color-gray-50)]' : ''}`}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
                 {columns.map((col) => (
                   <td
                     key={col.key}
-                    className={`${cellPad} text-${col.align ?? 'left'}${col.align === 'right' ? ' tabular-nums' : ''}`}
-                    style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--color-gray-100)' }}
+                    className={`${cellPad} text-${col.align ?? 'left'}${col.align === 'right' ? ' tabular-nums' : ''} text-[var(--text-primary)] border-b border-[var(--color-gray-100)]`}
                   >
                     {col.render(row)}
                   </td>
@@ -174,8 +164,7 @@ function TableSkeleton<T>({ columns, rows }: { columns: TableColumn<T>[]; rows: 
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}
-          className="h-12 rounded-md animate-pulse"
-          style={{ backgroundColor: 'var(--color-gray-100)' }}
+          className="h-12 rounded-md animate-pulse bg-[var(--color-gray-100)]"
         />
       ))}
       <span className="sr-only">Loading {columns.length} columns</span>

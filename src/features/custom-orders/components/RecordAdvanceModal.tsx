@@ -61,36 +61,23 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
       role="dialog"
       aria-label={t.coRecordAdvanceAria}
       aria-modal="true"
-      style={{
-        position: 'fixed', inset: 0, zIndex: 'var(--z-modal)' as unknown as number,
-        display: 'flex', alignItems: 'flex-end', background: 'rgba(0,0,0,0.4)',
-      }}
+      className="fixed inset-0 z-[var(--z-modal)] flex items-end bg-black/40"
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div
-        style={{
-          width: '100%',
-          maxWidth: 480,
-          margin: '0 auto',
-          background: 'var(--color-surface)',
-          borderRadius: '16px 16px 0 0',
-          padding: 'var(--space-5)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 'var(--space-4)',
-        }}
+        className="w-full max-w-[480px] mx-auto bg-[var(--color-surface)] rounded-t-2xl p-5 flex flex-col gap-4"
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Heading level={2} style={{ margin: 0, fontSize: 'var(--fs-md)', fontWeight: 700, color: 'var(--color-text)' }}>
+        <div className="flex items-center justify-between">
+          <Heading level={2} className="m-0 text-base font-bold text-[var(--color-text)]">
             {t.coRecordAdvance}
           </Heading>
-          <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label={t.close} style={{ minHeight: 44, minWidth: 44 }}>
+          <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label={t.close} className="min-h-[44px] min-w-[44px]">
             <X size={18} aria-hidden="true" />
           </Button>
         </div>
 
-        <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+        <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
             <label className="label" htmlFor="adv-amount">{t.coAmountRequired} *</label>
             <Input
               id="adv-amount"
@@ -107,7 +94,7 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
             {error && <span className="field-error" role="alert">{error}</span>}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+          <div className="flex flex-col gap-1">
             <label className="label" htmlFor="adv-method">{t.coPaymentMethod}</label>
             <Select value={method} onValueChange={setMethod} ariaLabel={t.coPaymentMethod}>
               {ADVANCE_METHODS.map((m) => (
@@ -116,7 +103,7 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
             </Select>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+          <div className="flex flex-col gap-1">
             <label className="label" htmlFor="adv-ref">{t.coReference}</label>
             <Input
               id="adv-ref"
@@ -129,7 +116,7 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
             />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+          <div className="flex flex-col gap-1">
             <label className="label" htmlFor="adv-notes">{t.coNotesOptional}</label>
             <Input
               id="adv-notes"
@@ -145,7 +132,7 @@ export function RecordAdvanceModal({ orderId, orderTitle, onClose }: RecordAdvan
             type="submit"
             variant="primary" size="lg"
             disabled={isPending}
-            style={{ minHeight: 48, width: '100%' }}
+            className="min-h-[48px] w-full"
           >
             {isPending ? t.coRecording : t.coRecordAdvance}
           </Button>

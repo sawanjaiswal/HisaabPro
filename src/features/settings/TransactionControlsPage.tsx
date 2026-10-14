@@ -2,6 +2,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ErrorState } from '@/components/feedback/ErrorState'
+import { Skeleton } from '@/components/feedback/Skeleton'
 import { ROUTES } from '@/config/routes.config'
 import { useLanguage } from '@/hooks/useLanguage'
 import { LockPeriodSection } from './components/LockPeriodSection'
@@ -21,11 +22,12 @@ export default function TransactionControlsPage() {
       <PageContainer className="txn-controls-page stagger-enter space-y-6">
 
         {status === 'loading' && (
-          <div aria-busy="true" aria-label={t.couldNotLoadSettings}>
+          <div aria-busy="true" aria-label={t.couldNotLoadSettings} className="space-y-2">
             {[1, 2, 3, 4].map((n) => (
-              <div
+              <Skeleton
                 key={n}
-                style={{ height: 60, marginBottom: 'var(--space-2)', borderRadius: 'var(--radius-lg)', background: 'var(--color-gray-100)', opacity: 0.5 }}
+                height="3.75rem"
+                borderRadius="var(--radius-lg)"
               />
             ))}
           </div>

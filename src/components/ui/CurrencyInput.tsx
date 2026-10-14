@@ -107,8 +107,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
 
           <div className="flex items-center justify-center gap-1.5 my-1">
             <span
-              className="text-4xl sm:text-6xl font-bold select-none leading-none"
-              style={{ color: 'var(--color-primary-600)' }}
+              className="text-4xl sm:text-6xl font-bold select-none leading-none text-primary-600"
             >
               ₹
             </span>
@@ -120,12 +119,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
               pattern="[0-9]*[.]?[0-9]*"
               placeholder="0"
               disabled={disabled}
-              className="w-56 sm:w-72 bg-transparent border-0 text-center text-5xl sm:text-6xl font-black focus:outline-none tabular-nums p-0 shadow-none disabled:opacity-50"
-              style={{
-                color: 'var(--text-primary)',
-                fontFamily: 'var(--font-primary)',
-                letterSpacing: '-0.03em',
-              }}
+              className="w-56 sm:w-72 bg-transparent border-0 text-center text-5xl sm:text-6xl font-black focus:outline-none tabular-nums p-0 shadow-none disabled:opacity-50 text-[var(--text-primary)] font-primary tracking-[-0.03em]"
               value={displayValue}
               onChange={handleInputChange}
               aria-label={label || 'Amount'}
@@ -138,14 +132,11 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
                 <Button
                   key={q}
                   type="button"
-                  variant="none"
+                  variant="outline"
+                  size="sm"
                   disabled={disabled}
                   onClick={() => handleQuickAdd(q)}
-                  className="px-3 py-1 rounded-full text-xs font-semibold transition-all hover:opacity-80 active:scale-95 cursor-pointer"
-                  style={{
-                    backgroundColor: 'var(--color-gray-100)',
-                    color: 'var(--text-secondary)',
-                  }}
+                  className="px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-gray-100)] text-[var(--text-secondary)] border-0"
                 >
                   +{formatRupees(q * 100)}
                 </Button>

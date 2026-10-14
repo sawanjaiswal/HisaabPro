@@ -92,8 +92,8 @@ export function PriceListEntryFormDrawer({
   const valueLabel = mode === 'PERCENT_OFF' ? t.plValueLabelPct : mode === 'FIXED_OFF' ? t.plValueLabelFlat : t.plValueLabelFixed
 
   const footer = (
-    <div style={{ display: 'flex', gap: 'var(--space-2)', padding: 'var(--space-4)' }}>
-      <Button variant="none" type="button" className="btn btn-outline flex-1" onClick={onClose}>{t.cancel}</Button>
+    <div className="flex gap-2 p-4">
+      <Button variant="outline" type="button" className="flex-1" onClick={onClose}>{t.cancel}</Button>
       <Button type="submit" form="pl-entry-form" variant="primary" className="flex-1" disabled={isLoading} aria-busy={isLoading}>
         {isLoading ? t.saving : t.save}
       </Button>

@@ -75,9 +75,9 @@ export function UpiIdInput({ initialValue, onSaved }: UpiIdInputProps) {
   const isDirty = value.trim() !== (initialValue ?? '')
 
   return (
-    <div className="settings-group" style={{ gap: 'var(--space-2)' }}>
+    <div className="settings-group gap-2">
       <label className="settings-item-label" htmlFor="upi-vpa-input">
-        <Smartphone size={14} aria-hidden="true" style={{ verticalAlign: 'middle', marginRight: 4 }} />
+        <Smartphone size={14} aria-hidden="true" className="inline-block mr-1 align-middle" />
         {t.upiVpaSettingsLabel}
       </label>
       <Input

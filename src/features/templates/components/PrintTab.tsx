@@ -73,20 +73,19 @@ export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) =
 
     <Section title={t.printOptionsSection}>
       <ControlRow label={t.copiesLabel}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+        <div className="flex items-center gap-2">
           <Button
             type="button"
-            variant="none"
-            className="template-segmented-btn"
+            variant="outline"
+            size="icon"
             aria-label={t.decreaseCopies}
             disabled={printSettings.copies <= 1}
             onClick={() => onChange({ copies: Math.max(1, printSettings.copies - 1) })}
-            style={{ minWidth: 44, minHeight: 44, fontWeight: 700 }}
           >
             −
           </Button>
           <span
-            style={{ minWidth: 32, textAlign: 'center', fontWeight: 600, fontSize: 'var(--fs-base)' }}
+            className="min-w-[32px] text-center font-semibold text-base"
             aria-live="polite"
             aria-label={`${printSettings.copies} ${t.copiesCountAria}`}
           >
@@ -94,12 +93,11 @@ export const PrintTab: React.FC<PrintTabProps> = ({ printSettings, onChange }) =
           </span>
           <Button
             type="button"
-            variant="none"
-            className="template-segmented-btn"
+            variant="outline"
+            size="icon"
             aria-label={t.increaseCopies}
             disabled={printSettings.copies >= MAX_COPIES}
             onClick={() => onChange({ copies: Math.min(MAX_COPIES, printSettings.copies + 1) })}
-            style={{ minWidth: 44, minHeight: 44, fontWeight: 700 }}
           >
             +
           </Button>

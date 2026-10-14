@@ -99,11 +99,11 @@ export function PendingCardSkeleton() {
     <div className="pending-card pending-card--skeleton" aria-busy="true" aria-label="Loading pending expense">
       <div className="pending-card__icon pending-card__skel-block pending-card__skel-circle" />
       <div className="pending-card__info">
-        <div className="pending-card__skel-block" style={{ width: '7rem', height: '0.875rem' }} />
-        <div className="pending-card__skel-block" style={{ width: '5rem', height: '0.75rem', marginTop: '0.25rem' }} />
+        <div className="pending-card__skel-block w-28 h-3.5" />
+        <div className="pending-card__skel-block w-20 h-3 mt-1" />
       </div>
       <div className="pending-card__right">
-        <div className="pending-card__skel-block" style={{ width: '4rem', height: '1rem' }} />
+        <div className="pending-card__skel-block w-16 h-4" />
       </div>
     </div>
   )

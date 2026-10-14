@@ -41,28 +41,20 @@ export function CustomOrderAdvancesList({
   const { mutate: doDelete, isPending } = useDeleteAdvance()
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+    <div className="flex flex-col gap-3">
       {advances.length === 0 ? (
-        <Text style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--fs-sm)', margin: 0 }}>
+        <Text className="text-secondary text-sm m-0">
           {t.coNoAdvances}
         </Text>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+        <div className="flex flex-col gap-2">
           {advances.map((adv) => (
             <div
               key={adv.id}
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'space-between',
-                gap: 'var(--space-2)',
-                padding: 'var(--space-2) var(--space-3)',
-                background: 'var(--color-surface-muted)',
-                borderRadius: 8,
-              }}
+              className="flex items-start justify-between gap-2 p-2 px-3 bg-[var(--color-surface-muted)] rounded-lg"
             >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <span style={{ fontWeight: 600, fontSize: 'var(--fs-sm)', color: 'var(--color-text)' }}>
+              <div className="flex flex-col gap-0.5">
+                <span className="font-semibold text-sm text-[var(--color-text)]">
                   ₹{formatPaise(adv.amountPaise)}
                 </span>
                 <span className="text-xs text-[var(--text-secondary)]">
@@ -73,7 +65,7 @@ export function CustomOrderAdvancesList({
                   {new Date(adv.receivedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </span>
                 {adv.notes && (
-                  <span style={{ fontSize: 'var(--fs-xs)', color: 'var(--color-text-secondary)', fontStyle: 'italic' }}>
+                  <span className="text-xs text-[var(--color-text-secondary)] italic">
                     {adv.notes}
                   </span>
                 )}
@@ -85,7 +77,7 @@ export function CustomOrderAdvancesList({
                   onClick={() => doDelete({ orderId, advanceId: adv.id, title: orderTitle })}
                   disabled={isPending}
                   aria-label={`${t.coRemoveAdvanceAria} ₹${formatPaise(adv.amountPaise)}`}
-                  style={{ minHeight: 44, minWidth: 44, color: 'var(--color-error-600)' }}
+                  className="min-h-[44px] min-w-[44px] text-red-600"
                 >
                   <Trash2 size={15} aria-hidden="true" />
                 </Button>
@@ -96,16 +88,16 @@ export function CustomOrderAdvancesList({
       )}
 
       {advances.length > 0 && (
-        <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 'var(--space-2)', display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', alignItems: 'flex-end' }}>
-          <div style={{ display: 'flex', gap: 'var(--space-3)', fontSize: 'var(--fs-sm)', color: 'var(--color-text-secondary)' }}>
+        <div className="border-t border-[var(--color-border)] pt-2 flex flex-col gap-1 items-end">
+          <div className="flex gap-3 text-sm text-[var(--color-text-secondary)]">
             <span>{t.coOrderTotal}</span>
             <span>₹{formatPaise(totalPaise)}</span>
           </div>
-          <div style={{ display: 'flex', gap: 'var(--space-3)', fontSize: 'var(--fs-sm)', color: 'var(--color-success-700)' }}>
+          <div className="flex gap-3 text-sm text-[var(--color-success-700)]">
             <span>{t.coAdvancePaid}</span>
             <span>-₹{formatPaise(advancePaise)}</span>
           </div>
-          <div style={{ display: 'flex', gap: 'var(--space-3)', fontSize: 'var(--fs-md)', fontWeight: 700, color: balancePaise > 0 ? 'var(--color-warning-700)' : 'var(--color-success-700)' }}>
+          <div className={`flex gap-3 text-base font-bold ${balancePaise > 0 ? 'text-[var(--color-warning-700)]' : 'text-[var(--color-success-700)]'}`}>
             <span>{t.coBalanceDue}</span>
             <span>₹{formatPaise(balancePaise)}</span>
           </div>

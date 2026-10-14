@@ -49,7 +49,7 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
 
   return (
     <BottomActionBar
-      className="!bg-[var(--color-surface)] !backdrop-blur-md !rounded-t-2xl !border-t !border-[var(--color-border)] !shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08)] !px-4 !pt-3 !pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] flex-col"
+      className="!bg-[var(--color-surface)] !backdrop-blur-md !rounded-t-2xl !border-t !border-[var(--color-border)] !shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08)] !px-4 !pt-3 flex-col"
       aria-label={t.invoiceTotalsAriaLabel}
     >
       <div className="w-full max-w-lg mx-auto flex items-center justify-between gap-3">
@@ -67,24 +67,25 @@ export const InvoiceTotalsBar: React.FC<InvoiceTotalsBarProps> = ({
         <div className="flex items-center gap-2">
           <Button
             type="button"
-            variant="none"
+            variant="outline"
+            size="sm"
             onClick={onSaveDraft}
             disabled={isSubmitting}
             aria-label={t.saveDraftAriaLabel}
-            className="bg-[var(--color-gray-100)] hover:bg-[var(--color-gray-200)] text-[var(--color-text-secondary)] font-bold text-xs px-3.5 py-2.5 rounded-xl border-0 transition-all cursor-pointer"
           >
             {t.saveDraft || 'Save Draft'}
           </Button>
 
           <Button
             type="button"
-            variant="none"
+            variant="primary"
+            size="sm"
             onClick={onPreview ?? onSave}
             disabled={isSubmitting}
             aria-label={
               onPreview ? (t.previewInvoice || 'Preview Invoice') : isSubmitting ? t.savingInvoice : t.saveInvoice
             }
-            className="bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 border-0"
+            className="flex items-center gap-1.5"
           >
             <span>{onPreview ? (t.previewInvoice || 'Preview Invoice') : isSubmitting ? t.saving : t.save}</span>
             <ArrowRight size={15} aria-hidden="true" />

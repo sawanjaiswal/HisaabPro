@@ -1,9 +1,7 @@
 /** CampaignDetailPage — /marketing/campaigns/:id — detail + cancel */
 
-import { Text } from '@/components/ui/Text'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { RefreshCw } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
 import { useCampaignDetail, useCancelCampaign } from '../hooks/useCampaigns'
 import { CampaignStatusBadge } from '../components/CampaignStatusBadge'
@@ -12,25 +10,28 @@ import { RecipientTable } from '../components/RecipientTable'
 import { MARKETING_ROUTES } from '../marketing.constants'
 import { formatDate, formatPaiseAsRupees, formatScheduledAt } from '../marketing.utils'
 import { Button } from '@/components/ui/Button'
-import { Heading } from '@/components/ui/Heading'
+import { Card } from '@/components/ui/Card'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { Skeleton } from '@/components/ui/Skeleton'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { AppShell } from '@/components/layout/AppShell'
 import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 
 function Stat({ label, value, color }: { label: string; value: string | number; color?: string }) {
   return (
-    <div style={{ flex: '1 1 80px', minWidth: 0, padding: '14px', borderRadius: '10px', background: 'white', border: '1px solid var(--color-gray-200)', textAlign: 'center' }}>
-      <div style={{ fontSize: '22px', fontWeight: 700, color: color ?? 'var(--color-gray-900)' }}>{value}</div>
-      <div style={{ fontSize: '11px', color: 'var(--color-gray-500)', marginTop: '2px' }}>{label}</div>
-    </div>
+    <Card className="flex-1 min-w-[80px] p-3.5 rounded-xl border border-border bg-card text-center shadow-2xs">
+      <div className="text-xl font-bold text-[var(--text-primary)]" style={color ? { color } : undefined}>{value}</div>
+      <div className="text-xs text-[var(--text-muted)] mt-0.5">{label}</div>
+    </Card>
   )
 }
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
-      <span style={{ color: 'var(--color-gray-500)' }}>{label}</span>
-      <span style={{ color: 'var(--color-gray-800)', fontWeight: 500 }}>{value}</span>
+    <div className="flex justify-between gap-3">
+      <span className="text-[var(--text-muted)]">{label}</span>
+      <span className="text-[var(--text-primary)] font-medium">{value}</span>
     </div>
   )
 }
@@ -47,10 +48,12 @@ export default function CampaignDetailPage() {
   if (status === 'loading') {
     return (
       <AppShell header={<Header title={t.marketingCampaignsTitle} backTo={MARKETING_ROUTES.CAMPAIGNS} />}>
-        <PageContainer className="py-4 pb-24 max-w-2xl mx-auto" aria-busy="true" aria-label={t.marketingLoadingCampaignAria}>
-          <div style={{ height: 48, borderRadius: 10, background: 'var(--color-gray-100)', marginBottom: 16, animation: 'pulse 1.5s infinite' }} />
-          <div style={{ display: 'flex', gap: 10 }}>
-            {[0, 1, 2].map((i) => <div key={i} style={{ flex: 1, height: 80, borderRadius: 10, background: 'var(--color-gray-100)', animation: 'pulse 1.5s infinite' }} />)}
+        <PageContainer className="py-4 pb-24 max-w-2xl mx-auto space-y-4" aria-busy="true" aria-label={t.marketingLoadingCampaignAria}>
+          <Skeleton className="h-12 w-full rounded-xl" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            {[0, 1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-20 rounded-xl" />
+            ))}
           </div>
         </PageContainer>
       </AppShell>
@@ -60,11 +63,12 @@ export default function CampaignDetailPage() {
   if (status === 'error' || !campaign) {
     return (
       <AppShell header={<Header title={t.marketingCampaignsTitle} backTo={MARKETING_ROUTES.CAMPAIGNS} />}>
-        <PageContainer className="py-8 text-center max-w-2xl mx-auto">
-          <div style={{ color: 'var(--color-error-600)', fontSize: '14px' }}>{t.marketingCampaignLoadFailed}</div>
-          <Button variant="none" type="button" onClick={refresh} style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', cursor: 'pointer', fontSize: '14px', minHeight: '44px' }}>
-            <RefreshCw size={14} aria-hidden="true" /> {t.marketingRetry}
-          </Button>
+        <PageContainer className="py-8 text-center max-w-2xl mx-auto space-y-3">
+          <ErrorState
+            title={t.marketingCampaignLoadFailed}
+            onRetry={refresh}
+            retryLabel={t.marketingRetry}
+          />
         </PageContainer>
       </AppShell>
     )
@@ -82,67 +86,60 @@ export default function CampaignDetailPage() {
       }
     >
       <PageContainer className="py-4 pb-24 max-w-2xl mx-auto">
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+        <div className="flex gap-2 mb-4 flex-wrap">
           <ChannelBadge channel={campaign.channel} />
           <CampaignStatusBadge status={campaign.status} />
         </div>
 
-      {/* Stats */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        <Stat label={t.marketingRecipients} value={campaign.recipientCount.toLocaleString('en-IN')} />
-        <Stat label={t.marketingSent} value={campaign.sentCount.toLocaleString('en-IN')} color="var(--color-success-600)" />
-        <Stat label={t.marketingDelivered} value={campaign.deliveredCount.toLocaleString('en-IN')} />
-        <Stat label={t.marketingFailedLabel} value={campaign.failedCount.toLocaleString('en-IN')} color={campaign.failedCount > 0 ? 'var(--color-error-600)' : undefined} />
-      </div>
-
-      {/* Meta */}
-      <div style={{ padding: '14px', borderRadius: '12px', background: 'var(--color-gray-50)', border: '1px solid var(--color-gray-200)', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
-          <Row label={t.marketingScheduleRow} value={formatScheduledAt(campaign.scheduledAt)} />
-          <Row label={t.marketingCost} value={campaign.totalCostPaise > 0 ? formatPaiseAsRupees(campaign.totalCostPaise) : '—'} />
-          <Row label={t.marketingCreated} value={formatDate(campaign.createdAt)} />
+        {/* Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5">
+          <Stat label={t.marketingRecipients} value={campaign.recipientCount.toLocaleString('en-IN')} />
+          <Stat label={t.marketingSent} value={campaign.sentCount.toLocaleString('en-IN')} color="var(--color-success-600)" />
+          <Stat label={t.marketingDelivered} value={campaign.deliveredCount.toLocaleString('en-IN')} />
+          <Stat label={t.marketingFailedLabel} value={campaign.failedCount.toLocaleString('en-IN')} color={campaign.failedCount > 0 ? 'var(--color-error-600)' : undefined} />
         </div>
-      </div>
 
-      {/* Recipients */}
-      <div style={{ marginBottom: '20px' }}>
-        <Heading level={2} style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-gray-700)', marginBottom: '10px' }}>{t.marketingRecipients}</Heading>
-        <RecipientTable campaignId={campaign.id} />
-      </div>
-
-      {/* Cancel */}
-      {canCancel && (
-        <Button variant="none"
-          type="button"
-          onClick={() => setConfirmCancel(true)}
-          style={{ display: 'block', width: '100%', padding: '13px', minHeight: '44px', borderRadius: '10px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
-        >
-          {t.marketingCancelCampaign}
-        </Button>
-      )}
-
-      {/* Confirm cancel dialog */}
-      {confirmCancel && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', background: 'rgba(0,0,0,0.5)' }} role="dialog" aria-modal="true" aria-labelledby="cancel-dialog-title">
-          <div style={{ width: '100%', maxWidth: 480, background: 'white', borderRadius: '20px 20px 0 0', padding: '24px 20px' }}>
-            <Heading level={3} id="cancel-dialog-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>{t.marketingCancelCampaignTitle}</Heading>
-            <Text style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>{t.marketingCancelCampaignDesc}</Text>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <Button variant="none" type="button" onClick={() => setConfirmCancel(false)} style={{ flex: 1, padding: '12px', minHeight: '44px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
-                {t.marketingKeepRunning}
-              </Button>
-              <Button variant="none"
-                type="button"
-                onClick={() => { setConfirmCancel(false); cancelMutation.mutate({ id: campaign.id, name: campaign.name }) }}
-                disabled={cancelMutation.isPending}
-                style={{ flex: 1, padding: '12px', minHeight: '44px', borderRadius: '10px', border: 'none', background: 'var(--color-error-600)', color: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
-              >
-                {cancelMutation.isPending ? t.marketingCancellingShort : t.marketingYesCancel}
-              </Button>
-            </div>
+        {/* Meta */}
+        <Card className="p-3.5 rounded-xl bg-[var(--color-gray-50)] border border-border mb-5">
+          <div className="flex flex-col gap-2 text-xs">
+            <Row label={t.marketingScheduleRow} value={formatScheduledAt(campaign.scheduledAt)} />
+            <Row label={t.marketingCost} value={campaign.totalCostPaise > 0 ? formatPaiseAsRupees(campaign.totalCostPaise) : '—'} />
+            <Row label={t.marketingCreated} value={formatDate(campaign.createdAt)} />
           </div>
+        </Card>
+
+        {/* Recipients */}
+        <div className="mb-5">
+          <h2 className="text-sm font-semibold text-[var(--text-primary)] mb-2.5">{t.marketingRecipients}</h2>
+          <RecipientTable campaignId={campaign.id} />
         </div>
-      )}
+
+        {/* Cancel */}
+        {canCancel && (
+          <Button
+            variant="destructive"
+            className="w-full mt-4"
+            onClick={() => setConfirmCancel(true)}
+          >
+            {t.marketingCancelCampaign}
+          </Button>
+        )}
+
+        {/* Confirm cancel dialog */}
+        <ConfirmDialog
+          open={confirmCancel}
+          onClose={() => setConfirmCancel(false)}
+          onConfirm={() => {
+            setConfirmCancel(false)
+            cancelMutation.mutate({ id: campaign.id, name: campaign.name })
+          }}
+          title={t.marketingCancelCampaignTitle}
+          description={t.marketingCancelCampaignDesc}
+          confirmLabel={cancelMutation.isPending ? t.marketingCancellingShort : t.marketingYesCancel}
+          cancelLabel={t.marketingKeepRunning}
+          isDanger={true}
+          isLoading={cancelMutation.isPending}
+        />
       </PageContainer>
     </AppShell>
   )

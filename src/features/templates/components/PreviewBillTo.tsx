@@ -16,21 +16,18 @@ export const PreviewBillTo: React.FC<PreviewBillToProps> = ({ fields, borderColo
 
   return (
     <div
-      style={{
-        padding: 'var(--space-3) var(--space-4)',
-        borderBottom: `1px solid ${borderColor}`,
-        fontSize: 'var(--fs-xs)',
-      }}
+      className="px-4 py-3 text-xs"
+      style={{ borderBottom: `1px solid ${borderColor}` }}
       aria-hidden="true"
     >
-      <div style={{ fontWeight: 600, color: 'var(--color-gray-500)', fontSize: 'var(--fs-xs)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
+      <div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
         {t.billTo}
       </div>
-      <div style={{ fontWeight: 600, color: 'var(--color-gray-800)' }}>{SAMPLE_PARTY.name}</div>
+      <div className="font-semibold text-foreground">{SAMPLE_PARTY.name}</div>
       {fields.customerPhone && (
-        <div style={{ color: 'var(--color-gray-500)' }}>{SAMPLE_PARTY.phone}</div>
+        <div className="text-muted-foreground">{SAMPLE_PARTY.phone}</div>
       )}
-      <div style={{ color: 'var(--color-gray-500)' }}>{SAMPLE_PARTY.address}</div>
+      <div className="text-muted-foreground">{SAMPLE_PARTY.address}</div>
     </div>
   )
 }
