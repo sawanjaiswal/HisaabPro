@@ -1,10 +1,10 @@
 /**
- * Bulk Product Add Modal — Spreadsheet & Fast Ingestion Studio
+ * Bulk Product Add Modal — Full View Fast Ingestion Studio
  * Ported & adapted from VaahanPro's SpeedGrid architecture.
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { X } from 'lucide-react'
+import { X, Table, LayoutGrid } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/Button'
 import { useToast } from '@/hooks/useToast'
@@ -14,8 +14,9 @@ import { getCategories } from '../category.service'
 import type { Unit, Category } from '../product.types'
 import type { BulkProductRow } from './bulk-product.types'
 import { parsePastedProductText } from './bulk-product-parser'
-import { validateBulkRow, commitBulkProducts } from './bulk-product.service'
+import { validateBulkRow, commitBulkProducts, createBlankRow } from './bulk-product.service'
 import { BulkProductRowItem } from './BulkProductRowItem'
+import { BulkProductCardItem } from './BulkProductCardItem'
 import { BulkProductToolbar } from './BulkProductToolbar'
 import './bulk-product.css'
 
@@ -23,10 +24,6 @@ interface BulkProductAddModalProps {
   isOpen: boolean
   onClose: () => void
   onSuccess: () => void
-}
-
-function createBlankRow(defaultUnitId: string, idx = 0): BulkProductRow {
-  return { id: `row_${Date.now()}_${Math.random().toString(36).substring(2, 6)}_${idx}`, name: '', unitId: defaultUnitId, salePrice: '', purchasePrice: '', openingStock: '0', minStockLevel: '0' }
 }
 
 export const BulkProductAddModal: React.FC<BulkProductAddModalProps> = ({ isOpen, onClose, onSuccess }) => {
@@ -39,6 +36,7 @@ export const BulkProductAddModal: React.FC<BulkProductAddModalProps> = ({ isOpen
   const [pasteText, setPasteText] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [progress, setProgress] = useState<{ current: number; total: number } | null>(null)
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards')
   const defaultUnitId = units[0]?.id ?? ''
 
   useEffect(() => {
@@ -77,10 +75,7 @@ export const BulkProductAddModal: React.FC<BulkProductAddModalProps> = ({ isOpen
       toast.error('No valid products detected in pasted text')
       return
     }
-    setRows((prev) => {
-      const nonEmpty = prev.filter((r) => r.name.trim() !== '')
-      return [...nonEmpty, ...parsed]
-    })
+    setRows((prev) => [...prev.filter((r) => r.name.trim() !== ''), ...parsed])
     setPasteText('')
     setIsPasting(false)
     toast.success(`Parsed ${parsed.length} products from clipboard`)
@@ -92,17 +87,12 @@ export const BulkProductAddModal: React.FC<BulkProductAddModalProps> = ({ isOpen
       if (text?.trim()) {
         const parsed = parsePastedProductText(text, units, categories, defaultUnitId)
         if (parsed.length > 0) {
-          setRows((prev) => {
-            const nonEmpty = prev.filter((r) => r.name.trim() !== '')
-            return [...nonEmpty, ...parsed]
-          })
+          setRows((prev) => [...prev.filter((r) => r.name.trim() !== ''), ...parsed])
           toast.success(`Imported ${parsed.length} products from clipboard!`)
           return
         }
       }
-    } catch {
-      // Fallback to manual text box
-    }
+    } catch { /* Fallback */ }
     setIsPasting(true)
   }
 
@@ -123,25 +113,15 @@ export const BulkProductAddModal: React.FC<BulkProductAddModalProps> = ({ isOpen
       toast.error('Please enter at least one valid product with name, unit, and price')
       return
     }
-
     setIsSubmitting(true)
     setProgress({ current: 0, total: validRows.length })
-
     try {
-      const result = await commitBulkProducts(validRows, (curr, tot) => {
-        setProgress({ current: curr, total: tot })
-      })
-
+      const res = await commitBulkProducts(validRows, (c, t) => setProgress({ current: c, total: t }))
       queryClient.invalidateQueries({ queryKey: queryKeys.products.all() })
-
-      if (result.failed === 0) {
-        toast.success(`Successfully added all ${result.succeeded} products!`)
-        onSuccess()
-        onClose()
-      } else {
-        toast.error(`Added ${result.succeeded} products, but ${result.failed} failed: ${result.failedNames.slice(0, 3).join(', ')}`)
-        onSuccess()
-      }
+      if (res.failed === 0) toast.success(`Successfully added all ${res.succeeded} products!`)
+      else toast.error(`Added ${res.succeeded} products, ${res.failed} failed: ${res.failedNames.slice(0, 3).join(', ')}`)
+      onSuccess()
+      onClose()
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Bulk import failed')
     } finally {
@@ -153,84 +133,108 @@ export const BulkProductAddModal: React.FC<BulkProductAddModalProps> = ({ isOpen
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/60 backdrop-blur-sm">
-      <div className="bulk-product-modal bg-[var(--color-gray-0)] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-        <div className="bulk-product-header">
-          <div>
-            <h2 className="text-xl font-bold text-[var(--text-primary)]">Bulk Add Products</h2>
-            <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-              Enter multiple products or paste directly from Excel / Google Sheets
-            </p>
-          </div>
-          <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close modal">
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[var(--color-gray-0)] w-full h-full overflow-hidden">
+      <div className="bulk-product-header shrink-0">
+        <div>
+          <h2 className="text-lg md:text-xl font-bold text-[var(--text-primary)]">Bulk Add Products</h2>
+          <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+            Enter multiple products or paste directly from spreadsheets
+          </p>
+        </div>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setViewMode(viewMode === 'cards' ? 'table' : 'cards')}
+            title={viewMode === 'cards' ? 'Switch to Spreadsheet Table' : 'Switch to Mobile Cards'}
+            aria-label="Toggle view layout"
+          >
+            {viewMode === 'cards' ? <Table size={18} /> : <LayoutGrid size={18} />}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close">
             <X size={20} aria-hidden="true" />
           </Button>
         </div>
+      </div>
 
-        <BulkProductToolbar
-          onPasteClick={handleDirectClipboardPaste}
-          onAddRows={handleAddRows}
-          onClearEmpty={handleClearEmpty}
-          validCount={validCount}
-          invalidCount={invalidCount}
-          isPasting={isPasting}
-          pasteText={pasteText}
-          onPasteTextChange={setPasteText}
-          onCancelPaste={() => setIsPasting(false)}
-          onApplyPaste={handleParseAndApplyPaste}
-        />
+      <BulkProductToolbar
+        onPasteClick={handleDirectClipboardPaste}
+        onAddRows={handleAddRows}
+        onClearEmpty={handleClearEmpty}
+        validCount={validCount}
+        invalidCount={invalidCount}
+        isPasting={isPasting}
+        pasteText={pasteText}
+        onPasteTextChange={setPasteText}
+        onCancelPaste={() => setIsPasting(false)}
+        onApplyPaste={handleParseAndApplyPaste}
+      />
 
-        <div className="bulk-product-table-wrap">
-          <table className="bulk-product-table">
-            <thead>
-              <tr>
-                <th className="w-10 text-center">#</th>
-                <th>Product Name *</th>
-                <th>Unit *</th>
-                <th>Sale Price (₹) *</th>
-                <th>Purchase (₹)</th>
-                <th>Stock</th>
-                <th>Category</th>
-                <th>SKU</th>
-                <th className="w-12 text-center"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, idx) => (
-                <BulkProductRowItem
-                  key={row.id}
-                  index={idx}
-                  row={row}
-                  units={units}
-                  categories={categories}
-                  onChange={handleRowChange}
-                  onDelete={handleDeleteRow}
-                />
-              ))}
-            </tbody>
-          </table>
+      <div className="flex-1 overflow-y-auto p-3 md:p-6 pb-28">
+        {viewMode === 'cards' ? (
+          <div className="space-y-3 max-w-3xl mx-auto">
+            {rows.map((row, idx) => (
+              <BulkProductCardItem
+                key={row.id}
+                index={idx}
+                row={row}
+                units={units}
+                categories={categories}
+                onChange={handleRowChange}
+                onDelete={handleDeleteRow}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="bulk-product-table-wrap border border-[var(--color-gray-200)] rounded-xl overflow-x-auto bg-[var(--color-gray-0)]">
+            <table className="bulk-product-table">
+              <thead>
+                <tr>
+                  <th className="w-10 text-center">#</th>
+                  <th>Product Name *</th>
+                  <th>Unit *</th>
+                  <th>Sale Price (₹) *</th>
+                  <th>Purchase (₹)</th>
+                  <th>Stock</th>
+                  <th>Category</th>
+                  <th>SKU</th>
+                  <th className="w-12 text-center"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row, idx) => (
+                  <BulkProductRowItem
+                    key={row.id}
+                    index={idx}
+                    row={row}
+                    units={units}
+                    categories={categories}
+                    onChange={handleRowChange}
+                    onDelete={handleDeleteRow}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <div className="bulk-product-footer shrink-0">
+        <div className="text-xs text-[var(--text-secondary)] font-medium">
+          {progress ? `Saving (${progress.current}/${progress.total})...` : `${validCount} ready (${rows.length} rows)`}
         </div>
-
-        <div className="bulk-product-footer">
-          <div className="text-xs text-[var(--text-secondary)]">
-            {progress
-              ? `Saving products... (${progress.current} of ${progress.total})`
-              : `${rows.length} total rows entered`}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleCommit}
-              loading={isSubmitting}
-              disabled={validCount === 0 || isSubmitting}
-            >
-              Save {validCount > 0 ? `(${validCount})` : ''} Products
-            </Button>
-          </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleCommit}
+            loading={isSubmitting}
+            disabled={validCount === 0 || isSubmitting}
+          >
+            Save {validCount > 0 ? `(${validCount})` : ''} Products
+          </Button>
         </div>
       </div>
     </div>

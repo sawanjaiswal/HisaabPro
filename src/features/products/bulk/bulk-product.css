@@ -43,7 +43,7 @@
 
 .bulk-product-table th {
   position: sticky;
-  top: var(--header-height, 0);
+  inset-block-start: 0;
   z-index: 2;
   background: var(--color-gray-100);
   padding: var(--space-2) var(--space-3);

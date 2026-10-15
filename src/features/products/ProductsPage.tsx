@@ -42,7 +42,6 @@ export default function ProductsPage() {
   const [labelPrintOpen, setLabelPrintOpen] = useState(false)
   const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false)
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
-  const [bulkModalOpen, setBulkModalOpen] = useState(false)
 
   const { bulkActions, isBulkDeleting } = useProductBulkActions({
     selectedIds: bulk.selectedIds,
@@ -86,7 +85,7 @@ export default function ProductsPage() {
               <Button variant="ghost" size="sm" onClick={() => setScannerOpen(true)} aria-label={t.scanBarcode ?? 'Scan Barcode'}>
                 <Camera size={18} aria-hidden="true" />
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => setBulkModalOpen(true)} aria-label="Bulk Add Products" title="Bulk Add Products">
+              <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.PRODUCT_BULK)} aria-label="Bulk Add Products" title="Bulk Add Products">
                 <Table2 size={18} aria-hidden="true" />
               </Button>
               <Button variant="ghost" size="sm" onClick={() => navigate(ROUTES.IMPORTS)} aria-label={t.import ?? 'Import'}>
@@ -147,7 +146,7 @@ export default function ProductsPage() {
                   <Button variant="primary" size="md" onClick={goToCreate} aria-label={t.addFirstProduct}>
                     {t.addProduct}
                   </Button>
-                  <Button variant="outline" size="md" onClick={() => setBulkModalOpen(true)} aria-label="Bulk Add Products">
+                  <Button variant="outline" size="md" onClick={() => navigate(ROUTES.PRODUCT_BULK)} aria-label="Bulk Add Products">
                     <Table2 size={16} className="mr-1.5" aria-hidden="true" />
                     Bulk Add
                   </Button>
@@ -225,9 +224,6 @@ export default function ProductsPage() {
         labelPrintOpen={labelPrintOpen}
         onCloseLabelPrint={() => { setLabelPrintOpen(false); bulk.clear() }}
         selectedIds={Array.from(bulk.selectedIds)}
-        bulkModalOpen={bulkModalOpen}
-        onCloseBulkModal={() => setBulkModalOpen(false)}
-        onBulkSuccess={refresh}
       />
     </AppShell>
   )

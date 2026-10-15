@@ -3,7 +3,7 @@
  * Responsive spreadsheet & mobile card studio for multi-product creation.
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LayoutGrid, Table } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -151,7 +151,7 @@ export default function BulkAddProductsPage() {
         }
       />
 
-      <PageContainer variant="default" className="py-3 pb-36 space-y-4 max-w-5xl">
+      <PageContainer variant="detail" className="py-3 pb-36 space-y-4 max-w-5xl">
         <BulkProductToolbar
           onPasteClick={handleDirectPaste}
           onAddRows={handleAddRows}

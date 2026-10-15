@@ -7,7 +7,6 @@ import { ProductCategoryDrawer } from './ProductCategoryDrawer'
 import { ProductFilterDrawer } from './ProductFilterDrawer'
 import { BarcodeScanner } from '@/components/ui/BarcodeScanner'
 import { LabelPrintDialog } from '../label-print/LabelPrintDialog'
-import { BulkProductAddModal } from '../bulk/BulkProductAddModal'
 import type { ProductSortBy } from '../product.types'
 import type { ProductStatusFilter } from '@/lib/types/product.types'
 
@@ -31,9 +30,6 @@ interface ProductPageOverlaysProps {
   labelPrintOpen: boolean
   onCloseLabelPrint: () => void
   selectedIds: string[]
-  bulkModalOpen: boolean
-  onCloseBulkModal: () => void
-  onBulkSuccess: () => void
 }
 
 export const ProductPageOverlays: React.FC<ProductPageOverlaysProps> = ({
@@ -56,9 +52,6 @@ export const ProductPageOverlays: React.FC<ProductPageOverlaysProps> = ({
   labelPrintOpen,
   onCloseLabelPrint,
   selectedIds,
-  bulkModalOpen,
-  onCloseBulkModal,
-  onBulkSuccess,
 }) => {
   return (
     <>
@@ -83,11 +76,6 @@ export const ProductPageOverlays: React.FC<ProductPageOverlaysProps> = ({
       {labelPrintOpen && (
         <LabelPrintDialog productIds={selectedIds} onClose={onCloseLabelPrint} />
       )}
-      <BulkProductAddModal
-        isOpen={bulkModalOpen}
-        onClose={onCloseBulkModal}
-        onSuccess={onBulkSuccess}
-      />
     </>
   )
 }

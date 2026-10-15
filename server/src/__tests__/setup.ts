@@ -115,6 +115,23 @@ vi.mock('../middleware/rate-limit.js', () => {
   }
 })
 
+vi.mock('../middleware/rate-limit/index.js', () => {
+  const passthrough = (_req: unknown, _res: unknown, next: () => void) => next()
+  return {
+    apiRateLimiter: passthrough,
+    authRateLimiter: passthrough,
+    switchBusinessRateLimiter: passthrough,
+    otpRateLimiter: passthrough,
+    sensitiveRateLimiter: passthrough,
+    sensitiveMutationLimiter: passthrough,
+    couponValidateRateLimiter: passthrough,
+    couponIpRateLimiter: passthrough,
+    devLoginRateLimiter: passthrough,
+    userMutationLimiter: passthrough,
+    createRateLimiter: () => passthrough,
+  }
+})
+
 // Mock razorpay (not installed in test env)
 vi.mock('razorpay', () => ({
   default: vi.fn().mockImplementation(() => ({

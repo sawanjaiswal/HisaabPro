@@ -16,7 +16,7 @@ import { PlanGate } from '@/features/subscription/PlanGate'
 import {
   Login, Register, VerifyOtp, ForgotPassword, Onboarding, Dashboard, DashboardPreview,
   Parties, CreateParty, PartyDetail, EditParty, FollowUps,
-  Products, CreateProduct, Categories, StockAdjustments, ProductDetail, EditProduct,
+  Products, CreateProduct, BulkAddProducts, Categories, StockAdjustments, ProductDetail, EditProduct,
   Invoices, CreateInvoice, InvoiceDetail, EditInvoice, DraftInvoices,
   TemplateGallery, TemplateEditor,
   Payments, RecordPayment, PaymentDetail, EditPayment, Outstanding,
@@ -107,6 +107,7 @@ export function App() {
         <Route path={ROUTES.APPOINTMENT_DETAIL} element={<PageRoute><ProtectedRoute><AppointmentDetail /></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCTS} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><Products /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCT_NEW} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><CreateProduct /></PlanGate></ProtectedRoute></PageRoute>} />
+        <Route path={ROUTES.PRODUCT_BULK} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><BulkAddProducts /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCT_CATEGORIES} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><Categories /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.STOCK_ADJUSTMENTS} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><StockAdjustments /></PlanGate></ProtectedRoute></PageRoute>} />
         <Route path={ROUTES.PRODUCT_DETAIL} element={<PageRoute><ProtectedRoute><PlanGate feature="products" featureLabel="Products"><ProductDetail /></PlanGate></ProtectedRoute></PageRoute>} />

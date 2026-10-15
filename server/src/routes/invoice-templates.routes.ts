@@ -13,7 +13,7 @@ import { validate } from '../middleware/validate.js'
 import { auth } from '../middleware/auth.js'
 import { requirePermission } from '../middleware/permission.js'
 import { idempotencyCheck } from '../middleware/idempotency.js'
-import { userMutationLimiter } from '../middleware/rate-limit/index.js'
+import { userMutationLimiter } from '../middleware/rate-limit.js'
 import { sendSuccess, sendError } from '../lib/response.js'
 import { FEATURES } from '../config/features.js'
 import {
