@@ -56,13 +56,12 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
         local = await repo.list(filters)
       } catch {}
 
-      // Background SWR update (non-blocking)
-      void getParties(filters).catch(() => {})
-
-      if (local) {
+      if (local && (local.summary?.totalParties > 0 || local.parties.length > 0)) {
+        // Background SWR update (non-blocking)
+        void getParties(filters).catch(() => {})
         return local
       }
-      return getParties(filters)
+      return await getParties(filters)
     }
   )
 
@@ -96,35 +95,17 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
     }
   }, [rawData, accumulatedParties, removedIds])
 
-  // Track if local store has completed at least one sync to prevent false empty state on fresh install
-  const [hasHydrated, setHasHydrated] = useState<boolean>(true)
-  useEffect(() => {
-    import('@/db/schema').then(({ db }) => {
-      db.syncMeta.toCollection().first().then((meta) => {
-        if (!meta?.lastSyncTimestamp && (!rawData || rawData.parties.length === 0)) {
-          setHasHydrated(false)
-        } else {
-          setHasHydrated(true)
-        }
-      }).catch(() => {})
-    })
-  }, [rawData])
+  const status: Status = isLoading && !data ? 'loading' : error && !data ? 'error' : 'success'
 
-  const status: Status = (isLoading && !data) || (!hasHydrated && (!data || data.parties.length === 0))
-    ? 'loading'
-    : error
-      ? 'error'
-      : 'success'
-
-  // Show toast on fetch error
+  // Show toast on fetch error only when no local data is available
   const prevErrorRef = useRef<Error | null>(null)
   useEffect(() => {
-    if (error && error !== prevErrorRef.current) {
+    if (error && !data && error !== prevErrorRef.current) {
       prevErrorRef.current = error
       const message = error instanceof ApiError ? error.message : 'Failed to load parties'
       toast.error(message)
     }
-  }, [error, toast])
+  }, [error, data, toast])
 
   // Debounced search
   const [pendingSearch, setPendingSearch] = useState<string | null>(null)

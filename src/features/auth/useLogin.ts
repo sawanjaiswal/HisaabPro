@@ -33,17 +33,17 @@ export function useLogin() {
       const isDevId = ['admin', 'demo', 'reviewer', 'google', 'razorpay', 'test'].includes(cleanId)
       if (isDevId || AUTH_MODE === 'dev-login') {
         try {
-          return await authLib.devLogin(id.trim(), pass, captcha)
+          return await authLib.devLogin(cleanId, pass, captcha)
         } catch (err) {
           // If dev-login route fails or is disabled on remote server, attempt standard login
           try {
-            return await authLib.login(id.trim(), pass, captcha)
+            return await authLib.login(cleanId, pass, captcha)
           } catch {
             throw err
           }
         }
       }
-      return authLib.login(id, pass, captcha)
+      return authLib.login(cleanId, pass, captcha)
     },
     onSuccess: (result) => {
       retryCount.current = 0
@@ -147,16 +147,17 @@ export function useLogin() {
     handleLogin,
     handleDevLogin: async (devUser = 'admin', devPass = 'password123') => {
       if (mutation.isPending || connecting) return
+      const cleanUser = devUser.trim().toLowerCase()
       setError('')
       setConnecting(true)
-      setIdentifier(devUser)
+      setIdentifier(cleanUser)
       setPassword(devPass)
       try {
         let res
         try {
-          res = await authLib.devLogin(devUser, devPass)
+          res = await authLib.devLogin(cleanUser, devPass)
         } catch {
-          res = await authLib.login(devUser, devPass)
+          res = await authLib.login(cleanUser, devPass)
         }
         authLib.setCachedUser(res.user)
         authLib.setCachedBusinesses(res.businesses)

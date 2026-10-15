@@ -25,7 +25,7 @@ router.post(
     if (!result.verified) {
       logger.warn('auth.login_failed', { ip: req.ip, userAgent: req.headers['user-agent'] })
       recordFailedAttempt(req.ip ?? 'unknown')
-      sendError(res, result.message, 'LOGIN_FAILED', 400)
+      sendError(res, result.message || 'Invalid phone/email or password.', 'LOGIN_FAILED', 400)
       return
     }
 

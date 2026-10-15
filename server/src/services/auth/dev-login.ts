@@ -20,8 +20,9 @@ export async function devLogin(data: { username: string; password: string }) {
   // Closed testing: dev login always available. Replace with OTP flow post-launch.
 
   const { username, password } = data
+  const cleanUsername = username.trim().toLowerCase()
 
-  const creds = DEV_CREDENTIALS[username]
+  const creds = DEV_CREDENTIALS[cleanUsername]
   if (!creds) {
     return { verified: false, message: 'Invalid username or password' }
   }
@@ -84,7 +85,34 @@ export async function devLogin(data: { username: string; password: string }) {
   // Dev login always succeeds for valid credentials — reset attempts
   await resetLoginAttempts(user.id)
 
-  const businessId = await resolveUserBusinessId(user.id)
+  let businessId = await resolveUserBusinessId(user.id)
+  if (!businessId) {
+    const business = await prisma.business.create({
+      data: {
+        name: `${creds.name}'s Demo Store`,
+        phone: creds.phone,
+        businessType: 'RETAIL',
+        currencyCode: 'INR',
+        isActive: true,
+      },
+      select: { id: true },
+    })
+    await prisma.businessUser.create({
+      data: {
+        userId: user.id,
+        businessId: business.id,
+        role: 'owner',
+        status: 'ACTIVE',
+        isActive: true,
+      },
+    })
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastActiveBusinessId: business.id },
+    })
+    businessId = business.id
+  }
+
   const tokens = generateTokens(user.id, user.phone, businessId)
 
   return {

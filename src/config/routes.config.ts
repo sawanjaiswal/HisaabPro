@@ -22,6 +22,7 @@ export const ROUTES = {
   CRM_FOLLOWUPS: '/crm/follow-ups',
   PRODUCTS: '/products',
   PRODUCT_NEW: '/products/new',
+  PRODUCT_BULK: '/products/bulk',
   PRODUCT_CATEGORIES: '/products/categories',
   STOCK_ADJUSTMENTS: '/products/adjustments',
   PRODUCT_DETAIL: '/products/:id',

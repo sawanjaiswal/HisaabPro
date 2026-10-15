@@ -101,3 +101,15 @@ export async function commitBulkProducts(
 
   return { succeeded, failed, failedNames }
 }
+
+export function createBlankRow(defaultUnitId: string, idx = 0): BulkProductRow {
+  return {
+    id: `row_${Date.now()}_${Math.random().toString(36).substring(2, 6)}_${idx}`,
+    name: '',
+    unitId: defaultUnitId,
+    salePrice: '',
+    purchasePrice: '',
+    openingStock: '0',
+    minStockLevel: '0',
+  }
+}

@@ -3,6 +3,8 @@ import { NetworkDetector } from './NetworkDetector';
 import { CrossTabSyncBus } from './CrossTabSyncBus';
 import { api } from '../lib/api';
 import { hasCachedSession } from '../lib/auth';
+import { liveQueryBus } from '../domain/live-query-bus';
+import { hydrateLocalEntities } from './syncHydration';
 
 export type SyncStatus = 'IDLE' | 'SYNCING' | 'ERROR' | 'OFFLINE';
 
@@ -34,11 +36,14 @@ class SyncManagerImpl {
         }
       });
 
-      // Update pending count whenever new mutations arrive
+      // Update pending count whenever new mutations arrive or cross-tab sync completes
       CrossTabSyncBus.subscribe((event) => {
         if (event.type === 'MUTATION_ENQUEUED') {
           this.refreshPendingCount();
           if (hasCachedSession()) this.triggerSync();
+        } else if (event.type === 'SYNC_COMPLETED') {
+          this.refreshPendingCount();
+          liveQueryBus.invalidateAll();
         }
       });
 
@@ -135,50 +140,7 @@ class SyncManagerImpl {
       });
 
       if (pullRes?.changes) {
-        // Hydrate local database
-        const { parties, products } = pullRes.changes;
-
-        if (Array.isArray(parties) && parties.length > 0) {
-          await db.parties.bulkPut(
-            parties.map((p: any) => ({
-              id: p.id,
-              businessId: p.businessId,
-              name: p.name,
-              phone: p.phone,
-              type: p.type,
-              companyName: p.companyName,
-              gstin: p.gstin,
-              pan: p.pan,
-              outstandingBalance: p.outstandingBalance || 0,
-              isActive: p.isActive ?? true,
-              isDeleted: false,
-              version: p.version || 1,
-              createdAt: p.createdAt,
-              updatedAt: p.updatedAt,
-            }))
-          );
-        }
-
-        if (Array.isArray(products) && products.length > 0) {
-          await db.products.bulkPut(
-            products.map((p: any) => ({
-              id: p.id,
-              businessId: p.businessId,
-              name: p.name,
-              sku: p.sku,
-              unitId: p.unitId,
-              currentStock: p.currentStock || 0,
-              salePrice: p.salePrice || 0,
-              purchasePrice: p.purchasePrice || 0,
-              minStockLevel: p.minStockLevel || 0,
-              isActive: p.isActive ?? true,
-              isDeleted: p.isDeleted ?? false,
-              version: p.version || 1,
-              createdAt: p.createdAt,
-              updatedAt: p.updatedAt,
-            }))
-          );
-        }
+        await hydrateLocalEntities(pullRes.changes);
       }
 
       // Update sync metadata
@@ -203,6 +165,7 @@ class SyncManagerImpl {
         type: 'SYNC_COMPLETED',
         businessId: meta?.businessId || 'default',
       });
+      liveQueryBus.invalidateAll();
     } catch (err: any) {
       console.warn('[SyncManager] Sync failed:', err.message);
       this.lastError = err.message || 'Sync failed';

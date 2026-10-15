@@ -32,10 +32,11 @@ describe('useInvoices', () => {
     mockGetDocuments.mockResolvedValue(MOCK_RESPONSE)
   })
 
-  it('starts in loading state', () => {
+  it('starts in loading state', async () => {
     const { result } = renderHook(() => useInvoices({ type: 'SALE_INVOICE' }), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
+    await waitFor(() => expect(result.current.status).toBe('success'))
   })
 
   it('fetches documents on mount', async () => {

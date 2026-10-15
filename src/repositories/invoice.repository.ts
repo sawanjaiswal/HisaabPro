@@ -3,7 +3,7 @@ import { OutboxEngine } from '../sync/OutboxEngine';
 import { liveQueryBus } from '../domain/live-query-bus';
 import { SyncManager } from '../sync/SyncManager';
 import type { DocumentListResponse, DocumentFilters } from '../features/invoices/invoice.types';
-import type { DocumentSummary } from '../features/invoices/invoice-document.types';
+import { mapLocalDocToSummary } from './invoice.mapper';
 
 import { resolveCurrentBusinessId } from './repository.utils';
 
@@ -58,30 +58,7 @@ export class InvoiceRepository {
     const startIndex = (page - 1) * limit;
     const pagedItems = items.slice(startIndex, startIndex + limit);
 
-    const summaries: DocumentSummary[] = pagedItems.map((d) => ({
-      id: d.id,
-      documentNumber: d.documentNumber,
-      type: (d.type || 'SALE_INVOICE') as any,
-      status: (d.status || 'SAVED') as any,
-      documentDate: d.documentDate,
-      dueDate: d.dueDate || null,
-      party: {
-        id: d.partyId,
-        name: d.partyName || 'Party',
-        phone: '',
-      },
-      subtotal: d.grandTotal,
-      totalDiscount: 0,
-      totalAdditionalCharges: 0,
-      roundOff: 0,
-      grandTotal: d.grandTotal,
-      totalProfit: 0,
-      paidAmount: d.paidAmount,
-      balanceDue: d.balanceAmount,
-      lineItemCount: Array.isArray(d.lineItems) ? d.lineItems.length : 0,
-      createdAt: d.createdAt,
-      updatedAt: d.updatedAt,
-    }));
+    const summaries = pagedItems.map(mapLocalDocToSummary);
 
     return {
       documents: summaries,
@@ -133,6 +110,12 @@ export class InvoiceRepository {
     const count = await this.db.documents.where('businessId').equals(this.businessId).count();
     const docNumber = data.documentNumber || `INV-${new Date().getFullYear()}-${String(count + 1).padStart(4, '0')}`;
 
+    let partyName = data.partyName;
+    if (!partyName && data.partyId) {
+      const p = await this.db.parties.get(data.partyId);
+      if (p) partyName = p.name;
+    }
+
     const newDoc: LocalDocument = {
       id: tempId,
       businessId: this.businessId,
@@ -140,7 +123,7 @@ export class InvoiceRepository {
       type: data.type || 'SALE_INVOICE',
       status: balance === 0 ? 'PAID' : (paid > 0 ? 'PARTIALLY_PAID' : 'SAVED'),
       partyId: data.partyId,
-      partyName: data.partyName,
+      partyName,
       documentDate: data.documentDate || nowIso,
       dueDate: data.dueDate || null,
       grandTotal: data.grandTotal,
@@ -154,8 +137,34 @@ export class InvoiceRepository {
       updatedAt: nowIso,
     };
 
-    await this.db.transaction('rw', [this.db.documents, this.db.syncQueue], async () => {
+    await this.db.transaction('rw', [this.db.documents, this.db.parties, this.db.products, this.db.syncQueue], async () => {
       await this.db.documents.put(newDoc);
+      if (data.partyId) {
+        const party = await this.db.parties.get(data.partyId);
+        if (party) {
+          const isSale = !data.type || data.type.startsWith('SALE');
+          const delta = isSale ? balance : -balance;
+          party.outstandingBalance = (party.outstandingBalance || 0) + delta;
+          party.version = (party.version || 1) + 1;
+          party.updatedAt = nowIso;
+          await this.db.parties.put(party);
+        }
+      }
+      if (Array.isArray(data.lineItems) && data.lineItems.length > 0) {
+        for (const item of data.lineItems) {
+          if (item.productId && item.quantity) {
+            const product = await this.db.products.get(item.productId);
+            if (product) {
+              const isSale = !data.type || data.type.startsWith('SALE');
+              const stockDelta = isSale ? -item.quantity : item.quantity;
+              product.currentStock = (product.currentStock || 0) + stockDelta;
+              product.version = (product.version || 1) + 1;
+              product.updatedAt = nowIso;
+              await this.db.products.put(product);
+            }
+          }
+        }
+      }
       await OutboxEngine.enqueueInTx(this.db, {
         businessId: this.businessId,
         entityType: 'DOCUMENT',
@@ -171,6 +180,7 @@ export class InvoiceRepository {
 
     liveQueryBus.invalidate(['invoices']);
     liveQueryBus.invalidate(['parties']);
+    liveQueryBus.invalidate(['products']);
     SyncManager.triggerSync();
 
     return newDoc;
@@ -191,8 +201,34 @@ export class InvoiceRepository {
       updatedAt: nowIso,
     };
 
-    await this.db.transaction('rw', [this.db.documents, this.db.syncQueue], async () => {
+    await this.db.transaction('rw', [this.db.documents, this.db.parties, this.db.products, this.db.syncQueue], async () => {
       await this.db.documents.put(updated);
+      if (existing.partyId && existing.balanceAmount) {
+        const party = await this.db.parties.get(existing.partyId);
+        if (party) {
+          const isSale = !existing.type || existing.type.startsWith('SALE');
+          const delta = isSale ? -existing.balanceAmount : existing.balanceAmount;
+          party.outstandingBalance = (party.outstandingBalance || 0) + delta;
+          party.version = (party.version || 1) + 1;
+          party.updatedAt = nowIso;
+          await this.db.parties.put(party);
+        }
+      }
+      if (Array.isArray(existing.lineItems) && existing.lineItems.length > 0) {
+        for (const item of existing.lineItems) {
+          if (item.productId && item.quantity) {
+            const product = await this.db.products.get(item.productId);
+            if (product) {
+              const isSale = !existing.type || existing.type.startsWith('SALE');
+              const stockDelta = isSale ? item.quantity : -item.quantity;
+              product.currentStock = (product.currentStock || 0) + stockDelta;
+              product.version = (product.version || 1) + 1;
+              product.updatedAt = nowIso;
+              await this.db.products.put(product);
+            }
+          }
+        }
+      }
       await OutboxEngine.enqueueInTx(this.db, {
         businessId: this.businessId,
         entityType: 'DOCUMENT',
@@ -205,6 +241,7 @@ export class InvoiceRepository {
 
     liveQueryBus.invalidate(['invoices']);
     liveQueryBus.invalidate(['parties']);
+    liveQueryBus.invalidate(['products']);
     SyncManager.triggerSync();
   }
 }

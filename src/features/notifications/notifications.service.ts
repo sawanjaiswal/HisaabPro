@@ -115,7 +115,7 @@ export async function updateSettings(
 
 /** Return the SSE stream URL (not called via api() — EventSource handles auth cookies) */
 export function getStreamUrl(): string {
-  const base = import.meta.env.VITE_API_URL ?? ''
+  const base = (import.meta.env.VITE_API_URL ?? '').replace(/\/api\/?$/, '')
   return `${base}/api/notifications/stream`
 }
 

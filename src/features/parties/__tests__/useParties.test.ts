@@ -37,10 +37,11 @@ describe('useParties', () => {
     wrapper = createTestWrapper()
   })
 
-  it('starts in loading state', () => {
+  it('starts in loading state', async () => {
     const { result } = renderHook(() => useParties(), { wrapper })
     expect(result.current.status).toBe('loading')
     expect(result.current.data).toBeNull()
+    await waitFor(() => expect(result.current.status).toBe('success'))
   })
 
   it('fetches parties on mount', async () => {

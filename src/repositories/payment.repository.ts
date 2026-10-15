@@ -110,11 +110,18 @@ export class PaymentRepository {
       ? crypto.randomUUID()
       : `temp_pay_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
+    let partyName = (data as any).partyName;
+    if (!partyName && data.partyId) {
+      const p = await this.db.parties.get(data.partyId);
+      if (p) partyName = p.name;
+    }
+
     const newPayment: LocalPayment = {
       id: tempId,
       businessId: this.businessId,
       type: data.type || 'PAYMENT_IN',
       partyId: data.partyId,
+      partyName,
       amount: data.amount,
       mode: data.mode || 'CASH',
       date: data.date || nowIso.split('T')[0],
@@ -126,8 +133,19 @@ export class PaymentRepository {
       updatedAt: nowIso,
     };
 
-    await this.db.transaction('rw', [this.db.payments, this.db.syncQueue], async () => {
+    await this.db.transaction('rw', [this.db.payments, this.db.parties, this.db.syncQueue], async () => {
       await this.db.payments.put(newPayment);
+      if (data.partyId) {
+        const party = await this.db.parties.get(data.partyId);
+        if (party) {
+          const isOut = data.type === 'PAYMENT_OUT' || data.type === 'PAYROLL_OUT';
+          const delta = isOut ? data.amount : -data.amount;
+          party.outstandingBalance = (party.outstandingBalance || 0) + delta;
+          party.version = (party.version || 1) + 1;
+          party.updatedAt = nowIso;
+          await this.db.parties.put(party);
+        }
+      }
       await OutboxEngine.enqueueInTx(this.db, {
         businessId: this.businessId,
         entityType: 'PAYMENT',
@@ -164,8 +182,19 @@ export class PaymentRepository {
       updatedAt: nowIso,
     };
 
-    await this.db.transaction('rw', [this.db.payments, this.db.syncQueue], async () => {
+    await this.db.transaction('rw', [this.db.payments, this.db.parties, this.db.syncQueue], async () => {
       await this.db.payments.put(updated);
+      if (existing.partyId && existing.amount) {
+        const party = await this.db.parties.get(existing.partyId);
+        if (party) {
+          const isOut = existing.type === 'PAYMENT_OUT' || existing.type === 'PAYROLL_OUT';
+          const delta = isOut ? -existing.amount : existing.amount;
+          party.outstandingBalance = (party.outstandingBalance || 0) + delta;
+          party.version = (party.version || 1) + 1;
+          party.updatedAt = nowIso;
+          await this.db.parties.put(party);
+        }
+      }
       await OutboxEngine.enqueueInTx(this.db, {
         businessId: this.businessId,
         entityType: 'PAYMENT',

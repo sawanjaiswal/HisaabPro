@@ -34,7 +34,7 @@ export function useLiveQuery<T>(
   queryFnRef.current = queryFn;
 
   const sequenceRef = useRef(0);
-  const lastFocusExecutionTimeRef = useRef(0);
+  const lastFocusExecutionTimeRef = useRef(Date.now());
   const serializedKey = JSON.stringify(queryKey);
 
   const executeQuery = useCallback(async (isFocusTrigger = false): Promise<T | undefined> => {

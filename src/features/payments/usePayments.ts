@@ -60,13 +60,12 @@ export function usePayments({
         local = await repo.list(filters)
       } catch {}
 
-      // Background SWR update (non-blocking)
-      void getPayments(filters).catch(() => {})
-
-      if (local && local.payments.length > 0) {
+      if (local && (local.summary?.totalIn > 0 || local.summary?.totalOut > 0 || local.payments.length > 0)) {
+        // Background SWR update (non-blocking)
+        void getPayments(filters).catch(() => {})
         return local
       }
-      return getPayments(filters)
+      return await getPayments(filters)
     }
   )
 
@@ -85,17 +84,17 @@ export function usePayments({
     }
   }, [rawData, removedIds])
 
-  const status: Status = isLoading && !data ? 'loading' : error ? 'error' : 'success'
+  const status: Status = isLoading && !data ? 'loading' : error && !data ? 'error' : 'success'
 
-  // Show toast on fetch error
+  // Show toast on fetch error only when no local data is available
   const prevErrorRef = useRef<Error | null>(null)
   useEffect(() => {
-    if (error && error !== prevErrorRef.current) {
+    if (error && !data && error !== prevErrorRef.current) {
       prevErrorRef.current = error
       const message = error instanceof ApiError ? error.message : 'Failed to load payments'
       toast.error(message)
     }
-  }, [error, toast])
+  }, [error, data, toast])
 
   // Debounced search
   const [pendingSearch, setPendingSearch] = useState<string | null>(null)

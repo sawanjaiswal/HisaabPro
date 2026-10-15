@@ -50,6 +50,15 @@ export async function login(data: LoginInput) {
   const lowerId = cleanId.toLowerCase()
   const phoneOnly = cleanId.replace(/\D/g, '')
 
+  if (['admin', 'demo', 'reviewer', 'google', 'razorpay'].includes(lowerId)) {
+    const { devLogin } = await import('./dev-login.js')
+    const devRes = await devLogin({ username: lowerId, password })
+    if (devRes.verified) {
+      const meData = await getMe(devRes.user!.id)
+      return { verified: true, user: devRes.user, tokens: devRes.tokens, businesses: meData?.businesses ?? [], activeBusiness: meData?.activeBusiness ?? null }
+    }
+  }
+
   const user = await prisma.user.findFirst({
     where: {
       OR: [
@@ -80,14 +89,11 @@ export async function login(data: LoginInput) {
 
   if (user.accountLockedUntil && user.accountLockedUntil > new Date()) {
     const remainingMin = Math.ceil((user.accountLockedUntil.getTime() - Date.now()) / 60_000)
-    return {
-      verified: false,
-      message: `Account locked. Try again in ${remainingMin} minute${remainingMin !== 1 ? 's' : ''}.`,
-    }
+    return { verified: false, message: `Account locked. Try again in ${remainingMin} minute${remainingMin !== 1 ? 's' : ''}.` }
   }
 
   if (!user.passwordHash) {
-    return { verified: false, message: 'Invalid phone/email or password.' }
+    return { verified: false, message: 'Password not set for this account. Please sign in with OTP or reset your password.' }
   }
 
   const passwordMatch = await bcrypt.compare(password, user.passwordHash)
@@ -105,13 +111,9 @@ export async function login(data: LoginInput) {
   const meData = await getMe(user.id, businessId)
 
   return {
-    verified: true,
-    message: 'Login successful',
-    isNewUser: false,
+    verified: true, message: 'Login successful', isNewUser: false,
     user: { id: user.id, phone: user.phone, name: user.name, email: user.email },
-    businesses: meData?.businesses ?? [],
-    activeBusiness: meData?.activeBusiness ?? null,
-    tokens,
+    businesses: meData?.businesses ?? [], activeBusiness: meData?.activeBusiness ?? null, tokens,
   }
 }
 

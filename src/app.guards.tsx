@@ -72,7 +72,7 @@ export function HomeGate() {
   return <GuestRoute><Landing /></GuestRoute>
 }
 
-const NAV_HIDDEN_PATTERNS = /\/(new|edit)(\/|$)|\/pos\b|\/designsystem\b/
+const NAV_HIDDEN_PATTERNS = /\/(new|edit|bulk)(\/|$)|\/pos\b|\/designsystem\b/
 
 // Entity detail (leaf) pages are drilled into via the back-stack, not the tab
 // bar — standard mobile apps hide the bottom nav there and let the page's own
