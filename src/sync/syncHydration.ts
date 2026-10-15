@@ -56,11 +56,14 @@ export async function hydrateLocalEntities(changes: SyncChanges): Promise<void> 
     );
   }
 
-  if (Array.isArray(documents) && documents.length > 0) {
-    const partyMap = new Map<string, string>();
+  const needsPartyMap = (Array.isArray(documents) && documents.length > 0) || (Array.isArray(payments) && payments.length > 0);
+  const partyMap = new Map<string, string>();
+  if (needsPartyMap) {
     const allParties = await db.parties.toArray();
     allParties.forEach((p) => partyMap.set(p.id, p.name));
+  }
 
+  if (Array.isArray(documents) && documents.length > 0) {
     await db.documents.bulkPut(
       documents.map((d: any) => ({
         id: d.id,
@@ -75,6 +78,7 @@ export async function hydrateLocalEntities(changes: SyncChanges): Promise<void> 
         grandTotal: d.grandTotal || 0,
         paidAmount: d.paidAmount || 0,
         balanceAmount: d.balanceDue ?? (d.balanceAmount ?? ((d.grandTotal || 0) - (d.paidAmount || 0))),
+        lineItems: d.lineItems || d.items || [],
         notes: d.notes || null,
         isDeleted: d.isDeleted ?? false,
         version: d.version || 1,
@@ -85,10 +89,6 @@ export async function hydrateLocalEntities(changes: SyncChanges): Promise<void> 
   }
 
   if (Array.isArray(payments) && payments.length > 0) {
-    const partyMap = new Map<string, string>();
-    const allParties = await db.parties.toArray();
-    allParties.forEach((p) => partyMap.set(p.id, p.name));
-
     await db.payments.bulkPut(
       payments.map((p: any) => ({
         id: p.id,

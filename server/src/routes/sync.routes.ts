@@ -6,6 +6,7 @@ import { requireActiveBusiness } from '../middleware/require-active-business.js'
 import { sendSuccess } from '../lib/response.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import logger from '../lib/logger.js';
+import { processSyncMutation } from './sync.mutations.js';
 
 const router = Router();
 
@@ -44,9 +45,9 @@ router.post(
   '/push',
   asyncHandler(async (req, res) => {
     const businessId = req.user!.businessId;
+    const userId = req.user!.userId;
     const { mutations } = syncPushSchema.parse(req.body);
 
-    // Sort mutations topologically
     const sortedMutations = [...mutations].sort(
       (a, b) => (TOPOLOGICAL_ORDER[a.entityType] || 99) - (TOPOLOGICAL_ORDER[b.entityType] || 99)
     );
@@ -57,184 +58,7 @@ router.post(
     for (const mutation of sortedMutations) {
       try {
         await prisma.$transaction(async (tx) => {
-          const { idempotencyKey, entityType, entityId, operation, payload } = mutation;
-          void mutation.baseVersion;
-
-          // Check idempotency log
-          if (idempotencyKey) {
-            const executed = await tx.idempotencyLog.findUnique({ where: { key: idempotencyKey } });
-            if (executed) {
-              return; // Already processed idempotently
-            }
-          }
-
-          if (entityType === 'PARTY') {
-            if (operation === 'CREATE') {
-              const existing = await tx.party.findFirst({ where: { id: entityId, businessId } });
-              if (!existing) {
-                const openingAmount = payload.openingBalance
-                  ? (typeof payload.openingBalance === 'number'
-                      ? payload.openingBalance
-                      : payload.openingBalance.type === 'RECEIVABLE'
-                        ? payload.openingBalance.amount
-                        : -payload.openingBalance.amount)
-                  : 0;
-
-                await tx.party.create({
-                  data: {
-                    id: entityId,
-                    businessId,
-                    name: payload.name || 'Unnamed Party',
-                    phone: payload.phone || null,
-                    email: payload.email || null,
-                    type: payload.type || 'CUSTOMER',
-                    companyName: payload.companyName || null,
-                    gstin: payload.gstin || null,
-                    pan: payload.pan || null,
-                    creditLimit: payload.creditLimit || 0,
-                    creditLimitMode: payload.creditLimitMode || 'WARN',
-                    notes: payload.notes || null,
-                    tags: Array.isArray(payload.tags) ? payload.tags : [],
-                    outstandingBalance: openingAmount,
-                    version: 1,
-                  },
-                });
-              }
-            } else if (operation === 'UPDATE') {
-              await tx.party.updateMany({
-                where: { id: entityId, businessId },
-                data: {
-                  name: payload.name,
-                  phone: payload.phone,
-                  email: payload.email,
-                  type: payload.type,
-                  companyName: payload.companyName,
-                  gstin: payload.gstin,
-                  pan: payload.pan,
-                  creditLimit: payload.creditLimit,
-                  creditLimitMode: payload.creditLimitMode,
-                  notes: payload.notes,
-                  tags: Array.isArray(payload.tags) ? payload.tags : undefined,
-                  version: { increment: 1 },
-                },
-              });
-            } else if (operation === 'DELETE') {
-              await tx.party.updateMany({
-                where: { id: entityId, businessId },
-                data: { isDeleted: true, deletedAt: new Date() },
-              });
-            }
-          } else if (entityType === 'PRODUCT') {
-            if (operation === 'CREATE') {
-              const existing = await tx.product.findFirst({ where: { id: entityId, businessId } });
-              if (!existing) {
-                // Ensure default unit
-                const unit = await tx.unit.findFirst({ where: { businessId } });
-                await tx.product.create({
-                  data: {
-                    id: entityId,
-                    businessId,
-                    name: payload.name || 'Unnamed Product',
-                    sku: payload.sku || null,
-                    unitId: payload.unitId || unit?.id || 'default_unit',
-                    salePrice: payload.salePrice || 0,
-                    purchasePrice: payload.purchasePrice || 0,
-                    currentStock: payload.openingStock || payload.currentStock || 0,
-                    minStockLevel: payload.minStockLevel || 0,
-                  },
-                });
-              }
-            } else if (operation === 'UPDATE') {
-              await tx.product.updateMany({
-                where: { id: entityId, businessId },
-                data: {
-                  name: payload.name,
-                  salePrice: payload.salePrice,
-                  purchasePrice: payload.purchasePrice,
-                },
-              });
-            } else if (operation === 'DELETE') {
-              await tx.product.updateMany({
-                where: { id: entityId, businessId },
-                data: { isDeleted: true },
-              });
-            }
-          } else if (entityType === 'DOCUMENT') {
-            if (operation === 'CREATE') {
-              const existing = await tx.document.findFirst({ where: { id: entityId, businessId } });
-              if (!existing) {
-                await tx.document.create({
-                  data: {
-                    id: entityId,
-                    businessId,
-                    type: payload.type || 'SALE_INVOICE',
-                    status: payload.status || 'SAVED',
-                    documentNumber: payload.documentNumber || null,
-                    partyId: payload.partyId,
-                    documentDate: payload.documentDate ? new Date(payload.documentDate) : new Date(),
-                    dueDate: payload.dueDate ? new Date(payload.dueDate) : null,
-                    grandTotal: payload.grandTotal || 0,
-                    subtotal: payload.grandTotal || 0,
-                    notes: payload.notes || null,
-                    createdBy: req.user!.userId,
-                  },
-                });
-              }
-            } else if (operation === 'UPDATE') {
-              await tx.document.updateMany({
-                where: { id: entityId, businessId },
-                data: {
-                  status: payload.status,
-                  notes: payload.notes,
-                },
-              });
-            } else if (operation === 'DELETE') {
-              await tx.document.updateMany({
-                where: { id: entityId, businessId },
-                data: { status: 'DELETED' },
-              });
-            }
-          } else if (entityType === 'PAYMENT') {
-            if (operation === 'CREATE') {
-              const existing = await tx.payment.findFirst({ where: { id: entityId, businessId } });
-              if (!existing) {
-                await tx.payment.create({
-                  data: {
-                    id: entityId,
-                    businessId,
-                    type: payload.type || 'PAYMENT_IN',
-                    partyId: payload.partyId,
-                    amount: payload.amount || 0,
-                    date: payload.date ? new Date(payload.date) : new Date(),
-                    mode: payload.mode || 'CASH',
-                    referenceNumber: payload.referenceNumber || null,
-                    notes: payload.notes || null,
-                    createdBy: req.user!.userId,
-                  },
-                });
-              }
-            } else if (operation === 'DELETE') {
-              await tx.payment.updateMany({
-                where: { id: entityId, businessId },
-                data: { isDeleted: true, deletedAt: new Date() },
-              });
-            }
-          }
-
-          if (idempotencyKey) {
-            const scopedKey = `${businessId}:${idempotencyKey}`;
-            const existingLog = await tx.idempotencyLog.findUnique({ where: { key: scopedKey } });
-            if (!existingLog) {
-              await tx.idempotencyLog.create({
-                data: {
-                  key: scopedKey,
-                  userId: req.user!.userId,
-                  response: { status: 'ACCEPTED', entityId },
-                  expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days retention
-                },
-              });
-            }
-          }
+          await processSyncMutation(tx, businessId, userId, mutation);
         });
 
         accepted.push({
@@ -283,9 +107,16 @@ router.get(
       }),
       prisma.document.findMany({
         where: { businessId, updatedAt: { gt: since } },
+        include: {
+          lineItems: true,
+          party: { select: { name: true } },
+        },
       }),
       prisma.payment.findMany({
         where: { businessId, updatedAt: { gt: since } },
+        include: {
+          party: { select: { name: true } },
+        },
       }),
     ]);
 
