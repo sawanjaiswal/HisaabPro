@@ -97,6 +97,13 @@ vi.mock('../middleware/subscription-gate.js', () => {
   }
 })
 
+vi.mock('../middleware/require-feature.js', () => {
+  const passthrough = (_req: unknown, _res: unknown, next: () => void) => next()
+  return {
+    requireFeature: () => passthrough,
+  }
+})
+
 // Mock rate limiters to pass through in tests
 vi.mock('../middleware/rate-limit.js', () => {
   const passthrough = (_req: unknown, _res: unknown, next: () => void) => next()
@@ -131,6 +138,12 @@ vi.mock('../middleware/rate-limit/index.js', () => {
     createRateLimiter: () => passthrough,
   }
 })
+
+vi.mock('../middleware/public/rate-limit.js', () => ({
+  publicRateLimiter: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+  BUCKET_CONFIG: {},
+  WINDOW_MS: 60_000,
+}))
 
 // Mock razorpay (not installed in test env)
 vi.mock('razorpay', () => ({

@@ -15,7 +15,7 @@
     "db:studio": "prisma studio",
     "db:seed:hsn": "tsx prisma/seed.hsn.ts",
     "db:seed:canary": "tsx prisma/seed.shadow-canary.ts",
-    "test": "vitest run",
+    "test": "vitest run --maxWorkers=4",
     "test:watch": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "enforce": "node ../scripts/enforce.js",
