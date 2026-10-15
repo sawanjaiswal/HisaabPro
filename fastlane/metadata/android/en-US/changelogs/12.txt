@@ -1,0 +1,1 @@
+HisaabPro v1.1.1 - Live auth integration, offline entity hydration, and review credentials
