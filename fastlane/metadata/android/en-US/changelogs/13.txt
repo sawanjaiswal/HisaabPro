@@ -1,0 +1,1 @@
+HisaabPro v1.1.2 - Customer data persistence and session recovery fixes
