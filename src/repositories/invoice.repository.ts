@@ -4,7 +4,7 @@ import { liveQueryBus } from '../domain/live-query-bus';
 import { SyncManager } from '../sync/SyncManager';
 import type { DocumentListResponse, DocumentFilters } from '../features/invoices/invoice.types';
 import { mapLocalDocToSummary } from './invoice.mapper';
-
+import { getDocumentOutstandingDelta, getDocumentStockDelta } from './invoice.rules';
 import { resolveCurrentBusinessId } from './repository.utils';
 
 export class InvoiceRepository {
@@ -140,27 +140,29 @@ export class InvoiceRepository {
     await this.db.transaction('rw', [this.db.documents, this.db.parties, this.db.products, this.db.syncQueue], async () => {
       await this.db.documents.put(newDoc);
       if (data.partyId) {
-        const party = await this.db.parties.get(data.partyId);
-        if (party) {
-          const isSale = !data.type || data.type.startsWith('SALE');
-          const delta = isSale ? balance : -balance;
-          party.outstandingBalance = (party.outstandingBalance || 0) + delta;
-          party.version = (party.version || 1) + 1;
-          party.updatedAt = nowIso;
-          await this.db.parties.put(party);
+        const delta = getDocumentOutstandingDelta(newDoc.type, balance);
+        if (delta !== 0) {
+          const party = await this.db.parties.get(data.partyId);
+          if (party) {
+            party.outstandingBalance = (party.outstandingBalance || 0) + delta;
+            party.version = (party.version || 1) + 1;
+            party.updatedAt = nowIso;
+            await this.db.parties.put(party);
+          }
         }
       }
       if (Array.isArray(data.lineItems) && data.lineItems.length > 0) {
         for (const item of data.lineItems) {
           if (item.productId && item.quantity) {
-            const product = await this.db.products.get(item.productId);
-            if (product) {
-              const isSale = !data.type || data.type.startsWith('SALE');
-              const stockDelta = isSale ? -item.quantity : item.quantity;
-              product.currentStock = (product.currentStock || 0) + stockDelta;
-              product.version = (product.version || 1) + 1;
-              product.updatedAt = nowIso;
-              await this.db.products.put(product);
+            const stockDelta = getDocumentStockDelta(newDoc.type, item.quantity);
+            if (stockDelta !== 0) {
+              const product = await this.db.products.get(item.productId);
+              if (product) {
+                product.currentStock = (product.currentStock || 0) + stockDelta;
+                product.version = (product.version || 1) + 1;
+                product.updatedAt = nowIso;
+                await this.db.products.put(product);
+              }
             }
           }
         }
@@ -170,10 +172,7 @@ export class InvoiceRepository {
         entityType: 'DOCUMENT',
         entityId: tempId,
         operation: 'CREATE',
-        payload: {
-          ...data,
-          id: tempId,
-        },
+        payload: { ...data, id: tempId },
         baseVersion: 0,
       });
     });
@@ -204,27 +203,29 @@ export class InvoiceRepository {
     await this.db.transaction('rw', [this.db.documents, this.db.parties, this.db.products, this.db.syncQueue], async () => {
       await this.db.documents.put(updated);
       if (existing.partyId && existing.balanceAmount) {
-        const party = await this.db.parties.get(existing.partyId);
-        if (party) {
-          const isSale = !existing.type || existing.type.startsWith('SALE');
-          const delta = isSale ? -existing.balanceAmount : existing.balanceAmount;
-          party.outstandingBalance = (party.outstandingBalance || 0) + delta;
-          party.version = (party.version || 1) + 1;
-          party.updatedAt = nowIso;
-          await this.db.parties.put(party);
+        const delta = getDocumentOutstandingDelta(existing.type, existing.balanceAmount);
+        if (delta !== 0) {
+          const party = await this.db.parties.get(existing.partyId);
+          if (party) {
+            party.outstandingBalance = (party.outstandingBalance || 0) - delta;
+            party.version = (party.version || 1) + 1;
+            party.updatedAt = nowIso;
+            await this.db.parties.put(party);
+          }
         }
       }
       if (Array.isArray(existing.lineItems) && existing.lineItems.length > 0) {
         for (const item of existing.lineItems) {
           if (item.productId && item.quantity) {
-            const product = await this.db.products.get(item.productId);
-            if (product) {
-              const isSale = !existing.type || existing.type.startsWith('SALE');
-              const stockDelta = isSale ? item.quantity : -item.quantity;
-              product.currentStock = (product.currentStock || 0) + stockDelta;
-              product.version = (product.version || 1) + 1;
-              product.updatedAt = nowIso;
-              await this.db.products.put(product);
+            const stockDelta = getDocumentStockDelta(existing.type, item.quantity);
+            if (stockDelta !== 0) {
+              const product = await this.db.products.get(item.productId);
+              if (product) {
+                product.currentStock = (product.currentStock || 0) - stockDelta;
+                product.version = (product.version || 1) + 1;
+                product.updatedAt = nowIso;
+                await this.db.products.put(product);
+              }
             }
           }
         }
