@@ -23,10 +23,22 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "Triggering hisaabpro-backend deployment inside Coolify..."
+            echo "=== Docker Containers ==="
+            sudo docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
+            echo "=== Coolify Application & Deployment Status ==="
             sudo docker exec coolify php artisan tinker --execute='
               $app = App\Models\Application::where("uuid", "aokz8bhkdqv1s67cxpbi46he")->first();
-              $deployment_uuid = new_public_id();
-              $res = queue_application_deployment(application: $app, deployment_uuid: $deployment_uuid, force_rebuild: true);
-              echo json_encode(["status" => $res, "deployment_uuid" => $deployment_uuid]);
+              if ($app) {
+                echo "App: " . $app->name . " | git_branch: " . $app->git_branch . " | build_pack: " . $app->build_pack . "\n";
+                $recent = App\Models\ApplicationDeploymentQueue::where("application_id", $app->id)->latest()->take(3)->get(["deployment_uuid", "status", "created_at"]);
+                echo "Recent: " . json_encode($recent) . "\n";
+                $deployment_uuid = new_public_id();
+                $res = queue_application_deployment(application: $app, deployment_uuid: $deployment_uuid, force_rebuild: true);
+                echo "Queued: " . json_encode(["status" => $res, "deployment_uuid" => $deployment_uuid]) . "\n";
+              } else {
+                echo "Application aokz8bhkdqv1s67cxpbi46he not found\n";
+              }
             '
+            echo "=== Triggering queue processing ==="
+            sudo docker exec coolify php artisan queue:restart || true
+
