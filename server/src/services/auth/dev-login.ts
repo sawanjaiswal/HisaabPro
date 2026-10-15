@@ -119,7 +119,7 @@ export async function devLogin(data: { username: string; password: string }) {
     verified: true,
     message: 'Login successful',
     isNewUser,
-    user: { id: user.id, phone: user.phone, name: user.name },
+    user: { id: user.id, phone: user.phone, name: user.name, businessId },
     tokens,
   }
 }

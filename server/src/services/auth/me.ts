@@ -68,7 +68,13 @@ export async function getMe(userId: string, activeBusinessId?: string) {
   const activeBusiness = businesses.find(b => b.id === currentBizId) ?? businesses[0] ?? null
 
   return {
-    user: { id: user.id, phone: user.phone, name: user.name, email: user.email },
+    user: {
+      id: user.id,
+      phone: user.phone,
+      name: user.name,
+      email: user.email,
+      businessId: activeBusiness?.id ?? user.lastActiveBusinessId ?? null,
+    },
     businesses,
     activeBusiness,
   }

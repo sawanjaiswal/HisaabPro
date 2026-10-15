@@ -225,9 +225,11 @@ export function useGoogleSso(): UseGoogleSsoReturn {
         const response = await exchangeNativeSso('google', { idToken: outcome.idToken, sealedTx, nonce })
 
         clearTimers()
-        setUser(response.user)
+        const activeBizId = response.activeBusiness?.id ?? response.businesses[0]?.id ?? response.user?.businessId ?? null
+        const normalizedUser = { ...response.user, businessId: activeBizId }
+        setUser(normalizedUser)
         setBusinesses(response.businesses)
-        authLib.setCachedUser(response.user)
+        authLib.setCachedUser(normalizedUser)
         authLib.setCachedBusinesses(response.businesses)
 
         if (isMountedRef.current) setState('success')
@@ -295,9 +297,11 @@ export function useGoogleSso(): UseGoogleSsoReturn {
               accessToken: tokenResponse.access_token,
             })
 
-            setUser(response.user)
+            const activeBizId = response.activeBusiness?.id ?? response.businesses[0]?.id ?? response.user?.businessId ?? null
+            const normalizedUser = { ...response.user, businessId: activeBizId }
+            setUser(normalizedUser)
             setBusinesses(response.businesses)
-            authLib.setCachedUser(response.user)
+            authLib.setCachedUser(normalizedUser)
             authLib.setCachedBusinesses(response.businesses)
 
             if (isMountedRef.current) setState('success')

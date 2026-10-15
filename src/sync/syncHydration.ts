@@ -7,6 +7,16 @@ export interface SyncChanges {
   payments?: any[];
 }
 
+function safeIsoDate(val: unknown, fallback?: string): string {
+  if (typeof val === 'string' && val.length > 0) return val
+  if (val instanceof Date && !isNaN(val.getTime())) return val.toISOString()
+  if (val) {
+    const d = new Date(val as any)
+    if (!isNaN(d.getTime())) return d.toISOString()
+  }
+  return fallback || new Date().toISOString()
+}
+
 /**
  * Hydrates locally stored Dexie tables with delta changes pulled from the server.
  * Operates at Level 6 local-first SSOT with 0ms read capability.
@@ -29,8 +39,8 @@ export async function hydrateLocalEntities(changes: SyncChanges): Promise<void> 
         isActive: p.isActive ?? true,
         isDeleted: false,
         version: p.version || 1,
-        createdAt: typeof p.createdAt === 'string' ? p.createdAt : new Date(p.createdAt).toISOString(),
-        updatedAt: typeof p.updatedAt === 'string' ? p.updatedAt : new Date(p.updatedAt).toISOString(),
+        createdAt: safeIsoDate(p.createdAt),
+        updatedAt: safeIsoDate(p.updatedAt),
       }))
     );
   }
@@ -50,8 +60,8 @@ export async function hydrateLocalEntities(changes: SyncChanges): Promise<void> 
         isActive: p.isActive ?? true,
         isDeleted: p.isDeleted ?? false,
         version: p.version || 1,
-        createdAt: typeof p.createdAt === 'string' ? p.createdAt : new Date(p.createdAt).toISOString(),
-        updatedAt: typeof p.updatedAt === 'string' ? p.updatedAt : new Date(p.updatedAt).toISOString(),
+        createdAt: safeIsoDate(p.createdAt),
+        updatedAt: safeIsoDate(p.updatedAt),
       }))
     );
   }
@@ -73,8 +83,8 @@ export async function hydrateLocalEntities(changes: SyncChanges): Promise<void> 
         status: d.status,
         partyId: d.partyId,
         partyName: d.partyName || d.party?.name || partyMap.get(d.partyId) || '',
-        documentDate: typeof d.documentDate === 'string' ? d.documentDate : new Date(d.documentDate).toISOString(),
-        dueDate: d.dueDate ? (typeof d.dueDate === 'string' ? d.dueDate : new Date(d.dueDate).toISOString()) : null,
+        documentDate: safeIsoDate(d.documentDate),
+        dueDate: d.dueDate ? safeIsoDate(d.dueDate) : null,
         grandTotal: d.grandTotal || 0,
         paidAmount: d.paidAmount || 0,
         balanceAmount: d.balanceDue ?? (d.balanceAmount ?? ((d.grandTotal || 0) - (d.paidAmount || 0))),
@@ -82,8 +92,8 @@ export async function hydrateLocalEntities(changes: SyncChanges): Promise<void> 
         notes: d.notes || null,
         isDeleted: d.isDeleted ?? false,
         version: d.version || 1,
-        createdAt: typeof d.createdAt === 'string' ? d.createdAt : new Date(d.createdAt).toISOString(),
-        updatedAt: typeof d.updatedAt === 'string' ? d.updatedAt : new Date(d.updatedAt).toISOString(),
+        createdAt: safeIsoDate(d.createdAt),
+        updatedAt: safeIsoDate(d.updatedAt),
       }))
     );
   }
@@ -99,13 +109,13 @@ export async function hydrateLocalEntities(changes: SyncChanges): Promise<void> 
         partyName: p.partyName || p.party?.name || partyMap.get(p.partyId) || '',
         amount: p.amount || 0,
         mode: p.mode,
-        date: typeof p.date === 'string' ? p.date : new Date(p.date).toISOString(),
+        date: safeIsoDate(p.date),
         referenceNumber: p.referenceNumber || null,
         notes: p.notes || null,
         isDeleted: p.isDeleted ?? false,
         version: p.version || 1,
-        createdAt: typeof p.createdAt === 'string' ? p.createdAt : new Date(p.createdAt).toISOString(),
-        updatedAt: typeof p.updatedAt === 'string' ? p.updatedAt : new Date(p.updatedAt).toISOString(),
+        createdAt: safeIsoDate(p.createdAt),
+        updatedAt: safeIsoDate(p.updatedAt),
       }))
     );
   }

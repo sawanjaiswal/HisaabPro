@@ -56,12 +56,36 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
         local = await repo.list(filters)
       } catch {}
 
-      if (local && (local.summary?.totalParties > 0 || local.parties.length > 0)) {
-        // Background SWR update (non-blocking)
-        void getParties(filters).catch(() => {})
+      if (typeof navigator !== 'undefined' && !navigator.onLine && local && local.parties.length > 0) {
         return local
       }
-      return await getParties(filters)
+
+      try {
+        const serverRes = await getParties(filters)
+        if (local && local.parties.length > 0) {
+          const tempParties = local.parties.filter((p) => p.id.startsWith('temp_'))
+          if (tempParties.length > 0) {
+            const serverIds = new Set(serverRes.parties.map((p) => p.id))
+            const unSynced = tempParties.filter((p) => !serverIds.has(p.id))
+            if (unSynced.length > 0) {
+              return {
+                ...serverRes,
+                parties: [...unSynced, ...serverRes.parties],
+                pagination: {
+                  ...serverRes.pagination,
+                  total: serverRes.pagination.total + unSynced.length,
+                },
+              }
+            }
+          }
+        }
+        return serverRes
+      } catch (netErr) {
+        if (local && local.parties.length > 0) {
+          return local
+        }
+        throw netErr
+      }
     }
   )
 

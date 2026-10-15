@@ -1,4 +1,4 @@
-import { getCachedUser } from '@/lib/auth';
+import { getCachedUser, getCachedBusinesses } from '@/lib/auth';
 
 /**
  * Returns the active tenant businessId for local-first IndexedDB operations.
@@ -7,7 +7,18 @@ import { getCachedUser } from '@/lib/auth';
 export function resolveCurrentBusinessId(): string {
   try {
     const user = getCachedUser();
-    return user?.businessId || 'default';
+    if (user?.businessId && user.businessId !== 'default') {
+      return user.businessId;
+    }
+    const businesses = getCachedBusinesses();
+    if (businesses && businesses.length > 0 && businesses[0]?.id) {
+      return businesses[0].id;
+    }
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem('lastActiveBusinessId');
+      if (stored && stored !== 'default') return stored;
+    }
+    return 'default';
   } catch {
     return 'default';
   }

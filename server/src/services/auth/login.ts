@@ -112,7 +112,7 @@ export async function login(data: LoginInput) {
 
   return {
     verified: true, message: 'Login successful', isNewUser: false,
-    user: { id: user.id, phone: user.phone, name: user.name, email: user.email },
+    user: { id: user.id, phone: user.phone, name: user.name, email: user.email, businessId },
     businesses: meData?.businesses ?? [], activeBusiness: meData?.activeBusiness ?? null, tokens,
   }
 }

@@ -24,6 +24,11 @@ import { invalidateCsrfToken } from './api-csrf'
 export function clearAuth() {
   sessionStorage.removeItem('cachedUser')
   sessionStorage.removeItem('cachedBusinesses')
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem('cachedUser')
+    localStorage.removeItem('cachedBusinesses')
+    localStorage.removeItem('lastActiveBusinessId')
+  }
   invalidateCsrfToken()
   // Drop the offline read cache too — the next user signing in on this
   // device must not see the previous user's PII (parties, balances, etc.).
@@ -36,11 +41,19 @@ export function clearAuth() {
 /** Cache user for offline access */
 export function setCachedUser(user: AuthUser) {
   sessionStorage.setItem('cachedUser', JSON.stringify(user))
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem('cachedUser', JSON.stringify(user))
+      if (user.businessId) {
+        localStorage.setItem('lastActiveBusinessId', user.businessId)
+      }
+    } catch {}
+  }
 }
 
 /** Get cached user */
 export function getCachedUser(): AuthUser | null {
-  const cached = sessionStorage.getItem('cachedUser')
+  const cached = sessionStorage.getItem('cachedUser') || (typeof localStorage !== 'undefined' ? localStorage.getItem('cachedUser') : null)
   if (!cached) return null
   try {
     return JSON.parse(cached)
@@ -52,11 +65,19 @@ export function getCachedUser(): AuthUser | null {
 /** Cache businesses list */
 export function setCachedBusinesses(businesses: BusinessSummary[]) {
   sessionStorage.setItem('cachedBusinesses', JSON.stringify(businesses))
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem('cachedBusinesses', JSON.stringify(businesses))
+      if (businesses.length > 0 && businesses[0]?.id) {
+        localStorage.setItem('lastActiveBusinessId', businesses[0].id)
+      }
+    } catch {}
+  }
 }
 
 /** Get cached businesses */
 export function getCachedBusinesses(): BusinessSummary[] | null {
-  const cached = sessionStorage.getItem('cachedBusinesses')
+  const cached = sessionStorage.getItem('cachedBusinesses') || (typeof localStorage !== 'undefined' ? localStorage.getItem('cachedBusinesses') : null)
   if (!cached) return null
   try {
     return JSON.parse(cached)
@@ -67,7 +88,7 @@ export function getCachedBusinesses(): BusinessSummary[] | null {
 
 /** Check if there's a cached session hint (user may still need server verification) */
 export function hasCachedSession(): boolean {
-  return sessionStorage.getItem('cachedUser') !== null
+  return sessionStorage.getItem('cachedUser') !== null || (typeof localStorage !== 'undefined' && localStorage.getItem('cachedUser') !== null)
 }
 
 /** Production login — phone or email + password */

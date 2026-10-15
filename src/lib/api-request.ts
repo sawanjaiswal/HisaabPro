@@ -79,7 +79,9 @@ export async function buildRequestHeaders(opts: {
   // timestamp on every mutation — send them so services never have to remember.
   const replayHeaders: Record<string, string> = SYNC_MUTATION_METHODS.has(method)
     ? {
-        'X-Request-Nonce': crypto.randomUUID(),
+        'X-Request-Nonce': typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `nonce_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
         'X-Request-Timestamp': Date.now().toString(),
       }
     : {}

@@ -12,21 +12,14 @@ import { z } from 'zod'
 import crypto from 'crypto'
 
 const googleExchangeSchema = z
-  .object({
-    idToken: z.string().optional(),
-    accessToken: z.string().optional(),
-  })
-  .refine((data) => Boolean(data.idToken || data.accessToken), {
-    message: 'Valid Google token is required',
-  })
+  .object({ idToken: z.string().optional(), accessToken: z.string().optional() })
+  .refine((d) => Boolean(d.idToken || d.accessToken), { message: 'Valid Google token is required' })
 
 const DEFAULT_GOOGLE_CLIENT_ID = '524171176361-osp3ragj5thpsjqj2im3tp5vk5kl505p.apps.googleusercontent.com'
-
 const router = Router()
 
 /**
  * GET /api/auth/sso/google/config
- * Returns Google OAuth client ID for web authentication.
  */
 router.get(
   '/sso/google/config',
@@ -54,29 +47,16 @@ router.post(
   })
 )
 
-/**
- * Verify Google ID token or Access token directly with Google OAuth2 APIs.
- */
+/** Verify Google ID token or Access token directly with Google OAuth2 APIs. */
 async function verifyGoogleTokenWithGoogle(token: string): Promise<{
-  email: string
-  name: string
-  picture?: string
-  sub: string
+  email: string; name: string; picture?: string; sub: string
 } | null> {
   // 1. Try Google ID Token verification
   try {
     const idTokenUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(token)}`
     const idRes = await fetch(idTokenUrl, { method: 'GET' })
     if (idRes.ok) {
-      const data = await idRes.json() as {
-        email?: string
-        email_verified?: string | boolean
-        name?: string
-        picture?: string
-        sub?: string
-        aud?: string
-      }
-
+      const data = await idRes.json() as { email?: string; email_verified?: string | boolean; name?: string; picture?: string; sub?: string; aud?: string }
       const isVerified = data.email_verified === true || data.email_verified === 'true'
       if (data.email && isVerified && data.sub) {
         return {
@@ -94,18 +74,9 @@ async function verifyGoogleTokenWithGoogle(token: string): Promise<{
   // 2. Try Google UserInfo endpoint (if token is an access token)
   try {
     const userinfoUrl = 'https://www.googleapis.com/oauth2/v3/userinfo'
-    const infoRes = await fetch(userinfoUrl, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const infoRes = await fetch(userinfoUrl, { headers: { Authorization: `Bearer ${token}` } })
     if (infoRes.ok) {
-      const data = await infoRes.json() as {
-        email?: string
-        email_verified?: boolean
-        name?: string
-        picture?: string
-        sub?: string
-      }
-
+      const data = await infoRes.json() as { email?: string; email_verified?: boolean; name?: string; picture?: string; sub?: string }
       if (data.email && (data.email_verified === true || data.email_verified === undefined) && data.sub) {
         return {
           email: data.email.toLowerCase().trim(),
@@ -235,16 +206,16 @@ async function handleGoogleExchange(req: any, res: any) {
     res.set('Cache-Control', 'no-store')
 
     const meData = await getMe(currentUser.id, businessId)
-
     sendSuccess(res, {
       isNewUser,
-      user: meData?.user ?? {
+      user: {
         id: currentUser.id,
         phone: currentUser.phone,
         name: currentUser.name,
         email: currentUser.email,
         businessId,
         role: 'owner',
+        ...(meData?.user ?? {}),
       },
       businesses: meData?.businesses ?? [],
       activeBusiness: meData?.activeBusiness ?? null,

@@ -18,7 +18,7 @@ vi.mock('../party.service', () => ({
 
 import { useParties } from '../useParties'
 import { createTestWrapper } from '@/test/query-wrapper'
-
+import { clearReadCache } from '@/db'
 
 const MOCK_RESPONSE = {
   parties: [{ id: '1', name: 'Party A' }],
@@ -31,8 +31,9 @@ const MOCK_RESPONSE = {
 let wrapper = createTestWrapper()
 
 describe('useParties', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    await clearReadCache()
     mockGetParties.mockResolvedValue(MOCK_RESPONSE)
     wrapper = createTestWrapper()
   })
