@@ -49,6 +49,7 @@ export const MORE_MENU_ITEMS: MoreMenuItem[] = [
   { id: 'items-library', navKey: 'items-library', label: 'Items Library', description: '67+ ready items', icon: 'BookOpen', route: ROUTES.ITEMS_LIBRARY, color: 'var(--color-primary-50)', group: 'efficiency' },
 
   // Money & Payments
+  { id: 'invoices', navKey: 'invoices', label: 'Invoices', description: 'All sales invoices', icon: 'FileText', route: ROUTES.INVOICES, color: 'var(--color-primary-50)', group: 'money' },
   { id: 'payments', navKey: 'payments', label: 'Payments', description: 'Record & track', icon: 'Banknote', route: ROUTES.PAYMENTS, color: 'var(--color-success-50)', group: 'money' },
   { id: 'outstanding', navKey: 'outstanding', label: 'Outstanding', description: 'Who owes what', icon: 'Clock', route: ROUTES.OUTSTANDING, color: 'var(--color-warning-50)', group: 'money' },
   { id: 'expenses', navKey: 'expenses', label: 'Expenses', description: 'Track spending', icon: 'Receipt', route: ROUTES.EXPENSES, color: 'var(--color-error-50)', group: 'money' },
