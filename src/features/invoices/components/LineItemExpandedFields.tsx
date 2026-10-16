@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/Input'
 
 interface LineItemExpandedFieldsProps {
   index: number
-  productName: string
   rate: number
   isFree: boolean
   priceSource?: PriceResolverResult['source']
@@ -18,12 +17,10 @@ interface LineItemExpandedFieldsProps {
   showProfit: boolean
   profit: number
   profitPercent: number
-  displayLineTotal: number
 }
 
 export const LineItemExpandedFields: React.FC<LineItemExpandedFieldsProps> = ({
   index,
-  productName,
   rate,
   isFree,
   priceSource,
@@ -38,23 +35,23 @@ export const LineItemExpandedFields: React.FC<LineItemExpandedFieldsProps> = ({
   const { t } = useLanguage()
 
   return (
-    <div className="mt-2 p-2.5 rounded-xl bg-[var(--color-surface-hover)] border border-[var(--color-border)] space-y-2.5 transition-all">
+    <div className="line-item-expanded-panel">
       <div className="flex items-center gap-3">
         <div className="flex-1 max-w-[200px]">
           <label
-            className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-secondary)] block mb-1"
+            className="line-item-expanded-panel__label"
             htmlFor={`line-rate-${index}`}
           >
             {t.rateRs || 'Custom Rate (₹)'}
           </label>
           <div className="relative flex items-center">
-            <span className="absolute left-2.5 text-xs font-bold text-[var(--color-text-muted)] pointer-events-none select-none">
+            <span className="line-item-discount-panel__currency-prefix">
               ₹
             </span>
             <Input
               id={`line-rate-${index}`}
               type="number"
-              className="input pl-7 min-h-[34px] h-[34px] text-xs font-bold tabular-nums bg-[var(--color-surface)] border-[var(--color-border)] focus:border-[var(--color-primary-500)]"
+              className="input line-item-discount-panel__input"
               value={rate === 0 ? '' : paiseToRupees(rate)}
               placeholder="0.00"
               min={0}
@@ -78,11 +75,11 @@ export const LineItemExpandedFields: React.FC<LineItemExpandedFieldsProps> = ({
       </div>
 
       {showProfit && !isFree && (
-        <div className="flex items-center justify-between pt-1.5 border-t border-[var(--color-border)]/60 text-xs">
-          <span className="font-semibold text-[var(--color-text-secondary)]">Margin / Profit</span>
+        <div className="line-item-expanded-panel__footer">
+          <span className="font-semibold text-secondary">Margin / Profit</span>
           <span
             className={`font-bold tabular-nums ${
-              profit >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+              profit >= 0 ? 'text-success' : 'text-danger'
             }`}
           >
             {profit >= 0 ? '+' : ''}

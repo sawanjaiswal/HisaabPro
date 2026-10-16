@@ -23,7 +23,7 @@ export const LineItemQuantityStepper: React.FC<LineItemQuantityStepperProps> = (
       step={1}
       disabled={disabled}
       size="md"
-      ariaLabel={`Quantity for ${productName}`}
+      ariaLabel={`quantity for ${productName}`}
     />
   )
 }

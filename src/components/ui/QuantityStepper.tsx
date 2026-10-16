@@ -72,34 +72,19 @@ export const QuantityStepper = React.forwardRef<HTMLDivElement, QuantityStepperP
       [max, min, onChange],
     )
 
-    const sizeStyles = {
-      sm: {
-        container: 'h-8 min-w-[96px]',
-        button: 'w-7 h-8',
-        icon: 12,
-        input: 'text-xs',
-      },
-      md: {
-        container: 'h-9 min-w-[108px]',
-        button: 'w-8 h-9',
-        icon: 14,
-        input: 'text-sm',
-      },
-      lg: {
-        container: 'h-10 min-w-[120px]',
-        button: 'w-9 h-10',
-        icon: 15,
-        input: 'text-base',
-      },
+    const iconSize = {
+      sm: 12,
+      md: 14,
+      lg: 15,
     }[size]
 
     return (
       <div
         ref={ref}
         className={cn(
-          'inline-flex items-center rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xs overflow-hidden select-none transition-all focus-within:border-[var(--color-primary-500)] focus-within:ring-2 focus-within:ring-[var(--color-primary-100)] dark:focus-within:ring-emerald-950/40',
-          sizeStyles.container,
-          disabled && 'opacity-50 pointer-events-none',
+          'quantity-stepper',
+          `quantity-stepper--${size}`,
+          disabled && 'quantity-stepper--disabled',
           className,
         )}
         {...props}
@@ -109,12 +94,9 @@ export const QuantityStepper = React.forwardRef<HTMLDivElement, QuantityStepperP
           onClick={handleDecrement}
           disabled={disabled || value <= min}
           aria-label={`Decrease ${ariaLabel}`}
-          className={cn(
-            'flex items-center justify-center shrink-0 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] active:bg-[var(--color-surface-active)] active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none border-0 bg-transparent p-0',
-            sizeStyles.button,
-          )}
+          className="quantity-stepper__btn"
         >
-          <Minus size={sizeStyles.icon} strokeWidth={2.4} aria-hidden="true" />
+          <Minus size={iconSize} strokeWidth={2.4} aria-hidden="true" />
         </button>
 
         <input
@@ -128,10 +110,7 @@ export const QuantityStepper = React.forwardRef<HTMLDivElement, QuantityStepperP
           onChange={handleInputChange}
           onFocus={(e) => e.target.select()}
           aria-label={ariaLabel}
-          className={cn(
-            'w-full flex-1 text-center font-bold text-[var(--color-text-primary)] bg-transparent border-0 outline-none p-0 tabular-nums [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none shadow-none',
-            sizeStyles.input,
-          )}
+          className="quantity-stepper__input"
         />
 
         <button
@@ -139,12 +118,9 @@ export const QuantityStepper = React.forwardRef<HTMLDivElement, QuantityStepperP
           onClick={handleIncrement}
           disabled={disabled || value >= max}
           aria-label={`Increase ${ariaLabel}`}
-          className={cn(
-            'flex items-center justify-center shrink-0 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] active:bg-[var(--color-surface-active)] active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none border-0 bg-transparent p-0',
-            sizeStyles.button,
-          )}
+          className="quantity-stepper__btn"
         >
-          <Plus size={sizeStyles.icon} strokeWidth={2.4} aria-hidden="true" />
+          <Plus size={iconSize} strokeWidth={2.4} aria-hidden="true" />
         </button>
       </div>
     )

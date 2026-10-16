@@ -119,10 +119,10 @@ describe('LineItemEditor', () => {
     // Price per unit
     expect(screen.getByText('₹ 55/PCS')).toBeDefined()
     // Stock indicator
-    expect(screen.getByText(/Stock: 10\.0PCS/)).toBeDefined()
+    expect(screen.getByText(/Stock: 10\.0 PCS/)).toBeDefined()
   })
 
-  it('toggles expansion when clicking price/chevron', () => {
+  it('toggles rate field expansion when clicking rate pill', () => {
     render(
       <LineItemEditor
         item={baseItem}
@@ -135,11 +135,39 @@ describe('LineItemEditor', () => {
       />
     )
 
-    const toggleBtn = screen.getByLabelText(/details for Maji/i)
+    const toggleBtn = screen.getByLabelText(/rate for Maji/i)
     fireEvent.click(toggleBtn)
 
-    // Purchase Price (PP) appears when expanded
-    expect(screen.getByText(/PP/)).toBeDefined()
-    expect(screen.getByText('₹ 40')).toBeDefined()
+    // Custom Rate input appears when expanded
+    expect(screen.getByDisplayValue('55')).toBeDefined()
+  })
+
+  it('opens discount panel and closes cleanly when toggled', () => {
+    const onUpdate = vi.fn()
+    render(
+      <LineItemEditor
+        item={baseItem}
+        index={0}
+        onUpdate={onUpdate}
+        onRemove={vi.fn()}
+        showProfit={false}
+        priceMode="AUTO"
+        onPriceModeChange={vi.fn()}
+      />
+    )
+
+    const discountTagBtn = screen.getByLabelText('Add discount')
+    fireEvent.click(discountTagBtn)
+
+    // Discount options (% Off, ₹ Flat) appear
+    expect(screen.getByText('% Off')).toBeDefined()
+    expect(screen.getByText('₹ Flat')).toBeDefined()
+
+    // Clicking close discount button dismisses the panel cleanly
+    const closeBtn = screen.getByLabelText('Close discount')
+    fireEvent.click(closeBtn)
+
+    expect(screen.queryByText('% Off')).toBeNull()
+    expect(onUpdate).toHaveBeenCalledWith(0, { discountValue: 0 })
   })
 })
