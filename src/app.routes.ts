@@ -11,6 +11,22 @@ export const FeedbackWidget = lazy(() =>
 export const WhatsAppFab = lazy(() =>
   import('@/components/feedback/WhatsAppFab').then((m) => ({ default: m.WhatsAppFab }))
 )
+// Prefetch core navigation routes during startup/idle so tab switches are instantaneous (0ms)
+if (typeof window !== 'undefined') {
+  const prefetchCore = () => {
+    import('@/features/dashboard/DashboardPage')
+    import('@/features/parties/PartiesPage')
+    import('@/features/products/ProductsPage')
+    import('@/features/invoices/CreateInvoicePage')
+    import('@/features/invoices/InvoicesPage')
+    import('@/features/more/MorePage')
+  }
+  if ('requestIdleCallback' in window) {
+    (window as unknown as { requestIdleCallback: (cb: () => void, opts: { timeout: number }) => void }).requestIdleCallback(prefetchCore, { timeout: 1000 })
+  } else {
+    setTimeout(prefetchCore, 50)
+  }
+}
 
 export const Login = lazy(() => import('@/features/auth/LoginPage'))
 export const Register = lazy(() => import('@/features/auth/RegisterPage'))

@@ -13,7 +13,14 @@ export async function handleDocumentMutation(
     const existing = await tx.document.findFirst({ where: { id: entityId, businessId } });
     if (!existing) {
       const docType = payload?.type || 'SALE_INVOICE';
-      const grandTotal = payload?.grandTotal || 0;
+      const grandTotal = Math.round(Number(payload?.grandTotal ?? 0));
+      const receivedPayment = payload?.payment?.amountReceived !== undefined
+        ? Number(payload.payment.amountReceived)
+        : (payload?.paidAmount !== undefined ? Number(payload.paidAmount) : 0);
+      const paidAmount = Math.max(0, Math.round(receivedPayment));
+      const balanceDue = payload?.balanceDue !== undefined
+        ? Math.max(0, Math.round(Number(payload.balanceDue)))
+        : Math.max(0, grandTotal - paidAmount);
       const lineItemsData = Array.isArray(payload?.lineItems)
         ? payload.lineItems
             .filter((it: any) => it.productId)
@@ -37,7 +44,9 @@ export async function handleDocumentMutation(
           documentDate: payload?.documentDate ? new Date(payload.documentDate) : new Date(),
           dueDate: payload?.dueDate ? new Date(payload.dueDate) : null,
           grandTotal,
-          subtotal: payload?.subtotal || grandTotal,
+          subtotal: payload?.subtotal ? Math.round(Number(payload.subtotal)) : grandTotal,
+          paidAmount,
+          balanceDue,
           notes: payload?.notes || null,
           createdBy: userId,
           ...(lineItemsData.length > 0 ? { lineItems: { create: lineItemsData } } : {}),
@@ -54,6 +63,39 @@ export async function handleDocumentMutation(
               totalBusiness: { increment: Math.abs(delta) },
               lastTransactionAt: new Date(),
             },
+          });
+        }
+
+        if (paidAmount > 0 && docType === 'SALE_INVOICE') {
+          const pCount = await tx.payment.count({ where: { businessId } });
+          const payNumber = `PAY-${new Date().getFullYear()}-${String(pCount + 1).padStart(4, '0')}`;
+          const paymentRecord = await tx.payment.create({
+            data: {
+              businessId,
+              type: 'PAYMENT_IN',
+              paymentNumber: payNumber,
+              partyId: payload.partyId,
+              amount: paidAmount,
+              date: payload.documentDate ? new Date(payload.documentDate) : new Date(),
+              mode: payload.payment?.mode || 'CASH',
+              referenceNumber: payload.payment?.referenceNumber || null,
+              notes: `Payment for ${payload.documentNumber || 'invoice'}`,
+              createdBy: userId,
+            },
+          });
+          const allocationAmt = Math.min(paidAmount, grandTotal);
+          if (allocationAmt > 0) {
+            await tx.paymentAllocation.create({
+              data: {
+                paymentId: paymentRecord.id,
+                invoiceId: entityId,
+                amount: allocationAmt,
+              },
+            });
+          }
+          await tx.party.update({
+            where: { id: payload.partyId },
+            data: { outstandingBalance: { decrement: paidAmount } },
           });
         }
       }

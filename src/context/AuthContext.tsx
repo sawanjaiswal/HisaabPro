@@ -56,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (cachedBiz?.length) {
           setBusinesses(cachedBiz)
           setIsLoading(false)
+          void import('@/sync/SyncManager').then(({ SyncManager }) => SyncManager.triggerSync())
         }
       }
 
@@ -67,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setActiveBusiness(response.activeBusiness)
         authLib.setCachedUser(response.user)
         authLib.setCachedBusinesses(response.businesses)
+        void import('@/sync/SyncManager').then(({ SyncManager }) => SyncManager.triggerSync())
       } catch (err) {
         // An aborted request is not a failure — it is the absence of an answer.
         // The effect that started it has already been torn down (React does

@@ -41,8 +41,12 @@ export function useDocumentSegments(
 
   const visible = useMemo(() => {
     return (documents: DocumentSummary[]) => {
-      if (segment === 'PAID') return documents.filter((d) => d.balanceDue <= 0)
-      if (segment === 'PENDING') return documents.filter((d) => d.balanceDue > 0)
+      if (segment === 'PAID') {
+        return documents.filter((d) => (d.grandTotal > 0 && d.balanceDue <= 0 && d.paidAmount >= d.grandTotal) || (d.grandTotal <= 0 && d.paidAmount > 0))
+      }
+      if (segment === 'PENDING') {
+        return documents.filter((d) => d.balanceDue > 0 || (d.grandTotal > 0 && d.paidAmount < d.grandTotal))
+      }
       return documents
     }
   }, [segment])

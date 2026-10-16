@@ -1,4 +1,5 @@
 import { db } from '../db/schema';
+import { generateSearchTokens } from '../repositories/repository.utils';
 
 export interface SyncChanges {
   parties?: any[];
@@ -57,6 +58,7 @@ export async function hydrateLocalEntities(changes: SyncChanges): Promise<void> 
         salePrice: p.salePrice || 0,
         purchasePrice: p.purchasePrice || 0,
         minStockLevel: p.minStockLevel || 0,
+        searchTokens: generateSearchTokens([p.name, p.sku, p.barcode]),
         isActive: p.isActive ?? true,
         isDeleted: p.isDeleted ?? false,
         version: p.version || 1,
@@ -75,26 +77,34 @@ export async function hydrateLocalEntities(changes: SyncChanges): Promise<void> 
 
   if (Array.isArray(documents) && documents.length > 0) {
     await db.documents.bulkPut(
-      documents.map((d: any) => ({
-        id: d.id,
-        businessId: d.businessId,
-        documentNumber: d.documentNumber || '',
-        type: d.type,
-        status: d.status,
-        partyId: d.partyId,
-        partyName: d.partyName || d.party?.name || partyMap.get(d.partyId) || '',
-        documentDate: safeIsoDate(d.documentDate),
-        dueDate: d.dueDate ? safeIsoDate(d.dueDate) : null,
-        grandTotal: d.grandTotal || 0,
-        paidAmount: d.paidAmount || 0,
-        balanceAmount: d.balanceDue ?? (d.balanceAmount ?? ((d.grandTotal || 0) - (d.paidAmount || 0))),
-        lineItems: d.lineItems || d.items || [],
-        notes: d.notes || null,
-        isDeleted: d.isDeleted ?? false,
-        version: d.version || 1,
-        createdAt: safeIsoDate(d.createdAt),
-        updatedAt: safeIsoDate(d.updatedAt),
-      }))
+      documents.map((d: any) => {
+        const gTotal = d.grandTotal || 0;
+        const pAmount = d.paidAmount || 0;
+        const rawDue = d.balanceDue !== undefined && d.balanceDue !== null ? d.balanceDue : d.balanceAmount;
+        const healedDue = (pAmount === 0 && gTotal > 0 && (rawDue === 0 || rawDue === undefined))
+          ? gTotal
+          : (rawDue !== undefined ? rawDue : Math.max(0, gTotal - pAmount));
+        return {
+          id: d.id,
+          businessId: d.businessId,
+          documentNumber: d.documentNumber || '',
+          type: d.type,
+          status: d.status,
+          partyId: d.partyId,
+          partyName: d.partyName || d.party?.name || partyMap.get(d.partyId) || '',
+          documentDate: safeIsoDate(d.documentDate),
+          dueDate: d.dueDate ? safeIsoDate(d.dueDate) : null,
+          grandTotal: gTotal,
+          paidAmount: pAmount,
+          balanceAmount: healedDue,
+          lineItems: d.lineItems || d.items || [],
+          notes: d.notes || null,
+          isDeleted: d.isDeleted ?? false,
+          version: d.version || 1,
+          createdAt: safeIsoDate(d.createdAt),
+          updatedAt: safeIsoDate(d.updatedAt),
+        };
+      })
     );
   }
 

@@ -57,7 +57,9 @@ export function InvoicePaymentHistory({ document }: Props) {
     ? Math.min(100, Math.round((document.paidAmount / document.grandTotal) * 100))
     : 100
 
-  const isFullyPaid = document.balanceDue <= 0
+  const isFullyPaid = document.grandTotal > 0
+    ? (document.balanceDue <= 0 && document.paidAmount >= document.grandTotal)
+    : document.paidAmount > 0
 
   return (
     <div className="bg-surface rounded-xl border border-border p-4 shadow-sm mb-4">

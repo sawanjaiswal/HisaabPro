@@ -24,6 +24,11 @@ const mockUser: AuthUser = {
   businessId: 'biz-456',
 }
 
+beforeEach(() => {
+  sessionStorage.clear()
+  localStorage.clear()
+})
+
 describe('clearAuth', () => {
   beforeEach(() => {
     sessionStorage.clear()

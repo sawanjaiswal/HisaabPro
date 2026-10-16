@@ -61,10 +61,10 @@ export function usePayments({
       } catch {}
 
       if (local && (local.summary?.totalIn > 0 || local.summary?.totalOut > 0 || local.payments.length > 0)) {
-        // Background SWR update (non-blocking)
         void getPayments(filters).catch(() => {})
         return local
       }
+
       return await getPayments(filters)
     }
   )

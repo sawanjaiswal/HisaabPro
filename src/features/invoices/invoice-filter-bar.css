@@ -10,7 +10,7 @@
   flex-direction: column;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
-  animation: fadeUp 400ms var(--ease-premium) 60ms both;
+  animation: fadeUp 200ms var(--ease-premium) both;
 }
 
 /* Horizontal scrollable row of document-type filter pills */

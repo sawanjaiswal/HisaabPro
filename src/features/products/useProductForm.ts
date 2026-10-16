@@ -45,6 +45,8 @@ export interface UseProductFormOptions {
   initialData?: ProductFormData
   /** #150 — the product's optimistic-lock version at load time (edit mode). */
   version?: number
+  /** Callback on success, suppresses navigation */
+  onSuccess?: (result: { mode: 'create' | 'edit'; id?: string; name: string }) => void
 }
 
 export interface UseProductFormReturn {
@@ -175,6 +177,11 @@ export function useProductForm(options: UseProductFormOptions = {}): UseProductF
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.products.all() })
+      if (options.onSuccess) {
+        toast.success(result.mode === 'edit' ? `${result.name} updated` : `${result.name} added`)
+        options.onSuccess({ mode: result.mode, id: result.mode === 'edit' ? result.editId : undefined, name: result.name })
+        return
+      }
       if (result.mode === 'edit') {
         toast.success(`${result.name} updated`)
         navigate(`/products/${result.editId}`, { replace: true })

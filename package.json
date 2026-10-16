@@ -23,6 +23,7 @@
     "cap:open": "./scripts/cap.sh open android",
     "cap:run": "./scripts/cap.sh run android",
     "android": "npm run build && ./scripts/cap.sh sync android && ./scripts/cap.sh open android",
+    "app:phone": "npm run build && ./scripts/cap.sh sync android && ./scripts/cap.sh run android --target 10BF190CZM002B3",
     "android:live": "./scripts/cap.sh run android --livereload --external",
     "release:apk": "./scripts/build-release.sh apk",
     "release:aab": "./scripts/build-release.sh aab",

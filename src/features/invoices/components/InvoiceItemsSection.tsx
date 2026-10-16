@@ -1,19 +1,16 @@
-import { useCallback } from 'react'
-import { Plus, X, Package, User } from 'lucide-react'
+import { useState, useCallback } from 'react'
+import { Plus, X, Package, User, ChevronDown, ChevronUp } from 'lucide-react'
 import { useLanguage } from '@/hooks/useLanguage'
-import { LineItemEditor } from './LineItemEditor'
 import { useLinePriceMeta } from './useLinePriceMeta'
 import { useBogoPermission } from '../useBogoPermission'
 import { PartySearchInput } from './PartySearchInput'
 import { ProductSearchInput } from './ProductSearchInput'
 import { FrequentProductChips } from './FrequentProductChips'
 import { InvoiceScanButton } from './InvoiceScanButton'
-import { TaxPickerColumn } from './TaxPickerColumn'
-import { HsnTypeahead } from './HsnTypeahead'
 import { InvoiceItemsEmptyState } from './InvoiceItemsEmptyState'
 import { InvoiceStockWarnings } from './InvoiceStockWarnings'
-import { calculateLineTotal } from '../invoice-calc.utils'
-import { calculateLineProfit } from '../invoice-totals.utils'
+import { InvoiceItemsList } from './InvoiceItemsList'
+import { EditProductDrawer } from '@/features/products/components/EditProductDrawer'
 import { usePartyTier } from '@/features/price-lists/use-party-tier'
 import { usePriceListOverride } from '@/features/pricing/usePriceListOverride'
 import { PriceListOverrideSelector } from '@/features/pricing/components/PriceListOverrideSelector'
@@ -54,6 +51,8 @@ export function InvoiceItemsSection({
 }: InvoiceItemsSectionProps) {
   const { t } = useLanguage()
   const canMarkFree = useBogoPermission()
+  const [editProductId, setEditProductId] = useState<string | null>(null)
+  const [isProductsCollapsed, setIsProductsCollapsed] = useState(false)
 
   const { tier: partyTier, partyPricing, status: tierStatus } = usePartyTier(partyId)
   const partyDefaultListId = tierStatus === 'success' ? (partyTier?.id ?? null) : null
@@ -125,15 +124,30 @@ export function InvoiceItemsSection({
       {/* ── 2. Items Section ── */}
       <div className="space-y-3.5">
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)]">
-            <Package size={13} className="text-[var(--color-primary-600)]" />
-            <span>{t.sectionItems || 'ITEMS'}</span>
+          <div className="flex items-center gap-2">
+            <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)]">
+              <Package size={13} className="text-[var(--color-primary-600)]" />
+              <span>{t.sectionItems || 'ITEMS'}</span>
+              {lineItems.length > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[var(--color-primary-50)] text-[var(--color-primary-700)] text-[10px] font-bold">
+                  {lineItems.length}
+                </span>
+              )}
+            </label>
             {lineItems.length > 0 && (
-              <span className="ml-1 px-1.5 py-0.5 rounded-full bg-[var(--color-primary-50)] text-[var(--color-primary-700)] text-[10px] font-bold">
-                {lineItems.length}
-              </span>
+              <Button
+                variant="none"
+                type="button"
+                onClick={() => setIsProductsCollapsed((v) => !v)}
+                className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] px-1.5 py-0.5 rounded text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                aria-expanded={!isProductsCollapsed}
+                aria-label={isProductsCollapsed ? 'Expand all products' : 'Collapse all products'}
+              >
+                <span>{isProductsCollapsed ? 'Expand' : 'Collapse'}</span>
+                {isProductsCollapsed ? <ChevronDown size={13} /> : <ChevronUp size={13} />}
+              </Button>
             )}
-          </label>
+          </div>
           <Button
             variant="none"
             type="button"
@@ -163,55 +177,23 @@ export function InvoiceItemsSection({
           />
         )}
 
-        {lineItems.map((item, index) => {
-          const { lineTotal, discountAmount } = calculateLineTotal(
-            item.quantity, item.rate, item.discountType, item.discountValue,
-          )
-          const { profit, profitPercent } = calculateLineProfit(item.rate, 0, item.quantity, discountAmount)
-          const meta = lineMeta[index] ?? { mode: isEditMode ? ('EDITED' as PriceMode) : ('AUTO' as PriceMode), salePrice: 0 }
-
-          return (
-            <div key={item.productId} className="line-item-with-gst">
-              <LineItemEditor
-                item={{
-                  ...item,
-                  productName: productNames[item.productId] ?? `${t.item} ${index + 1}`,
-                  discountAmount,
-                  lineTotal,
-                  profit,
-                  profitPercent,
-                }}
-                index={index}
-                onUpdate={handleUpdateLineItem}
-                onRemove={onRemoveLineItem}
-                showProfit={false}
-                canMarkFree={canMarkFree}
-                priceTier={tier}
-                partyPricing={partyPricing}
-                productSalePrice={meta.salePrice || undefined}
-                priceMode={meta.mode}
-                onPriceModeChange={handlePriceModeChange}
-              />
-              {gstEnabled && (
-                <div className="line-item-gst-row">
-                  {!compositionScheme && (
-                    <TaxPickerColumn
-                      lineIndex={index}
-                      taxCategoryId={item.taxCategoryId}
-                      compositionScheme={compositionScheme}
-                      onChange={(id) => onUpdateLineItem(index, { taxCategoryId: id })}
-                    />
-                  )}
-                  <HsnTypeahead
-                    lineIndex={index}
-                    value={item.hsnCode ?? ''}
-                    onSelect={(code, _rate) => onUpdateLineItem(index, { hsnCode: code })}
-                  />
-                </div>
-              )}
-            </div>
-          )
-        })}
+        <InvoiceItemsList
+          lineItems={lineItems}
+          productNames={productNames}
+          lineMeta={lineMeta}
+          isEditMode={isEditMode}
+          tier={tier}
+          partyPricing={partyPricing}
+          canMarkFree={canMarkFree}
+          gstEnabled={gstEnabled}
+          compositionScheme={compositionScheme}
+          isCollapsed={isProductsCollapsed}
+          onToggleCollapse={() => setIsProductsCollapsed((v) => !v)}
+          onUpdateLineItem={handleUpdateLineItem}
+          onRemoveLineItem={onRemoveLineItem}
+          onPriceModeChange={handlePriceModeChange}
+          onEditProduct={(id) => setEditProductId(id)}
+        />
 
         {errors.lineItems && <span className="field-error" role="alert">{errors.lineItems}</span>}
 
@@ -240,6 +222,17 @@ export function InvoiceItemsSection({
           </div>
         )}
       </div>
+
+      <EditProductDrawer
+        productId={editProductId}
+        open={Boolean(editProductId)}
+        onClose={() => setEditProductId(null)}
+        onProductUpdated={(updated) => {
+          if (updated?.name && updated?.id) {
+            productNames[updated.id] = updated.name
+          }
+        }}
+      />
     </div>
   )
 }

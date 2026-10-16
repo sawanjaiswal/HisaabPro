@@ -102,6 +102,31 @@ export async function getPayment(
   id: string,
   signal?: AbortSignal
 ): Promise<PaymentDetail> {
+  try {
+    const { PaymentRepository } = await import('@/repositories/payment.repository')
+    const repo = new PaymentRepository()
+    const local = await repo.getById(id)
+    if (local) {
+      return {
+        id: local.id,
+        offlineId: local.id,
+        type: (local.type === 'IN' || local.type === 'PAYMENT_IN' ? 'PAYMENT_IN' : 'PAYMENT_OUT') as any,
+        partyId: local.partyId,
+        partyName: local.partyName || 'Party',
+        amount: local.amount,
+        date: local.date,
+        mode: (local.mode || 'CASH') as any,
+        referenceNumber: local.referenceNumber || null,
+        notes: local.notes || null,
+        allocations: [],
+        discount: null,
+        unallocatedAmount: 0,
+        partyOutstandingAfter: 0,
+        createdAt: local.createdAt,
+        syncStatus: 'SYNCED',
+      }
+    }
+  } catch {}
   return api<PaymentDetail>(`/payments/${id}`, { signal })
 }
 

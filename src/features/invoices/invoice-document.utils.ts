@@ -35,8 +35,10 @@ export function getPaymentStatus(
   paidAmount: number,
 ): PaymentStatus {
   if (paidAmount <= 0) return 'UNPAID'
-  if (paidAmount >= grandTotal) return 'PAID'
-  return 'PARTIAL'
+  if (grandTotal > 0 && paidAmount >= grandTotal) return 'PAID'
+  if (paidAmount > 0 && grandTotal > 0) return 'PARTIAL'
+  if (paidAmount > 0 && grandTotal <= 0) return 'PAID'
+  return 'UNPAID'
 }
 
 // ─── Due date helpers ─────────────────────────────────────────────────────────

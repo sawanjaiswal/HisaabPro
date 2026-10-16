@@ -1,21 +1,21 @@
 {
-  "count": 1344,
+  "count": 1381,
   "violations": [
     {
       "file": "src/App.tsx",
-      "line": 120,
+      "line": 121,
       "type": "RAW_HEX",
       "text": "{/* Phase 5 Epic B — Sales Pipeline (#122) */}"
     },
     {
       "file": "src/App.tsx",
-      "line": 175,
+      "line": 176,
       "type": "RAW_HEX",
       "text": "{/* Epic D #128 — Commission frontend */}"
     },
     {
       "file": "src/App.tsx",
-      "line": 298,
+      "line": 299,
       "type": "RAW_HEX",
       "text": "{/* Epic C PR4 — Online Storefront (#121) */}"
     },

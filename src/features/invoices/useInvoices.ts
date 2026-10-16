@@ -64,10 +64,10 @@ export function useInvoices({
       } catch {}
 
       if (local && (local.summary?.totalAmount > 0 || local.documents.length > 0)) {
-        // Background SWR update (non-blocking)
         void getDocuments(filters).catch(() => {})
         return local
       }
+
       return await getDocuments(filters)
     }
   )

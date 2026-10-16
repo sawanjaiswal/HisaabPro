@@ -1,15 +1,16 @@
-/** Dashboard — State hook (TanStack Query)
+/** Dashboard — 0ms Local-First State Hook
  *
- * Fetches the home dashboard data in a single call.
- * Returns exactly what DashboardPage.tsx needs.
+ * Serves dashboard data instantly from Dexie via DashboardRepository.
+ * Background SWR updates from /dashboard/home without blocking UI.
  * All amounts in PAISE (integer).
  */
 
-import { useEffect } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useMemo, useEffect } from 'react'
 import { useToast } from '@/hooks/useToast'
 import { ApiError } from '@/lib/api'
-import { queryKeys } from '@/lib/query-keys'
+import { useLiveQuery, liveQueryMemoryCache } from '@/hooks/useLiveQuery'
+import { liveQueryBus } from '@/domain/live-query-bus'
+import { DashboardRepository } from '@/repositories/dashboard.repository'
 import { getHomeDashboard } from './dashboard.service'
 import type { HomeDashboardData } from './dashboard.types'
 
@@ -23,33 +24,62 @@ interface UseHomeDashboardReturn {
 
 export function useHomeDashboard(): UseHomeDashboardReturn {
   const toast = useToast()
-  const queryClient = useQueryClient()
+  const repo = useMemo(() => new DashboardRepository(), [])
 
-  const query = useQuery({
-    queryKey: queryKeys.dashboard.summary(),
-    queryFn: ({ signal }) => getHomeDashboard(signal),
-  })
+  const { data: rawData, isLoading, error, refetch } = useLiveQuery(
+    ['dashboard'],
+    async () => {
+      let local: HomeDashboardData | null = null
+      try {
+        local = await repo.getHomeData()
+      } catch {}
 
-  const data = query.data ?? null
-  // AbortError is fired when React Strict Mode (or rapid remount) cancels the
-  // first in-flight request — surface it as still-loading, not as a hard error,
-  // so the dashboard doesn't flash a banner on every dev refresh.
-  const isAbortError = query.error instanceof DOMException && query.error.name === 'AbortError'
-  const status: Status = query.isPending || isAbortError
+      const hasLocalData =
+        local &&
+        (local.outstanding.receivable.total > 0 ||
+          local.outstanding.payable.total > 0 ||
+          local.today.salesCount > 0 ||
+          local.today.paymentsReceivedCount > 0 ||
+          local.recentActivity.length > 0)
+
+      if (hasLocalData) {
+        void getHomeDashboard().catch(() => {})
+        return local
+      }
+
+      try {
+        return await getHomeDashboard()
+      } catch (err: any) {
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          return new Promise<HomeDashboardData>(() => {})
+        }
+        if (hasLocalData && local) return local
+        throw err
+      }
+    }
+  )
+
+  const isAbortError = error instanceof DOMException && error.name === 'AbortError'
+  const data = rawData ?? null
+  const status: Status = isLoading || isAbortError
     ? 'loading'
-    : query.isError ? 'error' : 'success'
+    : error && !data ? 'error' : 'success'
 
-  // Show toast on fetch error
   useEffect(() => {
-    if (query.error && !isAbortError) {
-      const message = query.error instanceof ApiError ? query.error.message : 'Failed to load dashboard'
+    if (error && !data && !isAbortError) {
+      const message = error instanceof ApiError ? error.message : 'Failed to load dashboard'
       toast.error(message)
     }
-  }, [query.error]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [error, data, isAbortError, toast])
 
-  const refresh = () => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all() })
-  }
+  const refresh = useCallback(async () => {
+    try {
+      const remote = await getHomeDashboard()
+      liveQueryMemoryCache.set(JSON.stringify(['dashboard']), remote)
+      liveQueryBus.invalidate(['dashboard'])
+    } catch {}
+    void refetch()
+  }, [refetch])
 
   return { data, status, refresh }
 }

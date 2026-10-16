@@ -34,6 +34,7 @@ export * from './BulkActionBar'
 export * from './FilterChips'
 export * from './OverlayShell'
 export * from './PartyAvatar'
+export * from './QuantityStepper'
 
 // Enterprise Data, Feedback & Navigation Primitives
 export * from './Table'

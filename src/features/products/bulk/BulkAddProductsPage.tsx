@@ -12,6 +12,7 @@ import { Header } from '@/components/layout/Header'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { BottomActionBar } from '@/components/ui/BottomActionBar'
 import { Button } from '@/components/ui/Button'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { useToast } from '@/hooks/useToast'
 import { ROUTES } from '@/config/routes.config'
 import { queryKeys } from '@/lib/query-keys'
@@ -165,7 +166,9 @@ export default function BulkAddProductsPage() {
           onApplyPaste={handleApplyPaste}
         />
 
-        {viewMode === 'cards' ? (
+        {rows.length === 0 ? (
+          <EmptyState title="No products to add" description="Add rows or paste text to start bulk adding products" />
+        ) : viewMode === 'cards' ? (
           <div className="space-y-3">
             {rows.map((row, idx) => (
               <BulkProductCardItem

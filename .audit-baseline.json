@@ -2,19 +2,19 @@
   "rawHex": [
     {
       "file": "src/App.tsx",
-      "line": 120,
+      "line": 121,
       "match": "#122",
       "context": "{/* Phase 5 Epic B — Sales Pipeline (#122) */}"
     },
     {
       "file": "src/App.tsx",
-      "line": 175,
+      "line": 176,
       "match": "#128",
       "context": "{/* Epic D #128 — Commission frontend */}"
     },
     {
       "file": "src/App.tsx",
-      "line": 298,
+      "line": 299,
       "match": "#121",
       "context": "{/* Epic C PR4 — Online Storefront (#121) */}"
     },
@@ -584,25 +584,25 @@
     },
     {
       "file": "src/config/routes.config.ts",
-      "line": 126,
+      "line": 127,
       "match": "#128",
       "context": "// Epic D #128 — Commission rules + ledger + leaderboard"
     },
     {
       "file": "src/config/routes.config.ts",
-      "line": 158,
+      "line": 159,
       "match": "#122",
       "context": "// Phase 5 Epic B — Sales Pipeline (#122)"
     },
     {
       "file": "src/config/routes.config.ts",
-      "line": 223,
+      "line": 224,
       "match": "#132",
       "context": "// #132 — Price Lists (Batch 4)"
     },
     {
       "file": "src/config/routes.config.ts",
-      "line": 227,
+      "line": 228,
       "match": "#121",
       "context": "// Epic C PR4 — Online Storefront (#121)"
     },
@@ -620,7 +620,7 @@
     },
     {
       "file": "src/context/AuthContext.tsx",
-      "line": 108,
+      "line": 110,
       "match": "#138",
       "context": "* Phase 6 #138 PR2 — refetch /me so the active business's suspendedAt fields"
     },
@@ -1249,12 +1249,6 @@
       "context": "* CRM (#127) — FollowUpsPage."
     },
     {
-      "file": "src/features/custom-orders/pages/CustomOrdersListPage.tsx",
-      "line": 85,
-      "match": "#fff",
-      "context": "color: activeFilter === f ? '#fff' : 'var(--color-text)',"
-    },
-    {
       "file": "src/features/dashboard/components/DashboardSalesHero.tsx",
       "line": 58,
       "match": "#4ade80",
@@ -1486,25 +1480,25 @@
       "file": "src/features/inventory/components/BatchPicker.tsx",
       "line": 44,
       "match": "#fff1f0",
-      "context": "<span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color: 'var(--color-error-500)', background: 'var(--color-danger-surface, #fff1f0)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>"
+      "context": "<span className=\"text-xs font-semibold text-[var(--color-error-500)] bg-[var(--color-danger-surface,#fff1f0)] rounded px-1.5 py-0.5 whitespace-nowrap\">"
     },
     {
       "file": "src/features/inventory/components/BatchPicker.tsx",
       "line": 51,
       "match": "#fffbeb",
-      "context": "<span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color: 'var(--color-warning)', background: 'var(--color-warning-surface, #fffbeb)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>"
+      "context": "<span className=\"text-xs font-semibold text-[var(--color-warning)] bg-[var(--color-warning-surface,#fffbeb)] rounded px-1.5 py-0.5 whitespace-nowrap\">"
     },
     {
       "file": "src/features/inventory/components/BatchPicker.tsx",
-      "line": 88,
+      "line": 82,
       "match": "#e0f2f1",
-      "context": "background: selected ? 'var(--color-primary-surface, #e0f2f1)' : 'transparent',"
+      "context": "selected ? 'bg-[var(--color-primary-surface,#e0f2f1)] border-2 border-[var(--color-primary)]' : 'bg-transparent border border-[var(--color-border)]'"
     },
     {
       "file": "src/features/inventory/components/ExpiredBatchBanner.tsx",
-      "line": 41,
+      "line": 38,
       "match": "#fff1f0",
-      "context": "background: 'var(--color-danger-surface, #fff1f0)',"
+      "context": "className=\"rounded-lg border border-[var(--color-error-500)] bg-[var(--color-danger-surface,#fff1f0)] p-3 px-4 mb-4\""
     },
     {
       "file": "src/features/invite-claim/invite-claim.service.ts",
@@ -1561,22 +1555,10 @@
       "context": "<Percent className=\"w-4 h-4 text-[#026F39] shrink-0\" />"
     },
     {
-      "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 3,
-      "match": "#132",
-      "context": "* #132 Batch 6: accepts priceMode + tier props; delegates resolver logic"
-    },
-    {
-      "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 37,
-      "match": "#132",
-      "context": "// ─── #132 Batch 6 — price resolution ───────────────────────────────────"
-    },
-    {
       "file": "src/features/invoices/components/StockShortageBanner.tsx",
-      "line": 42,
+      "line": 39,
       "match": "#fff1f0",
-      "context": "background: 'var(--color-danger-surface, #fff1f0)',"
+      "context": "className=\"rounded-lg border border-[var(--color-error-500)] bg-[var(--color-danger-surface,#fff1f0)] p-3 px-4 mb-4\""
     },
     {
       "file": "src/features/invoices/components/upi-pay-card.css",
@@ -1604,7 +1586,7 @@
     },
     {
       "file": "src/features/invoices/invoice-crud.service.ts",
-      "line": 190,
+      "line": 166,
       "match": "#150",
       "context": "entityVersion: expectedVersion, // #150 optimistic lock"
     },
@@ -1634,15 +1616,9 @@
     },
     {
       "file": "src/features/invoices/invoice-line-items.css",
-      "line": 96,
+      "line": 98,
       "match": "#f0fdf4",
       "context": "background: var(--color-success-50, #f0fdf4);"
-    },
-    {
-      "file": "src/features/invoices/invoice-line-items.css",
-      "line": 97,
-      "match": "#bbf7d0",
-      "context": "border-color: var(--color-success-200, #bbf7d0);"
     },
     {
       "file": "src/features/invoices/pdf/InvoicePdfDocument.tsx",
@@ -1670,39 +1646,15 @@
     },
     {
       "file": "src/features/invoices/useInvoiceForm.ts",
-      "line": 164,
+      "line": 171,
       "match": "#150",
       "context": "// #150 — a CONFLICT opens the reconcile dialog (handled below), not a toast."
     },
     {
       "file": "src/features/invoices/useInvoiceForm.ts",
-      "line": 207,
+      "line": 214,
       "match": "#150",
       "context": "if (isConflictError(err)) throw err // #150 — let withConflictGuard open the dialog; others already toasted"
-    },
-    {
-      "file": "src/features/jobs/components/JobForm.tsx",
-      "line": 191,
-      "match": "#f0fdf4",
-      "context": "<span style={{ alignSelf: 'flex-start', fontSize: 'var(--fs-xs)', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-full, 999px)', background: variance > 0 ? 'var(--color-error-50, var(--color-error-50))' : 'var(--color-success-50, #f0fdf4)', color: variance > 0 ? 'var(--color-error-600)' : 'var(--color-success-600, #16a34a)' }}>"
-    },
-    {
-      "file": "src/features/jobs/components/JobForm.tsx",
-      "line": 191,
-      "match": "#16a34a",
-      "context": "<span style={{ alignSelf: 'flex-start', fontSize: 'var(--fs-xs)', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-full, 999px)', background: variance > 0 ? 'var(--color-error-50, var(--color-error-50))' : 'var(--color-success-50, #f0fdf4)', color: variance > 0 ? 'var(--color-error-600)' : 'var(--color-success-600, #16a34a)' }}>"
-    },
-    {
-      "file": "src/features/jobs/components/JobItemRow.tsx",
-      "line": 53,
-      "match": "#fff",
-      "context": "color: active ? 'var(--color-on-primary, #fff)' : 'var(--color-text-secondary)',"
-    },
-    {
-      "file": "src/features/jobs/pages/JobsListPage.tsx",
-      "line": 80,
-      "match": "#fff",
-      "context": "color: activeFilter === f ? '#fff' : 'var(--color-text)',"
     },
     {
       "file": "src/features/landing/components/LandingCTA.tsx",
@@ -2395,62 +2347,26 @@
       "context": "* Loyalty #125 — Settings page (route: /settings/loyalty)."
     },
     {
-      "file": "src/features/marketing/components/DltWarningCard.tsx",
-      "line": 24,
-      "match": "#fef9c3",
-      "context": "background: 'var(--color-warning-50, #fef9c3)',"
-    },
-    {
-      "file": "src/features/marketing/components/DltWarningCard.tsx",
-      "line": 25,
-      "match": "#fde68a",
-      "context": "border: '1px solid var(--color-warning-200, #fde68a)',"
-    },
-    {
-      "file": "src/features/marketing/components/DltWarningCard.tsx",
-      "line": 26,
-      "match": "#78350f",
-      "context": "color: 'var(--color-warning-800, #78350f)',"
-    },
-    {
-      "file": "src/features/marketing/components/QuietHoursNotice.tsx",
-      "line": 21,
-      "match": "#eff6ff",
-      "context": "background: 'var(--color-primary-50, #eff6ff)',"
-    },
-    {
-      "file": "src/features/marketing/components/QuietHoursNotice.tsx",
-      "line": 22,
-      "match": "#bfdbfe",
-      "context": "border: '1px solid var(--color-primary-200, #bfdbfe)',"
-    },
-    {
-      "file": "src/features/marketing/components/QuietHoursNotice.tsx",
-      "line": 23,
-      "match": "#1d4ed8",
-      "context": "color: 'var(--color-primary-700, #1d4ed8)',"
-    },
-    {
       "file": "src/features/marketing/pages/MarketingHubPage.tsx",
-      "line": 169,
+      "line": 137,
       "match": "#7c3aed",
       "context": "icon={<FileText size={20} color=\"var(--color-secondary-600, #7c3aed)\" aria-hidden=\"true\" />}"
     },
     {
       "file": "src/features/marketing/pages/MarketingHubPage.tsx",
-      "line": 173,
+      "line": 141,
       "match": "#f5f3ff",
       "context": "color=\"var(--color-secondary-50, #f5f3ff)\""
     },
     {
       "file": "src/features/marketing/pages/MarketingHubPage.tsx",
-      "line": 177,
+      "line": 145,
       "match": "#d97706",
       "context": "icon={<Bell size={20} color=\"var(--color-warning-600, #d97706)\" aria-hidden=\"true\" />}"
     },
     {
       "file": "src/features/marketing/pages/MarketingHubPage.tsx",
-      "line": 181,
+      "line": 149,
       "match": "#fffbeb",
       "context": "color=\"var(--color-warning-50, #fffbeb)\""
     },
@@ -2606,7 +2522,7 @@
     },
     {
       "file": "src/features/payments/payment-crud.service.ts",
-      "line": 145,
+      "line": 170,
       "match": "#150",
       "context": "entityVersion: expectedVersion, // #150 optimistic lock"
     },
@@ -2815,18 +2731,6 @@
       "context": "background: var(--color-surface-primary, #fff);"
     },
     {
-      "file": "src/features/products/ExpiryAlertCard.tsx",
-      "line": 48,
-      "match": "#fff1f0",
-      "context": "const surface = isExpired ? 'var(--color-danger-surface, #fff1f0)' : 'var(--color-warning-surface, #fffbeb)'"
-    },
-    {
-      "file": "src/features/products/ExpiryAlertCard.tsx",
-      "line": 48,
-      "match": "#fffbeb",
-      "context": "const surface = isExpired ? 'var(--color-danger-surface, #fff1f0)' : 'var(--color-warning-surface, #fffbeb)'"
-    },
-    {
       "file": "src/features/products/label-print/LabelPDF.tsx",
       "line": 44,
       "match": "#e0e0e0",
@@ -2882,21 +2786,9 @@
     },
     {
       "file": "src/features/products/useProductForm.ts",
-      "line": 61,
+      "line": 63,
       "match": "#150",
       "context": "/** #150 — conflict reconcile state + actions; page renders <ConflictDialog>. */"
-    },
-    {
-      "file": "src/features/products/useProductForm.ts",
-      "line": 201,
-      "match": "#150",
-      "context": "// #150 — a CONFLICT opens the reconcile dialog (handled below), not a toast."
-    },
-    {
-      "file": "src/features/products/useProductForm.ts",
-      "line": 218,
-      "match": "#150",
-      "context": "// #150 — a stale save 409s; withConflictGuard opens the reconcile dialog."
     },
     {
       "file": "src/features/reorder/ReorderSuggestionsPage.tsx",
@@ -2971,26 +2863,14 @@
       "context": "{/* UPI ID — Epic C PR2 (#129) */}"
     },
     {
-      "file": "src/features/settings/InventorySettingsPage.tsx",
-      "line": 54,
-      "match": "#e0f2f1",
-      "context": "background: selected ? 'var(--color-primary-surface, #e0f2f1)' : 'var(--color-surface)',"
-    },
-    {
       "file": "src/features/settings/PinSetupPage.tsx",
-      "line": 63,
-      "match": "#8592",
-      "context": "&#8592;"
-    },
-    {
-      "file": "src/features/settings/PinSetupPage.tsx",
-      "line": 96,
+      "line": 85,
       "match": "#d97706",
       "context": "color: 'var(--color-warning-600, #d97706)',"
     },
     {
       "file": "src/features/settings/PinSetupPage.tsx",
-      "line": 118,
+      "line": 107,
       "match": "#fff",
       "context": "color: 'var(--color-gray-0, #fff)',"
     },
@@ -4202,7 +4082,7 @@
     },
     {
       "file": "src/lib/api-request.ts",
-      "line": 91,
+      "line": 93,
       "match": "#150",
       "context": "...(entityVersion !== undefined ? { 'X-Entity-Version': String(entityVersion) } : {}), // #150 optimistic lock"
     },
@@ -4214,7 +4094,7 @@
     },
     {
       "file": "src/lib/auth.ts",
-      "line": 162,
+      "line": 183,
       "match": "#138",
       "context": "/** Get current user profile with businesses list (incl. Phase 6 #138 suspendedAt fields) */"
     },
@@ -5385,6 +5265,24 @@
       "context": "<div className={`list-detail-layout list-detail-layout--desktop flex gap-0 min-h-[calc(100dvh-var(--header-height))] ${className}`.trim()}>"
     },
     {
+      "file": "src/components/layout/ListDetailLayout.tsx",
+      "line": 74,
+      "match": "border-[var(--color-gray-100)]",
+      "context": "className=\"list-detail-layout__rail flex-shrink-0 border-r border-[var(--color-gray-100)] bg-[var(--color-gray-0)] overflow-y-auto\""
+    },
+    {
+      "file": "src/components/layout/ListDetailLayout.tsx",
+      "line": 74,
+      "match": "bg-[var(--color-gray-0)]",
+      "context": "className=\"list-detail-layout__rail flex-shrink-0 border-r border-[var(--color-gray-100)] bg-[var(--color-gray-0)] overflow-y-auto\""
+    },
+    {
+      "file": "src/components/layout/ListDetailLayout.tsx",
+      "line": 84,
+      "match": "bg-[var(--color-gray-50)]",
+      "context": "className=\"list-detail-layout__detail flex-1 overflow-y-auto bg-[var(--color-gray-50)]\""
+    },
+    {
       "file": "src/components/layout/PageContainer.tsx",
       "line": 35,
       "match": "max-w-[var(--content-max-list)]",
@@ -5407,6 +5305,72 @@
       "line": 38,
       "match": "max-w-[var(--content-max-dashboard)]",
       "context": "dashboard: 'px-4 w-full mx-auto max-w-[var(--content-max-dashboard)]',"
+    },
+    {
+      "file": "src/components/layout/ResponsiveTable.tsx",
+      "line": 95,
+      "match": "border-[var(--color-gray-100)]",
+      "context": "className=\"w-full text-left rounded-xl p-4 border border-[var(--color-gray-100)] bg-[var(--color-gray-0)] min-h-11\""
+    },
+    {
+      "file": "src/components/layout/ResponsiveTable.tsx",
+      "line": 95,
+      "match": "bg-[var(--color-gray-0)]",
+      "context": "className=\"w-full text-left rounded-xl p-4 border border-[var(--color-gray-100)] bg-[var(--color-gray-0)] min-h-11\""
+    },
+    {
+      "file": "src/components/layout/ResponsiveTable.tsx",
+      "line": 103,
+      "match": "text-[var(--text-muted)]",
+      "context": "className=\"text-xs font-medium shrink-0 text-[var(--text-muted)]\""
+    },
+    {
+      "file": "src/components/layout/ResponsiveTable.tsx",
+      "line": 108,
+      "match": "text-[var(--text-primary)]",
+      "context": "className=\"text-sm text-right min-w-0 truncate text-[var(--text-primary)]\""
+    },
+    {
+      "file": "src/components/layout/ResponsiveTable.tsx",
+      "line": 123,
+      "match": "bg-[var(--color-gray-50)]",
+      "context": "className=\"sticky top-0 z-10 bg-[var(--color-gray-50)]\""
+    },
+    {
+      "file": "src/components/layout/ResponsiveTable.tsx",
+      "line": 130,
+      "match": "text-[var(--text-secondary)]",
+      "context": "className={`${cellPad} font-medium text-${col.align ?? 'left'} ${col.width ?? ''} text-[var(--text-secondary)] border-b border-[var(--color-gray-100)]`}"
+    },
+    {
+      "file": "src/components/layout/ResponsiveTable.tsx",
+      "line": 130,
+      "match": "border-[var(--color-gray-100)]",
+      "context": "className={`${cellPad} font-medium text-${col.align ?? 'left'} ${col.width ?? ''} text-[var(--text-secondary)] border-b border-[var(--color-gray-100)]`}"
+    },
+    {
+      "file": "src/components/layout/ResponsiveTable.tsx",
+      "line": 141,
+      "match": "bg-[var(--color-gray-50)]",
+      "context": "className={`${onRowClick ? 'cursor-pointer hover:bg-gray-50' : ''} ${zebra && i % 2 === 1 ? 'bg-[var(--color-gray-50)]' : ''}`}"
+    },
+    {
+      "file": "src/components/layout/ResponsiveTable.tsx",
+      "line": 147,
+      "match": "text-[var(--text-primary)]",
+      "context": "className={`${cellPad} text-${col.align ?? 'left'}${col.align === 'right' ? ' tabular-nums' : ''} text-[var(--text-primary)] border-b border-[var(--color-gray-100)]`}"
+    },
+    {
+      "file": "src/components/layout/ResponsiveTable.tsx",
+      "line": 147,
+      "match": "border-[var(--color-gray-100)]",
+      "context": "className={`${cellPad} text-${col.align ?? 'left'}${col.align === 'right' ? ' tabular-nums' : ''} text-[var(--text-primary)] border-b border-[var(--color-gray-100)]`}"
+    },
+    {
+      "file": "src/components/layout/ResponsiveTable.tsx",
+      "line": 167,
+      "match": "bg-[var(--color-gray-100)]",
+      "context": "className=\"h-12 rounded-md animate-pulse bg-[var(--color-gray-100)]\""
     },
     {
       "file": "src/components/magicui/animated-shiny-text.tsx",
@@ -6190,73 +6154,97 @@
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 174,
+      "line": 122,
+      "match": "text-[var(--text-primary)]",
+      "context": "className=\"w-56 sm:w-72 bg-transparent border-0 text-center text-5xl sm:text-6xl font-black focus:outline-none tabular-nums p-0 shadow-none disabled:opacity-50 text-[var(--text-primary)] font-primary tracking-[-0.03em]\""
+    },
+    {
+      "file": "src/components/ui/CurrencyInput.tsx",
+      "line": 122,
+      "match": "tracking-[-0.03em]",
+      "context": "className=\"w-56 sm:w-72 bg-transparent border-0 text-center text-5xl sm:text-6xl font-black focus:outline-none tabular-nums p-0 shadow-none disabled:opacity-50 text-[var(--text-primary)] font-primary tracking-[-0.03em]\""
+    },
+    {
+      "file": "src/components/ui/CurrencyInput.tsx",
+      "line": 139,
+      "match": "bg-[var(--color-gray-100)]",
+      "context": "className=\"px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-gray-100)] text-[var(--text-secondary)] border-0\""
+    },
+    {
+      "file": "src/components/ui/CurrencyInput.tsx",
+      "line": 139,
+      "match": "text-[var(--text-secondary)]",
+      "context": "className=\"px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-gray-100)] text-[var(--text-secondary)] border-0\""
+    },
+    {
+      "file": "src/components/ui/CurrencyInput.tsx",
+      "line": 165,
       "match": "text-[var(--color-text-primary)]",
       "context": "className=\"block text-sm font-medium text-[var(--color-text-primary)] select-none\""
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 177,
+      "line": 168,
       "match": "text-[var(--color-error-500)]",
       "context": "{required && <span className=\"text-[var(--color-error-500)] ml-1 font-bold\">*</span>}"
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 183,
+      "line": 174,
       "match": "rounded-[var(--radius-md)]",
       "context": "'flex items-center gap-2.5 px-3.5 py-2 rounded-[var(--radius-md)] border transition-all focus-within:ring-2 focus-within:ring-[var(--color-primary-100)] focus-within:border-[var(--color-primary-500)]',"
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 183,
+      "line": 174,
       "match": "ring-[var(--color-primary-100)]",
       "context": "'flex items-center gap-2.5 px-3.5 py-2 rounded-[var(--radius-md)] border transition-all focus-within:ring-2 focus-within:ring-[var(--color-primary-100)] focus-within:border-[var(--color-primary-500)]',"
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 183,
+      "line": 174,
       "match": "border-[var(--color-primary-500)]",
       "context": "'flex items-center gap-2.5 px-3.5 py-2 rounded-[var(--radius-md)] border transition-all focus-within:ring-2 focus-within:ring-[var(--color-primary-100)] focus-within:border-[var(--color-primary-500)]',"
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 185,
+      "line": 176,
       "match": "bg-[var(--color-gray-50)]",
       "context": "? 'bg-[var(--color-gray-50)] border-[var(--color-border)]'"
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 185,
+      "line": 176,
       "match": "border-[var(--color-border)]",
       "context": "? 'bg-[var(--color-gray-50)] border-[var(--color-border)]'"
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 186,
+      "line": 177,
       "match": "bg-[var(--color-surface)]",
       "context": ": 'bg-[var(--color-surface)] border-[var(--color-border)]',"
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 186,
+      "line": 177,
       "match": "border-[var(--color-border)]",
       "context": ": 'bg-[var(--color-surface)] border-[var(--color-border)]',"
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 187,
+      "line": 178,
       "match": "border-[var(--color-error-500)]",
       "context": "error && 'border-[var(--color-error-500)] focus-within:border-[var(--color-error-500)]'"
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 187,
+      "line": 178,
       "match": "border-[var(--color-error-500)]",
       "context": "error && 'border-[var(--color-error-500)] focus-within:border-[var(--color-error-500)]'"
     },
     {
       "file": "src/components/ui/CurrencyInput.tsx",
-      "line": 191,
+      "line": 182,
       "match": "text-[var(--color-primary-600)]",
       "context": "className=\"flex items-center justify-center w-6 h-6 rounded-sm flex-shrink-0 select-none text-[var(--color-primary-600)]\""
     },
@@ -7551,6 +7539,12 @@
       "context": "isCredit ? 'text-[var(--color-success-600)]' : 'text-[var(--color-error-500)]'"
     },
     {
+      "file": "src/components/ui/TransactionRow.tsx",
+      "line": 98,
+      "match": "text-[var(--text-primary)]",
+      "context": "className={`txn-row__amount tabular-nums ${isCredit ? 'text-success-600' : 'text-[var(--text-primary)]'}`}"
+    },
+    {
       "file": "src/components/ui/accordion.tsx",
       "line": 19,
       "match": "border-[var(--border-default)]",
@@ -7771,6 +7765,36 @@
       "line": 98,
       "match": "pb-[calc(var(--bottom-nav-height)+2rem)]",
       "context": "className=\"pb-[calc(var(--bottom-nav-height)+2rem)] pt-4 space-y-4\""
+    },
+    {
+      "file": "src/features/auth/ForgotPasswordPage.tsx",
+      "line": 149,
+      "match": "max-w-[210px]",
+      "context": "<BrandLogo variant=\"horizontal\" size={48} className=\"login-page__brand-logo mx-auto mb-2 block max-w-[210px] h-auto\" />"
+    },
+    {
+      "file": "src/features/auth/LoginPage.tsx",
+      "line": 79,
+      "match": "max-w-[210px]",
+      "context": "className=\"login-page__brand-logo mx-auto mb-2 block max-w-[210px] h-auto\""
+    },
+    {
+      "file": "src/features/auth/RegisterPage.tsx",
+      "line": 37,
+      "match": "max-w-[210px]",
+      "context": "className=\"login-page__brand-logo mx-auto mb-2 block max-w-[210px] h-auto\""
+    },
+    {
+      "file": "src/features/business/BusinessTypePage.tsx",
+      "line": 152,
+      "match": "bg-[var(--color-warning-50)]",
+      "context": "<Text className=\"p-3 bg-[var(--color-warning-50)] rounded-md text-[var(--color-gray-800)] text-sm leading-normal\">"
+    },
+    {
+      "file": "src/features/business/BusinessTypePage.tsx",
+      "line": 152,
+      "match": "text-[var(--color-gray-800)]",
+      "context": "<Text className=\"p-3 bg-[var(--color-warning-50)] rounded-md text-[var(--color-gray-800)] text-sm leading-normal\">"
     },
     {
       "file": "src/features/collections/CommitmentsSection.tsx",
@@ -8061,38 +8085,260 @@
       "context": "<div className=\"card p-3.5 rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-surface)] shadow-xs\">"
     },
     {
+      "file": "src/features/collections/PtpRecorderForm.tsx",
+      "line": 184,
+      "match": "min-h-[80px]",
+      "context": "className=\"resize-y min-h-[80px]\""
+    },
+    {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 95,
+      "match": "min-h-[200px]",
+      "context": "<div className=\"p-4 min-h-[200px]\">"
+    },
+    {
       "file": "src/features/collections/components/PaymentLinkSheet.tsx",
       "line": 101,
       "match": "text-[var(--text-secondary)]",
       "context": "<span className=\"text-sm text-[var(--text-secondary)]\">"
     },
     {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 110,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<AlertCircle size={28} className=\"text-[var(--color-error-500)]\" aria-hidden=\"true\" />"
+    },
+    {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 111,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<Text className=\"text-[var(--color-error-500)] text-center text-sm\">"
+    },
+    {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 125,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<Text className=\"text-xs text-[var(--color-text-secondary)] mb-1\">"
+    },
+    {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 128,
+      "match": "text-[var(--color-text-primary)]",
+      "context": "<Text className=\"text-2xl font-bold text-[var(--color-text-primary)]\">"
+    },
+    {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 134,
+      "match": "bg-[var(--color-surface-2)]",
+      "context": "<div className=\"bg-[var(--color-surface-2)] rounded-full py-2 px-3 flex items-center gap-2\">"
+    },
+    {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 135,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<Link size={14} aria-hidden=\"true\" className=\"text-[var(--color-text-secondary)] flex-shrink-0\" />"
+    },
+    {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 136,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"text-xs text-[var(--color-text-secondary)] truncate\">"
+    },
+    {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 146,
+      "match": "border-[var(--color-border)]",
+      "context": "className=\"text-xs p-2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] w-full\""
+    },
+    {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 146,
+      "match": "bg-[var(--color-surface)]",
+      "context": "className=\"text-xs p-2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] w-full\""
+    },
+    {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 151,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<Text className=\"text-xs text-[var(--color-text-secondary)] text-center\">"
+    },
+    {
+      "file": "src/features/collections/components/PaymentLinkSheet.tsx",
+      "line": 177,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<Text className=\"text-sm text-[var(--color-text-secondary)] text-center\">"
+    },
+    {
       "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
-      "line": 68,
+      "line": 54,
+      "match": "bg-[var(--color-surface-muted)]",
+      "context": "className=\"flex items-start justify-between gap-2 p-2 px-3 bg-[var(--color-surface-muted)] rounded-lg\""
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
+      "line": 57,
+      "match": "text-[var(--color-text)]",
+      "context": "<span className=\"font-semibold text-sm text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
+      "line": 60,
       "match": "text-[var(--text-secondary)]",
       "context": "<span className=\"text-xs text-[var(--text-secondary)]\">"
     },
     {
       "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
-      "line": 72,
+      "line": 64,
       "match": "text-[var(--text-secondary)]",
       "context": "<span className=\"text-xs text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
+      "line": 68,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"text-xs text-[var(--color-text-secondary)] italic\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
+      "line": 80,
+      "match": "min-h-[44px]",
+      "context": "className=\"min-h-[44px] min-w-[44px] text-red-600\""
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
+      "line": 80,
+      "match": "min-w-[44px]",
+      "context": "className=\"min-h-[44px] min-w-[44px] text-red-600\""
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
+      "line": 91,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"border-t border-[var(--color-border)] pt-2 flex flex-col gap-1 items-end\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
+      "line": 92,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<div className=\"flex gap-3 text-sm text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
+      "line": 96,
+      "match": "text-[var(--color-success-700)]",
+      "context": "<div className=\"flex gap-3 text-sm text-[var(--color-success-700)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
+      "line": 100,
+      "match": "text-[var(--color-warning-700)]",
+      "context": "<div className={`flex gap-3 text-base font-bold ${balancePaise > 0 ? 'text-[var(--color-warning-700)]' : 'text-[var(--color-success-700)]'}`}>"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderAdvancesList.tsx",
+      "line": 100,
+      "match": "text-[var(--color-success-700)]",
+      "context": "<div className={`flex gap-3 text-base font-bold ${balancePaise > 0 ? 'text-[var(--color-warning-700)]' : 'text-[var(--color-success-700)]'}`}>"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderConvertButton.tsx",
+      "line": 31,
+      "match": "min-h-[44px]",
+      "context": "className=\"flex items-center gap-2 min-h-[44px]\""
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderForm.tsx",
+      "line": 106,
+      "match": "min-h-[64px]",
+      "context": "<Textarea id=\"order-notes\" className=\"input resize-y min-h-[64px]\" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t.coNotesPlaceholder} rows={2} maxLength={5000} />"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderForm.tsx",
+      "line": 110,
+      "match": "min-w-[140px]",
+      "context": "<div className=\"flex-1 min-w-[140px] flex flex-col gap-1\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderForm.tsx",
+      "line": 114,
+      "match": "min-w-[120px]",
+      "context": "<div className=\"flex-1 min-w-[120px] flex flex-col gap-1\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderForm.tsx",
+      "line": 143,
+      "match": "min-h-[44px]",
+      "context": "<Button type=\"button\" variant=\"ghost\" size=\"sm\" onClick={addItem} className=\"self-start min-h-[44px]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderForm.tsx",
+      "line": 151,
+      "match": "max-w-[160px]",
+      "context": "<Input id=\"order-discount\" type=\"number\" className=\"input max-w-[160px]\" value={discountRs} min=\"0\" step=\"0.01\" onChange={(e) => setDiscountRs(e.target.value)} />"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderForm.tsx",
+      "line": 155,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"border-t-2 border-[var(--color-border)] pt-3 flex flex-col gap-1 items-end\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderForm.tsx",
+      "line": 156,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<div className=\"flex gap-4 text-sm text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderForm.tsx",
+      "line": 164,
+      "match": "text-[var(--color-text)]",
+      "context": "<div className=\"flex gap-4 text-base font-bold text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderForm.tsx",
+      "line": 169,
+      "match": "min-h-[48px]",
+      "context": "<Button type=\"submit\" variant=\"primary\" size=\"lg\" disabled={isSubmitting} className=\"min-h-[48px] w-full\">"
     },
     {
       "file": "src/features/custom-orders/components/CustomOrderItemEditor.tsx",
-      "line": 49,
+      "line": 24,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"border border-[var(--color-border)] rounded-lg p-3 flex flex-col gap-2\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemEditor.tsx",
+      "line": 26,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"text-xs text-[var(--color-text-secondary)] font-medium\">{t.coItemLabel} {index + 1}</span>"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemEditor.tsx",
+      "line": 34,
+      "match": "min-w-[44px]",
+      "context": "className=\"text-red-600 min-w-[44px] min-h-[44px]\""
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemEditor.tsx",
+      "line": 34,
+      "match": "min-h-[44px]",
+      "context": "className=\"text-red-600 min-w-[44px] min-h-[44px]\""
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemEditor.tsx",
+      "line": 51,
       "match": "text-[var(--text-secondary)]",
       "context": "<label className=\"text-xs text-[var(--text-secondary)]\">{t.qty}</label>"
     },
     {
       "file": "src/features/custom-orders/components/CustomOrderItemEditor.tsx",
-      "line": 61,
+      "line": 63,
       "match": "text-[var(--text-secondary)]",
       "context": "<label className=\"text-xs text-[var(--text-secondary)]\">{t.coRate}</label>"
     },
     {
       "file": "src/features/custom-orders/components/CustomOrderItemEditor.tsx",
-      "line": 73,
+      "line": 75,
       "match": "text-[var(--text-secondary)]",
       "context": "<label className=\"text-xs text-[var(--text-secondary)]\">{t.coDiscountRs}</label>"
     },
@@ -8101,6 +8347,294 @@
       "line": 16,
       "match": "text-[var(--text-secondary)]",
       "context": "<Text className=\"text-sm text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemsList.tsx",
+      "line": 29,
+      "match": "border-[var(--color-border)]",
+      "context": "<tr className=\"border-b-2 border-[var(--color-border)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemsList.tsx",
+      "line": 30,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<th className=\"text-left p-2 text-[var(--color-text-secondary)] font-semibold\">{t.coColDescription}</th>"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemsList.tsx",
+      "line": 31,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<th className=\"text-right p-2 text-[var(--color-text-secondary)] font-semibold\">{t.qty}</th>"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemsList.tsx",
+      "line": 32,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<th className=\"text-right p-2 text-[var(--color-text-secondary)] font-semibold\">{t.coColRate}</th>"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemsList.tsx",
+      "line": 33,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<th className=\"text-right p-2 text-[var(--color-text-secondary)] font-semibold\">{t.coColTotal}</th>"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemsList.tsx",
+      "line": 38,
+      "match": "border-[var(--color-border)]",
+      "context": "<tr key={item.id} className=\"border-b border-[var(--color-border)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemsList.tsx",
+      "line": 39,
+      "match": "text-[var(--color-text)]",
+      "context": "<td className=\"p-2 text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemsList.tsx",
+      "line": 42,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<div className=\"text-xs text-[var(--color-text-secondary)] mt-0.5\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemsList.tsx",
+      "line": 47,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<td className=\"p-2 text-right text-[var(--color-text-secondary)]\">{item.quantity}</td>"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemsList.tsx",
+      "line": 48,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<td className=\"p-2 text-right text-[var(--color-text-secondary)]\">₹{formatPaise(item.ratePaise)}</td>"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderItemsList.tsx",
+      "line": 49,
+      "match": "text-[var(--color-text)]",
+      "context": "<td className=\"p-2 text-right font-semibold text-[var(--color-text)]\">₹{formatPaise(item.totalPaise)}</td>"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderListItem.tsx",
+      "line": 25,
+      "match": "bg-[var(--color-surface)]",
+      "context": "className=\"order-list-item flex flex-col gap-1 w-full text-left p-3 px-4 bg-[var(--color-surface)] border-b border-[var(--color-border)] min-h-[44px]\""
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderListItem.tsx",
+      "line": 25,
+      "match": "border-[var(--color-border)]",
+      "context": "className=\"order-list-item flex flex-col gap-1 w-full text-left p-3 px-4 bg-[var(--color-surface)] border-b border-[var(--color-border)] min-h-[44px]\""
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderListItem.tsx",
+      "line": 25,
+      "match": "min-h-[44px]",
+      "context": "className=\"order-list-item flex flex-col gap-1 w-full text-left p-3 px-4 bg-[var(--color-surface)] border-b border-[var(--color-border)] min-h-[44px]\""
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderListItem.tsx",
+      "line": 30,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"text-xs text-[var(--color-text-secondary)] font-medium\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderListItem.tsx",
+      "line": 36,
+      "match": "text-[var(--color-text)]",
+      "context": "<span className=\"text-sm font-semibold text-[var(--color-text)] leading-snug\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderListItem.tsx",
+      "line": 41,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"flex items-center gap-1 text-xs text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderListItem.tsx",
+      "line": 48,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"flex items-center gap-1 text-xs text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderListItem.tsx",
+      "line": 54,
+      "match": "text-[var(--color-text)]",
+      "context": "<span className=\"flex items-center text-sm font-bold text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderListItem.tsx",
+      "line": 59,
+      "match": "text-[var(--color-warning-700)]",
+      "context": "<span className=\"text-xs font-medium text-[var(--color-warning-700)] bg-[var(--color-warning-50)] rounded px-1.5 py-0.5\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderListItem.tsx",
+      "line": 59,
+      "match": "bg-[var(--color-warning-50)]",
+      "context": "<span className=\"text-xs font-medium text-[var(--color-warning-700)] bg-[var(--color-warning-50)] rounded px-1.5 py-0.5\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderStatusActions.tsx",
+      "line": 65,
+      "match": "min-h-[44px]",
+      "context": "className=\"min-h-[44px]\""
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderStatusActions.tsx",
+      "line": 93,
+      "match": "min-h-[44px]",
+      "context": "className=\"min-h-[44px]\""
+    },
+    {
+      "file": "src/features/custom-orders/components/CustomOrderStatusActions.tsx",
+      "line": 102,
+      "match": "min-h-[44px]",
+      "context": "className=\"min-h-[44px]\""
+    },
+    {
+      "file": "src/features/custom-orders/components/RecordAdvanceModal.tsx",
+      "line": 64,
+      "match": "z-[var(--z-modal)]",
+      "context": "className=\"fixed inset-0 z-[var(--z-modal)] flex items-end bg-black/40\""
+    },
+    {
+      "file": "src/features/custom-orders/components/RecordAdvanceModal.tsx",
+      "line": 68,
+      "match": "max-w-[480px]",
+      "context": "className=\"w-full max-w-[480px] mx-auto bg-[var(--color-surface)] rounded-t-2xl p-5 flex flex-col gap-4\""
+    },
+    {
+      "file": "src/features/custom-orders/components/RecordAdvanceModal.tsx",
+      "line": 68,
+      "match": "bg-[var(--color-surface)]",
+      "context": "className=\"w-full max-w-[480px] mx-auto bg-[var(--color-surface)] rounded-t-2xl p-5 flex flex-col gap-4\""
+    },
+    {
+      "file": "src/features/custom-orders/components/RecordAdvanceModal.tsx",
+      "line": 71,
+      "match": "text-[var(--color-text)]",
+      "context": "<Heading level={2} className=\"m-0 text-base font-bold text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/RecordAdvanceModal.tsx",
+      "line": 74,
+      "match": "min-h-[44px]",
+      "context": "<Button type=\"button\" variant=\"ghost\" size=\"sm\" onClick={onClose} aria-label={t.close} className=\"min-h-[44px] min-w-[44px]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/RecordAdvanceModal.tsx",
+      "line": 74,
+      "match": "min-w-[44px]",
+      "context": "<Button type=\"button\" variant=\"ghost\" size=\"sm\" onClick={onClose} aria-label={t.close} className=\"min-h-[44px] min-w-[44px]\">"
+    },
+    {
+      "file": "src/features/custom-orders/components/RecordAdvanceModal.tsx",
+      "line": 135,
+      "match": "min-h-[48px]",
+      "context": "className=\"min-h-[48px] w-full\""
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 40,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<Heading level={2} className=\"text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider m-0\">{title}</Heading>"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 114,
+      "match": "text-[var(--color-text)]",
+      "context": "<Heading level={1} className=\"text-lg font-bold text-[var(--color-text)] m-0 leading-snug\">{order.title}</Heading>"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 119,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<div className=\"flex items-center gap-2 text-sm text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 124,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<div className=\"flex items-center gap-2 text-sm text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 132,
+      "match": "text-[var(--color-text)]",
+      "context": "<div className=\"flex items-center gap-1 font-bold text-xl text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 137,
+      "match": "text-[var(--color-warning-700)]",
+      "context": "<span className=\"text-sm font-semibold text-[var(--color-warning-700)] bg-[var(--color-warning-50)] rounded-md px-2 py-0.5\">"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 137,
+      "match": "bg-[var(--color-warning-50)]",
+      "context": "<span className=\"text-sm font-semibold text-[var(--color-warning-700)] bg-[var(--color-warning-50)] rounded-md px-2 py-0.5\">"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 144,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<Text className=\"text-sm text-[var(--color-text-secondary)] m-0\">"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 160,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<Text className=\"text-sm text-[var(--color-text-secondary)] m-0\">"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 174,
+      "match": "min-h-[44px]",
+      "context": "className=\"self-start min-h-[44px]\""
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 187,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"border-t border-[var(--color-border)] pt-3 flex flex-col gap-1 items-end\">"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 194,
+      "match": "text-[var(--color-text)]",
+      "context": "<div className=\"flex gap-4 font-bold text-base text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
+      "line": 216,
+      "match": "min-h-[44px]",
+      "context": "className=\"self-start min-h-[44px] flex items-center gap-1\""
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrdersListPage.tsx",
+      "line": 75,
+      "match": "min-h-[36px]",
+      "context": "className=\"flex-shrink-0 rounded-full text-xs font-medium min-h-[36px] whitespace-nowrap px-3.5 py-1.5\""
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrdersListPage.tsx",
+      "line": 83,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<label className=\"flex items-center gap-2 text-sm text-[var(--color-text-secondary)] cursor-pointer min-h-[36px] pb-2\">"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrdersListPage.tsx",
+      "line": 83,
+      "match": "min-h-[36px]",
+      "context": "<label className=\"flex items-center gap-2 text-sm text-[var(--color-text-secondary)] cursor-pointer min-h-[36px] pb-2\">"
+    },
+    {
+      "file": "src/features/custom-orders/pages/CustomOrdersListPage.tsx",
+      "line": 116,
+      "match": "min-h-[44px]",
+      "context": "className=\"w-full mt-3 min-h-[44px]\""
     },
     {
       "file": "src/features/hr/AttendancePage.tsx",
@@ -8125,6 +8659,78 @@
       "line": 89,
       "match": "bg-[var(--color-success-50)]",
       "context": "className=\"flex items-center justify-center w-10 h-10 rounded-full bg-[var(--color-success-50)] text-success-600\""
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 86,
+      "match": "text-[var(--color-gray-600)]",
+      "context": "className=\"text-left p-2 text-sm text-[var(--color-gray-600)] font-semibold min-w-[140px]\""
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 86,
+      "match": "min-w-[140px]",
+      "context": "className=\"text-left p-2 text-sm text-[var(--color-gray-600)] font-semibold min-w-[140px]\""
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 94,
+      "match": "text-[var(--color-gray-600)]",
+      "context": "className=\"text-center p-2 text-sm text-[var(--color-gray-600)] font-semibold min-w-[100px]\""
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 94,
+      "match": "min-w-[100px]",
+      "context": "className=\"text-center p-2 text-sm text-[var(--color-gray-600)] font-semibold min-w-[100px]\""
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 106,
+      "match": "text-[var(--color-gray-700)]",
+      "context": "className=\"text-left p-2 font-medium text-base text-[var(--color-gray-700)] bg-[var(--color-gray-50)] rounded-md align-middle\""
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 106,
+      "match": "bg-[var(--color-gray-50)]",
+      "context": "className=\"text-left p-2 font-medium text-base text-[var(--color-gray-700)] bg-[var(--color-gray-50)] rounded-md align-middle\""
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 111,
+      "match": "text-[var(--color-gray-500)]",
+      "context": "<span className=\"text-xs text-[var(--color-gray-500)] font-normal\">{emp.role}</span>"
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 145,
+      "match": "text-[var(--color-gray-600)]",
+      "context": "<li className=\"text-sm text-[var(--color-gray-600)] font-semibold px-3 py-2\">"
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 156,
+      "match": "bg-[var(--color-gray-0,white)]",
+      "context": "className=\"flex items-center justify-between gap-3 p-3 bg-[var(--color-gray-0,white)] border border-[var(--color-gray-100)] rounded-lg\""
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 156,
+      "match": "border-[var(--color-gray-100)]",
+      "context": "className=\"flex items-center justify-between gap-3 p-3 bg-[var(--color-gray-0,white)] border border-[var(--color-gray-100)] rounded-lg\""
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 159,
+      "match": "text-[var(--color-gray-700)]",
+      "context": "<span className=\"text-base font-medium text-[var(--color-gray-700)] truncate\">{emp.name}</span>"
+    },
+    {
+      "file": "src/features/hr/components/AttendanceGrid.tsx",
+      "line": 161,
+      "match": "text-[var(--color-gray-500)]",
+      "context": "<span className=\"text-xs text-[var(--color-gray-500)]\">{emp.role}</span>"
     },
     {
       "file": "src/features/hr/components/PayrollWizardStepDates.tsx",
@@ -8230,7 +8836,7 @@
     },
     {
       "file": "src/features/import/components/EntityPicker.tsx",
-      "line": 86,
+      "line": 82,
       "match": "text-[var(--text-secondary)]",
       "context": "<span className=\"text-xs text-[var(--text-secondary)]\">"
     },
@@ -8242,25 +8848,31 @@
     },
     {
       "file": "src/features/import/components/FileDropzone.tsx",
-      "line": 86,
+      "line": 85,
       "match": "text-[var(--text-primary)]",
       "context": "className=\"font-semibold break-all text-sm text-[var(--text-primary)] font-medium\""
     },
     {
       "file": "src/features/import/components/FileDropzone.tsx",
-      "line": 91,
+      "line": 89,
       "match": "text-[var(--text-secondary)]",
       "context": "<span className=\"text-xs text-[var(--text-secondary)]\">"
     },
     {
       "file": "src/features/import/components/FileDropzone.tsx",
-      "line": 117,
+      "line": 102,
+      "match": "text-[var(--text-secondary)]",
+      "context": "className=\"mt-1 text-xs text-[var(--text-secondary)]\""
+    },
+    {
+      "file": "src/features/import/components/FileDropzone.tsx",
+      "line": 115,
       "match": "text-[var(--text-primary)]",
       "context": "className=\"font-semibold text-sm text-[var(--text-primary)] font-medium\""
     },
     {
       "file": "src/features/import/components/FileDropzone.tsx",
-      "line": 122,
+      "line": 119,
       "match": "text-[var(--text-secondary)]",
       "context": "<span className=\"text-xs text-[var(--text-secondary)]\">"
     },
@@ -8518,21 +9130,195 @@
     },
     {
       "file": "src/features/import/pages/ImportUpload.tsx",
+      "line": 96,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<Text className=\"text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/import/pages/ImportUpload.tsx",
       "line": 111,
       "match": "text-[var(--text-primary)]",
-      "context": "className=\"font-semibold text-lg text-[var(--text-primary)] font-semibold\""
+      "context": "className=\"font-semibold text-lg text-[var(--text-primary)]\""
+    },
+    {
+      "file": "src/features/import/pages/ImportUpload.tsx",
+      "line": 121,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<Text className=\"text-base text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/import/pages/ImportUpload.tsx",
+      "line": 138,
+      "match": "text-[var(--text-primary)]",
+      "context": "className=\"font-semibold text-base text-[var(--text-primary)]\""
+    },
+    {
+      "file": "src/features/import/pages/ImportUpload.tsx",
+      "line": 148,
+      "match": "text-[var(--text-primary)]",
+      "context": "className=\"font-semibold text-base text-[var(--text-primary)]\""
+    },
+    {
+      "file": "src/features/import/pages/ImportUpload.tsx",
+      "line": 158,
+      "match": "text-[var(--text-primary)]",
+      "context": "className=\"font-semibold text-base text-[var(--text-primary)]\""
     },
     {
       "file": "src/features/inventory/components/BatchPicker.tsx",
-      "line": 111,
+      "line": 44,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<span className=\"text-xs font-semibold text-[var(--color-error-500)] bg-[var(--color-danger-surface,#fff1f0)] rounded px-1.5 py-0.5 whitespace-nowrap\">"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 44,
+      "match": "bg-[var(--color-danger-surface,#fff1f0)]",
+      "context": "<span className=\"text-xs font-semibold text-[var(--color-error-500)] bg-[var(--color-danger-surface,#fff1f0)] rounded px-1.5 py-0.5 whitespace-nowrap\">"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 51,
+      "match": "text-[var(--color-warning)]",
+      "context": "<span className=\"text-xs font-semibold text-[var(--color-warning)] bg-[var(--color-warning-surface,#fffbeb)] rounded px-1.5 py-0.5 whitespace-nowrap\">"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 51,
+      "match": "bg-[var(--color-warning-surface,#fffbeb)]",
+      "context": "<span className=\"text-xs font-semibold text-[var(--color-warning)] bg-[var(--color-warning-surface,#fffbeb)] rounded px-1.5 py-0.5 whitespace-nowrap\">"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 81,
+      "match": "min-h-[44px]",
+      "context": "className={`flex items-center justify-between gap-3 w-full text-left p-3 px-4 rounded-lg min-h-[44px] ${"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 82,
+      "match": "bg-[var(--color-primary-surface,#e0f2f1)]",
+      "context": "selected ? 'bg-[var(--color-primary-surface,#e0f2f1)] border-2 border-[var(--color-primary)]' : 'bg-transparent border border-[var(--color-border)]'"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 82,
+      "match": "border-[var(--color-primary)]",
+      "context": "selected ? 'bg-[var(--color-primary-surface,#e0f2f1)] border-2 border-[var(--color-primary)]' : 'bg-transparent border border-[var(--color-border)]'"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 82,
+      "match": "border-[var(--color-border)]",
+      "context": "selected ? 'bg-[var(--color-primary-surface,#e0f2f1)] border-2 border-[var(--color-primary)]' : 'bg-transparent border border-[var(--color-border)]'"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 87,
+      "match": "text-[var(--color-text-primary)]",
+      "context": "<span className={`font-semibold text-sm text-[var(--color-text-primary)] truncate ${batch.isExpired && policy === 'WARN_ONLY' ? 'line-through' : ''}`}>"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 92,
       "match": "text-[var(--text-muted)]",
       "context": "<span className=\"text-xs text-[var(--text-muted)]\">"
     },
     {
       "file": "src/features/inventory/components/BatchPicker.tsx",
-      "line": 116,
+      "line": 97,
       "match": "text-[var(--text-muted)]",
       "context": "<span className=\"text-xs text-[var(--text-muted)]\">"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 156,
+      "match": "text-[var(--color-text-primary)]",
+      "context": "<Heading level={2} className=\"text-base font-bold text-[var(--color-text-primary)] m-0\">"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 165,
+      "match": "min-w-[44px]",
+      "context": "className=\"min-w-[44px] min-h-[44px] text-[var(--color-text-muted)]\""
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 165,
+      "match": "min-h-[44px]",
+      "context": "className=\"min-w-[44px] min-h-[44px] text-[var(--color-text-muted)]\""
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 165,
+      "match": "text-[var(--color-text-muted)]",
+      "context": "className=\"min-w-[44px] min-h-[44px] text-[var(--color-text-muted)]\""
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 182,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<div role=\"alert\" className=\"flex items-center gap-2 text-sm text-[var(--color-error-500)]\">"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 191,
+      "match": "text-[var(--color-text-muted)]",
+      "context": "<div className=\"text-center p-6 text-sm text-[var(--color-text-muted)]\">"
+    },
+    {
+      "file": "src/features/inventory/components/BatchPicker.tsx",
+      "line": 204,
+      "match": "text-[var(--color-text-muted)]",
+      "context": "<Text className=\"text-xs text-[var(--color-text-muted)] m-0\">"
+    },
+    {
+      "file": "src/features/inventory/components/ExpiredBatchBanner.tsx",
+      "line": 38,
+      "match": "border-[var(--color-error-500)]",
+      "context": "className=\"rounded-lg border border-[var(--color-error-500)] bg-[var(--color-danger-surface,#fff1f0)] p-3 px-4 mb-4\""
+    },
+    {
+      "file": "src/features/inventory/components/ExpiredBatchBanner.tsx",
+      "line": 38,
+      "match": "bg-[var(--color-danger-surface,#fff1f0)]",
+      "context": "className=\"rounded-lg border border-[var(--color-error-500)] bg-[var(--color-danger-surface,#fff1f0)] p-3 px-4 mb-4\""
+    },
+    {
+      "file": "src/features/inventory/components/ExpiredBatchBanner.tsx",
+      "line": 42,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<AlertTriangle size={16} aria-hidden=\"true\" className=\"text-[var(--color-error-500)] flex-shrink-0\" />"
+    },
+    {
+      "file": "src/features/inventory/components/ExpiredBatchBanner.tsx",
+      "line": 43,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<span className=\"font-semibold text-sm text-[var(--color-error-500)]\">"
+    },
+    {
+      "file": "src/features/inventory/components/ExpiredBatchBanner.tsx",
+      "line": 53,
+      "match": "min-w-[44px]",
+      "context": "className=\"min-w-[44px] min-h-[44px] p-0\""
+    },
+    {
+      "file": "src/features/inventory/components/ExpiredBatchBanner.tsx",
+      "line": 53,
+      "match": "min-h-[44px]",
+      "context": "className=\"min-w-[44px] min-h-[44px] p-0\""
+    },
+    {
+      "file": "src/features/inventory/components/ExpiredBatchBanner.tsx",
+      "line": 58,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<Text className=\"text-xs text-[var(--color-error-500)] mt-1 mb-2\">"
+    },
+    {
+      "file": "src/features/inventory/components/ExpiredBatchBanner.tsx",
+      "line": 67,
+      "match": "min-h-[36px]",
+      "context": "className=\"text-sm min-h-[36px]\""
     },
     {
       "file": "src/features/invoices/components/EditInvoiceForm.tsx",
@@ -8593,6 +9379,18 @@
       "line": 73,
       "match": "scale-[0.99]",
       "context": "className=\"w-full py-2.5 px-4 bg-[var(--color-primary-50)] hover:bg-[var(--color-primary-100)] text-[var(--color-primary-700)] border border-[var(--color-primary-200)] rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-[0.99]\""
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceDetailHeader.tsx",
+      "line": 64,
+      "match": "text-[var(--color-gray-0)]",
+      "context": "<span className=\"text-xs opacity-75 text-[var(--color-gray-0)]\">"
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceDetailSkeleton.tsx",
+      "line": 9,
+      "match": "min-h-[160px]",
+      "context": "<Card className=\"mb-4 min-h-[160px] p-4\">"
     },
     {
       "file": "src/features/invoices/components/InvoiceDetailsSection.tsx",
@@ -8961,20 +9759,74 @@
       "context": "<div className=\"[&>button]:bg-emerald-50 [&>button]:text-[#026F39] [&>button]:hover:bg-emerald-100 [&>button]:font-bold [&>button]:text-xs [&>button]:px-4 [&>button]:py-2.5 [&>button]:rounded-xl [&>button]:border-0\">"
     },
     {
+      "file": "src/features/invoices/components/InvoiceItemsList.tsx",
+      "line": 60,
+      "match": "bg-[var(--color-surface)]",
+      "context": "className=\"p-3.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl flex items-center justify-between cursor-pointer hover:border-[var(--color-primary-500)] transition-all shadow-xs\""
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceItemsList.tsx",
+      "line": 60,
+      "match": "border-[var(--color-border)]",
+      "context": "className=\"p-3.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl flex items-center justify-between cursor-pointer hover:border-[var(--color-primary-500)] transition-all shadow-xs\""
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceItemsList.tsx",
+      "line": 60,
+      "match": "border-[var(--color-primary-500)]",
+      "context": "className=\"p-3.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl flex items-center justify-between cursor-pointer hover:border-[var(--color-primary-500)] transition-all shadow-xs\""
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceItemsList.tsx",
+      "line": 65,
+      "match": "text-[var(--color-text-primary)]",
+      "context": "<div className=\"flex items-center gap-2 text-sm font-bold text-[var(--color-text-primary)]\">"
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceItemsList.tsx",
+      "line": 67,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"text-[var(--color-text-secondary)] font-normal\">·</span>"
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceItemsList.tsx",
+      "line": 68,
+      "match": "text-[var(--color-primary-700)]",
+      "context": "<span className=\"text-[var(--color-primary-700)] dark:text-emerald-400 font-extrabold\">"
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceItemsList.tsx",
+      "line": 72,
+      "match": "text-[var(--color-primary-600)]",
+      "context": "<div className=\"flex items-center gap-1 text-xs font-bold text-[var(--color-primary-600)]\">"
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceItemsList.tsx",
+      "line": 81,
+      "match": "divide-[var(--color-border)]",
+      "context": "<div className=\"divide-y divide-[var(--color-border)] border-y border-[var(--color-border)]\">"
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceItemsList.tsx",
+      "line": 81,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"divide-y divide-[var(--color-border)] border-y border-[var(--color-border)]\">"
+    },
+    {
       "file": "src/features/invoices/components/InvoiceItemsSection.tsx",
-      "line": 102,
+      "line": 101,
       "match": "text-[var(--color-text-muted)]",
       "context": "<label className=\"flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-[var(--color-text-muted)]\">"
     },
     {
       "file": "src/features/invoices/components/InvoiceItemsSection.tsx",
-      "line": 103,
+      "line": 102,
       "match": "text-[var(--color-primary-600)]",
       "context": "<User size={13} className=\"text-[var(--color-primary-600)]\" />"
     },
     {
       "file": "src/features/invoices/components/InvoiceItemsSection.tsx",
-      "line": 105,
+      "line": 104,
       "match": "text-[var(--color-error-500)]",
       "context": "<span className=\"text-[var(--color-error-500)]\">*</span>"
     },
@@ -9010,25 +9862,37 @@
     },
     {
       "file": "src/features/invoices/components/InvoiceItemsSection.tsx",
-      "line": 140,
+      "line": 142,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "className=\"text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] px-1.5 py-0.5 rounded text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors\""
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceItemsSection.tsx",
+      "line": 142,
+      "match": "text-[var(--color-primary-600)]",
+      "context": "className=\"text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] px-1.5 py-0.5 rounded text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors\""
+    },
+    {
+      "file": "src/features/invoices/components/InvoiceItemsSection.tsx",
+      "line": 154,
       "match": "text-[var(--color-primary-600)]",
       "context": "className=\"text-[var(--color-primary-600)] hover:text-[var(--color-primary-700)] bg-[var(--color-primary-50)] hover:bg-[var(--color-primary-100)] px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors\""
     },
     {
       "file": "src/features/invoices/components/InvoiceItemsSection.tsx",
-      "line": 140,
+      "line": 154,
       "match": "text-[var(--color-primary-700)]",
       "context": "className=\"text-[var(--color-primary-600)] hover:text-[var(--color-primary-700)] bg-[var(--color-primary-50)] hover:bg-[var(--color-primary-100)] px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors\""
     },
     {
       "file": "src/features/invoices/components/InvoiceItemsSection.tsx",
-      "line": 140,
+      "line": 154,
       "match": "bg-[var(--color-primary-50)]",
       "context": "className=\"text-[var(--color-primary-600)] hover:text-[var(--color-primary-700)] bg-[var(--color-primary-50)] hover:bg-[var(--color-primary-100)] px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors\""
     },
     {
       "file": "src/features/invoices/components/InvoiceItemsSection.tsx",
-      "line": 140,
+      "line": 154,
       "match": "bg-[var(--color-primary-100)]",
       "context": "className=\"text-[var(--color-primary-600)] hover:text-[var(--color-primary-700)] bg-[var(--color-primary-50)] hover:bg-[var(--color-primary-100)] px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors\""
     },
@@ -9082,7 +9946,7 @@
     },
     {
       "file": "src/features/invoices/components/InvoicePaymentHistory.tsx",
-      "line": 118,
+      "line": 120,
       "match": "text-[11px]",
       "context": "<div className=\"text-[11px] text-text-muted\">{p.date}</div>"
     },
@@ -9126,25 +9990,19 @@
       "file": "src/features/invoices/components/InvoiceTotalsBar.tsx",
       "line": 52,
       "match": "bg-[var(--color-surface)]",
-      "context": "className=\"!bg-[var(--color-surface)] !backdrop-blur-md !rounded-t-2xl !border-t !border-[var(--color-border)] !shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08)] !px-4 !pt-3 !pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] flex-col\""
+      "context": "className=\"!bg-[var(--color-surface)] !backdrop-blur-md !rounded-t-2xl !border-t !border-[var(--color-border)] !shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08)] !px-4 !pt-3 flex-col\""
     },
     {
       "file": "src/features/invoices/components/InvoiceTotalsBar.tsx",
       "line": 52,
       "match": "border-[var(--color-border)]",
-      "context": "className=\"!bg-[var(--color-surface)] !backdrop-blur-md !rounded-t-2xl !border-t !border-[var(--color-border)] !shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08)] !px-4 !pt-3 !pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] flex-col\""
+      "context": "className=\"!bg-[var(--color-surface)] !backdrop-blur-md !rounded-t-2xl !border-t !border-[var(--color-border)] !shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08)] !px-4 !pt-3 flex-col\""
     },
     {
       "file": "src/features/invoices/components/InvoiceTotalsBar.tsx",
       "line": 52,
       "match": "shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08)]",
-      "context": "className=\"!bg-[var(--color-surface)] !backdrop-blur-md !rounded-t-2xl !border-t !border-[var(--color-border)] !shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08)] !px-4 !pt-3 !pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] flex-col\""
-    },
-    {
-      "file": "src/features/invoices/components/InvoiceTotalsBar.tsx",
-      "line": 52,
-      "match": "pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)]",
-      "context": "className=\"!bg-[var(--color-surface)] !backdrop-blur-md !rounded-t-2xl !border-t !border-[var(--color-border)] !shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08)] !px-4 !pt-3 !pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] flex-col\""
+      "context": "className=\"!bg-[var(--color-surface)] !backdrop-blur-md !rounded-t-2xl !border-t !border-[var(--color-border)] !shadow-[0_-8px_25px_-5px_rgba(0,0,0,0.08)] !px-4 !pt-3 flex-col\""
     },
     {
       "file": "src/features/invoices/components/InvoiceTotalsBar.tsx",
@@ -9165,208 +10023,340 @@
       "context": "<span className=\"text-xl sm:text-2xl font-black text-[var(--color-text-primary)] tabular-nums tracking-tight invoice-summary-row-total\">"
     },
     {
-      "file": "src/features/invoices/components/InvoiceTotalsBar.tsx",
-      "line": 74,
-      "match": "bg-[var(--color-gray-100)]",
-      "context": "className=\"bg-[var(--color-gray-100)] hover:bg-[var(--color-gray-200)] text-[var(--color-text-secondary)] font-bold text-xs px-3.5 py-2.5 rounded-xl border-0 transition-all cursor-pointer\""
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 42,
+      "match": "bg-[var(--color-primary-100)]",
+      "context": "? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]'"
     },
     {
-      "file": "src/features/invoices/components/InvoiceTotalsBar.tsx",
-      "line": 74,
-      "match": "bg-[var(--color-gray-200)]",
-      "context": "className=\"bg-[var(--color-gray-100)] hover:bg-[var(--color-gray-200)] text-[var(--color-text-secondary)] font-bold text-xs px-3.5 py-2.5 rounded-xl border-0 transition-all cursor-pointer\""
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 42,
+      "match": "text-[var(--color-primary-800)]",
+      "context": "? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]'"
     },
     {
-      "file": "src/features/invoices/components/InvoiceTotalsBar.tsx",
-      "line": 74,
-      "match": "text-[var(--color-text-secondary)]",
-      "context": "className=\"bg-[var(--color-gray-100)] hover:bg-[var(--color-gray-200)] text-[var(--color-text-secondary)] font-bold text-xs px-3.5 py-2.5 rounded-xl border-0 transition-all cursor-pointer\""
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 44,
+      "match": "bg-[var(--color-primary-50)]",
+      "context": "? 'bg-[var(--color-primary-50)] text-[var(--color-primary-600)]'"
     },
     {
-      "file": "src/features/invoices/components/InvoiceTotalsBar.tsx",
-      "line": 87,
-      "match": "bg-[var(--color-primary-600)]",
-      "context": "className=\"bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 border-0\""
-    },
-    {
-      "file": "src/features/invoices/components/InvoiceTotalsBar.tsx",
-      "line": 87,
-      "match": "bg-[var(--color-primary-700)]",
-      "context": "className=\"bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 border-0\""
-    },
-    {
-      "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 49,
-      "match": "text-[11px]",
-      "context": "className=\"inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] transition-colors cursor-pointer py-0.5\""
-    },
-    {
-      "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 49,
-      "match": "text-[var(--color-text-secondary)]",
-      "context": "className=\"inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] transition-colors cursor-pointer py-0.5\""
-    },
-    {
-      "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 49,
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 44,
       "match": "text-[var(--color-primary-600)]",
-      "context": "className=\"inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-primary-600)] transition-colors cursor-pointer py-0.5\""
+      "context": "? 'bg-[var(--color-primary-50)] text-[var(--color-primary-600)]'"
     },
     {
-      "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 51,
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 45,
       "match": "text-[var(--color-gray-400)]",
-      "context": "<Tag size={12} className=\"text-[var(--color-gray-400)]\" />"
+      "context": ": 'text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]'"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 45,
+      "match": "text-[var(--color-primary-600)]",
+      "context": ": 'text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]'"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 45,
+      "match": "bg-[var(--color-primary-50)]",
+      "context": ": 'text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]'"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 60,
+      "match": "bg-[var(--color-success-100)]",
+      "context": "? 'bg-[var(--color-success-100)] text-[var(--color-success-800)]'"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 60,
+      "match": "text-[var(--color-success-800)]",
+      "context": "? 'bg-[var(--color-success-100)] text-[var(--color-success-800)]'"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 61,
+      "match": "text-[var(--color-gray-400)]",
+      "context": ": 'text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]'"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 61,
+      "match": "text-[var(--color-primary-600)]",
+      "context": ": 'text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]'"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 61,
+      "match": "bg-[var(--color-primary-50)]",
+      "context": ": 'text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]'"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 75,
+      "match": "text-[var(--color-gray-400)]",
+      "context": "className=\"p-1.5 rounded-lg text-xs font-semibold flex items-center justify-center text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)] transition-colors cursor-pointer border-0\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 75,
+      "match": "text-[var(--color-primary-600)]",
+      "context": "className=\"p-1.5 rounded-lg text-xs font-semibold flex items-center justify-center text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)] transition-colors cursor-pointer border-0\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 75,
+      "match": "bg-[var(--color-primary-50)]",
+      "context": "className=\"p-1.5 rounded-lg text-xs font-semibold flex items-center justify-center text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)] transition-colors cursor-pointer border-0\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 86,
+      "match": "text-[var(--color-gray-400)]",
+      "context": "className=\"line-item-remove cursor-pointer text-[var(--color-gray-400)] hover:text-[var(--color-error-600)] hover:bg-[var(--color-error-50)] p-1.5 rounded-lg transition-colors border-0\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 86,
+      "match": "text-[var(--color-error-600)]",
+      "context": "className=\"line-item-remove cursor-pointer text-[var(--color-gray-400)] hover:text-[var(--color-error-600)] hover:bg-[var(--color-error-50)] p-1.5 rounded-lg transition-colors border-0\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemActionIcons.tsx",
+      "line": 86,
+      "match": "bg-[var(--color-error-50)]",
+      "context": "className=\"line-item-remove cursor-pointer text-[var(--color-gray-400)] hover:text-[var(--color-error-600)] hover:bg-[var(--color-error-50)] p-1.5 rounded-lg transition-colors border-0\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemBatchPicker.tsx",
+      "line": 33,
+      "match": "min-h-[44px]",
+      "context": "className={`inline-flex items-center gap-1 text-xs border-dashed min-h-[44px] px-2.5 py-1 ${"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemBatchPicker.tsx",
+      "line": 34,
+      "match": "text-[var(--color-primary)]",
+      "context": "batchId ? 'text-[var(--color-primary)] border-[var(--color-primary)]' : 'text-[var(--color-text-muted)] border-[var(--color-border)]'"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemBatchPicker.tsx",
+      "line": 34,
+      "match": "border-[var(--color-primary)]",
+      "context": "batchId ? 'text-[var(--color-primary)] border-[var(--color-primary)]' : 'text-[var(--color-text-muted)] border-[var(--color-border)]'"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemBatchPicker.tsx",
+      "line": 34,
+      "match": "text-[var(--color-text-muted)]",
+      "context": "batchId ? 'text-[var(--color-primary)] border-[var(--color-primary)]' : 'text-[var(--color-text-muted)] border-[var(--color-border)]'"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemBatchPicker.tsx",
+      "line": 34,
+      "match": "border-[var(--color-border)]",
+      "context": "batchId ? 'text-[var(--color-primary)] border-[var(--color-primary)]' : 'text-[var(--color-text-muted)] border-[var(--color-border)]'"
     },
     {
       "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 61,
+      "line": 48,
       "match": "border-[var(--color-gray-200)]",
       "context": "className=\"flex items-center gap-1 rounded-lg border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] p-0.5\""
     },
     {
       "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 61,
+      "line": 48,
       "match": "bg-[var(--color-gray-50)]",
       "context": "className=\"flex items-center gap-1 rounded-lg border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] p-0.5\""
     },
     {
       "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 74,
+      "line": 61,
       "match": "bg-[var(--color-primary-600)]",
       "context": "? 'bg-[var(--color-primary-600)] text-white shadow-xs'"
     },
     {
       "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 76,
+      "line": 63,
       "match": "bg-[var(--color-surface)]",
       "context": "? 'bg-[var(--color-surface)] text-[var(--color-text-primary)] shadow-xs'"
     },
     {
       "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 76,
+      "line": 63,
       "match": "text-[var(--color-text-primary)]",
       "context": "? 'bg-[var(--color-surface)] text-[var(--color-text-primary)] shadow-xs'"
     },
     {
       "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 77,
+      "line": 64,
       "match": "text-[var(--color-text-secondary)]",
       "context": ": 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
     },
     {
       "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 77,
+      "line": 64,
       "match": "text-[var(--color-text-primary)]",
       "context": ": 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
     },
     {
       "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 85,
+      "line": 72,
       "match": "max-w-[130px]",
       "context": "<div className=\"relative flex-1 max-w-[130px]\">"
     },
     {
       "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 89,
+      "line": 76,
       "match": "min-h-[36px]",
       "context": "className=\"input min-h-[36px] text-xs font-bold tabular-nums px-2.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none\""
     },
     {
       "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 107,
+      "line": 94,
       "match": "text-[var(--color-gray-400)]",
       "context": "className=\"p-1 text-[var(--color-gray-400)] hover:text-[var(--color-error-500)] rounded transition-colors\""
     },
     {
       "file": "src/features/invoices/components/LineItemDiscountRow.tsx",
-      "line": 107,
+      "line": 94,
       "match": "text-[var(--color-error-500)]",
       "context": "className=\"p-1 text-[var(--color-gray-400)] hover:text-[var(--color-error-500)] rounded transition-colors\""
     },
     {
       "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 126,
-      "match": "bg-[var(--color-gray-100)]",
-      "context": "<span className=\"w-5 h-5 rounded-full bg-[var(--color-gray-100)] text-[var(--color-text-secondary)] text-[10px] font-bold flex items-center justify-center shrink-0\">"
-    },
-    {
-      "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 126,
-      "match": "text-[var(--color-text-secondary)]",
-      "context": "<span className=\"w-5 h-5 rounded-full bg-[var(--color-gray-100)] text-[var(--color-text-secondary)] text-[10px] font-bold flex items-center justify-center shrink-0\">"
-    },
-    {
-      "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 126,
-      "match": "text-[10px]",
-      "context": "<span className=\"w-5 h-5 rounded-full bg-[var(--color-gray-100)] text-[var(--color-text-secondary)] text-[10px] font-bold flex items-center justify-center shrink-0\">"
-    },
-    {
-      "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 129,
+      "line": 127,
       "match": "text-[var(--color-text-primary)]",
-      "context": "<span className=\"line-item-product-name text-sm sm:text-base font-bold text-[var(--color-text-primary)] truncate\">"
+      "context": "<span className=\"font-bold text-sm sm:text-base text-[var(--color-text-primary)] leading-tight truncate\">"
     },
     {
       "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 133,
+      "line": 131,
       "match": "bg-[var(--color-success-50)]",
-      "context": "<span className=\"px-2 py-0.5 rounded-full bg-[var(--color-success-50)] text-[var(--color-success-700)] text-[10px] font-bold shrink-0\">"
+      "context": "<span className=\"px-1.5 py-0.2 rounded-full bg-[var(--color-success-50)] text-[var(--color-success-700)] text-[10px] font-bold shrink-0\">"
     },
     {
       "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 133,
+      "line": 131,
       "match": "text-[var(--color-success-700)]",
-      "context": "<span className=\"px-2 py-0.5 rounded-full bg-[var(--color-success-50)] text-[var(--color-success-700)] text-[10px] font-bold shrink-0\">"
+      "context": "<span className=\"px-1.5 py-0.2 rounded-full bg-[var(--color-success-50)] text-[var(--color-success-700)] text-[10px] font-bold shrink-0\">"
     },
     {
       "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 133,
+      "line": 131,
       "match": "text-[10px]",
-      "context": "<span className=\"px-2 py-0.5 rounded-full bg-[var(--color-success-50)] text-[var(--color-success-700)] text-[10px] font-bold shrink-0\">"
+      "context": "<span className=\"px-1.5 py-0.2 rounded-full bg-[var(--color-success-50)] text-[var(--color-success-700)] text-[10px] font-bold shrink-0\">"
     },
     {
       "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 145,
-      "match": "bg-[var(--color-success-100)]",
-      "context": "? 'bg-[var(--color-success-100)] text-[var(--color-success-800)]'"
+      "line": 138,
+      "match": "text-[11px]",
+      "context": "<span className=\"text-[11px] text-[var(--color-text-secondary)] truncate\">"
     },
     {
       "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 145,
-      "match": "text-[var(--color-success-800)]",
-      "context": "? 'bg-[var(--color-success-100)] text-[var(--color-success-800)]'"
-    },
-    {
-      "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 146,
-      "match": "text-[var(--color-gray-400)]",
-      "context": ": 'text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]'"
-    },
-    {
-      "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 146,
-      "match": "text-[var(--color-primary-600)]",
-      "context": ": 'text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]'"
-    },
-    {
-      "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 146,
-      "match": "bg-[var(--color-primary-50)]",
-      "context": ": 'text-[var(--color-gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]'"
-    },
-    {
-      "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 192,
-      "match": "border-[var(--color-border)]",
-      "context": "<div className=\"line-item-total flex items-center justify-between pt-2.5 border-t border-[var(--color-border)] mt-1\">"
-    },
-    {
-      "file": "src/features/invoices/components/LineItemEditor.tsx",
-      "line": 193,
+      "line": 138,
       "match": "text-[var(--color-text-secondary)]",
-      "context": "<span className=\"line-item-total-label text-xs font-semibold text-[var(--color-text-secondary)]\">{t.lineTotal}</span>"
+      "context": "<span className=\"text-[11px] text-[var(--color-text-secondary)] truncate\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemEditor.tsx",
+      "line": 161,
+      "match": "text-[11px]",
+      "context": "<div className=\"text-[11px] text-[var(--color-text-secondary)] mt-0.5\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemEditor.tsx",
+      "line": 161,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<div className=\"text-[11px] text-[var(--color-text-secondary)] mt-0.5\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemEditor.tsx",
+      "line": 166,
+      "match": "text-[11px]",
+      "context": "<div className=\"text-[11px] text-[var(--color-text-secondary)] mt-0.5\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemEditor.tsx",
+      "line": 166,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<div className=\"text-[11px] text-[var(--color-text-secondary)] mt-0.5\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemEditor.tsx",
+      "line": 167,
+      "match": "text-[var(--color-text-muted)]",
+      "context": "<span className=\"font-semibold text-[var(--color-text-muted)]\">PP </span>"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemEditor.tsx",
+      "line": 202,
+      "match": "text-[11px]",
+      "context": "<span className=\"text-[11px] font-bold text-[var(--color-text-secondary)] tabular-nums\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemEditor.tsx",
+      "line": 202,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"text-[11px] font-bold text-[var(--color-text-secondary)] tabular-nums\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemExpandedFields.tsx",
+      "line": 63,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"mt-1 pt-2.5 border-t border-[var(--color-border)] space-y-3\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemExpandedFields.tsx",
+      "line": 65,
+      "match": "max-w-[200px]",
+      "context": "<div className=\"flex-1 max-w-[200px]\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemExpandedFields.tsx",
+      "line": 67,
+      "match": "text-[10px]",
+      "context": "className=\"text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-secondary)] block mb-1\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemExpandedFields.tsx",
+      "line": 67,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "className=\"text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-secondary)] block mb-1\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemExpandedFields.tsx",
+      "line": 73,
+      "match": "text-[var(--color-gray-500)]",
+      "context": "<span className=\"absolute left-2.5 text-xs font-bold text-[var(--color-gray-500)] pointer-events-none select-none\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemExpandedFields.tsx",
+      "line": 79,
+      "match": "min-h-[36px]",
+      "context": "className=\"input pl-7 min-h-[36px] text-xs font-bold tabular-nums\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemExpandedFields.tsx",
+      "line": 130,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"flex items-center justify-between pt-2 border-t border-dashed border-[var(--color-border)] text-xs\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemExpandedFields.tsx",
+      "line": 131,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"font-semibold text-[var(--color-text-secondary)]\">{t.lineTotal}</span>"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemExpandedFields.tsx",
+      "line": 145,
+      "match": "text-[var(--color-text-primary)]",
+      "context": "<span className=\"font-bold text-[var(--color-text-primary)] text-sm\">"
     },
     {
       "file": "src/features/invoices/components/LineItemFields.tsx",
@@ -9505,6 +10495,108 @@
       "line": 173,
       "match": "min-h-[42px]",
       "context": "className=\"input pl-8 min-h-[42px] text-sm font-bold tabular-nums [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 44,
+      "match": "border-[var(--color-gray-200)]",
+      "context": "<div className=\"flex items-center rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] dark:bg-[var(--color-surface)] dark:border-[var(--color-border)] min-h-[38px] h-[38px] overflow-hidden w-28 sm:w-32 shrink-0 shadow-2xs\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 44,
+      "match": "bg-[var(--color-gray-50)]",
+      "context": "<div className=\"flex items-center rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] dark:bg-[var(--color-surface)] dark:border-[var(--color-border)] min-h-[38px] h-[38px] overflow-hidden w-28 sm:w-32 shrink-0 shadow-2xs\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 44,
+      "match": "bg-[var(--color-surface)]",
+      "context": "<div className=\"flex items-center rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] dark:bg-[var(--color-surface)] dark:border-[var(--color-border)] min-h-[38px] h-[38px] overflow-hidden w-28 sm:w-32 shrink-0 shadow-2xs\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 44,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"flex items-center rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] dark:bg-[var(--color-surface)] dark:border-[var(--color-border)] min-h-[38px] h-[38px] overflow-hidden w-28 sm:w-32 shrink-0 shadow-2xs\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 44,
+      "match": "min-h-[38px]",
+      "context": "<div className=\"flex items-center rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] dark:bg-[var(--color-surface)] dark:border-[var(--color-border)] min-h-[38px] h-[38px] overflow-hidden w-28 sm:w-32 shrink-0 shadow-2xs\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 44,
+      "match": "h-[38px]",
+      "context": "<div className=\"flex items-center rounded-xl border border-[var(--color-gray-200)] bg-[var(--color-gray-50)] dark:bg-[var(--color-surface)] dark:border-[var(--color-border)] min-h-[38px] h-[38px] overflow-hidden w-28 sm:w-32 shrink-0 shadow-2xs\">"
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 50,
+      "match": "h-[38px]",
+      "context": "className=\"w-8 sm:w-9 h-[38px] flex items-center justify-center text-[var(--color-gray-500)] hover:text-[var(--color-gray-800)] hover:bg-[var(--color-gray-100)] active:bg-[var(--color-gray-200)] dark:hover:bg-slate-800 transition-colors p-0 border-0 cursor-pointer\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 50,
+      "match": "text-[var(--color-gray-500)]",
+      "context": "className=\"w-8 sm:w-9 h-[38px] flex items-center justify-center text-[var(--color-gray-500)] hover:text-[var(--color-gray-800)] hover:bg-[var(--color-gray-100)] active:bg-[var(--color-gray-200)] dark:hover:bg-slate-800 transition-colors p-0 border-0 cursor-pointer\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 50,
+      "match": "text-[var(--color-gray-800)]",
+      "context": "className=\"w-8 sm:w-9 h-[38px] flex items-center justify-center text-[var(--color-gray-500)] hover:text-[var(--color-gray-800)] hover:bg-[var(--color-gray-100)] active:bg-[var(--color-gray-200)] dark:hover:bg-slate-800 transition-colors p-0 border-0 cursor-pointer\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 50,
+      "match": "bg-[var(--color-gray-100)]",
+      "context": "className=\"w-8 sm:w-9 h-[38px] flex items-center justify-center text-[var(--color-gray-500)] hover:text-[var(--color-gray-800)] hover:bg-[var(--color-gray-100)] active:bg-[var(--color-gray-200)] dark:hover:bg-slate-800 transition-colors p-0 border-0 cursor-pointer\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 50,
+      "match": "bg-[var(--color-gray-200)]",
+      "context": "className=\"w-8 sm:w-9 h-[38px] flex items-center justify-center text-[var(--color-gray-500)] hover:text-[var(--color-gray-800)] hover:bg-[var(--color-gray-100)] active:bg-[var(--color-gray-200)] dark:hover:bg-slate-800 transition-colors p-0 border-0 cursor-pointer\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 58,
+      "match": "text-[var(--color-text-primary)]",
+      "context": "className=\"w-full text-center text-sm font-bold text-[var(--color-text-primary)] bg-transparent border-0 focus:outline-none p-0 tabular-nums [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none shadow-none focus-visible:ring-0\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 73,
+      "match": "h-[38px]",
+      "context": "className=\"w-8 sm:w-9 h-[38px] flex items-center justify-center text-[var(--color-gray-500)] hover:text-[var(--color-gray-800)] hover:bg-[var(--color-gray-100)] active:bg-[var(--color-gray-200)] dark:hover:bg-slate-800 transition-colors p-0 border-0 cursor-pointer\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 73,
+      "match": "text-[var(--color-gray-500)]",
+      "context": "className=\"w-8 sm:w-9 h-[38px] flex items-center justify-center text-[var(--color-gray-500)] hover:text-[var(--color-gray-800)] hover:bg-[var(--color-gray-100)] active:bg-[var(--color-gray-200)] dark:hover:bg-slate-800 transition-colors p-0 border-0 cursor-pointer\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 73,
+      "match": "text-[var(--color-gray-800)]",
+      "context": "className=\"w-8 sm:w-9 h-[38px] flex items-center justify-center text-[var(--color-gray-500)] hover:text-[var(--color-gray-800)] hover:bg-[var(--color-gray-100)] active:bg-[var(--color-gray-200)] dark:hover:bg-slate-800 transition-colors p-0 border-0 cursor-pointer\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 73,
+      "match": "bg-[var(--color-gray-100)]",
+      "context": "className=\"w-8 sm:w-9 h-[38px] flex items-center justify-center text-[var(--color-gray-500)] hover:text-[var(--color-gray-800)] hover:bg-[var(--color-gray-100)] active:bg-[var(--color-gray-200)] dark:hover:bg-slate-800 transition-colors p-0 border-0 cursor-pointer\""
+    },
+    {
+      "file": "src/features/invoices/components/LineItemQuantityStepper.tsx",
+      "line": 73,
+      "match": "bg-[var(--color-gray-200)]",
+      "context": "className=\"w-8 sm:w-9 h-[38px] flex items-center justify-center text-[var(--color-gray-500)] hover:text-[var(--color-gray-800)] hover:bg-[var(--color-gray-100)] active:bg-[var(--color-gray-200)] dark:hover:bg-slate-800 transition-colors p-0 border-0 cursor-pointer\""
     },
     {
       "file": "src/features/invoices/components/PartySearchDropdown.tsx",
@@ -9663,10 +10755,376 @@
       "context": "<span className=\"receive-payment-balance-value tabular-nums text-sm text-[var(--color-success-700)]\">"
     },
     {
+      "file": "src/features/invoices/components/StockShortageBanner.tsx",
+      "line": 39,
+      "match": "border-[var(--color-error-500)]",
+      "context": "className=\"rounded-lg border border-[var(--color-error-500)] bg-[var(--color-danger-surface,#fff1f0)] p-3 px-4 mb-4\""
+    },
+    {
+      "file": "src/features/invoices/components/StockShortageBanner.tsx",
+      "line": 39,
+      "match": "bg-[var(--color-danger-surface,#fff1f0)]",
+      "context": "className=\"rounded-lg border border-[var(--color-error-500)] bg-[var(--color-danger-surface,#fff1f0)] p-3 px-4 mb-4\""
+    },
+    {
+      "file": "src/features/invoices/components/StockShortageBanner.tsx",
+      "line": 43,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<AlertTriangle size={16} aria-hidden=\"true\" className=\"text-[var(--color-error-500)] flex-shrink-0\" />"
+    },
+    {
+      "file": "src/features/invoices/components/StockShortageBanner.tsx",
+      "line": 44,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<span className=\"font-semibold text-sm text-[var(--color-error-500)]\">"
+    },
+    {
+      "file": "src/features/invoices/components/StockShortageBanner.tsx",
+      "line": 53,
+      "match": "min-w-[44px]",
+      "context": "className=\"min-w-[44px] min-h-[44px] p-0\""
+    },
+    {
+      "file": "src/features/invoices/components/StockShortageBanner.tsx",
+      "line": 53,
+      "match": "min-h-[44px]",
+      "context": "className=\"min-w-[44px] min-h-[44px] p-0\""
+    },
+    {
+      "file": "src/features/invoices/components/StockShortageBanner.tsx",
+      "line": 58,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<Text className=\"text-xs text-[var(--color-error-500)] mt-1 mb-2\">"
+    },
+    {
+      "file": "src/features/invoices/components/StockShortageBanner.tsx",
+      "line": 61,
+      "match": "text-[var(--color-text-primary)]",
+      "context": "<ul className=\"m-0 pl-4 text-sm text-[var(--color-text-primary)]\" aria-label={t.errStockShortageTitle}>"
+    },
+    {
+      "file": "src/features/invoices/components/StockShortageBanner.tsx",
+      "line": 68,
+      "match": "text-[var(--color-text-muted)]",
+      "context": "<Text className=\"text-xs text-[var(--color-text-muted)] mt-2\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobConvertButton.tsx",
+      "line": 31,
+      "match": "min-h-[44px]",
+      "context": "className=\"flex items-center gap-2 min-h-[44px]\""
+    },
+    {
+      "file": "src/features/jobs/components/JobForm.tsx",
+      "line": 141,
+      "match": "min-h-[80px]",
+      "context": "className=\"input resize-y min-h-[80px]\""
+    },
+    {
+      "file": "src/features/jobs/components/JobForm.tsx",
+      "line": 213,
+      "match": "min-h-[44px]",
+      "context": "<Button type=\"button\" variant=\"ghost\" size=\"sm\" onClick={addItem} className=\"self-start min-h-[44px]\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobForm.tsx",
+      "line": 219,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"border-t-2 border-[var(--color-border)] pt-3 flex flex-col gap-1 items-end\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobForm.tsx",
+      "line": 220,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<div className=\"flex gap-4 text-sm text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobForm.tsx",
+      "line": 230,
+      "match": "text-[var(--color-text)]",
+      "context": "<div className=\"flex gap-4 text-base font-bold text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobForm.tsx",
+      "line": 240,
+      "match": "min-h-[48px]",
+      "context": "className=\"min-h-[48px] w-full\""
+    },
+    {
+      "file": "src/features/jobs/components/JobItemRow.tsx",
+      "line": 27,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"border border-[var(--color-border)] rounded-lg p-3 flex flex-col gap-2\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemRow.tsx",
+      "line": 29,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"text-xs text-[var(--color-text-secondary)] font-medium\">{t.jobItemLabel} {n}</span>"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemRow.tsx",
+      "line": 37,
+      "match": "min-w-[44px]",
+      "context": "className=\"text-red-600 min-w-[44px] min-h-[44px]\""
+    },
+    {
+      "file": "src/features/jobs/components/JobItemRow.tsx",
+      "line": 37,
+      "match": "min-h-[44px]",
+      "context": "className=\"text-red-600 min-w-[44px] min-h-[44px]\""
+    },
+    {
+      "file": "src/features/jobs/components/JobItemRow.tsx",
+      "line": 45,
+      "match": "border-[var(--color-border)]",
+      "context": "<div role=\"group\" aria-label={`${t.jobItemLabel} ${n} type`} className=\"inline-flex self-start border border-[var(--color-border)] rounded-lg overflow-hidden\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemRow.tsx",
+      "line": 55,
+      "match": "min-h-[44px]",
+      "context": "className={`min-h-[44px] px-3 text-xs font-semibold ${"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemRow.tsx",
+      "line": 56,
+      "match": "bg-[var(--color-primary-600)]",
+      "context": "active ? 'bg-[var(--color-primary-600)] text-white' : 'bg-transparent text-[var(--color-text-secondary)]'"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemRow.tsx",
+      "line": 56,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "active ? 'bg-[var(--color-primary-600)] text-white' : 'bg-transparent text-[var(--color-text-secondary)]'"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemRow.tsx",
+      "line": 77,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<label className=\"text-xs text-[var(--color-text-secondary)]\">{isHourly ? t.jobItemHoursLabel : t.jobItemQtyLabel}</label>"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemRow.tsx",
+      "line": 89,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<label className=\"text-xs text-[var(--color-text-secondary)]\">{isHourly ? t.jobItemRatePerHrLabel : t.jobItemRateLabel}</label>"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemRow.tsx",
+      "line": 101,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<label className=\"text-xs text-[var(--color-text-secondary)]\">{t.jobItemDiscountLabel}</label>"
+    },
+    {
       "file": "src/features/jobs/components/JobItemsList.tsx",
       "line": 16,
       "match": "text-[var(--text-secondary)]",
       "context": "<Text className=\"text-sm text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemsList.tsx",
+      "line": 29,
+      "match": "border-[var(--color-border)]",
+      "context": "<tr className=\"border-b-2 border-[var(--color-border)]\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemsList.tsx",
+      "line": 30,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<th className=\"text-left p-2 text-[var(--color-text-secondary)] font-semibold\">{t.jobColDescription}</th>"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemsList.tsx",
+      "line": 31,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<th className=\"text-right p-2 text-[var(--color-text-secondary)] font-semibold\">{t.jobColQty}</th>"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemsList.tsx",
+      "line": 32,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<th className=\"text-right p-2 text-[var(--color-text-secondary)] font-semibold\">{t.jobColRate}</th>"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemsList.tsx",
+      "line": 33,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<th className=\"text-right p-2 text-[var(--color-text-secondary)] font-semibold\">{t.jobColTotal}</th>"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemsList.tsx",
+      "line": 38,
+      "match": "border-[var(--color-border)]",
+      "context": "<tr key={item.id} className=\"border-b border-[var(--color-border)]\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemsList.tsx",
+      "line": 39,
+      "match": "text-[var(--color-text)]",
+      "context": "<td className=\"p-2 text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemsList.tsx",
+      "line": 42,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"block text-xs text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemsList.tsx",
+      "line": 47,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<td className=\"p-2 text-right text-[var(--color-text-secondary)]\">{item.quantity}</td>"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemsList.tsx",
+      "line": 48,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<td className=\"p-2 text-right text-[var(--color-text-secondary)]\">₹{formatPaise(item.ratePaise)}</td>"
+    },
+    {
+      "file": "src/features/jobs/components/JobItemsList.tsx",
+      "line": 49,
+      "match": "text-[var(--color-text)]",
+      "context": "<td className=\"p-2 text-right font-semibold text-[var(--color-text)]\">₹{formatPaise(item.totalPaise)}</td>"
+    },
+    {
+      "file": "src/features/jobs/components/JobListItem.tsx",
+      "line": 25,
+      "match": "bg-[var(--color-surface)]",
+      "context": "className=\"job-list-item flex flex-col gap-1 w-full text-left p-3 px-4 bg-[var(--color-surface)] border-b border-[var(--color-border)] min-h-[44px]\""
+    },
+    {
+      "file": "src/features/jobs/components/JobListItem.tsx",
+      "line": 25,
+      "match": "border-[var(--color-border)]",
+      "context": "className=\"job-list-item flex flex-col gap-1 w-full text-left p-3 px-4 bg-[var(--color-surface)] border-b border-[var(--color-border)] min-h-[44px]\""
+    },
+    {
+      "file": "src/features/jobs/components/JobListItem.tsx",
+      "line": 25,
+      "match": "min-h-[44px]",
+      "context": "className=\"job-list-item flex flex-col gap-1 w-full text-left p-3 px-4 bg-[var(--color-surface)] border-b border-[var(--color-border)] min-h-[44px]\""
+    },
+    {
+      "file": "src/features/jobs/components/JobListItem.tsx",
+      "line": 30,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"text-xs text-[var(--color-text-secondary)] font-medium\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobListItem.tsx",
+      "line": 36,
+      "match": "text-[var(--color-text)]",
+      "context": "<span className=\"text-sm font-semibold text-[var(--color-text)] leading-snug\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobListItem.tsx",
+      "line": 41,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"flex items-center gap-1 text-xs text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobListItem.tsx",
+      "line": 48,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<span className=\"flex items-center gap-1 text-xs text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobListItem.tsx",
+      "line": 53,
+      "match": "text-[var(--color-text)]",
+      "context": "<span className=\"text-sm font-bold text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/jobs/components/JobStatusActions.tsx",
+      "line": 65,
+      "match": "min-h-[44px]",
+      "context": "className=\"min-h-[44px]\""
+    },
+    {
+      "file": "src/features/jobs/components/JobStatusActions.tsx",
+      "line": 93,
+      "match": "min-h-[44px]",
+      "context": "className=\"min-h-[44px]\""
+    },
+    {
+      "file": "src/features/jobs/components/JobStatusActions.tsx",
+      "line": 101,
+      "match": "min-h-[44px]",
+      "context": "className=\"min-h-[44px]\""
+    },
+    {
+      "file": "src/features/jobs/pages/JobDetailPage.tsx",
+      "line": 35,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<Heading level={2} className=\"text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider m-0\">{title}</Heading>"
+    },
+    {
+      "file": "src/features/jobs/pages/JobDetailPage.tsx",
+      "line": 90,
+      "match": "text-[var(--color-text)]",
+      "context": "<Heading level={1} className=\"text-lg font-bold text-[var(--color-text)] m-0 leading-snug\">{job.title}</Heading>"
+    },
+    {
+      "file": "src/features/jobs/pages/JobDetailPage.tsx",
+      "line": 95,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<div className=\"flex items-center gap-2 text-sm text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/jobs/pages/JobDetailPage.tsx",
+      "line": 100,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<div className=\"flex items-center gap-2 text-sm text-[var(--color-text-secondary)]\">"
+    },
+    {
+      "file": "src/features/jobs/pages/JobDetailPage.tsx",
+      "line": 107,
+      "match": "text-[var(--color-text)]",
+      "context": "<div className=\"flex items-center gap-2 font-bold text-xl text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/jobs/pages/JobDetailPage.tsx",
+      "line": 113,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<Text className=\"text-sm text-[var(--color-text-secondary)] m-0\">"
+    },
+    {
+      "file": "src/features/jobs/pages/JobDetailPage.tsx",
+      "line": 129,
+      "match": "text-[var(--color-text-secondary)]",
+      "context": "<Text className=\"text-sm text-[var(--color-text-secondary)] m-0\">"
+    },
+    {
+      "file": "src/features/jobs/pages/JobDetailPage.tsx",
+      "line": 143,
+      "match": "min-h-[44px]",
+      "context": "className=\"self-start min-h-[44px]\""
+    },
+    {
+      "file": "src/features/jobs/pages/JobDetailPage.tsx",
+      "line": 156,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"border-t border-[var(--color-border)] pt-3 flex flex-col gap-1 items-end\">"
+    },
+    {
+      "file": "src/features/jobs/pages/JobDetailPage.tsx",
+      "line": 163,
+      "match": "text-[var(--color-text)]",
+      "context": "<div className=\"flex gap-4 font-bold text-base text-[var(--color-text)]\">"
+    },
+    {
+      "file": "src/features/jobs/pages/JobsListPage.tsx",
+      "line": 70,
+      "match": "min-h-[36px]",
+      "context": "className=\"flex-shrink-0 rounded-full text-xs font-medium min-h-[36px] whitespace-nowrap px-3.5 py-1.5\""
+    },
+    {
+      "file": "src/features/jobs/pages/JobsListPage.tsx",
+      "line": 100,
+      "match": "min-h-[44px]",
+      "context": "className=\"w-full mt-3 min-h-[44px]\""
     },
     {
       "file": "src/features/landing/components/LandingAccordion.tsx",
@@ -10038,19 +11496,13 @@
       "file": "src/features/landing/components/gallery-section.tsx",
       "line": 150,
       "match": "max-w-[320px]",
-      "context": "className=\"max-w-[320px] pl-[20px] lg:max-w-[360px]\""
-    },
-    {
-      "file": "src/features/landing/components/gallery-section.tsx",
-      "line": 150,
-      "match": "pl-[20px]",
-      "context": "className=\"max-w-[320px] pl-[20px] lg:max-w-[360px]\""
+      "context": "className=\"max-w-[320px] pl-5 lg:max-w-[360px]\""
     },
     {
       "file": "src/features/landing/components/gallery-section.tsx",
       "line": 150,
       "match": "max-w-[360px]",
-      "context": "className=\"max-w-[320px] pl-[20px] lg:max-w-[360px]\""
+      "context": "className=\"max-w-[320px] pl-5 lg:max-w-[360px]\""
     },
     {
       "file": "src/features/landing/components/gallery-section.tsx",
@@ -10303,6 +11755,558 @@
       "line": 60,
       "match": "max-w-[600px]",
       "context": "<p className=\"text-md max-w-[600px] font-medium text-muted-foreground sm:text-xl\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep1Channel.tsx",
+      "line": 20,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label htmlFor=\"campaign-name\" className=\"block text-xs font-semibold text-[var(--text-secondary)] mb-2\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep1Channel.tsx",
+      "line": 33,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"mt-1 text-xs text-[var(--text-muted)] text-right\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep1Channel.tsx",
+      "line": 39,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label className=\"block text-xs font-semibold text-[var(--text-secondary)] mb-2\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
+      "line": 44,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"py-8 px-4 text-center text-[var(--text-muted)] text-sm space-y-2\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
+      "line": 46,
+      "match": "text-[var(--text-muted)]",
+      "context": "<Text className=\"text-xs text-[var(--text-muted)]\">{t.marketingCreateTemplateFirst}</Text>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
+      "line": 66,
+      "match": "border-[var(--border-strong)]",
+      "context": ": 'border-border bg-card hover:border-[var(--border-strong)]'"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
+      "line": 70,
+      "match": "text-[var(--text-primary)]",
+      "context": "<span className=\"font-semibold text-sm text-[var(--text-primary)] flex-1\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
+      "line": 75,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-xs text-[var(--text-muted)] line-clamp-2\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
+      "line": 79,
+      "match": "text-[11px]",
+      "context": "<div className=\"text-[11px] text-[var(--text-muted)] mt-1\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
+      "line": 79,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-[11px] text-[var(--text-muted)] mt-1\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
+      "line": 24,
+      "match": "bg-[var(--color-error-50)]",
+      "context": "className=\"p-3 rounded-lg bg-[var(--color-error-50)] border border-[var(--color-error-200)] text-destructive text-xs\""
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
+      "line": 24,
+      "match": "border-[var(--color-error-200)]",
+      "context": "className=\"p-3 rounded-lg bg-[var(--color-error-50)] border border-[var(--color-error-200)] text-destructive text-xs\""
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
+      "line": 33,
+      "match": "bg-[var(--color-warning-50)]",
+      "context": "className=\"p-3 rounded-lg bg-[var(--color-warning-50)] border border-[var(--color-warning-200)] text-amber-700 text-xs\""
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
+      "line": 33,
+      "match": "border-[var(--color-warning-200)]",
+      "context": "className=\"p-3 rounded-lg bg-[var(--color-warning-50)] border border-[var(--color-warning-200)] text-amber-700 text-xs\""
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
+      "line": 41,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
+      "line": 46,
+      "match": "bg-[var(--color-gray-50)]",
+      "context": "<div key={p.id} className=\"flex gap-2 items-center py-2 px-2.5 rounded-lg bg-[var(--color-gray-50)] text-xs\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
+      "line": 47,
+      "match": "text-[var(--text-primary)]",
+      "context": "<span className=\"font-semibold text-[var(--text-primary)] flex-1\">{p.name}</span>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
+      "line": 48,
+      "match": "text-[var(--text-muted)]",
+      "context": "<span className=\"text-[var(--text-muted)]\">{p.phone ?? t.marketingNoPhone}</span>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
+      "line": 40,
+      "match": "border-[var(--border-strong)]",
+      "context": ": 'border-border bg-card hover:border-[var(--border-strong)]'"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
+      "line": 43,
+      "match": "text-[var(--text-primary)]",
+      "context": "<div className=\"font-semibold text-sm text-[var(--text-primary)]\">{t.marketingSendNowTitle}</div>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
+      "line": 44,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-xs text-[var(--text-muted)] mt-0.5\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
+      "line": 58,
+      "match": "border-[var(--border-strong)]",
+      "context": ": 'border-border bg-card hover:border-[var(--border-strong)]'"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
+      "line": 61,
+      "match": "text-[var(--text-primary)]",
+      "context": "<div className=\"font-semibold text-sm text-[var(--text-primary)]\">{t.marketingScheduleLaterTitle}</div>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
+      "line": 62,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-xs text-[var(--text-muted)] mt-0.5\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
+      "line": 70,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label htmlFor=\"schedule-datetime\" className=\"block text-xs font-semibold text-[var(--text-secondary)] mb-2\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 37,
+      "match": "bg-[var(--color-gray-50)]",
+      "context": "<Card className=\"p-4 rounded-xl bg-[var(--color-gray-50)] border border-border\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 40,
+      "match": "text-[var(--text-muted)]",
+      "context": "<span className=\"text-[var(--text-muted)] shrink-0\">{t.marketingCampaignRow}</span>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 41,
+      "match": "text-[var(--text-primary)]",
+      "context": "<span className=\"font-semibold text-[var(--text-primary)]\">{state.name}</span>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 44,
+      "match": "text-[var(--text-muted)]",
+      "context": "<span className=\"text-[var(--text-muted)] shrink-0\">{t.marketingChannelRow}</span>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 48,
+      "match": "text-[var(--text-muted)]",
+      "context": "<span className=\"text-[var(--text-muted)] shrink-0\">{t.marketingTemplateRow}</span>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 49,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<span className=\"text-[var(--text-secondary)]\">{template?.name ?? '—'}</span>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 52,
+      "match": "text-[var(--text-muted)]",
+      "context": "<span className=\"text-[var(--text-muted)] shrink-0\">{t.marketingAudienceRow}</span>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 53,
+      "match": "text-[var(--text-primary)]",
+      "context": "<span className={`font-semibold ${tooLarge ? 'text-destructive' : 'text-[var(--text-primary)]'}`}>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 58,
+      "match": "text-[var(--text-muted)]",
+      "context": "<span className=\"text-[var(--text-muted)] shrink-0\">{t.marketingScheduleRow}</span>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 59,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<span className=\"text-[var(--text-secondary)]\">{formatScheduledAt(state.scheduledAt)}</span>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 62,
+      "match": "text-[var(--text-muted)]",
+      "context": "<span className=\"text-[var(--text-muted)] shrink-0\">{t.marketingEstCostRow}</span>"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 63,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<span className=\"text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 78,
+      "match": "bg-[var(--color-error-50)]",
+      "context": "<div role=\"alert\" className=\"p-3 rounded-lg bg-[var(--color-error-50)] border border-[var(--color-error-200)] text-destructive text-xs\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 78,
+      "match": "border-[var(--color-error-200)]",
+      "context": "<div role=\"alert\" className=\"p-3 rounded-lg bg-[var(--color-error-50)] border border-[var(--color-error-200)] text-destructive text-xs\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 83,
+      "match": "bg-[var(--color-warning-50)]",
+      "context": "<div role=\"alert\" className=\"p-3 rounded-lg bg-[var(--color-warning-50)] border border-[var(--color-warning-200)] text-amber-700 text-xs\">"
+    },
+    {
+      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
+      "line": 83,
+      "match": "border-[var(--color-warning-200)]",
+      "context": "<div role=\"alert\" className=\"p-3 rounded-lg bg-[var(--color-warning-50)] border border-[var(--color-warning-200)] text-amber-700 text-xs\">"
+    },
+    {
+      "file": "src/features/marketing/components/ChannelBadge.tsx",
+      "line": 21,
+      "match": "text-[11px]",
+      "context": "size === 'sm' ? 'text-[11px] py-0.5 px-2' : 'text-xs py-1 px-2.5',"
+    },
+    {
+      "file": "src/features/marketing/components/ChannelToggle.tsx",
+      "line": 36,
+      "match": "border-[var(--border-strong)]",
+      "context": ": 'border-border bg-card hover:border-[var(--border-strong)] font-normal text-[var(--text-secondary)]'"
+    },
+    {
+      "file": "src/features/marketing/components/ChannelToggle.tsx",
+      "line": 36,
+      "match": "text-[var(--text-secondary)]",
+      "context": ": 'border-border bg-card hover:border-[var(--border-strong)] font-normal text-[var(--text-secondary)]'"
+    },
+    {
+      "file": "src/features/marketing/components/OptOutChip.tsx",
+      "line": 13,
+      "match": "text-[11px]",
+      "context": "className=\"inline-flex items-center gap-1 text-[11px] py-0.5 px-1.5\""
+    },
+    {
+      "file": "src/features/marketing/components/RecipientTable.tsx",
+      "line": 59,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"py-6 px-4 text-center text-[var(--text-muted)] text-sm\">"
+    },
+    {
+      "file": "src/features/marketing/components/RecipientTable.tsx",
+      "line": 70,
+      "match": "text-[var(--text-muted)]",
+      "context": "<tr className=\"border-b border-border bg-muted/40 text-[var(--text-muted)]\">"
+    },
+    {
+      "file": "src/features/marketing/components/RecipientTable.tsx",
+      "line": 80,
+      "match": "text-[var(--text-primary)]",
+      "context": "<td className=\"py-2.5 px-3 text-[var(--text-primary)] font-medium\">{r.partyName}</td>"
+    },
+    {
+      "file": "src/features/marketing/components/RecipientTable.tsx",
+      "line": 81,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<td className=\"py-2.5 px-3 text-[var(--text-secondary)]\">{r.phone ?? '—'}</td>"
+    },
+    {
+      "file": "src/features/marketing/components/RecipientTable.tsx",
+      "line": 85,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<td className=\"py-2.5 px-3 text-[var(--text-secondary)]\">{r.costPaise > 0 ? formatPaiseAsRupees(r.costPaise) : '—'}</td>"
+    },
+    {
+      "file": "src/features/marketing/components/ReminderTriggerPicker.tsx",
+      "line": 42,
+      "match": "border-[var(--border-strong)]",
+      "context": ": 'border-border bg-card hover:border-[var(--border-strong)]'"
+    },
+    {
+      "file": "src/features/marketing/components/TemplatePreview.tsx",
+      "line": 26,
+      "match": "text-[11px]",
+      "context": "<div className=\"text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2\">"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
+      "line": 23,
+      "match": "min-w-[80px]",
+      "context": "<Card className=\"flex-1 min-w-[80px] p-3.5 rounded-xl border border-border bg-card text-center shadow-2xs\">"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
+      "line": 24,
+      "match": "text-[var(--text-primary)]",
+      "context": "<div className=\"text-xl font-bold text-[var(--text-primary)]\" style={color ? { color } : undefined}>{value}</div>"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
+      "line": 25,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-xs text-[var(--text-muted)] mt-0.5\">{label}</div>"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
+      "line": 33,
+      "match": "text-[var(--text-muted)]",
+      "context": "<span className=\"text-[var(--text-muted)]\">{label}</span>"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
+      "line": 34,
+      "match": "text-[var(--text-primary)]",
+      "context": "<span className=\"text-[var(--text-primary)] font-medium\">{value}</span>"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
+      "line": 103,
+      "match": "bg-[var(--color-gray-50)]",
+      "context": "<Card className=\"p-3.5 rounded-xl bg-[var(--color-gray-50)] border border-border mb-5\">"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
+      "line": 113,
+      "match": "text-[var(--text-primary)]",
+      "context": "<h2 className=\"text-sm font-semibold text-[var(--text-primary)] mb-2.5\">{t.marketingRecipients}</h2>"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignListPage.tsx",
+      "line": 126,
+      "match": "text-[var(--text-primary)]",
+      "context": "<span className=\"flex-1 font-semibold text-sm text-[var(--text-primary)] truncate\">{c.name}</span>"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignListPage.tsx",
+      "line": 130,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"flex gap-4 text-xs text-[var(--text-muted)]\">"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignWizardPage.tsx",
+      "line": 33,
+      "match": "text-[11px]",
+      "context": "'h-5.5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all',"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignWizardPage.tsx",
+      "line": 35,
+      "match": "bg-[var(--color-success-500)]",
+      "context": "done && 'bg-[var(--color-success-500)] text-white',"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignWizardPage.tsx",
+      "line": 36,
+      "match": "text-[var(--text-muted)]",
+      "context": "!done && !active && 'bg-muted text-[var(--text-muted)]'"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignWizardPage.tsx",
+      "line": 43,
+      "match": "bg-[var(--color-success-400)]",
+      "context": "<div className={cn('w-4 h-0.5', done ? 'bg-[var(--color-success-400)]' : 'bg-muted')} />"
+    },
+    {
+      "file": "src/features/marketing/pages/CampaignWizardPage.tsx",
+      "line": 114,
+      "match": "min-h-[300px]",
+      "context": "<div className=\"min-h-[300px]\">"
+    },
+    {
+      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
+      "line": 19,
+      "match": "min-w-[120px]",
+      "context": "<Card className=\"flex-1 min-w-[120px] p-4 rounded-xl border border-border bg-card shadow-2xs\">"
+    },
+    {
+      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
+      "line": 20,
+      "match": "text-[var(--text-primary)]",
+      "context": "<div className=\"text-xl font-bold text-[var(--text-primary)]\">"
+    },
+    {
+      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
+      "line": 23,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-xs text-[var(--text-muted)] mt-1\">{label}</div>"
+    },
+    {
+      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
+      "line": 44,
+      "match": "min-w-[140px]",
+      "context": "className=\"flex flex-col gap-2 p-4 rounded-xl border border-border bg-card shadow-2xs text-left flex-1 min-w-[140px]\""
+    },
+    {
+      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
+      "line": 50,
+      "match": "text-[var(--text-primary)]",
+      "context": "<div className=\"font-bold text-sm text-[var(--text-primary)]\">{title}</div>"
+    },
+    {
+      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
+      "line": 51,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-xs text-[var(--text-muted)] mt-0.5\">{description}</div>"
+    },
+    {
+      "file": "src/features/marketing/pages/OptOutListPage.tsx",
+      "line": 106,
+      "match": "text-[var(--text-primary)]",
+      "context": "<div className=\"font-semibold text-sm text-[var(--text-primary)] truncate\">{party.name}</div>"
+    },
+    {
+      "file": "src/features/marketing/pages/OptOutListPage.tsx",
+      "line": 107,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-xs text-[var(--text-muted)]\">{party.phone ?? t.marketingNoPhoneOnRow}</div>"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 104,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label className=\"block text-xs font-semibold text-[var(--text-secondary)] mb-2\">"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 110,
+      "match": "text-[var(--text-muted)]",
+      "context": "{isEdit && <div className=\"text-xs text-[var(--text-muted)] mt-1\">{t.marketingChannelCannotChange}</div>}"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 115,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label htmlFor=\"tmpl-name\" className=\"block text-xs font-semibold text-[var(--text-secondary)] mb-2\">"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 123,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label htmlFor=\"tmpl-body\" className=\"block text-xs font-semibold text-[var(--text-secondary)] mb-2\">"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 126,
+      "match": "text-[var(--text-muted)]",
+      "context": "<span className={`float-right text-xs font-normal ${charCount > SMS_CHAR_WARN ? 'text-destructive' : 'text-[var(--text-muted)]'}`}>"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 139,
+      "match": "min-h-[100px]",
+      "context": "className=\"resize-y min-h-[100px]\""
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 152,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label htmlFor=\"tmpl-vars\" className=\"block text-xs font-semibold text-[var(--text-secondary)] mb-2\">"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 156,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-xs text-[var(--text-muted)] mt-1\">{t.marketingVariableNamesHelper}</div>"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 163,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label htmlFor=\"tmpl-dlt\" className=\"block text-xs font-semibold text-[var(--text-secondary)] mb-2\">"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 170,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label htmlFor=\"dlt-reg\" className=\"text-sm font-medium text-[var(--text-secondary)] cursor-pointer select-none\">"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 179,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label htmlFor=\"tmpl-wa\" className=\"block text-xs font-semibold text-[var(--text-secondary)] mb-2\">"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
+      "line": 183,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-xs text-[var(--text-muted)] mt-1\">{t.marketingWaTemplateHelper}</div>"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateListPage.tsx",
+      "line": 114,
+      "match": "text-[var(--text-primary)]",
+      "context": "<span className=\"font-semibold text-sm text-[var(--text-primary)]\">{tpl.name}</span>"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateListPage.tsx",
+      "line": 118,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-xs text-[var(--text-muted)] mt-1 line-clamp-2\">"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateListPage.tsx",
+      "line": 121,
+      "match": "text-[11px]",
+      "context": "<div className=\"text-[11px] text-[var(--text-muted)] mt-1\">{formatDate(tpl.createdAt)}</div>"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateListPage.tsx",
+      "line": 121,
+      "match": "text-[var(--text-muted)]",
+      "context": "<div className=\"text-[11px] text-[var(--text-muted)] mt-1\">{formatDate(tpl.createdAt)}</div>"
+    },
+    {
+      "file": "src/features/marketing/pages/TemplateListPage.tsx",
+      "line": 130,
+      "match": "text-[var(--text-muted)]",
+      "context": "<Pencil size={15} className=\"text-[var(--text-muted)]\" aria-hidden=\"true\" />"
+    },
+    {
+      "file": "src/features/notifications/pages/NotificationPreferencesPage.tsx",
+      "line": 141,
+      "match": "bg-[var(--color-gray-50)]",
+      "context": "<div className=\"notif-prefs__row bg-[var(--color-gray-50)]\">"
     },
     {
       "file": "src/features/parties/components/AddressFormDrawer.tsx",
@@ -10821,6 +12825,12 @@
       "context": "<div className=\"text-[11px] text-[var(--color-error-600)] font-medium pt-1 border-t border-[var(--color-gray-200)] flex items-center gap-1\">"
     },
     {
+      "file": "src/features/parties/components/PartyDetailLoyaltyTab.tsx",
+      "line": 57,
+      "match": "min-h-[44px]",
+      "context": "className=\"btn btn-primary btn-md inline-flex items-center min-h-[44px]\""
+    },
+    {
       "file": "src/features/parties/components/PartyOverviewTab.tsx",
       "line": 41,
       "match": "border-[var(--color-gray-100)]",
@@ -11185,6 +13195,18 @@
       "line": 53,
       "match": "scale-[0.99]",
       "context": "className=\"w-full bg-[#024724] hover:bg-[#01351a] active:scale-[0.99] text-white font-bold py-4 rounded-2xl shadow-md text-base transition-all flex items-center justify-center cursor-pointer\""
+    },
+    {
+      "file": "src/features/payments/components/OutstandingFilterBar.tsx",
+      "line": 74,
+      "match": "text-[var(--color-gray-500)]",
+      "context": "<SlidersHorizontal size={16} aria-hidden=\"true\" className=\"text-[var(--color-gray-500)] flex-shrink-0\" />"
+    },
+    {
+      "file": "src/features/payments/components/PaymentDetailSkeleton.tsx",
+      "line": 13,
+      "match": "min-h-[160px]",
+      "context": "<Card className=\"mb-4 min-h-[160px] p-4\">"
     },
     {
       "file": "src/features/payments/components/PaymentDetailsSection.tsx",
@@ -11637,34 +13659,40 @@
       "context": "className=\"w-full bg-[#026F39] hover:bg-[#014D27] active:scale-[0.99] text-white font-bold py-3 rounded-xl shadow-md text-base transition-all flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed\""
     },
     {
-      "file": "src/features/products/ExpiryAlertCard.tsx",
-      "line": 60,
-      "match": "text-[var(--text-primary)]",
-      "context": "<span className=\"text-sm font-semibold text-[var(--text-primary)]\">"
+      "file": "src/features/pos/components/payment/PaymentSheet.tsx",
+      "line": 135,
+      "match": "min-h-[36px]",
+      "context": "className=\"min-h-[36px] inline-flex items-center gap-1.5\""
+    },
+    {
+      "file": "src/features/price-lists/PriceListDetailPage.tsx",
+      "line": 32,
+      "match": "h-[68px]",
+      "context": "{[0, 1, 2].map((i) => <div key={i} className=\"pl-skeleton__card h-[68px]\" />)}"
+    },
+    {
+      "file": "src/features/price-lists/PriceListDetailPage.tsx",
+      "line": 170,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"pt-4 border-t border-[var(--color-border)]\">"
     },
     {
       "file": "src/features/products/ExpiryAlertCard.tsx",
-      "line": 69,
-      "match": "text-[var(--text-muted)]",
-      "context": "<div className=\"text-xs text-[var(--text-muted)]\">{t.expiryBatchLabel}</div>"
+      "line": 58,
+      "match": "text-[var(--color-error-500)]",
+      "context": "className={cn('shrink-0 mt-0.5', isExpired ? 'text-[var(--color-error-500)]' : 'text-amber-500')}"
     },
     {
       "file": "src/features/products/ExpiryAlertCard.tsx",
-      "line": 73,
-      "match": "text-[var(--text-muted)]",
-      "context": "<div className=\"text-xs text-[var(--text-muted)]\">{t.expiryDateLabel}</div>"
+      "line": 76,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<div className={cn('text-sm font-medium', isExpired ? 'text-[var(--color-error-500)]' : 'text-amber-600')}>"
     },
     {
       "file": "src/features/products/ExpiryAlertCard.tsx",
-      "line": 77,
-      "match": "text-[var(--text-muted)]",
-      "context": "<div className=\"text-xs text-[var(--text-muted)]\">{t.expiryStockLabel}</div>"
-    },
-    {
-      "file": "src/features/products/ExpiryAlertCard.tsx",
-      "line": 81,
-      "match": "text-[var(--text-muted)]",
-      "context": "<div className=\"text-xs text-[var(--text-muted)]\">Status</div>"
+      "line": 86,
+      "match": "text-[var(--color-error-500)]",
+      "context": "<div className={cn('text-sm font-medium', isExpired ? 'text-[var(--color-error-500)]' : 'text-amber-600')}>"
     },
     {
       "file": "src/features/products/ProductDetailPage.tsx",
@@ -11673,6 +13701,204 @@
       "context": "<div className=\"stagger-enter flex flex-col gap-[var(--gap-section)]\">"
     },
     {
+      "file": "src/features/products/bulk/BulkAddProductsPage.tsx",
+      "line": 186,
+      "match": "border-[var(--color-gray-200)]",
+      "context": "<div className=\"bulk-product-table-wrap border border-[var(--color-gray-200)] rounded-xl overflow-x-auto bg-[var(--color-gray-0)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkAddProductsPage.tsx",
+      "line": 186,
+      "match": "bg-[var(--color-gray-0)]",
+      "context": "<div className=\"bulk-product-table-wrap border border-[var(--color-gray-200)] rounded-xl overflow-x-auto bg-[var(--color-gray-0)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkAddProductsPage.tsx",
+      "line": 220,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<div className=\"text-xs text-[var(--text-secondary)] font-medium\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductAddModal.tsx",
+      "line": 136,
+      "match": "z-[100]",
+      "context": "<div className=\"fixed inset-0 z-[100] flex flex-col bg-[var(--color-gray-0)] w-full h-full overflow-hidden\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductAddModal.tsx",
+      "line": 136,
+      "match": "bg-[var(--color-gray-0)]",
+      "context": "<div className=\"fixed inset-0 z-[100] flex flex-col bg-[var(--color-gray-0)] w-full h-full overflow-hidden\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductAddModal.tsx",
+      "line": 139,
+      "match": "text-[var(--text-primary)]",
+      "context": "<h2 className=\"text-lg md:text-xl font-bold text-[var(--text-primary)]\">Bulk Add Products</h2>"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductAddModal.tsx",
+      "line": 140,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<p className=\"text-xs text-[var(--text-secondary)] mt-0.5\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductAddModal.tsx",
+      "line": 189,
+      "match": "border-[var(--color-gray-200)]",
+      "context": "<div className=\"bulk-product-table-wrap border border-[var(--color-gray-200)] rounded-xl overflow-x-auto bg-[var(--color-gray-0)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductAddModal.tsx",
+      "line": 189,
+      "match": "bg-[var(--color-gray-0)]",
+      "context": "<div className=\"bulk-product-table-wrap border border-[var(--color-gray-200)] rounded-xl overflow-x-auto bg-[var(--color-gray-0)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductAddModal.tsx",
+      "line": 223,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<div className=\"text-xs text-[var(--text-secondary)] font-medium\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 36,
+      "match": "bg-[var(--color-gray-0)]",
+      "context": "className={`p-3.5 bg-[var(--color-gray-0)] border rounded-xl shadow-xs space-y-3 transition-colors ${"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 38,
+      "match": "border-[var(--color-error-400)]",
+      "context": "? 'border-[var(--color-error-400)] bg-[var(--color-error-50)]/30'"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 38,
+      "match": "bg-[var(--color-error-50)]",
+      "context": "? 'border-[var(--color-error-400)] bg-[var(--color-error-50)]/30'"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 39,
+      "match": "border-[var(--color-gray-200)]",
+      "context": ": 'border-[var(--color-gray-200)]'"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 44,
+      "match": "bg-[var(--color-gray-100)]",
+      "context": "<span className=\"w-6 h-6 rounded-full bg-[var(--color-gray-100)] text-[var(--text-secondary)] font-mono text-xs flex items-center justify-center font-semibold\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 44,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<span className=\"w-6 h-6 rounded-full bg-[var(--color-gray-100)] text-[var(--text-secondary)] font-mono text-xs flex items-center justify-center font-semibold\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 51,
+      "match": "text-[var(--text-muted)]",
+      "context": "<span className=\"text-xs font-medium text-[var(--text-muted)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 62,
+      "match": "text-[var(--color-error-500)]",
+      "context": "className=\"text-[var(--color-error-500)] hover:text-[var(--color-error-700)] h-8 w-8 p-0\""
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 62,
+      "match": "text-[var(--color-error-700)]",
+      "context": "className=\"text-[var(--color-error-500)] hover:text-[var(--color-error-700)] h-8 w-8 p-0\""
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 69,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label className=\"text-xs font-semibold text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 84,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label className=\"text-xs font-semibold text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 96,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label className=\"text-xs font-semibold text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 114,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label className=\"text-xs font-semibold text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 130,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label className=\"text-xs font-semibold text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 152,
+      "match": "text-[var(--text-secondary)]",
+      "context": "className=\"text-xs text-[var(--text-secondary)] p-0 h-7 flex items-center gap-1\""
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 159,
+      "match": "border-[var(--color-gray-100)]",
+      "context": "<div className=\"grid grid-cols-2 gap-2.5 pt-2 border-t border-[var(--color-gray-100)] mt-2\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 161,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label className=\"text-xs font-semibold text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductCardItem.tsx",
+      "line": 176,
+      "match": "text-[var(--text-secondary)]",
+      "context": "<label className=\"text-xs font-semibold text-[var(--text-secondary)]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductRowItem.tsx",
+      "line": 41,
+      "match": "text-[var(--text-muted)]",
+      "context": "<span className=\"text-xs text-[var(--text-muted)] font-mono\">{index + 1}</span>"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductRowItem.tsx",
+      "line": 44,
+      "match": "min-w-[180px]",
+      "context": "<td className=\"min-w-[180px]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductRowItem.tsx",
+      "line": 56,
+      "match": "min-w-[110px]",
+      "context": "<td className=\"min-w-[110px]\">"
+    },
+    {
+      "file": "src/features/products/bulk/BulkProductRowItem.tsx",
+      "line": 105,
+      "match": "min-w-[130px]",
+      "context": "<td className=\"min-w-[130px]\">"
+    },
+    {
+      "file": "src/features/products/components/EditProductDrawer.tsx",
+      "line": 176,
+      "match": "border-[var(--color-border)]",
+      "context": "<div className=\"pt-4 border-t border-[var(--color-border)] flex items-center justify-end gap-2\">"
+    },
+    {
       "file": "src/features/products/components/ProductFormBasic.tsx",
       "line": 127,
       "match": "rounded-[var(--radius-md)]",
@@ -11695,6 +13921,30 @@
       "line": 152,
       "match": "bg-[var(--color-gray-200)]",
       "context": "className=\"h-11 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-gray-200)]\""
+    },
+    {
+      "file": "src/features/recurring/pages/RecurringDetailPage.tsx",
+      "line": 123,
+      "match": "h-[60px]",
+      "context": "<div key={k} className=\"recurring-skeleton__card h-[60px]\" />"
+    },
+    {
+      "file": "src/features/reports/components/StockSummaryFilterBar.tsx",
+      "line": 69,
+      "match": "text-[var(--color-gray-400)]",
+      "context": "leftIcon={<Search size={16} className=\"text-[var(--color-gray-400)]\" aria-hidden=\"true\" />}"
+    },
+    {
+      "file": "src/features/sales/ChallanDetailPage.tsx",
+      "line": 75,
+      "match": "min-h-[160px]",
+      "context": "<Card className=\"min-h-[160px] p-4\">"
+    },
+    {
+      "file": "src/features/sales/SaleOrderDetailPage.tsx",
+      "line": 75,
+      "match": "min-h-[160px]",
+      "context": "<Card className=\"min-h-[160px] p-4\">"
     },
     {
       "file": "src/features/sales/SalesHubPage.tsx",
@@ -11704,21 +13954,141 @@
     },
     {
       "file": "src/features/settings/InventorySettingsPage.tsx",
-      "line": 64,
-      "match": "text-[var(--text-primary)]",
-      "context": "<span className=\"text-sm font-semibold text-[var(--text-primary)]\">"
+      "line": 52,
+      "match": "border-[var(--border-strong)]",
+      "context": ": 'border-border bg-card hover:border-[var(--border-strong)]'"
     },
     {
-      "file": "src/features/settings/InventorySettingsPage.tsx",
-      "line": 127,
-      "match": "text-[var(--text-primary)]",
-      "context": "className=\"text-sm font-semibold text-[var(--text-primary)]\""
+      "file": "src/features/settings/RoleBuilderPage.tsx",
+      "line": 79,
+      "match": "text-[var(--color-gray-600)]",
+      "context": "<Text className=\"text-xs font-semibold text-[var(--color-gray-600)] uppercase tracking-wider\">{t.permissionsLabel}</Text>"
+    },
+    {
+      "file": "src/features/settings/components/AuditLogEntry.tsx",
+      "line": 120,
+      "match": "text-[var(--color-gray-400)]",
+      "context": "className=\"text-[var(--color-gray-400)] flex-shrink-0\""
+    },
+    {
+      "file": "src/features/settings/components/AuditRedactionsManager.tsx",
+      "line": 129,
+      "match": "text-[var(--color-gray-900)]",
+      "context": "<Text className=\"m-0 font-medium text-[var(--color-gray-900)]\">"
+    },
+    {
+      "file": "src/features/settings/components/AuditRedactionsManager.tsx",
+      "line": 132,
+      "match": "text-[var(--color-gray-500)]",
+      "context": "<Text className=\"m-0 text-xs text-[var(--color-gray-500)] break-all\">"
     },
     {
       "file": "src/features/settings/components/DocumentCustomFieldRow.tsx",
       "line": 60,
       "match": "bg-[var(--color-error-50)]",
       "context": "className=\"p-2 rounded-sm hover:bg-[var(--color-error-50)] transition-colors\""
+    },
+    {
+      "file": "src/features/settings/components/InviteSuccessCard.tsx",
+      "line": 20,
+      "match": "text-[var(--color-success-600)]",
+      "context": "className=\"text-[var(--color-success-600)] mb-4\""
+    },
+    {
+      "file": "src/features/settings/components/InviteSuccessCard.tsx",
+      "line": 22,
+      "match": "text-[var(--color-gray-900)]",
+      "context": "<Text className=\"font-bold text-base text-[var(--color-gray-900)] mb-2\">"
+    },
+    {
+      "file": "src/features/settings/components/InviteSuccessCard.tsx",
+      "line": 25,
+      "match": "text-[var(--color-gray-500)]",
+      "context": "<Text className=\"text-[var(--color-gray-500)] mb-6 leading-relaxed\">"
+    },
+    {
+      "file": "src/features/settings/components/InviteSuccessCard.tsx",
+      "line": 29,
+      "match": "bg-[var(--color-primary-50)]",
+      "context": "className=\"inline-block py-3 px-6 bg-[var(--color-primary-50)] rounded-xl border-2 border-dashed border-[var(--color-primary-300)] text-lg font-bold tracking-widest text-[var(--color-primary-700)] mb-8\""
+    },
+    {
+      "file": "src/features/settings/components/InviteSuccessCard.tsx",
+      "line": 29,
+      "match": "border-[var(--color-primary-300)]",
+      "context": "className=\"inline-block py-3 px-6 bg-[var(--color-primary-50)] rounded-xl border-2 border-dashed border-[var(--color-primary-300)] text-lg font-bold tracking-widest text-[var(--color-primary-700)] mb-8\""
+    },
+    {
+      "file": "src/features/settings/components/InviteSuccessCard.tsx",
+      "line": 29,
+      "match": "text-[var(--color-primary-700)]",
+      "context": "className=\"inline-block py-3 px-6 bg-[var(--color-primary-50)] rounded-xl border-2 border-dashed border-[var(--color-primary-300)] text-lg font-bold tracking-widest text-[var(--color-primary-700)] mb-8\""
+    },
+    {
+      "file": "src/features/settings/components/OperationPinSection.tsx",
+      "line": 27,
+      "match": "text-[var(--color-success-600)]",
+      "context": "className={operationPinSet ? 'text-[var(--color-success-600)]' : 'text-[var(--color-gray-400)]'}"
+    },
+    {
+      "file": "src/features/settings/components/OperationPinSection.tsx",
+      "line": 27,
+      "match": "text-[var(--color-gray-400)]",
+      "context": "className={operationPinSet ? 'text-[var(--color-success-600)]' : 'text-[var(--color-gray-400)]'}"
+    },
+    {
+      "file": "src/features/settings/components/OperationPinSection.tsx",
+      "line": 32,
+      "match": "text-[var(--color-success-600)]",
+      "context": "operationPinSet ? 'text-[var(--color-success-600)]' : 'text-[var(--color-gray-400)]'"
+    },
+    {
+      "file": "src/features/settings/components/OperationPinSection.tsx",
+      "line": 32,
+      "match": "text-[var(--color-gray-400)]",
+      "context": "operationPinSet ? 'text-[var(--color-success-600)]' : 'text-[var(--color-gray-400)]'"
+    },
+    {
+      "file": "src/features/settings/components/RoleNameInput.tsx",
+      "line": 17,
+      "match": "text-[var(--color-gray-600)]",
+      "context": "<label htmlFor=\"role-name\" className=\"text-xs font-semibold text-[var(--color-gray-600)] uppercase tracking-wider\">"
+    },
+    {
+      "file": "src/features/settings/components/RoleTemplatePills.tsx",
+      "line": 25,
+      "match": "text-[var(--color-gray-600)]",
+      "context": "<Text className=\"text-xs font-semibold text-[var(--color-gray-600)] uppercase tracking-wider\">{t.startFromTemplate}</Text>"
+    },
+    {
+      "file": "src/features/templates/components/PreviewBillTo.tsx",
+      "line": 23,
+      "match": "text-[10px]",
+      "context": "<div className=\"font-semibold text-[10px] text-muted-foreground uppercase tracking-wider mb-1\">"
+    },
+    {
+      "file": "src/features/templates/components/PreviewInvoiceHeader.tsx",
+      "line": 47,
+      "match": "max-w-[160px]",
+      "context": "<div className=\"text-xs opacity-75 mt-0.5 max-w-[160px]\">"
+    },
+    {
+      "file": "src/features/templates/components/PreviewTotalsSummary.tsx",
+      "line": 30,
+      "match": "min-w-[180px]",
+      "context": "<div className=\"min-w-[180px]\">"
+    },
+    {
+      "file": "src/features/templates/components/PrintTab.tsx",
+      "line": 88,
+      "match": "min-w-[32px]",
+      "context": "className=\"min-w-[32px] text-center font-semibold text-base\""
+    },
+    {
+      "file": "src/pages/SubscriptionManagePage.tsx",
+      "line": 85,
+      "match": "text-[var(--text-muted)]",
+      "context": "className=\"text-xs font-medium uppercase tracking-wider mb-2 text-[var(--text-muted)]\""
     },
     {
       "file": "src/pages/design-system/DesignSystemShowcasePage.tsx",
@@ -12785,702 +15155,6 @@
   ],
   "inlineRawStyles": [
     {
-      "file": "src/features/collections/pages/AgingBucketList.tsx",
-      "line": 185,
-      "match": "16px",
-      "context": "<div style={{ display: 'flex', justifyContent: 'center', padding: '16px 0' }}><Spinner /></div>"
-    },
-    {
-      "file": "src/features/custom-orders/pages/CustomOrderDetailPage.tsx",
-      "line": 135,
-      "match": "3px",
-      "context": "<span style={{ fontSize: 'var(--fs-sm)', fontWeight: 600, color: 'var(--color-warning-700)', background: 'var(--color-warning-50)', borderRadius: 6, padding: '3px 8px' }}>"
-    },
-    {
-      "file": "src/features/inventory/components/BatchPicker.tsx",
-      "line": 44,
-      "match": "2px",
-      "context": "<span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color: 'var(--color-error-500)', background: 'var(--color-danger-surface, #fff1f0)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>"
-    },
-    {
-      "file": "src/features/inventory/components/BatchPicker.tsx",
-      "line": 51,
-      "match": "2px",
-      "context": "<span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color: 'var(--color-warning)', background: 'var(--color-warning-surface, #fffbeb)', borderRadius: 'var(--radius-sm)', padding: '2px 6px', whiteSpace: 'nowrap' }}>"
-    },
-    {
-      "file": "src/features/jobs/components/JobForm.tsx",
-      "line": 191,
-      "match": "2px",
-      "context": "<span style={{ alignSelf: 'flex-start', fontSize: 'var(--fs-xs)', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-full, 999px)', background: variance > 0 ? 'var(--color-error-50, var(--color-error-50))' : 'var(--color-success-50, #f0fdf4)', color: variance > 0 ? 'var(--color-error-600)' : 'var(--color-success-600, #16a34a)' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/AudiencePicker.tsx",
-      "line": 29,
-      "match": "16px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/AudiencePicker.tsx",
-      "line": 107,
-      "match": "14px",
-      "context": "<label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: 'var(--color-gray-700)' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/AudiencePicker.tsx",
-      "line": 112,
-      "match": "18px",
-      "context": "style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary-600)' }}"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep1Channel.tsx",
-      "line": 19,
-      "match": "20px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep1Channel.tsx",
-      "line": 42,
-      "match": "12px",
-      "context": "<div style={{ marginTop: '4px', fontSize: '12px', color: 'var(--color-gray-400)', textAlign: 'right' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep1Channel.tsx",
-      "line": 49,
-      "match": "12px",
-      "context": "<div style={{ display: 'flex', gap: '12px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
-      "line": 32,
-      "match": "14px",
-      "context": "<div style={{ padding: '16px', color: 'var(--color-error-600)', fontSize: '14px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
-      "line": 42,
-      "match": "14px",
-      "context": "<div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-gray-500)', fontSize: '14px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
-      "line": 44,
-      "match": "13px",
-      "context": "<Text style={{ marginTop: '8px', fontSize: '13px' }}>{t.marketingCreateTemplateFirst}</Text>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
-      "line": 50,
-      "match": "10px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
-      "line": 72,
-      "match": "8px",
-      "context": "<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
-      "line": 73,
-      "match": "14px",
-      "context": "<span style={{ fontWeight: 600, fontSize: '14px', color: 'var(--color-gray-800)', flex: 1 }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
-      "line": 78,
-      "match": "13px",
-      "context": "<div style={{ fontSize: '13px', color: 'var(--color-gray-500)', WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep2Template.tsx",
-      "line": 82,
-      "match": "11px",
-      "context": "<div style={{ fontSize: '11px', color: 'var(--color-gray-400)' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
-      "line": 18,
-      "match": "16px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
-      "line": 55,
-      "match": "12px",
-      "context": "<div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-gray-500)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
-      "line": 58,
-      "match": "4px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep3Audience.tsx",
-      "line": 60,
-      "match": "13px",
-      "context": "<div key={p.id} style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '8px 10px', borderRadius: '8px', background: 'var(--color-gray-50)', fontSize: '13px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
-      "line": 28,
-      "match": "20px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
-      "line": 29,
-      "match": "10px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
-      "line": 37,
-      "match": "15px",
-      "context": "<div style={{ fontWeight: 600, fontSize: '15px' }}>{t.marketingSendNowTitle}</div>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
-      "line": 38,
-      "match": "13px",
-      "context": "<div style={{ fontSize: '13px', color: sendNow ? 'var(--color-primary-600)' : 'var(--color-gray-400)', marginTop: '2px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
-      "line": 50,
-      "match": "15px",
-      "context": "<div style={{ fontWeight: 600, fontSize: '15px' }}>{t.marketingScheduleLaterTitle}</div>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep4Schedule.tsx",
-      "line": 51,
-      "match": "13px",
-      "context": "<div style={{ fontSize: '13px', color: !sendNow ? 'var(--color-primary-600)' : 'var(--color-gray-400)', marginTop: '2px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
-      "line": 34,
-      "match": "20px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
-      "line": 36,
-      "match": "16px",
-      "context": "<div style={{ padding: '16px', borderRadius: '12px', background: 'var(--color-gray-50)', border: '1px solid var(--color-gray-200)' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/CampaignWizardStep5Preview.tsx",
-      "line": 37,
-      "match": "14px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/RecipientTable.tsx",
-      "line": 43,
-      "match": "14px",
-      "context": "<div style={{ padding: '16px', color: 'var(--color-error-600)', fontSize: '14px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/RecipientTable.tsx",
-      "line": 45,
-      "match": "14px",
-      "context": "<Button variant=\"none\" type=\"button\" onClick={() => query.refetch()} style={{ marginLeft: 8, color: 'var(--color-primary-600)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/RecipientTable.tsx",
-      "line": 56,
-      "match": "14px",
-      "context": "<div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--color-gray-500)', fontSize: '14px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/RecipientTable.tsx",
-      "line": 65,
-      "match": "13px",
-      "context": "<table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/ReminderTriggerPicker.tsx",
-      "line": 28,
-      "match": "8px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }} role=\"radiogroup\" aria-label={t.marketingTriggerGroupAria}>"
-    },
-    {
-      "file": "src/features/marketing/components/ReminderTriggerPicker.tsx",
-      "line": 53,
-      "match": "14px",
-      "context": "<span style={{ fontWeight: 600, fontSize: '14px', color: active ? 'var(--color-primary-700)' : 'var(--color-gray-800)' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/ReminderTriggerPicker.tsx",
-      "line": 56,
-      "match": "12px",
-      "context": "<span style={{ fontSize: '12px', color: active ? 'var(--color-primary-600)' : 'var(--color-gray-400)' }}>"
-    },
-    {
-      "file": "src/features/marketing/components/TemplatePreview.tsx",
-      "line": 61,
-      "match": "12px",
-      "context": "<div style={{ marginTop: '10px', fontSize: '12px', color: 'var(--color-gray-500)' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 22,
-      "match": "14px",
-      "context": "<div style={{ flex: '1 1 80px', minWidth: 0, padding: '14px', borderRadius: '10px', background: 'white', border: '1px solid var(--color-gray-200)', textAlign: 'center' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 23,
-      "match": "22px",
-      "context": "<div style={{ fontSize: '22px', fontWeight: 700, color: color ?? 'var(--color-gray-900)' }}>{value}</div>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 24,
-      "match": "11px",
-      "context": "<div style={{ fontSize: '11px', color: 'var(--color-gray-500)', marginTop: '2px' }}>{label}</div>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 31,
-      "match": "12px",
-      "context": "<div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 64,
-      "match": "14px",
-      "context": "<div style={{ color: 'var(--color-error-600)', fontSize: '14px' }}>{t.marketingCampaignLoadFailed}</div>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 65,
-      "match": "14px",
-      "context": "<Button variant=\"none\" type=\"button\" onClick={refresh} style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', cursor: 'pointer', fontSize: '14px', minHeight: '44px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 85,
-      "match": "8px",
-      "context": "<div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 91,
-      "match": "10px",
-      "context": "<div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 99,
-      "match": "14px",
-      "context": "<div style={{ padding: '14px', borderRadius: '12px', background: 'var(--color-gray-50)', border: '1px solid var(--color-gray-200)', marginBottom: '20px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 100,
-      "match": "13px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 109,
-      "match": "15px",
-      "context": "<Heading level={2} style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-gray-700)', marginBottom: '10px' }}>{t.marketingRecipients}</Heading>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 118,
-      "match": "14px",
-      "context": "style={{ display: 'block', width: '100%', padding: '13px', minHeight: '44px', borderRadius: '10px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 127,
-      "match": "24px",
-      "context": "<div style={{ width: '100%', maxWidth: 480, background: 'white', borderRadius: '20px 20px 0 0', padding: '24px 20px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 128,
-      "match": "16px",
-      "context": "<Heading level={3} id=\"cancel-dialog-title\" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>{t.marketingCancelCampaignTitle}</Heading>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 129,
-      "match": "14px",
-      "context": "<Text style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>{t.marketingCancelCampaignDesc}</Text>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 130,
-      "match": "10px",
-      "context": "<div style={{ display: 'flex', gap: '10px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 131,
-      "match": "14px",
-      "context": "<Button variant=\"none\" type=\"button\" onClick={() => setConfirmCancel(false)} style={{ flex: 1, padding: '12px', minHeight: '44px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignDetailPage.tsx",
-      "line": 138,
-      "match": "14px",
-      "context": "style={{ flex: 1, padding: '12px', minHeight: '44px', borderRadius: '10px', border: 'none', background: 'var(--color-error-600)', color: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignListPage.tsx",
-      "line": 71,
-      "match": "8px",
-      "context": "<div style={{ display: 'flex', gap: '8px', overflowX: 'auto', marginBottom: '20px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignListPage.tsx",
-      "line": 101,
-      "match": "14px",
-      "context": "<div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-error-600)', fontSize: '14px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignListPage.tsx",
-      "line": 103,
-      "match": "14px",
-      "context": "<Button variant=\"none\" type=\"button\" onClick={refresh} style={{ marginTop: '12px', display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '1px solid var(--color-error-300)', background: 'white', color: 'var(--color-error-600)', cursor: 'pointer', fontSize: '14px', minHeight: '44px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignListPage.tsx",
-      "line": 116,
-      "match": "14px",
-      "context": "<Button variant=\"none\" type=\"button\" onClick={() => navigate(MARKETING_ROUTES.CAMPAIGN_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer', minHeight: '44px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignListPage.tsx",
-      "line": 125,
-      "match": "10px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignListPage.tsx",
-      "line": 131,
-      "match": "14px",
-      "context": "style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '14px', borderRadius: '12px', background: 'white', border: '1px solid var(--color-gray-200)', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', textAlign: 'left', cursor: 'pointer', width: '100%' }}"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignListPage.tsx",
-      "line": 133,
-      "match": "8px",
-      "context": "<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignListPage.tsx",
-      "line": 134,
-      "match": "15px",
-      "context": "<span style={{ flex: 1, fontWeight: 600, fontSize: '15px', color: 'var(--color-gray-800)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignListPage.tsx",
-      "line": 138,
-      "match": "13px",
-      "context": "<div style={{ display: 'flex', gap: '16px', fontSize: '13px', color: 'var(--color-gray-500)' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignWizardPage.tsx",
-      "line": 23,
-      "match": "4px",
-      "context": "<div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center', marginBottom: '20px' }} role=\"group\" aria-label={ariaLabel}>"
-    },
-    {
-      "file": "src/features/marketing/pages/CampaignWizardPage.tsx",
-      "line": 29,
-      "match": "4px",
-      "context": "<div key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
-      "line": 26,
-      "match": "22px",
-      "context": "<div style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-gray-900)' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
-      "line": 29,
-      "match": "12px",
-      "context": "<div style={{ fontSize: '12px', color: 'var(--color-gray-500)', marginTop: '4px' }}>{label}</div>"
-    },
-    {
-      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
-      "line": 68,
-      "match": "14px",
-      "context": "<div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--color-gray-800)' }}>{title}</div>"
-    },
-    {
-      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
-      "line": 69,
-      "match": "12px",
-      "context": "<div style={{ fontSize: '12px', color: 'var(--color-gray-500)', marginTop: '2px' }}>{description}</div>"
-    },
-    {
-      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
-      "line": 71,
-      "match": "12px",
-      "context": "<span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-primary-600)', marginTop: 'auto' }}>{cta} →</span>"
-    },
-    {
-      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
-      "line": 128,
-      "match": "10px",
-      "context": "<div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '24px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/MarketingHubPage.tsx",
-      "line": 159,
-      "match": "12px",
-      "context": "<div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/OptOutListPage.tsx",
-      "line": 99,
-      "match": "10px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/OptOutListPage.tsx",
-      "line": 101,
-      "match": "14px",
-      "context": "<div key={party.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', borderRadius: '12px', background: 'white', border: '1px solid var(--color-gray-200)', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/OptOutListPage.tsx",
-      "line": 104,
-      "match": "14px",
-      "context": "<div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--color-gray-800)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{party.name}</div>"
-    },
-    {
-      "file": "src/features/marketing/pages/OptOutListPage.tsx",
-      "line": 105,
-      "match": "12px",
-      "context": "<div style={{ fontSize: '12px', color: 'var(--color-gray-400)' }}>{party.phone ?? t.marketingNoPhoneOnRow}</div>"
-    },
-    {
-      "file": "src/features/marketing/pages/OptOutListPage.tsx",
-      "line": 110,
-      "match": "12px",
-      "context": "style={{ padding: '7px 12px', borderRadius: '8px', border: '1px solid var(--color-gray-300)', background: 'white', fontSize: '12px', fontWeight: 600, color: 'var(--color-primary-600)', cursor: 'pointer', flexShrink: 0 }}"
-    },
-    {
-      "file": "src/features/marketing/pages/OptOutListPage.tsx",
-      "line": 123,
-      "match": "24px",
-      "context": "<div style={{ width: '100%', maxWidth: 480, background: 'white', borderRadius: '20px 20px 0 0', padding: '24px 20px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/OptOutListPage.tsx",
-      "line": 124,
-      "match": "16px",
-      "context": "<Heading level={3} id=\"opt-in-title\" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/OptOutListPage.tsx",
-      "line": 127,
-      "match": "14px",
-      "context": "<Text style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/OptOutListPage.tsx",
-      "line": 130,
-      "match": "10px",
-      "context": "<div style={{ display: 'flex', gap: '10px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/OptOutListPage.tsx",
-      "line": 131,
-      "match": "14px",
-      "context": "<Button variant=\"none\" type=\"button\" onClick={() => setConfirmOptIn(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/OptOutListPage.tsx",
-      "line": 138,
-      "match": "14px",
-      "context": "style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', background: 'var(--color-primary-600)', color: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
-      "line": 98,
-      "match": "18px",
-      "context": "<form onSubmit={(e) => { void handleSubmit(e) }} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
-      "line": 102,
-      "match": "10px",
-      "context": "<div style={{ display: 'flex', gap: '10px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
-      "line": 105,
-      "match": "12px",
-      "context": "{isEdit && <div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{t.marketingChannelCannotChange}</div>}"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
-      "line": 119,
-      "match": "12px",
-      "context": "<span style={{ float: 'right', fontSize: '12px', fontWeight: 400, color: charCount > SMS_CHAR_WARN ? 'var(--color-error-600)' : 'var(--color-gray-400)' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
-      "line": 137,
-      "match": "12px",
-      "context": "<div id=\"sms-char-note\" style={{ fontSize: '12px', color: 'var(--color-warning-600)', marginTop: '4px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
-      "line": 147,
-      "match": "12px",
-      "context": "<div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{t.marketingVariableNamesHelper}</div>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
-      "line": 157,
-      "match": "14px",
-      "context": "<label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: 'var(--color-gray-700)' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
-      "line": 158,
-      "match": "18px",
-      "context": "<Input type=\"checkbox\" checked={dltRegistered} onChange={(e) => setDltRegistered(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary-600)' }} />"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateFormPage.tsx",
-      "line": 168,
-      "match": "12px",
-      "context": "<div style={{ fontSize: '12px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{t.marketingWaTemplateHelper}</div>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 58,
-      "match": "8px",
-      "context": "<div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 88,
-      "match": "14px",
-      "context": "<div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--color-error-600)', fontSize: '14px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 90,
-      "match": "14px",
-      "context": "<Button variant=\"none\" type=\"button\" onClick={refresh} style={{ marginLeft: 8, background: 'none', border: 'none', color: 'var(--color-primary-600)', cursor: 'pointer', fontSize: '14px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 101,
-      "match": "14px",
-      "context": "<Button variant=\"none\" type=\"button\" onClick={() => navigate(MARKETING_ROUTES.TEMPLATE_NEW)} style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--color-primary-600)', color: 'white', border: 'none', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 109,
-      "match": "10px",
-      "context": "<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 113,
-      "match": "14px",
-      "context": "style={{ padding: '14px', borderRadius: '12px', background: 'white', border: '1px solid var(--color-gray-200)', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 115,
-      "match": "8px",
-      "context": "<div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 117,
-      "match": "8px",
-      "context": "<div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 118,
-      "match": "15px",
-      "context": "<span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--color-gray-800)' }}>{tpl.name}</span>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 122,
-      "match": "13px",
-      "context": "<div style={{ fontSize: '13px', color: 'var(--color-gray-500)', marginTop: '4px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 125,
-      "match": "11px",
-      "context": "<div style={{ fontSize: '11px', color: 'var(--color-gray-400)', marginTop: '4px' }}>{formatDate(tpl.createdAt)}</div>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 127,
-      "match": "4px",
-      "context": "<div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 131,
-      "match": "8px",
-      "context": "style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--color-gray-200)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center' }}"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 139,
-      "match": "8px",
-      "context": "style={{ padding: '8px', borderRadius: '8px', border: '1px solid var(--color-error-200)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center' }}"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 154,
-      "match": "24px",
-      "context": "<div style={{ width: '100%', maxWidth: 480, background: 'white', borderRadius: '20px 20px 0 0', padding: '24px 20px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 155,
-      "match": "16px",
-      "context": "<Heading level={3} id=\"del-tmpl-title\" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-gray-900)', marginBottom: '10px' }}>{t.marketingDeleteTemplateTitle}</Heading>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 156,
-      "match": "14px",
-      "context": "<Text style={{ fontSize: '14px', color: 'var(--color-gray-600)', marginBottom: '20px' }}>{t.marketingDeleteTemplateDesc}</Text>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 157,
-      "match": "10px",
-      "context": "<div style={{ display: 'flex', gap: '10px' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 158,
-      "match": "14px",
-      "context": "<Button variant=\"none\" type=\"button\" onClick={() => setConfirmDelete(null)} style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--color-gray-300)', background: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>"
-    },
-    {
-      "file": "src/features/marketing/pages/TemplateListPage.tsx",
-      "line": 165,
-      "match": "14px",
-      "context": "style={{ flex: 1, padding: '12px', borderRadius: '10px', border: 'none', background: 'var(--color-error-600)', color: 'white', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}"
-    },
-    {
       "file": "src/features/pos/components/receipt/Receipt58mm.tsx",
       "line": 92,
       "match": "#555",
@@ -13491,18 +15165,6 @@
       "line": 173,
       "match": "#888",
       "context": "<Text style={{ fontSize: 8, color: '#888' }}>HSN: {item.hsnCode}</Text>"
-    },
-    {
-      "file": "src/features/products/ExpiryAlertCard.tsx",
-      "line": 63,
-      "match": "2px",
-      "context": "<span style={{ fontSize: 'var(--fs-xs)', fontWeight: 600, color, background: surface, borderRadius: 'var(--radius-full)', padding: '2px 8px' }}>"
-    },
-    {
-      "file": "src/features/storefront/components/StorefrontProductsSection.tsx",
-      "line": 61,
-      "match": "16px",
-      "context": "<Text className=\"sf-help\" style={{ textAlign: 'center', padding: '16px 0' }}>"
     }
   ]
 }

@@ -15,18 +15,22 @@ export interface UseLiveQueryResult<T> {
   refetch: () => Promise<T | undefined>;
 }
 
+export const liveQueryMemoryCache = new Map<string, any>();
+
 export function useLiveQuery<T>(
   queryKey: QueryKey,
   queryFn: () => Promise<T>,
   options: UseLiveQueryOptions<T> = {}
 ): UseLiveQueryResult<T> {
   const { enabled = true, initialData, refetchOnFocus = true } = options;
+  const serializedKey = JSON.stringify(queryKey);
 
-  const [data, setData] = useState<T | undefined>(initialData);
+  const initialVal = initialData !== undefined ? initialData : liveQueryMemoryCache.get(serializedKey);
+  const [data, setData] = useState<T | undefined>(initialVal);
   const dataRef = useRef<T | undefined>(data);
   dataRef.current = data;
 
-  const [isLoading, setIsLoading] = useState<boolean>(initialData === undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(initialVal === undefined);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -35,7 +39,14 @@ export function useLiveQuery<T>(
 
   const sequenceRef = useRef(0);
   const lastFocusExecutionTimeRef = useRef(Date.now());
-  const serializedKey = JSON.stringify(queryKey);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const executeQuery = useCallback(async (isFocusTrigger = false): Promise<T | undefined> => {
     if (!enabled) return undefined;
@@ -53,19 +64,22 @@ export function useLiveQuery<T>(
     setIsFetching(true);
     try {
       const result = await queryFnRef.current();
-      // Level 6 Sequence Guard: Discard result if a newer query was initiated
-      if (currentSeq === sequenceRef.current) {
+      // Level 6 Sequence & Mount Guard: Discard result if newer query was initiated or component unmounted
+      if (isMountedRef.current && currentSeq === sequenceRef.current) {
+        liveQueryMemoryCache.set(serializedKey, result);
         setData(result);
         setError(null);
       }
       return result;
     } catch (err: any) {
-      if (currentSeq === sequenceRef.current) {
+      if (isMountedRef.current && currentSeq === sequenceRef.current) {
+        liveQueryMemoryCache.delete(serializedKey);
+        setData(undefined);
         setError(err instanceof Error ? err : new Error(String(err)));
       }
       return undefined;
     } finally {
-      if (currentSeq === sequenceRef.current) {
+      if (isMountedRef.current && currentSeq === sequenceRef.current) {
         setIsLoading(false);
         setIsFetching(false);
       }
@@ -105,4 +119,8 @@ export function useLiveQuery<T>(
     error,
     refetch: executeQuery,
   };
+}
+
+export function clearLiveQueryMemoryCache(): void {
+  liveQueryMemoryCache.clear();
 }

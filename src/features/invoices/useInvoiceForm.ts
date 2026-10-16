@@ -117,12 +117,19 @@ export function useInvoiceForm(
         await updateDocument(editId, payload, versionOverrideRef.current ?? version)
         return { mode: 'edit' as const, targetStatus, editId }
       }
-      // Payment-at-creation: attach the received amount only when the user
-      // actually collected money (the server records it via createPayment and
-      // ignores it for drafts / non-sale docs).
-      const createPayload = form.payment.amountReceived > 0
-        ? { ...payload, payment: form.payment }
-        : payload
+      const paidAmt = form.payment.amountReceived > 0 ? form.payment.amountReceived : 0
+      const balanceAmt = Math.max(0, totals.grandTotal - paidAmt)
+      const createPayload = {
+        ...payload,
+        grandTotal: totals.grandTotal,
+        subtotal: totals.subtotal,
+        totalDiscount: totals.totalDiscount,
+        totalAdditionalCharges: totals.totalCharges,
+        roundOff: totals.roundOff,
+        paidAmount: paidAmt,
+        balanceDue: balanceAmt,
+        payment: form.payment.amountReceived > 0 ? form.payment : undefined,
+      }
       const created = await createDocument(createPayload)
       return { mode: 'create' as const, targetStatus, id: created?.id }
     },

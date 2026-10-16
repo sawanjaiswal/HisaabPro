@@ -56,36 +56,12 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
         local = await repo.list(filters)
       } catch {}
 
-      if (typeof navigator !== 'undefined' && !navigator.onLine && local && local.parties.length > 0) {
+      if (local && (local.summary?.totalParties > 0 || local.parties.length > 0)) {
+        void getParties(filters).catch(() => {})
         return local
       }
 
-      try {
-        const serverRes = await getParties(filters)
-        if (local && local.parties.length > 0) {
-          const tempParties = local.parties.filter((p) => p.id.startsWith('temp_'))
-          if (tempParties.length > 0) {
-            const serverIds = new Set(serverRes.parties.map((p) => p.id))
-            const unSynced = tempParties.filter((p) => !serverIds.has(p.id))
-            if (unSynced.length > 0) {
-              return {
-                ...serverRes,
-                parties: [...unSynced, ...serverRes.parties],
-                pagination: {
-                  ...serverRes.pagination,
-                  total: serverRes.pagination.total + unSynced.length,
-                },
-              }
-            }
-          }
-        }
-        return serverRes
-      } catch (netErr) {
-        if (local && local.parties.length > 0) {
-          return local
-        }
-        throw netErr
-      }
+      return await getParties(filters)
     }
   )
 
@@ -107,7 +83,11 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
   // Compute final data with optimistic deletions applied
   const data = useMemo<PartyListResponse | null>(() => {
     if (!rawData) return null
-    const filteredParties = accumulatedParties.filter((p) => !removedIds.has(p.id))
+    const partiesSource =
+      accumulatedParties.length > 0
+        ? accumulatedParties
+        : (filters.page === 1 ? rawData.parties : [])
+    const filteredParties = partiesSource.filter((p) => !removedIds.has(p.id))
     const removedCount = removedIds.size
     return {
       parties: filteredParties,
@@ -117,9 +97,9 @@ export function useParties({ initialFilters }: UsePartiesOptions = {}): UseParti
       },
       summary: rawData.summary,
     }
-  }, [rawData, accumulatedParties, removedIds])
+  }, [rawData, accumulatedParties, removedIds, filters.page])
 
-  const status: Status = isLoading && !data ? 'loading' : error && !data ? 'error' : 'success'
+  const status: Status = isLoading && !data ? 'loading' : error && !data ? 'error' : !data ? 'loading' : 'success'
 
   // Show toast on fetch error only when no local data is available
   const prevErrorRef = useRef<Error | null>(null)

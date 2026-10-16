@@ -17,62 +17,27 @@ export class InvoiceRepository {
    * 0ms Local-First Read: List documents / invoices instantly from Dexie
    */
   async list(filters: Partial<DocumentFilters> = {}): Promise<DocumentListResponse> {
-    const page = filters.page || 1;
-    const limit = filters.limit || 20;
+    const page = filters.page || 1, limit = filters.limit || 20;
     const search = (filters.search || '').trim().toLowerCase();
-    const type = filters.type;
-
-    let items = await this.db.documents
-      .where('businessId')
-      .equals(this.businessId)
-      .toArray();
-
-    items = items.filter((d) => !d.isDeleted);
-
-    if (type) {
-      items = items.filter((d) => d.type === type);
-    }
-
+    const all = await this.db.documents.where('businessId').equals(this.businessId).toArray();
+    let items = all.filter((d) => !d.isDeleted && (!filters.type || d.type === filters.type));
     if (search) {
-      items = items.filter(
-        (d) =>
-          (d.documentNumber || '').toLowerCase().includes(search) ||
-          (d.partyName || '').toLowerCase().includes(search)
-      );
+      items = items.filter((d) => (d.documentNumber || '').toLowerCase().includes(search) || (d.partyName || '').toLowerCase().includes(search));
     }
-
     items.sort((a, b) => (b.documentDate || b.updatedAt || '').localeCompare(a.documentDate || a.updatedAt || ''));
 
-    let totalAmount = 0;
-    let totalPaid = 0;
-    let totalDue = 0;
-
+    let totalAmount = 0, totalPaid = 0, totalDue = 0;
     for (const d of items) {
       totalAmount += d.grandTotal || 0;
       totalPaid += d.paidAmount || 0;
       totalDue += d.balanceAmount || 0;
     }
-
     const total = items.length;
-    const totalPages = Math.ceil(total / limit) || 1;
-    const startIndex = (page - 1) * limit;
-    const pagedItems = items.slice(startIndex, startIndex + limit);
-
-    const summaries = pagedItems.map(mapLocalDocToSummary);
-
+    const paged = items.slice((page - 1) * limit, page * limit);
     return {
-      documents: summaries,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-      },
-      summary: {
-        totalAmount,
-        totalPaid,
-        totalDue,
-      },
+      documents: paged.map(mapLocalDocToSummary),
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) || 1 },
+      summary: { totalAmount, totalPaid, totalDue },
     };
   }
 
@@ -92,21 +57,24 @@ export class InvoiceRepository {
     partyId: string;
     partyName?: string;
     type?: string;
+    status?: string;
     documentNumber?: string;
     documentDate?: string;
     dueDate?: string;
     grandTotal: number;
     paidAmount?: number;
+    balanceAmount?: number;
     lineItems?: any[];
     notes?: string;
+    payment?: any;
   }): Promise<LocalDocument> {
     const nowIso = new Date().toISOString();
     const tempId = typeof crypto !== 'undefined' && crypto.randomUUID
       ? crypto.randomUUID()
       : `temp_doc_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
-    const paid = data.paidAmount || 0;
-    const balance = Math.max(0, data.grandTotal - paid);
+    const paid = Number(data.paidAmount) || 0;
+    const balance = data.balanceAmount !== undefined ? Number(data.balanceAmount) : Math.max(0, data.grandTotal - paid);
     const count = await this.db.documents.where('businessId').equals(this.businessId).count();
     const docNumber = data.documentNumber || `INV-${new Date().getFullYear()}-${String(count + 1).padStart(4, '0')}`;
 
@@ -116,12 +84,14 @@ export class InvoiceRepository {
       if (p) partyName = p.name;
     }
 
+    const docStatus = data.status === 'DRAFT' ? 'DRAFT' : 'SAVED';
+
     const newDoc: LocalDocument = {
       id: tempId,
       businessId: this.businessId,
       documentNumber: docNumber,
       type: data.type || 'SALE_INVOICE',
-      status: balance === 0 ? 'PAID' : (paid > 0 ? 'PARTIALLY_PAID' : 'SAVED'),
+      status: docStatus,
       partyId: data.partyId,
       partyName,
       documentDate: data.documentDate || nowIso,
@@ -137,8 +107,27 @@ export class InvoiceRepository {
       updatedAt: nowIso,
     };
 
-    await this.db.transaction('rw', [this.db.documents, this.db.parties, this.db.products, this.db.syncQueue], async () => {
+    await this.db.transaction('rw', [this.db.documents, this.db.parties, this.db.products, this.db.payments, this.db.syncQueue], async () => {
       await this.db.documents.put(newDoc);
+      if (paid > 0 && newDoc.type === 'SALE_INVOICE') {
+        const payTempId = `temp_pay_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+        await this.db.payments.put({
+          id: payTempId,
+          businessId: this.businessId,
+          type: 'PAYMENT_IN',
+          partyId: data.partyId,
+          partyName,
+          amount: paid,
+          mode: data.payment?.mode || 'CASH',
+          date: (data.documentDate || nowIso).split('T')[0],
+          referenceNumber: data.payment?.referenceNumber || null,
+          notes: `Payment for ${docNumber}`,
+          isDeleted: false,
+          version: 1,
+          createdAt: nowIso,
+          updatedAt: nowIso,
+        });
+      }
       if (data.partyId) {
         const delta = getDocumentOutstandingDelta(newDoc.type, balance);
         if (delta !== 0) {
@@ -172,14 +161,20 @@ export class InvoiceRepository {
         entityType: 'DOCUMENT',
         entityId: tempId,
         operation: 'CREATE',
-        payload: { ...data, id: tempId },
+        payload: {
+          ...data,
+          id: tempId,
+          documentNumber: docNumber,
+          status: docStatus,
+          grandTotal: data.grandTotal,
+          paidAmount: paid,
+          balanceDue: balance,
+        },
         baseVersion: 0,
       });
     });
 
-    liveQueryBus.invalidate(['invoices']);
-    liveQueryBus.invalidate(['parties']);
-    liveQueryBus.invalidate(['products']);
+    ['invoices', 'parties', 'products', 'payments', 'dashboard'].forEach((k) => liveQueryBus.invalidate([k]));
     SyncManager.triggerSync();
 
     return newDoc;
@@ -240,9 +235,7 @@ export class InvoiceRepository {
       });
     });
 
-    liveQueryBus.invalidate(['invoices']);
-    liveQueryBus.invalidate(['parties']);
-    liveQueryBus.invalidate(['products']);
+    ['invoices', 'parties', 'products', 'dashboard'].forEach((k) => liveQueryBus.invalidate([k]));
     SyncManager.triggerSync();
   }
 }

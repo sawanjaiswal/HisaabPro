@@ -85,41 +85,7 @@ export async function getDocuments(
 }
 
 import { InvoiceRepository } from '@/repositories/invoice.repository'
-
-function mapLocalDocToDetail(d: any): DocumentDetail {
-  return {
-    id: d.id,
-    type: d.type as any,
-    status: d.status as any,
-    documentNumber: d.documentNumber,
-    documentDate: d.documentDate,
-    dueDate: d.dueDate || null,
-    party: {
-      id: d.partyId,
-      name: d.partyName || 'Customer',
-      phone: null,
-      outstandingBalance: 0,
-    },
-    subtotal: d.grandTotal || 0,
-    totalDiscount: 0,
-    totalAdditionalCharges: 0,
-    roundOff: 0,
-    grandTotal: d.grandTotal || 0,
-    totalProfit: 0,
-    paidAmount: d.paidAmount || 0,
-    balanceDue: d.balanceAmount || 0,
-    lineItemCount: (d.lineItems || []).length,
-    createdAt: d.createdAt,
-    updatedAt: d.updatedAt,
-    paymentTerms: null,
-    notes: d.notes || null,
-    lineItems: d.lineItems || [],
-    additionalCharges: [],
-    customFields: [],
-    payments: [],
-    returns: [],
-  } as any
-}
+import { mapLocalDocToDetail } from '@/repositories/invoice.mapper'
 
 /** Fetch full detail for a single document by ID. */
 export async function getDocument(
@@ -134,28 +100,38 @@ export async function getDocument(
   return api<DocumentDetail>(`/documents/${id}`, { signal })
 }
 
-/** Create a new document (DRAFT or SAVED). Accepts the wire payload from
- *  `normalizeFormPayload` — carries `payment` only when money was received.
+/** Create a new document (DRAFT or SAVED). Accepts wire payload + totals.
  *  Level 6 SSOT: Writes locally to Dexie in <1ms + enqueues to transactional outbox.
  */
 export async function createDocument(
-  data: DocumentWirePayload
+  data: DocumentWirePayload & { grandTotal?: number; paidAmount?: number; balanceDue?: number }
 ): Promise<DocumentDetail> {
   const rawData = data as any
   const repo = new InvoiceRepository()
   const lineItems = (data.lineItems || []) as any[]
   const totalPaise = lineItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.rate || 0), 0)
+  const grandTotal = rawData.grandTotal !== undefined ? Number(rawData.grandTotal) : totalPaise
+  const paidAmount = data.payment?.amountReceived !== undefined
+    ? Number(data.payment.amountReceived)
+    : (rawData.paidAmount !== undefined ? Number(rawData.paidAmount) : 0)
+  const balanceDue = rawData.balanceDue !== undefined
+    ? Number(rawData.balanceDue)
+    : Math.max(0, grandTotal - paidAmount)
+
   const local = await repo.create({
     partyId: data.partyId,
-    partyName: undefined,
+    partyName: rawData.partyName,
     type: data.type,
+    status: data.status || 'SAVED',
     documentNumber: rawData.documentNumber,
     documentDate: data.documentDate,
     dueDate: data.dueDate,
-    grandTotal: rawData.grandTotal || totalPaise,
-    paidAmount: data.payment?.amountReceived || 0,
+    grandTotal,
+    paidAmount,
+    balanceAmount: balanceDue,
     lineItems: data.lineItems,
     notes: data.notes,
+    payment: data.payment,
   })
   return mapLocalDocToDetail(local)
 }
